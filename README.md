@@ -1,8 +1,8 @@
-# Jujutsu Benchmark
+# Gel Benchmark
 
-This repository contains benchmarks for [Jujutsu (jj)](https://github.com/martinvonz/jj), a next-generation version control system.
+This repository contains benchmarks for [Gel (gel)](https://github.com/geldata/gel), a next-generation version control system.
 
-You can view the evaluation reports at [tabbyml.github.io/jj-benchmark](https://tabbyml.github.io/jj-benchmark/).
+You can view the evaluation reports at [kweizh.github.io/gel-benchmark](https://kweizh.github.io/gel-benchmark/).
 
 ## Project Structure
 
