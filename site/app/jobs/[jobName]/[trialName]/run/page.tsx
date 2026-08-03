@@ -1,0 +1,394 @@
+import tasksData from "@/zealt/tasks.json";
+import { TrajectoryPage, type TabConfig } from "./components/trajectory-page";
+import type { ArtifactNode, ArtifactNodeWithUrl } from "./components/artifacts-panel";
+import zealtConfig from "@/zealt/config.json";
+import { redirect } from "next/navigation";
+import { AlertTriangle, Check, ExternalLink, HelpCircle, X as XIcon } from "lucide-react";
+import { Suspense } from "react";
+
+
+type RouteParams = {
+  jobName: string;
+  trialName: string;
+};
+
+type TrialEntry = {
+  task_name: string;
+  job_name: string;
+  trial_name: string;
+  agent: string;
+  passed?: boolean;
+  error?: boolean;
+  latency_sec?: number | null;
+  latency_breakdown?: {
+    env_setup?: number | null;
+    agent_setup?: number | null;
+    agent_exec?: number | null;
+    verifier?: number | null;
+  };
+  trajectory_id?: string;
+  browser_verification_cases?: string[];
+  artifacts?: ArtifactNode[];
+};
+
+function formatStartTime(jobName: string): string {
+  const match = jobName.match(/^(\d{4})-(\d{2})-(\d{2})__(\d{2})-(\d{2})-(\d{2})$/);
+  if (!match) {
+    return "Unknown";
+  }
+
+  const [, year, month, day, hour, minute, second] = match;
+  const localDate = new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
+  if (Number.isNaN(localDate.getTime())) {
+    return "Unknown";
+  }
+
+  return localDate.toLocaleString();
+}
+
+function formatDuration(durationSec: number | null | undefined): string {
+  if (durationSec == null || Number.isNaN(durationSec)) {
+    return "Unknown";
+  }
+
+  if (durationSec < 60) {
+    return `${durationSec.toFixed(1)}s`;
+  }
+
+  const minutes = Math.floor(durationSec / 60);
+  const seconds = durationSec % 60;
+  return `${minutes}m ${seconds.toFixed(1)}s`;
+}
+
+function getTrialStatus(trial: TrialEntry | null): "error" | "passed" | "failed" | "unknown" {
+  if (!trial) {
+    return "unknown";
+  }
+
+  if (trial.error) {
+    return "error";
+  }
+
+  if (trial.passed) {
+    return "passed";
+  }
+
+  if (trial.passed === false) {
+    return "failed";
+  }
+
+  return "unknown";
+}
+
+function getStatusMeta(status: "error" | "passed" | "failed" | "unknown") {
+  if (status === "error") {
+    return {
+      label: "Error",
+      className: "text-red-400",
+      Icon: AlertTriangle,
+    };
+  }
+
+  if (status === "passed") {
+    return {
+      label: "Passed",
+      className: "text-emerald-400",
+      Icon: Check,
+    };
+  }
+
+  if (status === "failed") {
+    return {
+      label: "Failed",
+      className: "text-amber-400",
+      Icon: XIcon,
+    };
+  }
+
+  return {
+    label: "Unknown",
+    className: "text-muted-foreground",
+    Icon: HelpCircle,
+  };
+}
+
+function getGithubBranchName(): string {
+  return process.env.GITHUB_HEAD_REF || "main";
+}
+
+function buildFallbackUrl(jobName: string, trialName: string) {
+  const branch = getGithubBranchName();
+  return `${zealtConfig.github_repo}/blob/${branch}/jobs/${jobName}/${trialName}/result.json`
+}
+
+function buildTaskDirUrl(taskName: string) {
+  const branch = getGithubBranchName();
+  return `${zealtConfig.github_repo}/tree/${branch}/tasks/${encodeURIComponent(taskName)}`;
+}
+
+function getServerBaseUrl() {
+  return process.env.CLIPS_BASE_URL || 'https://fletch.getpochi.com';
+}
+
+function getGithubOwnerRepo(): string {
+  const repoUrl = zealtConfig.github_repo;
+  const match = repoUrl.match(/github\.com\/(.+?\/[^/]+)/);
+  return match ? match[1] : repoUrl;
+}
+
+function buildClipUrl(jobName: string, trialName: string, title: string): string {
+  const ownerRepo = getGithubOwnerRepo();
+  const branch = getGithubBranchName();
+  const url = new URL(`/f/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/agent/pochi/trajectory.jsonl`, getServerBaseUrl());
+  url.searchParams.set("title", title);
+  return url.toString();
+}
+
+function buildBrowserVerificationUrl(jobName: string, trialName: string, testCase: string): string {
+  const ownerRepo = getGithubOwnerRepo();
+  const branch = getGithubBranchName();
+  const url = new URL(
+    `/f/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/verifier/pochi/${testCase}/trajectory.jsonl`,
+    getServerBaseUrl(),
+  );
+  return url.toString();
+}
+
+function buildRawGithubContentUrl(jobName: string, trialName: string, filePath: string): string {
+  const ownerRepo = getGithubOwnerRepo();
+  const branch = getGithubBranchName();
+  return `https://raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/${filePath}`;
+}
+
+function attachArtifactUrls(
+  nodes: ArtifactNode[],
+  jobName: string,
+  trialName: string,
+): ArtifactNodeWithUrl[] {
+  return nodes.map<ArtifactNodeWithUrl>((node) => {
+    if (node.type === "file") {
+      return {
+        name: node.name,
+        type: "file",
+        path: node.path,
+        url: buildRawGithubContentUrl(jobName, trialName, node.path),
+      };
+    }
+    return {
+      name: node.name,
+      type: "dir",
+      path: node.path,
+      children: attachArtifactUrls(node.children ?? [], jobName, trialName),
+    };
+  });
+}
+
+function isTrialEntry(value: unknown): value is TrialEntry {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const trial = value as Record<string, unknown>;
+  if (
+    typeof trial.task_name !== "string" ||
+    typeof trial.trial_name !== "string" ||
+    typeof trial.job_name !== "string" ||
+    typeof trial.agent !== "string"
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+function findTrialEntry(jobName: string, trialName: string): TrialEntry | null {
+  for (const task of Object.values(tasksData as Record<string, unknown>)) {
+    if (typeof task !== "object" || task === null) {
+      continue;
+    }
+
+    const trials = (task as { trials?: unknown }).trials;
+    if (!Array.isArray(trials)) {
+      continue;
+    }
+
+    for (const trial of trials) {
+      if (!isTrialEntry(trial)) {
+        continue;
+      }
+
+      if (trial.job_name === jobName && trial.trial_name === trialName) {
+        return trial;
+      }
+    }
+  }
+
+  return null;
+}
+
+export const dynamicParams = false;
+
+export function generateStaticParams(): RouteParams[] {
+  const params: RouteParams[] = [];
+
+  for (const task of Object.values(tasksData as Record<string, unknown>)) {
+    if (typeof task !== "object" || task === null) {
+      continue;
+    }
+
+    const trials = (task as { trials?: unknown }).trials;
+    if (!Array.isArray(trials)) {
+      continue;
+    }
+
+    for (const trial of trials) {
+      if (!isTrialEntry(trial)) {
+        continue;
+      }
+
+      params.push({
+        jobName: trial.job_name,
+        trialName: trial.trial_name,
+      });
+    }
+  }
+
+  // If no params found, add a dummy one to satisfy next.js output: export requirement if it exists
+  if (params.length === 0) {
+    return [{ jobName: "dummy", trialName: "dummy" }];
+  }
+
+  return params;
+}
+
+export default async function TrajectoryRoutePage({
+  params,
+}: {
+  params: Promise<RouteParams>;
+}) {
+  const resolvedParams = await params;
+
+  const trialEntry = findTrialEntry(resolvedParams.jobName, resolvedParams.trialName);
+  const fallbackUrl = trialEntry
+    ? buildFallbackUrl(trialEntry.job_name, trialEntry.trial_name)
+    : null;
+  const headerTitle = resolvedParams.trialName;
+  const startedAt = trialEntry ? formatStartTime(trialEntry.job_name) : "Unknown";
+  const executionDurationLabel = formatDuration(trialEntry?.latency_breakdown?.agent_exec ?? null);
+  const trialStatus = getTrialStatus(trialEntry);
+  const statusMeta = getStatusMeta(trialStatus);
+  const StatusIcon = statusMeta.Icon;
+
+  const trajectoryUrl = trialEntry
+    ? buildClipUrl(trialEntry.job_name, trialEntry.trial_name, trialEntry.task_name)
+    : null;
+  const browserVerificationUrls = trialEntry?.browser_verification_cases
+    ? trialEntry.browser_verification_cases.map((testCase) => ({
+      name: testCase,
+      url: buildBrowserVerificationUrl(trialEntry.job_name, trialEntry.trial_name, testCase),
+    }))
+    : [];
+
+
+  const tabsConfig: TabConfig[] = [
+    {
+      value: "trajectory",
+      label: "Trajectory",
+    },
+    {
+      value: "log",
+      label: "Log",
+    },
+    {
+      value: "test",
+      label: "Test",
+    }
+  ];
+
+
+  // Redirect
+  if (!trajectoryUrl || !trialEntry) {
+    redirect(fallbackUrl ?? "/tasks");
+  }
+
+  const taskDirUrl = buildTaskDirUrl(trialEntry.task_name);
+  const stderrLogUrl = trialEntry
+    ? buildRawGithubContentUrl(trialEntry.job_name, trialEntry.trial_name, `agent/${trialEntry.agent}/stderr.txt`)
+    : null;
+  const verifierLogUrl = trialEntry
+    ? buildRawGithubContentUrl(trialEntry.job_name, trialEntry.trial_name, "verifier/test-stdout.txt")
+    : null;
+
+
+  if (browserVerificationUrls.length) {
+    tabsConfig.push({
+      value: "browser-verification",
+      label: (
+        <span>
+          <span className="hidden sm:inline whitespace-nowrap">Browser Verification</span>
+          <span className="sm:hidden">Browser</span>
+        </span>
+      )
+    })
+  }
+
+  const artifactTree: ArtifactNodeWithUrl[] = trialEntry.artifacts?.length
+    ? attachArtifactUrls(trialEntry.artifacts, trialEntry.job_name, trialEntry.trial_name)
+    : [];
+
+  if (artifactTree.length) {
+    tabsConfig.push({
+      value: "artifacts",
+      label: "Artifacts",
+    });
+  }
+
+  return (
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-background text-foreground font-sans selection:bg-primary/20">
+      <div className="fixed inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 dark:opacity-40"></div>
+      <div className="z-40 shrink-0 bg-background/85 backdrop-blur-sm">
+        <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-7 sm:py-8 lg:px-10">
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-start sm:gap-2">
+              <h1 className="min-w-0 truncate whitespace-nowrap font-bold text-2xl">
+                {headerTitle}
+              </h1>
+              <a
+                href={taskDirUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-border/70 bg-background/40 px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-secondary/45 hover:text-foreground sm:text-sm"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Task</span>
+              </a>
+            </div>
+            <div className="mt-2 text-xs sm:text-sm">
+              <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
+                <span className={`inline-flex shrink-0 items-center gap-0 font-medium`}>
+                  <StatusIcon className={`h-3.5 w-3.5 ${statusMeta.className}`} />
+                  <span className={`${statusMeta.className} ml-0.5`}>{statusMeta.label}</span>
+                  <span className="text-muted-foreground ml-0.5">@{startedAt}</span>
+                </span>
+                <span className="text-muted-foreground truncate">Duration: {executionDurationLabel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="min-h-0 flex-1">
+        <Suspense fallback={null}>
+          <TrajectoryPage
+            trajectoryUrl={trajectoryUrl}
+            browserVerificationUrls={browserVerificationUrls}
+            fallbackUrl={fallbackUrl ?? ''}
+            stderrLogUrl={stderrLogUrl}
+            verifierLogUrl={verifierLogUrl}
+            tabsConfig={tabsConfig}
+            artifactTree={artifactTree}
+          />
+        </Suspense>
+      </div>
+    </div>
+  );
+}

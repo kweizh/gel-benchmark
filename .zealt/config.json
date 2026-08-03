@@ -1,0 +1,6 @@
+{
+  "title": "Gel Benchmark",
+  "description": "Performance results of AI coding models on gel tasks, measuring success rate and execution time with high precision.",
+  "github_repo": "https://github.com/kweizh/gel-benchmark",
+  "pending_models": []
+}
