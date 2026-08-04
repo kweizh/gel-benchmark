@@ -277,6 +277,21 @@ run();
 
 These common challenges serve as excellent candidates for complex evaluation tasks to test an agent's problem-solving capability:
 
+### Limited Evaluation Env
+
+* The tasks would always be evaluated in a limited environment, please make sure NEVER generate task description that required plenty of memory.
+* **Fixture Dependencies in Tests**: When writing automated tests (like `pytest`) that interact with a local Gel server, tests that invoke the Gel CLI (e.g., `gel migration status`, `gel migrate`) might fail with a `Connection refused` error if they run before the database server is fully started. Always ensure that any test function executing a database-dependent CLI command explicitly requests the test fixture that starts the server (e.g., the `client` fixture), even if the test does not use the client object directly.
+  * **Example**:
+    ```python
+    # BAD: Runs before server starts if placed early in the file
+    def test_migration_status_is_in_sync():
+        proc = subprocess.run(["gel", "migration", "status"], ...)
+
+    # GOOD: Explicitly depends on the 'client' fixture which ensures the server is running
+    def test_migration_status_is_in_sync(client):
+        proc = subprocess.run(["gel", "migration", "status"], ...)
+    ```
+
 ### Friction Point 1: Backlink Cardinality & Type Intersection
 * **The Challenge**: When traversing a link in reverse (e.g., `.<author[is Post]`), Gel defaults to treating it as a `multi` link (returning a set of objects). If a developer wants to declare a computed 1-to-1 reverse link, they must explicitly use the `single` keyword in the schema definition. Furthermore, omitting the type intersection `[is Post]` when the link is on an abstract type causes compilation errors.
 * **Relevant Resource**: [Links - Backlinks Reference](https://docs.geldata.com/reference/datamodel/links#backlinks)
