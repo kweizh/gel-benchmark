@@ -304,6 +304,58 @@ These common challenges serve as excellent candidates for complex evaluation tas
 * **The Challenge**: If a developer manually runs a DDL statement (e.g., `create type...`) in the database REPL or if a migration script is modified out-of-sync with the local `dbschema/migrations` folder, the Gel CLI will refuse to run `gel migrate`. Resolving this requires understanding how to use `gel migration extract` to sync the file system with the database, or `gel migrate --dev-mode` to force-align the development instance.
 * **Relevant Resource**: [Migrations Guide](https://docs.geldata.com/resources/guides/migrations/guide)
 
+### Friction Point 4: Introspecting Link Properties via `schema::Pointer`
+* **The Challenge**: `schema::ObjectType.pointers` returns a set of `schema::Pointer`, which is the *abstract* base type shared by both properties and links. Link properties (declared inside a link's `{ ... }` block, e.g. `precedence` on a `multi layers: SettingsLayer { precedence: int64 }`) live on a nested `pointers` link — but that nested `pointers` link is only defined on `schema::Link` (via `schema::Source`), not on the generic `schema::Pointer`. Writing an introspection query like `pointers: { name, pointers: { name } }` therefore fails with `InvalidReferenceError: object type 'schema::Pointer' has no link or property 'pointers'`, even though it works fine when the outer set happens to contain only links. This is an easy trap for auto-generated `test_initial_state.py` / `test_final_state.py` checks that try to assert a link property exists.
+* **The Fix**: Always add an explicit type intersection to `[is schema::Link]` before drilling into the nested `pointers`, since only link-type pointers can have their own link properties:
+  ```edgeql
+  select schema::ObjectType {
+      pointers: {
+          name,
+          [is schema::Link].pointers: { name }
+      }
+  }
+  filter .name = 'default::SettingsRecord';
+  ```
+  When authoring `bootstrap`/`tests` pytest files that introspect the schema for link properties, prefer this pattern (or filter `pointers` down to `schema::Link` first, e.g. `.pointers[is schema::Link]`) instead of naively nesting `pointers: { pointers: { name } }`.
+* **Relevant Resource**: [Schema Introspection Reference](https://docs.geldata.com/reference/datamodel/introspection)
+
+### Friction Point 6: `gel` CLI Option Placement — Global vs. Subcommand Flags
+* **The Challenge**: Flags like `-F`/`--output-format` (and similarly `-I`/`--instance`, `--branch`, etc. in some contexts) are *subcommand* options, not top-level/global options of the `gel` binary. Writing `gel -F json query 'select ...'` fails immediately at the top-level argument parser with `error: unexpected argument '-F' found` / `Usage: gel [OPTIONS] [COMMAND]`, even though the exact same flag works fine once it is moved after the subcommand name. This is an easy typo to introduce in bake scripts because many other CLIs (e.g. `git -C dir status`) do accept options before the subcommand.
+  * **Example**:
+    ```bash
+    # BAD: -F placed before the subcommand — fails with "unexpected argument '-F' found"
+    gel -F json query 'select count(LedgerEntry)'
+
+    # GOOD: flag placed after the subcommand it belongs to
+    gel query -F json 'select count(LedgerEntry)'
+    ```
+  * **The Fix**: Always write `gel <subcommand> [subcommand-flags] '<query-or-args>'`. Before baking an image, run every distinct `gel ...` invocation used in the Dockerfile/bake script at least once against a scratch container to confirm the flag ordering is accepted, rather than assuming it from memory or from a different CLI's conventions.
+
+### Friction Point 7: Omitting `--runstate-dir` Defaults to Root-Owned `/run/gel`
+* **The Challenge**: When no `--runstate-dir` is passed, `gel-server` defaults to a path under `/run` (e.g. `/run/gel`), which is root-owned tmpfs. Dockerfiles that bootstrap the server as root (where writing to `/run/gel` succeeds) but then start the *real*, long-running server as an unprivileged user (via `su`, `gosu`, or `runuser`, since `gel-server` refuses to run as root) hit `cannot create the runstate directory: [Errno 13] Permission denied: '/run/gel'; please use --runstate-dir to specify the correct location` the moment that second, non-root invocation starts — often deep into a multi-minute bake step, after migrations/seeding already appeared to be set up.
+  * **The Fix**: Never rely on the default runstate directory. On *every* `gel-server`/`gel-server-N` invocation (bootstrap, background start, and any ad-hoc restarts), pass an explicit `--runstate-dir=<path>` that points at a directory created ahead of time and `chown`-ed to the exact uid/gid the server will run as (e.g. `/var/lib/gel/run`), such as:
+    ```bash
+    mkdir -p /var/lib/gel/run && chown gelsrv:gelsrv /var/lib/gel/run
+    su gelsrv -s /bin/bash -c '/usr/bin/gel-server-7 --data-dir=... --runstate-dir=/var/lib/gel/run ...'
+    ```
+
+### Friction Point 8: Migration Filenames Are Content-Hashed, Never Just `NNNNN.edgeql`
+* **The Challenge**: `gel migration create` names the generated file `<index>-<hash>.edgeql` (e.g. `00001-m1dgr4xalvqsbycxqgt5hbybkvdtpoqkt4hdibirk4caywcpxteepa.edgeql`), never the bare zero-padded index alone. Bake scripts or tests that hardcode a path like `dbschema/migrations/00001.edgeql` — perhaps to `cp` it out as a reference snapshot, or to diff it against an expected file — fail with `cp: cannot stat '.../00001.edgeql': No such file or directory`, because that literal filename never exists on disk.
+  * **The Fix**: Never hardcode a migration's exact filename. Resolve it with a glob (`ls dbschema/migrations/00001-*.edgeql`) or by querying `schema::Migration { name }`/`gel migration log`, then use the resolved path in any subsequent `cp`/`chmod`/diff command or test fixture.
+
+### Friction Point 9: Don't Assume a Fixed `gel-server` Binary Name or PATH Entry
+* **The Challenge**: The local server binary's name varies across base images, install methods, and Gel major versions — `gel-server`, `gel-server-6`, `gel-server-7`, or a path nested under `/usr/lib/*/gel-server-*/bin/gel-server` — and the official `geldata/gel:<version>` Docker image does not necessarily expose a plain `gel-server` executable on `PATH`, even though the image's own bundled entrypoint knows how to start it. A Dockerfile that calls `gel-server ...` directly (assuming the apt-installed naming convention) can fail at build time with `bash: line 1: gel-server: command not found`, especially when it was copy-pasted from a task that installed the `gel-server-N` apt package rather than using the `geldata/gel` Docker image.
+  * **The Fix**:
+    1. When basing off `geldata/gel:<version>`, prefer delegating to the image's own `/usr/local/bin/docker-entrypoint.sh server` (after setting `ENTRYPOINT []` so it doesn't also run automatically as the container's default command) instead of guessing the server binary's name.
+    2. When installing the `gel-server` apt package directly, resolve the binary defensively by trying a list of candidate names in order (e.g. `gel-server`, `gel-server-<major>`) and falling back to `ls /usr/bin/gel-server* 2>/dev/null | head -n 1`, failing loudly with a clear diagnostic if none is found — never hardcode a single assumed name.
+
+### Friction Point 10: `pytest-json-ctrf` Crashes the Whole Suite with an Old apt-provided `pytest`
+* **The Challenge**: Task `Dockerfile`s commonly install test tooling with a single apt line such as `apt-get install ... python3 python3-pip python3-pytest ...` and then `pip3 install --break-system-packages pytest-json-ctrf ...`. On Debian bookworm, `python3-pytest` resolves to an old pytest release (e.g. 7.2.1) whose `TestReport` objects do **not** carry `.start`/`.stop` timing attributes. The unpinned, always-latest `pytest-json-ctrf` plugin (used by `tests/test.sh` via `pytest --ctrf ...`) assumes those attributes exist and reads them in its `pytest_runtest_logreport` hook. The very first test's `setup` report triggers an `AttributeError: 'TestReport' object has no attribute 'start'` inside the plugin, which pytest surfaces as an `INTERNALERROR` — the whole run aborts with **zero tests executed** ("no tests ran"), regardless of whether the executor's solution is correct. Because this comes from the harness itself, it silently fails every task that ships this apt+pip combination, no matter what the agent does.
+* **The Fix**: Never rely on the distro-packaged `python3-pytest` when also installing `pytest-json-ctrf` (or any other reporting plugin that inspects `TestReport` internals). Instead:
+  1. Drop `python3-pytest` from the `apt-get install` line, and let `pip3 install --break-system-packages pytest pytest-json-ctrf ...` provide a modern, mutually-compatible pytest (or explicitly pin a known-good pair, e.g. `pytest>=8` with the `pytest-json-ctrf` version you tested against).
+  2. During task authoring, actually execute `tests/test.sh` (or the verifier command) against the built image at least once — an `INTERNALERROR`/"no tests ran" outcome from the harness itself must never be mistaken for "the executor's solution is untested."
+* **Relevant Resource**: [pytest `TestReport` API Reference](https://docs.pytest.org/en/stable/reference/reference.html#pytest.TestReport) — note the `start`/`stop` timing attributes are only populated by sufficiently new pytest versions.
+
 ---
 
 ## 5. Evaluation Ideas
