@@ -1,0 +1,139 @@
+module default {
+  abstract type Auditable {
+    required version: int64 {
+      rewrite insert using (1);
+      rewrite update using (__old__.version + 1);
+    }
+    required created_at: datetime {
+      rewrite insert using (datetime_of_statement());
+      rewrite update using (__old__.created_at);
+    }
+    required modified_at: datetime {
+      rewrite insert using (datetime_of_statement());
+      rewrite update using (datetime_of_statement());
+    }
+  }
+
+  type Document extending Auditable {
+    required slug: str {
+      constraint exclusive;
+    }
+    required title: str;
+    required body: str;
+
+    trigger log_insert after insert for each do (
+      insert AuditEntry {
+        action := 'insert',
+        entity_type := 'Document',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.created_at,
+        snapshot := <json>{
+          slug := __new__.slug,
+          title := __new__.title,
+          version := __new__.version,
+        },
+      }
+    );
+
+    trigger log_update after update for each do (
+      insert AuditEntry {
+        action := 'update',
+        entity_type := 'Document',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.modified_at,
+        snapshot := <json>{
+          slug := __new__.slug,
+          title := __new__.title,
+          version := __new__.version,
+        },
+      }
+    );
+
+    trigger log_delete after delete for each do (
+      insert AuditEntry {
+        action := 'delete',
+        entity_type := 'Document',
+        entity_id := __old__.id,
+        version := __old__.version,
+        at := datetime_of_statement(),
+        snapshot := <json>{
+          slug := __old__.slug,
+          title := __old__.title,
+          version := __old__.version,
+        },
+      }
+    );
+  }
+
+  type Comment extending Auditable {
+    required body: str;
+    required document: Document {
+      on target delete allow;
+    };
+    required document_slug: str {
+      rewrite insert using (.document.slug);
+      rewrite update using (.document.slug);
+    }
+
+    trigger log_insert after insert for each do (
+      insert AuditEntry {
+        action := 'insert',
+        entity_type := 'Comment',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.created_at,
+        snapshot := <json>{
+          body := __new__.body,
+          document_slug := __new__.document_slug,
+          version := __new__.version,
+        },
+      }
+    );
+
+    trigger log_update after update for each do (
+      insert AuditEntry {
+        action := 'update',
+        entity_type := 'Comment',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.modified_at,
+        snapshot := <json>{
+          body := __new__.body,
+          document_slug := __new__.document_slug,
+          version := __new__.version,
+        },
+      }
+    );
+
+    trigger log_delete after delete for each do (
+      insert AuditEntry {
+        action := 'delete',
+        entity_type := 'Comment',
+        entity_id := __old__.id,
+        version := __old__.version,
+        at := datetime_of_statement(),
+        snapshot := <json>{
+          body := __old__.body,
+          document_slug := __old__.document_slug,
+          version := __old__.version,
+        },
+      }
+    );
+  }
+
+  type AuditEntry {
+    required action: str;
+    required entity_type: str;
+    required entity_id: uuid;
+    required version: int64;
+    required at: datetime;
+    required snapshot: json;
+
+    access policy allow_read_write
+      allow select, insert;
+    access policy deny_modify
+      deny update, delete;
+  }
+}

@@ -1,0 +1,329 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T07:30:15.844211+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 30,
+            "passed": 20,
+            "failed": 10,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785915013685,
+            "stop": 1785915015844
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_status_reports_up_to_date",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 380,
+                "start": 1785915013776,
+                "stop": 1785915014156,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\n\n    def test_migration_status_reports_up_to_date(client):\n        proc = subprocess.run(\n            [\"gel\", \"migration\", \"status\"],\n            cwd=PROJECT_DIR,\n            capture_output=True,\n            text=True,\n            timeout=600,\n        )\n>       assert proc.returncode == 0, (\n            \"'gel migration status' must exit 0 with the database up to date, but it exited \"\n            f\"{proc.returncode}: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'gel migration status' must exit 0 with the database up to date, but it exited 3: \nE         gel error: Database revision m1c5ncfdlxdfygwwafvjxs7rf5wv5zdehy4aaqhpgjmgx2ughpyt3q not found in the filesystem.\nE           Consider updating sources.\nE         \nE       assert 3 == 0\nE        +  where 3 = CompletedProcess(args=['gel', 'migration', 'status'], returncode=3, stdout='', stderr='gel error: Database revision m1c5ncfdlxdfygwwafvjxs7rf5wv5zdehy4aaqhpgjmgx2ughpyt3q not found in the filesystem.\\n  Consider updating sources.\\n').returncode\n\n/tests/test_final_state.py:411: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_schema_changes_are_recorded_as_migrations",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785915014156,
+                "stop": 1785915014157,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seeded_documents_survived",
+                "status": "passed",
+                "duration": 24,
+                "start": 1785915014157,
+                "stop": 1785915014181,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seeded_comments_survived",
+                "status": "passed",
+                "duration": 30,
+                "start": 1785915014181,
+                "stop": 1785915014211,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_insert_ignores_client_supplied_metadata",
+                "status": "passed",
+                "duration": 287,
+                "start": 1785915014211,
+                "stop": 1785915014498,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_insert_produces_exactly_one_audit_entry",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785915014498,
+                "stop": 1785915014499,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_document_snapshot_shape",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785915014499,
+                "stop": 1785915014499,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_noop_update_still_bumps_version",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785915014499,
+                "stop": 1785915014500,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_noop_update_is_audited",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785915014500,
+                "stop": 1785915014500,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_update_ignores_client_supplied_metadata",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785915014500,
+                "stop": 1785915014500,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_forged_update_is_audited",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785915014501,
+                "stop": 1785915014501,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_no_extra_entries_for_doc_a",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785915014501,
+                "stop": 1785915014501,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_multi_statement_transaction_versions",
+                "status": "passed",
+                "duration": 90,
+                "start": 1785915014501,
+                "stop": 1785915014591,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_rolled_back_transaction_leaves_no_audit_trail",
+                "status": "passed",
+                "duration": 50,
+                "start": 1785915014591,
+                "stop": 1785915014641,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_bulk_insert_creates_one_entry_per_object",
+                "status": "passed",
+                "duration": 170,
+                "start": 1785915014641,
+                "stop": 1785915014811,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_bulk_update_creates_one_entry_per_object",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785915014811,
+                "stop": 1785915014811,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_comment_document_slug_cannot_be_forged",
+                "status": "passed",
+                "duration": 193,
+                "start": 1785915014811,
+                "stop": 1785915015004,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_comment_document_slug_follows_link_change",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785915015005,
+                "stop": 1785915015005,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_direct_comment_delete_is_audited_once",
+                "status": "passed",
+                "duration": 143,
+                "start": 1785915015005,
+                "stop": 1785915015148,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_document_delete_removes_its_comments",
+                "status": "passed",
+                "duration": 314,
+                "start": 1785915015148,
+                "stop": 1785915015462,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_document_delete_audits_document_and_children",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 11,
+                "start": 1785915015462,
+                "stop": 1785915015473,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "cascade = {'bodies': ['cd1x-7adc2367', 'cd2-7adc2367', 'cd3-7adc2367'], 'comment_entries': [{'action': 'insert', 'at': datetime....05bb8c0-909f-11f1-a00c-0f8d6f5ed0a6', 'cd3-7adc2367': '805bbc30-909f-11f1-a00c-a3d4ea8954b5'}, 'comments_left': 0, ...}\n\n    def test_document_delete_audits_document_and_children(cascade):\n        doc_deletes = [e for e in cascade[\"doc_entries\"] if e[\"action\"] == \"delete\"]\n        assert len(doc_deletes) == 1, (\n            f\"Exactly one 'delete' entry is expected for the document, got {doc_deletes}.\"\n        )\n        assert doc_deletes[0][\"entity_id\"] == cascade[\"doc_id\"], (\n            f\"The document delete entry must reference {cascade['doc_id']}, got {doc_deletes[0]['entity_id']}.\"\n        )\n        assert doc_deletes[0][\"version\"] == 1, (\n            f\"The document was never updated, so its delete entry must record version 1, \"\n            f\"got {doc_deletes[0]['version']}.\"\n        )\n    \n        comment_deletes = [e for e in cascade[\"comment_entries\"] if e[\"action\"] == \"delete\"]\n>       assert len(comment_deletes) == 3, (\n            \"Deleting a document with three comments must record exactly one 'delete' entry per \"\n            f\"removed comment, got {comment_deletes}.\"\n        )\nE       AssertionError: Deleting a document with three comments must record exactly one 'delete' entry per removed comment, got [].\nE       assert 0 == 3\nE        +  where 0 = len([])\n\n/tests/test_final_state.py:821: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_audit_entry_update_is_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 95,
+                "start": 1785915015473,
+                "stop": 1785915015568,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\ndoc_a = {'after_forged': Object{id := UUID('7fc3b53e-909f-11f1-a00c-cfead4bd8e09'), slug := 'doc-a-7adc2367', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': '7fc3b53e-909f-11f1-a00c-cfead4bd8e09', 'entity_type': 'Document', ...}], ...}\n\n    def test_audit_entry_update_is_rejected(client, doc_a):\n        entries = document_entries_for_slug(client, doc_a[\"slug\"])\n        assert entries, f\"No audit entries found for {doc_a['slug']}.\"\n        target = entries[0]\n        found = client.query_single(\n            \"\"\"\n            select (\n                select AuditEntry\n                filter .entity_type = 'Document'\n                   and json_get(.snapshot, 'slug') ?= <json><str>$slug\n                   and .action = <str>$action\n                   and .version = <int64>$version\n                limit 1\n            ) { id }\n            \"\"\",\n            slug=doc_a[\"slug\"],\n            action=target[\"action\"],\n            version=target[\"version\"],\n        )\n        assert found is not None, \"Could not resolve an existing AuditEntry id.\"\n        target_id = found.id\n    \n>       with pytest.raises(GEL_ERRORS):\nE       Failed: DID NOT RAISE (<class 'gel.errors._base.EdgeDBError'>,)\n\n/tests/test_final_state.py:881: Failed",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_audit_entry_delete_is_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 78,
+                "start": 1785915015568,
+                "stop": 1785915015646,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\ndoc_a = {'after_forged': Object{id := UUID('7fc3b53e-909f-11f1-a00c-cfead4bd8e09'), slug := 'doc-a-7adc2367', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': '7fc3b53e-909f-11f1-a00c-cfead4bd8e09', 'entity_type': 'Document', ...}], ...}\n\n    def test_audit_entry_delete_is_rejected(client, doc_a):\n        before = document_entries_for_slug(client, doc_a[\"slug\"])\n        assert before, f\"No audit entries found for {doc_a['slug']}.\"\n        found = client.query_single(\n            \"\"\"\n            select (\n                select AuditEntry\n                filter .entity_type = 'Document'\n                   and json_get(.snapshot, 'slug') ?= <json><str>$slug\n                limit 1\n            ) { id }\n            \"\"\",\n            slug=doc_a[\"slug\"],\n        )\n        assert found is not None, \"Could not resolve an existing AuditEntry id.\"\n        target_id = found.id\n>       with pytest.raises(GEL_ERRORS):\nE       Failed: DID NOT RAISE (<class 'gel.errors._base.EdgeDBError'>,)\n\n/tests/test_final_state.py:920: Failed",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_audit_entry_bulk_delete_is_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 47,
+                "start": 1785915015646,
+                "stop": 1785915015693,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\ndoc_a = {'after_forged': Object{id := UUID('7fc3b53e-909f-11f1-a00c-cfead4bd8e09'), slug := 'doc-a-7adc2367', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': '7fc3b53e-909f-11f1-a00c-cfead4bd8e09', 'entity_type': 'Document', ...}], ...}\n\n    def test_audit_entry_bulk_delete_is_rejected(client, doc_a):\n        before = document_entries_for_slug(client, doc_a[\"slug\"])\n>       with pytest.raises(GEL_ERRORS):\nE       Failed: DID NOT RAISE (<class 'gel.errors._base.EdgeDBError'>,)\n\n/tests/test_final_state.py:935: Failed",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_report_script_exists",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785915015693,
+                "stop": 1785915015702,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\n\n    def test_report_script_exists(client):\n>       assert os.path.isfile(REPORT_SCRIPT), f\"{REPORT_SCRIPT} does not exist.\"\nE       AssertionError: /home/user/auditdb/audit_report.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x753340e40220>('/home/user/auditdb/audit_report.py')\nE        +    where <function isfile at 0x753340e40220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:957: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_for_populated_slug",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 28,
+                "start": 1785915015702,
+                "stop": 1785915015730,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\ndoc_a = {'after_forged': Object{id := UUID('7fc3b53e-909f-11f1-a00c-cfead4bd8e09'), slug := 'doc-a-7adc2367', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': '7fc3b53e-909f-11f1-a00c-cfead4bd8e09', 'entity_type': 'Document', ...}], ...}\nmoved_comment = {'after_insert': Object{id := UUID('8020cfe4-909f-11f1-94f9-b77342d356ff'), body := 'cmt-7adc2367', version := 1, crea...info=datetime.timezone.utc), 'entity_id': '8020cfe4-909f-11f1-94f9-b77342d356ff', 'entity_type': 'Comment', ...}], ...}\nsolo_comment = {'body': 'cmt-solo-7adc2367', 'entries': [{'action': 'delete', 'at': datetime.datetime(2026, 8, 5, 7, 30, 15, 144051, ...f9-ef92631430b2', 'entity_type': 'Comment', ...}], 'id': '803bfed6-909f-11f1-94f9-ef92631430b2', 'still_exists': False}\n\n    def test_report_for_populated_slug(client, doc_a, moved_comment, solo_comment):\n>       payload = report_json(\"--slug\", doc_a[\"slug\"])\n\n/tests/test_final_state.py:961: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('--slug', 'doc-a-7adc2367')\nproc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-7adc2367'], returncode=2, stdout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\")\n@py_assert1 = 2, @py_assert4 = 0\n\n    def report_json(*args):\n        proc = run_report(*args)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: python3 /home/user/auditdb/audit_report.py --slug doc-a-7adc2367 exited 2. stdout='' stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\"\nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-7adc2367'], returncode=2, stdout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\").returncode\n\n/tests/test_final_state.py:186: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_for_deleted_document",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 25,
+                "start": 1785915015730,
+                "stop": 1785915015755,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\ncascade = {'bodies': ['cd1x-7adc2367', 'cd2-7adc2367', 'cd3-7adc2367'], 'comment_entries': [{'action': 'insert', 'at': datetime....05bb8c0-909f-11f1-a00c-0f8d6f5ed0a6', 'cd3-7adc2367': '805bbc30-909f-11f1-a00c-a3d4ea8954b5'}, 'comments_left': 0, ...}\n\n    def test_report_for_deleted_document(client, cascade):\n>       payload = report_json(\"--slug\", cascade[\"slug\"])\n\n/tests/test_final_state.py:984: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('--slug', 'doc-del-7adc2367')\nproc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-del-7adc2367'], returncode=2, stdout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\")\n@py_assert1 = 2, @py_assert4 = 0\n\n    def report_json(*args):\n        proc = run_report(*args)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: python3 /home/user/auditdb/audit_report.py --slug doc-del-7adc2367 exited 2. stdout='' stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\"\nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-del-7adc2367'], returncode=2, stdout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\").returncode\n\n/tests/test_final_state.py:186: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_for_unknown_slug",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 24,
+                "start": 1785915015755,
+                "stop": 1785915015779,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\ntoken = '7adc2367'\n\n    def test_report_for_unknown_slug(client, token):\n        unknown = f\"no-such-slug-{token}\"\n>       payload = report_json(\"--slug\", unknown)\n\n/tests/test_final_state.py:1008: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('--slug', 'no-such-slug-7adc2367')\nproc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'no-such-slug-7adc2367'], returncode...dout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\")\n@py_assert1 = 2, @py_assert4 = 0\n\n    def report_json(*args):\n        proc = run_report(*args)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: python3 /home/user/auditdb/audit_report.py --slug no-such-slug-7adc2367 exited 2. stdout='' stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\"\nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'no-such-slug-7adc2367'], returncode...dout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\").returncode\n\n/tests/test_final_state.py:186: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_is_read_only",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 37,
+                "start": 1785915015779,
+                "stop": 1785915015816,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7533407ef4d0>\ndoc_a = {'after_forged': Object{id := UUID('7fc3b53e-909f-11f1-a00c-cfead4bd8e09'), slug := 'doc-a-7adc2367', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': '7fc3b53e-909f-11f1-a00c-cfead4bd8e09', 'entity_type': 'Document', ...}], ...}\nmoved_comment = {'after_insert': Object{id := UUID('8020cfe4-909f-11f1-94f9-b77342d356ff'), body := 'cmt-7adc2367', version := 1, crea...info=datetime.timezone.utc), 'entity_id': '8020cfe4-909f-11f1-94f9-b77342d356ff', 'entity_type': 'Comment', ...}], ...}\nsolo_comment = {'body': 'cmt-solo-7adc2367', 'entries': [{'action': 'delete', 'at': datetime.datetime(2026, 8, 5, 7, 30, 15, 144051, ...f9-ef92631430b2', 'entity_type': 'Comment', ...}], 'id': '803bfed6-909f-11f1-94f9-ef92631430b2', 'still_exists': False}\n\n    def test_report_is_read_only(client, doc_a, moved_comment, solo_comment):\n        entries_before = len(document_entries_for_slug(client, doc_a[\"slug\"])) + len(\n            comment_entries_for_slug(client, doc_a[\"slug\"])\n        )\n>       first = report_json(\"--slug\", doc_a[\"slug\"])\n\n/tests/test_final_state.py:1034: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('--slug', 'doc-a-7adc2367')\nproc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-7adc2367'], returncode=2, stdout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\")\n@py_assert1 = 2, @py_assert4 = 0\n\n    def report_json(*args):\n        proc = run_report(*args)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: python3 /home/user/auditdb/audit_report.py --slug doc-a-7adc2367 exited 2. stdout='' stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\"\nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-7adc2367'], returncode=2, stdout='', stderr=\"python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\\n\").returncode\n\n/tests/test_final_state.py:186: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_requires_slug_argument",
+                "status": "passed",
+                "duration": 27,
+                "start": 1785915015816,
+                "stop": 1785915015843,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

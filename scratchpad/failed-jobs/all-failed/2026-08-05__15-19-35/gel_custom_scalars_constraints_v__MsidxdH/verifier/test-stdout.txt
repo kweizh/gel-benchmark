@@ -1,0 +1,2082 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 45 items
+
+../tests/test_final_state.py EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE [ 95%]
+EE                                                                       [100%]
+
+==================================== ERRORS ====================================
+_______________ ERROR at setup of test_custom_scalar_types_exist _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________ ERROR at setup of test_enum_labels_are_exact_and_ordered ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+________ ERROR at setup of test_abstract_constraint_clean_label_exists _________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________ ERROR at setup of test_object_types_and_property_targets ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______ ERROR at setup of test_migration_files_exist_and_history_applied _______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________ ERROR at setup of test_migration_status_reports_in_sync ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______ ERROR at setup of test_specimen_code_format_enforced_by_database _______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+__ ERROR at setup of test_specimen_code_exclusivity_is_delegated_to_subtypes ___
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________ ERROR at setup of test_label_rules_enforced_by_database ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+________________ ERROR at setup of test_volume_must_be_positive ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+______________ ERROR at setup of test_blood_volume_limit_enforced ______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+______________ ERROR at setup of test_urine_volume_limit_enforced ______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______________ ERROR at setup of test_tube_count_range_enforced _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______ ERROR at setup of test_analyte_code_format_enforced_by_database ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+______ ERROR at setup of test_measured_value_bounds_enforced_by_database _______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_________ ERROR at setup of test_reference_interval_must_be_ascending __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_ ERROR at setup of test_validated_measurement_must_sit_inside_reference_interval _
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_____________ ERROR at setup of test_analyte_is_unique_per_sample ______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_________ ERROR at setup of test_measurement_state_defaults_to_pending _________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______ ERROR at setup of test_unknown_enum_labels_rejected_by_database ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________ ERROR at setup of test_register_sample_blood_happy_path ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_____ ERROR at setup of test_register_sample_same_code_other_kind_accepted _____
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______ ERROR at setup of test_register_sample_boundary_values_accepted ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+____________ ERROR at setup of test_register_sample_missing_fields _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_____________ ERROR at setup of test_register_sample_invalid_kind ______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_________ ERROR at setup of test_register_sample_invalid_specimen_code _________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+________ ERROR at setup of test_register_sample_duplicate_specimen_code ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+____________ ERROR at setup of test_register_sample_malformed_label ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+__________ ERROR at setup of test_register_sample_volume_not_positive __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+________ ERROR at setup of test_register_sample_volume_above_kind_limit ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+________ ERROR at setup of test_register_sample_tube_count_out_of_range ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______ ERROR at setup of test_register_sample_rejections_leave_no_rows ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_____________ ERROR at setup of test_submit_measurement_happy_path _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___ ERROR at setup of test_submit_measurement_validated_boundaries_accepted ____
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+______ ERROR at setup of test_submit_measurement_accepts_every_enum_label ______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________ ERROR at setup of test_submit_measurement_missing_fields ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________ ERROR at setup of test_submit_measurement_unknown_sample ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+__________ ERROR at setup of test_submit_measurement_invalid_analyte ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+____________ ERROR at setup of test_submit_measurement_value_bounds ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+________ ERROR at setup of test_submit_measurement_invalid_enum_labels _________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+__________ ERROR at setup of test_submit_measurement_malformed_label ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______ ERROR at setup of test_submit_measurement_interval_not_ascending _______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+__ ERROR at setup of test_submit_measurement_validated_value_outside_interval __
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_________ ERROR at setup of test_submit_measurement_duplicate_analyte __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+______ ERROR at setup of test_submit_measurement_rejections_leave_no_rows ______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def client(gel_server):
+        """A blocking Gel client connected to the project's instance."""
+        import gel  # noqa: PLC0415
+    
+        os.chdir(PROJECT_DIR)
+        c = gel.create_client()
+        c.ensure_connected()
+        # Start from a clean data set so the suite is deterministic and re-runnable.
+>       c.execute("delete Measurement")
+
+/tests/test_final_state.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Measurement' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete Measurement
+E     │          ^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+=========================== short test summary info ============================
+ERROR ../tests/test_final_state.py::test_custom_scalar_types_exist - gel.erro...
+ERROR ../tests/test_final_state.py::test_enum_labels_are_exact_and_ordered - ...
+ERROR ../tests/test_final_state.py::test_abstract_constraint_clean_label_exists
+ERROR ../tests/test_final_state.py::test_object_types_and_property_targets - ...
+ERROR ../tests/test_final_state.py::test_migration_files_exist_and_history_applied
+ERROR ../tests/test_final_state.py::test_migration_status_reports_in_sync - g...
+ERROR ../tests/test_final_state.py::test_specimen_code_format_enforced_by_database
+ERROR ../tests/test_final_state.py::test_specimen_code_exclusivity_is_delegated_to_subtypes
+ERROR ../tests/test_final_state.py::test_label_rules_enforced_by_database - g...
+ERROR ../tests/test_final_state.py::test_volume_must_be_positive - gel.errors...
+ERROR ../tests/test_final_state.py::test_blood_volume_limit_enforced - gel.er...
+ERROR ../tests/test_final_state.py::test_urine_volume_limit_enforced - gel.er...
+ERROR ../tests/test_final_state.py::test_tube_count_range_enforced - gel.erro...
+ERROR ../tests/test_final_state.py::test_analyte_code_format_enforced_by_database
+ERROR ../tests/test_final_state.py::test_measured_value_bounds_enforced_by_database
+ERROR ../tests/test_final_state.py::test_reference_interval_must_be_ascending
+ERROR ../tests/test_final_state.py::test_validated_measurement_must_sit_inside_reference_interval
+ERROR ../tests/test_final_state.py::test_analyte_is_unique_per_sample - gel.e...
+ERROR ../tests/test_final_state.py::test_measurement_state_defaults_to_pending
+ERROR ../tests/test_final_state.py::test_unknown_enum_labels_rejected_by_database
+ERROR ../tests/test_final_state.py::test_register_sample_blood_happy_path - g...
+ERROR ../tests/test_final_state.py::test_register_sample_same_code_other_kind_accepted
+ERROR ../tests/test_final_state.py::test_register_sample_boundary_values_accepted
+ERROR ../tests/test_final_state.py::test_register_sample_missing_fields - gel...
+ERROR ../tests/test_final_state.py::test_register_sample_invalid_kind - gel.e...
+ERROR ../tests/test_final_state.py::test_register_sample_invalid_specimen_code
+ERROR ../tests/test_final_state.py::test_register_sample_duplicate_specimen_code
+ERROR ../tests/test_final_state.py::test_register_sample_malformed_label - ge...
+ERROR ../tests/test_final_state.py::test_register_sample_volume_not_positive
+ERROR ../tests/test_final_state.py::test_register_sample_volume_above_kind_limit
+ERROR ../tests/test_final_state.py::test_register_sample_tube_count_out_of_range
+ERROR ../tests/test_final_state.py::test_register_sample_rejections_leave_no_rows
+ERROR ../tests/test_final_state.py::test_submit_measurement_happy_path - gel....
+ERROR ../tests/test_final_state.py::test_submit_measurement_validated_boundaries_accepted
+ERROR ../tests/test_final_state.py::test_submit_measurement_accepts_every_enum_label
+ERROR ../tests/test_final_state.py::test_submit_measurement_missing_fields - ...
+ERROR ../tests/test_final_state.py::test_submit_measurement_unknown_sample - ...
+ERROR ../tests/test_final_state.py::test_submit_measurement_invalid_analyte
+ERROR ../tests/test_final_state.py::test_submit_measurement_value_bounds - ge...
+ERROR ../tests/test_final_state.py::test_submit_measurement_invalid_enum_labels
+ERROR ../tests/test_final_state.py::test_submit_measurement_malformed_label
+ERROR ../tests/test_final_state.py::test_submit_measurement_interval_not_ascending
+ERROR ../tests/test_final_state.py::test_submit_measurement_validated_value_outside_interval
+ERROR ../tests/test_final_state.py::test_submit_measurement_duplicate_analyte
+ERROR ../tests/test_final_state.py::test_submit_measurement_rejections_leave_no_rows
+============================== 45 errors in 1.93s ==============================

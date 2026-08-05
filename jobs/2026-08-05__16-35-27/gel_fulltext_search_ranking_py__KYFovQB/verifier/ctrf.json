@@ -1,0 +1,435 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T08:47:31.950136+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 40,
+            "passed": 8,
+            "failed": 32,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785919641988,
+            "stop": 1785919651950
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_status_is_in_sync",
+                "status": "passed",
+                "duration": 6455,
+                "start": 1785919642078,
+                "stop": 1785919648533,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_are_committed_to_the_project",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785919648533,
+                "stop": 1785919648533,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_article_status_enum_declaration",
+                "status": "passed",
+                "duration": 226,
+                "start": 1785919648534,
+                "stop": 1785919648760,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_article_type_pointers",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 2512,
+                "start": 1785919648760,
+                "stop": 1785919651272,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_article_type_pointers(gel_server):\n>       rows = run_edgeql(\n            \"\"\"\n            select schema::ObjectType {\n              pointers: { name, required, cardinality, target: { name } }\n            } filter .name = 'default::Article'\n            \"\"\"\n        )\n\n/tests/test_final_state.py:235: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:105: in run_edgeql\n    return asyncio.run(_run())\n/usr/lib/python3.12/asyncio/runners.py:194: in run\n    return runner.run(main)\n/usr/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete\n    return future.result()\n/tests/test_final_state.py:101: in _run\n    return await client.query(query, **kwargs)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:359: in query\n    return await self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query\n    return await con.raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:225: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:207: in _retry_operation\n    await self.connect(single_attempt=True)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:149: in connect\n    await self.connect_addr(addr, self._config.connect_timeout)\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:57: in connect_addr\n    await asyncio.wait_for(self._connect_addr(addr), timeout)\n/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for\n    return await fut\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:119: in _connect_addr\n    await pr.connect()\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\n\ngel/protocol/protocol.pyx:903: BackendUnavailableError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_slug_is_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 183,
+                "start": 1785919651272,
+                "stop": 1785919651455,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_duplicate_slug_is_rejected(gel_server):\n        import gel\n    \n>       before = run_edgeql(\"select count(Article)\", expect_single=True)\n\n/tests/test_final_state.py:284: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:105: in run_edgeql\n    return asyncio.run(_run())\n/usr/lib/python3.12/asyncio/runners.py:194: in run\n    return runner.run(main)\n/usr/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete\n    return future.result()\n/tests/test_final_state.py:100: in _run\n    return await client.query_single(query, **kwargs)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:371: in query_single\n    return await self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:751: in _query\n    con = await self._impl.acquire()\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:211: in acquire\n    return await _acquire_impl()\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:197: in _acquire_impl\n    proxy = await ch.acquire()  # type: AsyncIOConnection\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:350: in acquire\n    await self.connect()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:342: in connect\n    self._con = await self._pool._get_new_connection()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:581: in _get_new_connection\n    con = await self._maybe_get_first_connection()\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:189: in _maybe_get_first_connection\n    return await self._get_first_connection()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:565: in _get_first_connection\n    await con.connect()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:149: in connect\n    await self.connect_addr(addr, self._config.connect_timeout)\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:57: in connect_addr\n    await asyncio.wait_for(self._connect_addr(addr), timeout)\n/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for\n    return await fut\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:119: in _connect_addr\n    await pr.connect()\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\n\ngel/protocol/protocol.pyx:903: BackendUnavailableError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_corpus_is_loaded_exactly",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 180,
+                "start": 1785919651455,
+                "stop": 1785919651635,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\nseed_records = [{'body': 'Provision the nodes, verify the private network, then hand the cluster over to the platform team.', 'slug':...rollout-guide', 'status': 'published', 'summary': 'The staged release procedure used by the payments team.', ...}, ...]\n\n    def test_corpus_is_loaded_exactly(gel_server, seed_records):\n>       _assert_corpus_matches(seed_records)\n\n/tests/test_final_state.py:343: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:310: in _assert_corpus_matches\n    count = run_edgeql(\"select count(Article)\", expect_single=True)\n/tests/test_final_state.py:105: in run_edgeql\n    return asyncio.run(_run())\n/usr/lib/python3.12/asyncio/runners.py:194: in run\n    return runner.run(main)\n/usr/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete\n    return future.result()\n/tests/test_final_state.py:100: in _run\n    return await client.query_single(query, **kwargs)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:371: in query_single\n    return await self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:751: in _query\n    con = await self._impl.acquire()\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:211: in acquire\n    return await _acquire_impl()\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:197: in _acquire_impl\n    proxy = await ch.acquire()  # type: AsyncIOConnection\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:350: in acquire\n    await self.connect()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:342: in connect\n    self._con = await self._pool._get_new_connection()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:581: in _get_new_connection\n    con = await self._maybe_get_first_connection()\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:189: in _maybe_get_first_connection\n    return await self._get_first_connection()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:565: in _get_first_connection\n    await con.connect()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:149: in connect\n    await self.connect_addr(addr, self._config.connect_timeout)\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:57: in connect_addr\n    await asyncio.wait_for(self._connect_addr(addr), timeout)\n/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for\n    return await fut\n/usr/local/lib/python3.12/dist-packages/gel/asyncio_client.py:119: in _connect_addr\n    await pr.connect()\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\n\ngel/protocol/protocol.pyx:903: BackendUnavailableError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_seed_script_is_idempotent",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785919651635,
+                "stop": 1785919651644,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\nseed_records = [{'body': 'Provision the nodes, verify the private network, then hand the cluster over to the platform team.', 'slug':...rollout-guide', 'status': 'published', 'summary': 'The staged release procedure used by the payments team.', ...}, ...]\n\n    def test_seed_script_is_idempotent(gel_server, seed_records):\n>       assert os.path.isfile(SEED_SCRIPT), f\"{SEED_SCRIPT} does not exist.\"\nE       AssertionError: /home/user/kbsearch/seed.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/seed.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:352: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_field_weighting_orders_title_above_summary_above_body",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651644,
+                "stop": 1785919651652,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_multi_term_query_ranking",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651652,
+                "stop": 1785919651660,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_identical_articles_are_tie_broken_by_slug",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785919651660,
+                "stop": 1785919651669,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_ordering_is_score_desc_then_slug_asc",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651669,
+                "stop": 1785919651677,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_search_is_deterministic_across_calls",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651677,
+                "stop": 1785919651685,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_language_aware_stemming",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651685,
+                "stop": 1785919651693,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_unfiltered_ledger_match_set",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651693,
+                "stop": 1785919651701,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_status_filter",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785919651701,
+                "stop": 1785919651710,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_tag_filter",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651710,
+                "stop": 1785919651718,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_status_and_tag_filters_combined",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651718,
+                "stop": 1785919651726,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_unknown_tag_yields_no_matches",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785919651726,
+                "stop": 1785919651735,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_pagination_reproduces_the_full_ordered_list",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651735,
+                "stop": 1785919651743,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_offset_beyond_last_match",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651743,
+                "stop": 1785919651751,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_zero_limit",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651751,
+                "stop": 1785919651759,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_queries_without_matches",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785919651759,
+                "stop": 1785919651768,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_queries_without_matches",
+                "status": "failed",
+                "duration": 7,
+                "start": 1785919651769,
+                "stop": 1785919651776,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_queries_without_matches",
+                "status": "failed",
+                "duration": 7,
+                "start": 1785919651777,
+                "stop": 1785919651784,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_payload_shape_and_echoed_arguments",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651785,
+                "stop": 1785919651793,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_highlight_wraps_matched_title_words",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651793,
+                "stop": 1785919651801,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_highlight_is_unchanged_title_when_nothing_matches",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651801,
+                "stop": 1785919651809,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_negative_limit_raises_value_error",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651809,
+                "stop": 1785919651817,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_negative_offset_raises_value_error",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651818,
+                "stop": 1785919651826,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_unknown_status_raises_value_error",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651826,
+                "stop": 1785919651834,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_search_reflects_live_database",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651834,
+                "stop": 1785919651842,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_cli_exists",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 8,
+                "start": 1785919651842,
+                "stop": 1785919651850,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_cli_exists(gel_server):\n>       assert os.path.isfile(SEARCH_CLI), f\"{SEARCH_CLI} does not exist.\"\nE       AssertionError: /home/user/kbsearch/search_cli.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_cli.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:785: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_cli_matches_the_service_payload",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785919651850,
+                "stop": 1785919651858,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def service(gel_server):\n        \"\"\"Import the solution's search service module from the project directory.\"\"\"\n>       assert os.path.isfile(os.path.join(PROJECT_DIR, \"search_service.py\")), (\n            f\"{PROJECT_DIR}/search_service.py does not exist.\"\n        )\nE       AssertionError: /home/user/kbsearch/search_service.py does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7a543a658220>('/home/user/kbsearch/search_service.py')\nE        +    where <function isfile at 0x7a543a658220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\nE        +    and   '/home/user/kbsearch/search_service.py' = <function join at 0x7a543a658c20>('/home/user/kbsearch', 'search_service.py')\nE        +      where <function join at 0x7a543a658c20> = <module 'posixpath' (frozen)>.join\nE        +        where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:62: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_cli_applies_both_filters",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 22,
+                "start": 1785919651858,
+                "stop": 1785919651880,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_cli_applies_both_filters(gel_server):\n        proc = run_cli(\n            [\"--query\", \"ledger\", \"--status\", \"draft\", \"--tag\", \"security\", \"--limit\", \"10\"]\n        )\n>       assert proc.returncode == 0, (\n            f\"The CLI must exit 0, got {proc.returncode}.\\nstdout: {proc.stdout}\\n\"\n            f\"stderr: {proc.stderr}\"\n        )\nE       AssertionError: The CLI must exit 0, got 2.\nE         stdout: \nE         stderr: /usr/bin/python3: can't open file '/home/user/kbsearch/search_cli.py': [Errno 2] No such file or directory\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['/usr/bin/python3', '/home/user/kbsearch/search_cli.py', '--query', 'ledger', '--status', 'draf... stderr=\"/usr/bin/python3: can't open file '/home/user/kbsearch/search_cli.py': [Errno 2] No such file or directory\\n\").returncode\n\n/tests/test_final_state.py:837: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_cli_rejects_invalid_arguments",
+                "status": "passed",
+                "duration": 10,
+                "start": 1785919651880,
+                "stop": 1785919651890,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_rejects_invalid_arguments",
+                "status": "passed",
+                "duration": 11,
+                "start": 1785919651890,
+                "stop": 1785919651901,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_rejects_invalid_arguments",
+                "status": "passed",
+                "duration": 9,
+                "start": 1785919651901,
+                "stop": 1785919651910,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_rejects_invalid_arguments",
+                "status": "passed",
+                "duration": 9,
+                "start": 1785919651911,
+                "stop": 1785919651920,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_rejects_invalid_arguments",
+                "status": "passed",
+                "duration": 9,
+                "start": 1785919651921,
+                "stop": 1785919651930,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_empty_result",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 19,
+                "start": 1785919651930,
+                "stop": 1785919651949,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_cli_empty_result(gel_server):\n        proc = run_cli([\"--query\", \"zzzunmatchableterm\"])\n>       assert proc.returncode == 0, (\n            f\"A search without matches must still exit 0, got {proc.returncode}.\\n\"\n            f\"stdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: A search without matches must still exit 0, got 2.\nE         stdout: \nE         stderr: /usr/bin/python3: can't open file '/home/user/kbsearch/search_cli.py': [Errno 2] No such file or directory\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['/usr/bin/python3', '/home/user/kbsearch/search_cli.py', '--query', 'zzzunmatchableterm'], retu... stderr=\"/usr/bin/python3: can't open file '/home/user/kbsearch/search_cli.py': [Errno 2] No such file or directory\\n\").returncode\n\n/tests/test_final_state.py:878: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

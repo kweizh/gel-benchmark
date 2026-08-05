@@ -1,0 +1,230 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T07:30:25.414949+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 22,
+            "passed": 21,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785915016491,
+            "stop": 1785915025414
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_branch_set_is_exactly_main_and_feat_review",
+                "status": "passed",
+                "duration": 171,
+                "start": 1785915016524,
+                "stop": 1785915016695,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_active_branch_is_main",
+                "status": "passed",
+                "duration": 70,
+                "start": 1785915016696,
+                "stop": 1785915016766,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_has_tag_object_type",
+                "status": "passed",
+                "duration": 103,
+                "start": 1785915016766,
+                "stop": 1785915016869,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_tag_label_is_required_str_and_exclusive",
+                "status": "passed",
+                "duration": 180,
+                "start": 1785915016870,
+                "stop": 1785915017050,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_tags_link",
+                "status": "passed",
+                "duration": 198,
+                "start": 1785915017050,
+                "stop": 1785915017248,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_review_state_property",
+                "status": "passed",
+                "duration": 144,
+                "start": 1785915017248,
+                "stop": 1785915017392,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_carries_both_features",
+                "status": "passed",
+                "duration": 618,
+                "start": 1785915017393,
+                "stop": 1785915018011,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_migration_history_is_linear_with_three_migrations",
+                "status": "passed",
+                "duration": 180,
+                "start": 1785915018011,
+                "stop": 1785915018191,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_each_feature_contributed_one_migration",
+                "status": "passed",
+                "duration": 157,
+                "start": 1785915018192,
+                "stop": 1785915018349,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_history_matches_main",
+                "status": "passed",
+                "duration": 257,
+                "start": 1785915018350,
+                "stop": 1785915018607,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_main",
+                "status": "passed",
+                "duration": 1017,
+                "start": 1785915018607,
+                "stop": 1785915019624,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_feat_review",
+                "status": "passed",
+                "duration": 993,
+                "start": 1785915019624,
+                "stop": 1785915020617,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migrations_directory_has_exactly_three_files",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785915020617,
+                "stop": 1785915020618,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_schema_source_file_exists",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785915020619,
+                "stop": 1785915020620,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_authors_preserved_in_place",
+                "status": "passed",
+                "duration": 79,
+                "start": 1785915020620,
+                "stop": 1785915020699,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_articles_preserved_in_place",
+                "status": "passed",
+                "duration": 100,
+                "start": 1785915020699,
+                "stop": 1785915020799,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_review_state_backfill_values",
+                "status": "passed",
+                "duration": 74,
+                "start": 1785915020800,
+                "stop": 1785915020874,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_single_longform_tag_exists",
+                "status": "passed",
+                "duration": 149,
+                "start": 1785915020874,
+                "stop": 1785915021023,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_longform_tagging_matches_word_count_boundary",
+                "status": "passed",
+                "duration": 77,
+                "start": 1785915021023,
+                "stop": 1785915021100,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reproduction_script_is_present_and_executable",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785915021100,
+                "stop": 1785915021101,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_file_contents",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 12,
+                "start": 1785915021101,
+                "stop": 1785915021113,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_file_contents(gel_server):\n>       assert os.path.isfile(REPORT_PATH), \"Report file {} is missing.\".format(REPORT_PATH)\nE       AssertionError: Report file /home/user/branchlab/reconcile-report.json is missing.\nE       assert False\nE        +  where False = <function isfile at 0x7b5d836e4220>('/home/user/branchlab/reconcile-report.json')\nE        +    where <function isfile at 0x7b5d836e4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:417: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_zz_reproduction_script_is_rerunnable_and_state_preserved",
+                "status": "passed",
+                "duration": 4301,
+                "start": 1785915021113,
+                "stop": 1785915025414,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

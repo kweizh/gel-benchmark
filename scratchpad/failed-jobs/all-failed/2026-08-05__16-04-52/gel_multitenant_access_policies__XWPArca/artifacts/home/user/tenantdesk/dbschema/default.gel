@@ -1,0 +1,99 @@
+module default {
+  scalar type ActorRole extending enum<admin, agent, readonly>;
+  scalar type TicketStatus extending enum<open, pending, closed>;
+
+  global current_actor_email: str;
+
+  type Tenant {
+    required slug: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Actor {
+    required email: str {
+      constraint exclusive;
+    }
+    required tenant: Tenant;
+    required role: ActorRole;
+  }
+
+  type Ticket {
+    required ref: str;
+    required subject: str;
+    required status: TicketStatus {
+      default := TicketStatus.open;
+    }
+    required tenant: Tenant;
+
+    constraint exclusive on ((.ref, .tenant));
+
+    # -- Access policies: tenant isolation enforced by the database --
+
+    # Select: only show tickets belonging to the current actor's tenant.
+    # When current_actor_email is unset or matches no Actor, no tickets visible.
+    access policy tenant_select
+      allow select
+      using (
+        .tenant in (
+          select (select Actor filter .email = global current_actor_email).tenant
+        )
+      );
+
+    # Insert: actor must be admin or agent and the new ticket's tenant
+    # must be the actor's own tenant.
+    access policy tenant_insert
+      allow insert
+      using (
+        .tenant in (
+          select (
+            select Actor
+            filter .email = global current_actor_email
+               and .role in {ActorRole.admin, ActorRole.agent}
+          ).tenant
+        )
+      );
+
+    # Update read: actor must be admin or agent and ticket belongs to
+    # the actor's tenant.
+    access policy tenant_update_read
+      allow update read
+      using (
+        .tenant in (
+          select (
+            select Actor
+            filter .email = global current_actor_email
+               and .role in {ActorRole.admin, ActorRole.agent}
+          ).tenant
+        )
+      );
+
+    # Update write: the ticket's tenant must still match the actor's tenant
+    # after the update.
+    access policy tenant_update_write
+      allow update write
+      using (
+        .tenant in (
+          select (
+            select Actor
+            filter .email = global current_actor_email
+               and .role in {ActorRole.admin, ActorRole.agent}
+          ).tenant
+        )
+      );
+
+    # Delete: actor must be admin and ticket belongs to actor's tenant.
+    access policy tenant_delete
+      allow delete
+      using (
+        .tenant in (
+          select (
+            select Actor
+            filter .email = global current_actor_email
+               and .role = ActorRole.admin
+          ).tenant
+        )
+      );
+  }
+}

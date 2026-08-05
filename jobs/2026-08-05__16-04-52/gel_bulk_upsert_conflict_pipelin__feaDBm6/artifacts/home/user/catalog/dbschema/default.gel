@@ -1,0 +1,24 @@
+module default {
+  type Supplier {
+    required code: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Product {
+    required source_system: str;
+    required external_id: str;
+    required name: str {
+      constraint max_len_value(200);
+    }
+    required price_cents: int64 {
+      constraint min_value(0);
+    }
+    required revision: int64;
+    required updated_at: datetime;
+    required supplier: Supplier;
+
+    constraint exclusive on ((.source_system, .external_id));
+  }
+}

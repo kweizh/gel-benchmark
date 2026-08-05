@@ -1,0 +1,451 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 15 items
+
+../tests/test_final_state.py ......FFFFFFFFF                             [100%]
+
+=================================== FAILURES ===================================
+______________________________ test_fresh_insert _______________________________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_fresh_insert(db):
+>       stats = ingest(list(BASE_BATCH))
+
+/tests/test_final_state.py:390: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "P-1", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+____________________ test_identical_replay_changes_nothing _____________________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_identical_replay_changes_nothing(db):
+>       ingest(list(BASE_BATCH))
+
+/tests/test_final_state.py:414: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "P-1", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+___________________ test_mixed_insert_update_unchanged_batch ___________________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_mixed_insert_update_unchanged_batch(db):
+>       ingest(list(BASE_BATCH))
+
+/tests/test_final_state.py:435: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "P-1", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+____________________ test_name_only_change_counts_as_update ____________________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_name_only_change_counts_as_update(db):
+>       ingest([rec("erp", "P-9", "Caliper", 2599, "GLOBEX")])
+
+/tests/test_final_state.py:479: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "P-9", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+___________________________ test_dirty_batch_rejects ___________________________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_dirty_batch_rejects(db):
+        dirty = [
+            rec("erp", "D-1", "Good One", 10, "ACME"),
+            "not-a-dict",
+            {"source_system": "erp", "external_id": "D-2", "name": "No price", "supplier_code": "ACME"},
+            rec("erp", "D-3", "", 5, "ACME"),
+            rec("erp", "D-4", "Negative", -5, "ACME"),
+            rec("erp", "D-5", "Float", 3.5, "ACME"),
+            rec("erp", "D-6", "Boolish", True, "ACME"),
+            rec("", "D-7", "Blank source", 5, "ACME"),
+            rec("erp", "D-8", "Ghost supplier", 5, "NOPE"),
+            {
+                "source_system": "erp",
+                "external_id": "D-1",
+                "name": "Shadow",
+                "price_cents": 999,
+                "supplier_code": "GLOBEX",
+                "extra": "ignored",
+            },
+            rec("erp", "D-9", "Good Two", 20, "INITECH"),
+        ]
+>       stats = ingest(dirty)
+
+/tests/test_final_state.py:520: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "D-1", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+____________ test_duplicate_of_a_rejected_record_is_not_a_duplicate ____________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_duplicate_of_a_rejected_record_is_not_a_duplicate(db):
+        batch = [
+            rec("erp", "R-1", "Ghost", 100, "NOPE"),
+            rec("erp", "R-1", "Real", 100, "ACME"),
+        ]
+>       stats = ingest(batch)
+
+/tests/test_final_state.py:556: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "R-1", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+__________________ test_failed_batch_leaves_no_partial_state ___________________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_failed_batch_leaves_no_partial_state(db):
+>       ingest(
+            [
+                rec("erp", "A-1", "Alpha", 100, "ACME"),
+                rec("erp", "A-2", "Beta", 200, "GLOBEX"),
+            ]
+        )
+
+/tests/test_final_state.py:575: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "A-1", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+_______________ test_round_trip_budget_and_supplied_client_usage _______________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_round_trip_budget_and_supplied_client_usage(db):
+        records = _bulk_records(120)
+    
+        counter = Counter()
+>       stats = ingest(records, counter=counter)
+
+/tests/test_final_state.py:625: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/tests/test_final_state.py:95: in _counted
+    return await attr(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "B-0000", "ss": "bulk"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+____________________ test_small_batch_uses_the_same_budget _____________________
+
+db = <gel.blocking_client.Client object at 0x7f6e52e4d650>
+
+    def test_small_batch_uses_the_same_budget(db):
+        counter = Counter()
+>       stats = ingest(list(BASE_BATCH), counter=counter)
+
+/tests/test_final_state.py:653: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:215: in ingest
+    return asyncio.run(_main())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+/tests/test_final_state.py:211: in _main
+    return await ingest_batch(supplied, records)
+/home/user/catalog/catalog_ingest/pipeline.py:79: in ingest_batch
+    result1_json = await client.query_json(
+/tests/test_final_state.py:95: in _counted
+    return await attr(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:400: in query_json
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidValueError: expected JSON array; got JSON object: {"ei": "P-1", "ss": "erp"}
+
+gel/protocol/protocol.pyx:545: InvalidValueError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_history_is_in_sync
+PASSED ../tests/test_final_state.py::test_new_migration_file_was_created
+PASSED ../tests/test_final_state.py::test_natural_key_is_exclusive_in_the_database
+PASSED ../tests/test_final_state.py::test_same_external_id_under_another_source_system_is_allowed
+PASSED ../tests/test_final_state.py::test_database_rejects_overlong_name
+PASSED ../tests/test_final_state.py::test_database_rejects_negative_price
+FAILED ../tests/test_final_state.py::test_fresh_insert - gel.errors.InvalidVa...
+FAILED ../tests/test_final_state.py::test_identical_replay_changes_nothing - ...
+FAILED ../tests/test_final_state.py::test_mixed_insert_update_unchanged_batch
+FAILED ../tests/test_final_state.py::test_name_only_change_counts_as_update
+FAILED ../tests/test_final_state.py::test_dirty_batch_rejects - gel.errors.In...
+FAILED ../tests/test_final_state.py::test_duplicate_of_a_rejected_record_is_not_a_duplicate
+FAILED ../tests/test_final_state.py::test_failed_batch_leaves_no_partial_state
+FAILED ../tests/test_final_state.py::test_round_trip_budget_and_supplied_client_usage
+FAILED ../tests/test_final_state.py::test_small_batch_uses_the_same_budget - ...
+========================= 9 failed, 6 passed in 2.22s ==========================

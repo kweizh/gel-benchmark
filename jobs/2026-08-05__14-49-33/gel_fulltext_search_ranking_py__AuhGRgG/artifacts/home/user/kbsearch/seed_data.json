@@ -1,0 +1,242 @@
+[
+  {
+    "slug": "quokka-cluster-provisioning",
+    "title": "Quokka cluster provisioning checklist",
+    "summary": "Steps for standing up a new cluster in the staging region.",
+    "body": "Provision the nodes, verify the private network, then hand the cluster over to the platform team.",
+    "status": "published",
+    "tags": ["ops", "database"]
+  },
+  {
+    "slug": "fleet-preparation-window",
+    "title": "Fleet preparation window",
+    "summary": "How the quokka fleet is prepared before a release window.",
+    "body": "Confirm spare capacity, drain traffic slowly, then hand the fleet over to the platform team.",
+    "status": "published",
+    "tags": ["ops"]
+  },
+  {
+    "slug": "spare-hardware-notes",
+    "title": "Spare hardware notes",
+    "summary": "General notes about preparing physical hardware.",
+    "body": "The quokka rack sits next to the spare switches in the staging region and is powered from the second feed.",
+    "status": "published",
+    "tags": ["ops"]
+  },
+  {
+    "slug": "tie-breaker-alpha",
+    "title": "Wombat telemetry pipeline",
+    "summary": "Reference for the wombat telemetry pipeline.",
+    "body": "The wombat pipeline batches events in memory and writes them to the warehouse once every minute.",
+    "status": "published",
+    "tags": ["database", "ops"]
+  },
+  {
+    "slug": "tie-breaker-beta",
+    "title": "Wombat telemetry pipeline",
+    "summary": "Reference for the wombat telemetry pipeline.",
+    "body": "The wombat pipeline batches events in memory and writes them to the warehouse once every minute.",
+    "status": "published",
+    "tags": ["database", "ops"]
+  },
+  {
+    "slug": "canary-rollout-guide",
+    "title": "Canary rollout guide for the payments API",
+    "summary": "The staged release procedure used by the payments team.",
+    "body": "Shift one percent of traffic first, watch the error budget, then widen the exposure in three steps.",
+    "status": "published",
+    "tags": ["ops", "testing"]
+  },
+  {
+    "slug": "canary-alerting-thresholds",
+    "title": "Canary alerting thresholds",
+    "summary": "Which metrics page the on-call engineer.",
+    "body": "Alerts fire when the error budget burns faster than the agreed rate for two consecutive windows.",
+    "status": "published",
+    "tags": ["ops"]
+  },
+  {
+    "slug": "release-freeze-policy",
+    "title": "Release freeze policy",
+    "summary": "When a rollout request is declined.",
+    "body": "During a freeze window only security patches ship, and every exception needs a written approval.",
+    "status": "published",
+    "tags": ["ops", "security"]
+  },
+  {
+    "slug": "kangaroos-load-harness",
+    "title": "Kangaroos load testing harness",
+    "summary": "A small harness for synthetic write bursts.",
+    "body": "The harness replays a recorded traffic profile and reports the slowest percentile per endpoint.",
+    "status": "published",
+    "tags": ["testing"]
+  },
+  {
+    "slug": "ledger-schema-overview",
+    "title": "Ledger schema overview",
+    "summary": "The object types that make up the ledger core.",
+    "body": "Every entry links to an account and to a posting batch, and the balance is a computed value.",
+    "status": "published",
+    "tags": ["database", "onboarding"]
+  },
+  {
+    "slug": "ledger-partition-strategy",
+    "title": "Partition strategy for the ledger",
+    "summary": "How entries are split across storage ranges.",
+    "body": "Ranges are cut by posting month so that the hot range stays small enough for the cache.",
+    "status": "published",
+    "tags": ["database"]
+  },
+  {
+    "slug": "ledger-backfill-runbook",
+    "title": "Backfill runbook",
+    "summary": "Recovering a ledger range after a failed import.",
+    "body": "Pause the importer, replay the source file in batches of one thousand, then reconcile the totals.",
+    "status": "published",
+    "tags": ["ops", "database"]
+  },
+  {
+    "slug": "ledger-audit-trail",
+    "title": "Audit trail requirements",
+    "summary": "What auditors expect from the ledger history.",
+    "body": "Each mutation records an actor, a reason code and a timestamp that cannot be edited afterwards.",
+    "status": "published",
+    "tags": ["security", "database"]
+  },
+  {
+    "slug": "ledger-api-pagination",
+    "title": "Ledger API pagination rules",
+    "summary": "Stable ordering for paged responses.",
+    "body": "Clients pass a limit and an offset, and the service returns a stable order so pages never overlap.",
+    "status": "published",
+    "tags": ["frontend", "onboarding"]
+  },
+  {
+    "slug": "ledger-retry-semantics",
+    "title": "Retry semantics",
+    "summary": "How the ledger writer handles a conflict.",
+    "body": "A conflicting transaction is retried with a short backoff, and the request key keeps the write unique.",
+    "status": "published",
+    "tags": ["database"]
+  },
+  {
+    "slug": "ledger-cost-report",
+    "title": "Monthly cost report",
+    "summary": "Where the ledger spend goes each month.",
+    "body": "Storage dominates the bill, followed by the read replicas kept warm for the reporting workload.",
+    "status": "draft",
+    "tags": ["ops"]
+  },
+  {
+    "slug": "ledger-onboarding-guide",
+    "title": "Onboarding guide",
+    "summary": "First week reading list for a new ledger engineer.",
+    "body": "Read the schema overview, run the local stack, then ship a tiny change behind a feature flag.",
+    "status": "draft",
+    "tags": ["onboarding"]
+  },
+  {
+    "slug": "ledger-incident-postmortem",
+    "title": "Postmortem template",
+    "summary": "The template used after a ledger incident.",
+    "body": "Describe the impact, the detection gap and the follow up items with an owner for each of them.",
+    "status": "draft",
+    "tags": ["ops", "onboarding"]
+  },
+  {
+    "slug": "ledger-secrets-rotation",
+    "title": "Secrets rotation procedure",
+    "summary": "Rotating the ledger service credentials.",
+    "body": "Issue the new credential, deploy it beside the old one, then revoke the old credential after a day.",
+    "status": "draft",
+    "tags": ["security"]
+  },
+  {
+    "slug": "ledger-query-tuning",
+    "title": "Query tuning for the ledger",
+    "summary": "Reading a slow query report.",
+    "body": "Start from the widest scan, add the missing index, then confirm the plan changed before shipping.",
+    "status": "published",
+    "tags": ["database", "testing"]
+  },
+  {
+    "slug": "ledger-archive-policy",
+    "title": "Archive policy",
+    "summary": "When a ledger range leaves hot storage.",
+    "body": "Ranges older than seven years move to cold storage and stay readable through the export endpoint.",
+    "status": "archived",
+    "tags": ["database", "security"]
+  },
+  {
+    "slug": "ledger-migration-checklist",
+    "title": "Migration checklist",
+    "summary": "Shipping a ledger schema change safely.",
+    "body": "Write the migration, review the generated plan, apply it on staging and only then promote it.",
+    "status": "archived",
+    "tags": ["database", "onboarding"]
+  },
+  {
+    "slug": "ledger-mobile-client",
+    "title": "Mobile client notes",
+    "summary": "How the mobile app reads the ledger.",
+    "body": "The app keeps a small local cache and refreshes it whenever the session token is renewed.",
+    "status": "archived",
+    "tags": ["frontend"]
+  },
+  {
+    "slug": "ledger-webhook-contract",
+    "title": "Webhook contract",
+    "summary": "Events emitted by the ledger service.",
+    "body": "Every event carries a version field, and consumers must ignore any field they do not recognise.",
+    "status": "published",
+    "tags": ["frontend", "security"]
+  },
+  {
+    "slug": "ledger-rate-limits",
+    "title": "Rate limits",
+    "summary": "Per client limits on the ledger API.",
+    "body": "Reads are limited by a token bucket, and writes fall back to a queue once the bucket is empty.",
+    "status": "published",
+    "tags": ["frontend"]
+  },
+  {
+    "slug": "ledger-data-retention",
+    "title": "Data retention rules",
+    "summary": "How long ledger attachments are kept.",
+    "body": "Attachments live for two years unless a legal hold pins them for longer than the default window.",
+    "status": "draft",
+    "tags": ["security", "database"]
+  },
+  {
+    "slug": "ledger-glossary",
+    "title": "Glossary",
+    "summary": "Words that show up in every ledger review.",
+    "body": "A posting is one side of a transfer, and a batch is the smallest unit that can be reversed.",
+    "status": "published",
+    "tags": ["onboarding"]
+  },
+  {
+    "slug": "graph-traversal-notes",
+    "title": "Graph traversal notes",
+    "summary": "Walking a link in reverse.",
+    "body": "A reverse walk returns a set by default, so the shape has to say when a single value is expected.",
+    "status": "published",
+    "tags": ["database"]
+  },
+  {
+    "slug": "index-tuning-primer",
+    "title": "Index tuning primer",
+    "summary": "Choosing between a plain index and a composite one.",
+    "body": "A composite index helps when the filter always uses both fields, and hurts when it uses only one.",
+    "status": "published",
+    "tags": ["database", "testing"]
+  },
+  {
+    "slug": "dashboard-design-notes",
+    "title": "Dashboard design notes",
+    "summary": "Layout rules for the operations dashboard.",
+    "body": "Keep the busiest chart above the fold and put the slow panels behind an explicit refresh button.",
+    "status": "draft",
+    "tags": ["frontend"]
+  }
+]

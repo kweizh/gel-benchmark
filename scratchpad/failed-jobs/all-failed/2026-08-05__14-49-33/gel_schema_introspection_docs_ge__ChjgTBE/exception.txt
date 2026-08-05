@@ -1,0 +1,46 @@
+Traceback (most recent call last):
+  File "/home/kw/code/zealt/pochi-harbor/agents/pochi.py", line 194, in run
+    await self.exec_as_agent(
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 592, in exec_as_agent
+    return await self._exec(
+           ^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 559, in _exec
+    raise self._classify_exec_error(command, result)
+harbor.agents.installed.base.NetworkConnectionError: Command failed (exit 1): if [ -f /bootstrap/test_initial_state.py ]; then pytest -s --log-cli-level=DEBUG /bootstrap/test_initial_state.py > >(tee /logs/agent/pochi/initial-test-stdout.txt) 2> >(tee /logs/agent/pochi/initial-test-stderr.txt >&2); fi
+stdout: ============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 10 items
+
+../bootstrap/test_initial_state.py::test_gel ... [18078 chars truncated] ...   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/amsg.py", line 152, in __init__\n    self._sock.connect(sockname)\nConnectionRefusedError: [Errno 111] Connection refused\n').returncode
+
+/bootstrap/test_initial_state.py:21: AssertionError
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_gel_server_is_reachable - Asse...
+ERROR ../bootstrap/test_initial_state.py::test_project_is_linked_to_instance
+ERROR ../bootstrap/test_initial_state.py::test_starting_schema_has_no_user_object_types
+=================== 7 passed, 3 errors in 196.85s (0:03:16) ====================
+
+stderr: None
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py", line 354, in run
+    await self._run()
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/single_step.py", line 41, in _run
+    await self._run_agent()
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/single_step.py", line 77, in _run_agent
+    await self._run_agent_phase(
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py", line 450, in _run_agent_phase
+    await asyncio.wait_for(
+  File "/opt/miniconda3/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 168, in wrapper
+    return await fn(self, instruction, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/code/zealt/pochi-harbor/agents/pochi.py", line 206, in run
+    raise InitialStateError("Initial state test failed") from e
+agents.pochi.InitialStateError: Initial state test failed

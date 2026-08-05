@@ -1,0 +1,15 @@
+module reports {
+    alias UnpaidInvoice := (
+        select billing::Invoice filter not .paid
+    );
+
+    alias CustomerBalance := billing::Customer {
+        outstanding := util::money_round(sum(
+            (select .<customer[is billing::Invoice] filter not .paid).total_due
+        ))
+    };
+
+    alias InvoicePlan := billing::Invoice {
+        plan := util::installments(.total_due, .installment_count)
+    };
+}

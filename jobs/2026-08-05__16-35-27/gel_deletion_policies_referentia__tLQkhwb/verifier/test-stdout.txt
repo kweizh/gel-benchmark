@@ -1,0 +1,100 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 18 items
+
+../../../tests/test_final_state.py .............EEEEE                    [100%]
+
+==================================== ERRORS ====================================
+______________ ERROR at setup of test_purge_workspace_happy_path _______________
+
+client = <gel.blocking_client.Client object at 0x7e5351c7a810>
+
+    @pytest.fixture(scope="session")
+    def purge_module(client):
+>       assert os.path.isfile(PURGE_MODULE), f"Expected the purge module at {PURGE_MODULE}."
+E       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.
+E       assert False
+E        +  where False = <function isfile at 0x7e53529ac220>('/home/user/docmgr/purge.py')
+E        +    where <function isfile at 0x7e53529ac220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:66: AssertionError
+___ ERROR at setup of test_purge_workspace_unknown_name_raises_lookup_error ____
+
+client = <gel.blocking_client.Client object at 0x7e5351c7a810>
+
+    @pytest.fixture(scope="session")
+    def purge_module(client):
+>       assert os.path.isfile(PURGE_MODULE), f"Expected the purge module at {PURGE_MODULE}."
+E       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.
+E       assert False
+E        +  where False = <function isfile at 0x7e53529ac220>('/home/user/docmgr/purge.py')
+E        +    where <function isfile at 0x7e53529ac220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:66: AssertionError
+________ ERROR at setup of test_purge_workspace_refused_purge_is_atomic ________
+
+client = <gel.blocking_client.Client object at 0x7e5351c7a810>
+
+    @pytest.fixture(scope="session")
+    def purge_module(client):
+>       assert os.path.isfile(PURGE_MODULE), f"Expected the purge module at {PURGE_MODULE}."
+E       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.
+E       assert False
+E        +  where False = <function isfile at 0x7e53529ac220>('/home/user/docmgr/purge.py')
+E        +    where <function isfile at 0x7e53529ac220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:66: AssertionError
+_________ ERROR at setup of test_purge_workspace_reports_real_numbers __________
+
+client = <gel.blocking_client.Client object at 0x7e5351c7a810>
+
+    @pytest.fixture(scope="session")
+    def purge_module(client):
+>       assert os.path.isfile(PURGE_MODULE), f"Expected the purge module at {PURGE_MODULE}."
+E       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.
+E       assert False
+E        +  where False = <function isfile at 0x7e53529ac220>('/home/user/docmgr/purge.py')
+E        +    where <function isfile at 0x7e53529ac220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:66: AssertionError
+_____________ ERROR at setup of test_purge_workspace_keeps_editors _____________
+
+client = <gel.blocking_client.Client object at 0x7e5351c7a810>
+
+    @pytest.fixture(scope="session")
+    def purge_module(client):
+>       assert os.path.isfile(PURGE_MODULE), f"Expected the purge module at {PURGE_MODULE}."
+E       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.
+E       assert False
+E        +  where False = <function isfile at 0x7e53529ac220>('/home/user/docmgr/purge.py')
+E        +    where <function isfile at 0x7e53529ac220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:66: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../../../tests/test_final_state.py::test_migration_history_applied_and_in_sync
+PASSED ../../../tests/test_final_state.py::test_schema_types_and_pointers
+PASSED ../../../tests/test_final_state.py::test_unique_constraints
+PASSED ../../../tests/test_final_state.py::test_archived_at_is_populated_automatically
+PASSED ../../../tests/test_final_state.py::test_workspace_delete_cascades_to_folders_and_documents
+PASSED ../../../tests/test_final_state.py::test_folder_delete_cascades_to_documents_only
+PASSED ../../../tests/test_final_state.py::test_orphan_attachments_removed_on_direct_document_delete
+PASSED ../../../tests/test_final_state.py::test_orphan_attachments_removed_through_workspace_cascade
+PASSED ../../../tests/test_final_state.py::test_archived_document_cannot_be_deleted_directly
+PASSED ../../../tests/test_final_state.py::test_archived_document_blocks_folder_and_workspace_cascade
+PASSED ../../../tests/test_final_state.py::test_editor_protection_is_deferred_until_commit
+PASSED ../../../tests/test_final_state.py::test_editor_deletion_fails_at_commit_when_still_referenced
+PASSED ../../../tests/test_final_state.py::test_unreferenced_editor_can_be_deleted
+ERROR ../../../tests/test_final_state.py::test_purge_workspace_happy_path - A...
+ERROR ../../../tests/test_final_state.py::test_purge_workspace_unknown_name_raises_lookup_error
+ERROR ../../../tests/test_final_state.py::test_purge_workspace_refused_purge_is_atomic
+ERROR ../../../tests/test_final_state.py::test_purge_workspace_reports_real_numbers
+ERROR ../../../tests/test_final_state.py::test_purge_workspace_keeps_editors
+========================= 13 passed, 5 errors in 2.63s =========================

@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 11 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_declares_supplier PASSED
+../bootstrap/test_initial_state.py::test_exactly_one_initial_migration PASSED
+../bootstrap/test_initial_state.py::test_ingestion_package_not_created_yet PASSED
+../bootstrap/test_initial_state.py::test_instance_reachable_and_supplier_type_exists PASSED
+../bootstrap/test_initial_state.py::test_supplier_has_exclusive_code PASSED
+../bootstrap/test_initial_state.py::test_product_type_does_not_exist_yet PASSED
+../bootstrap/test_initial_state.py::test_migration_status_is_in_sync PASSED
+
+============================== 11 passed in 8.45s ==============================

@@ -1,0 +1,47 @@
+module util {
+    # Round `amount` to 2 decimal places (decimal rounding, ties away from zero).
+    function money_round(amount: decimal) -> decimal
+        using (round(amount, 2));
+
+    # Round `amount` to `places` decimal places. `places` may be zero or
+    # negative. Coexists with the 1-argument overload above.
+    function money_round(amount: decimal, places: int64) -> decimal
+        using (round(amount, places));
+
+    # Sum of all supplied amounts, rounded to 2 decimal places.
+    # Returns 0 when called with no arguments.
+    function total_of(variadic amounts: decimal) -> decimal
+        using (money_round(sum(array_unpack(amounts))));
+
+    # Reduce `amount` by `pct` percent, round to 2 decimal places, then
+    # floor the result at `floor_amount` when that optional value is present.
+    function apply_discount(
+        amount: decimal,
+        pct: decimal,
+        floor_amount: optional decimal,
+    ) -> decimal
+        using (
+            with
+                d := money_round(amount - amount * pct / <decimal>100),
+                f := floor_amount ?? d,
+            select (d if d >= f else f)
+        );
+
+    # Increase `net` by `tax_pct` percent (passable only by name, defaults
+    # to 0), rounded to 2 decimal places.
+    function gross_with_tax(net: decimal, named only tax_pct: decimal = <decimal>0) -> decimal
+        using (money_round(net + net * tax_pct / <decimal>100));
+
+    # Split `total` into exactly `count` amounts that sum to `total` exactly.
+    # The first `count - 1` amounts are `total / count` rounded to 2 decimal
+    # places; the last amount absorbs the remainder. Empty set when
+    # `count < 1`.
+    function installments(total: decimal, count: int64) -> set of decimal
+        using (
+            for i in range_unpack(range(1, (count + 1) if count >= 0 else 1))
+            union (
+                money_round(total / count) if i < count else
+                total - money_round(total / count) * (count - 1)
+            )
+        );
+}

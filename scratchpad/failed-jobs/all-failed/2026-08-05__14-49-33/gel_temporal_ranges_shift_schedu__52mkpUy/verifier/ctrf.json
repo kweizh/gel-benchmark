@@ -1,0 +1,377 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T06:50:59.123591+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 34,
+            "passed": 0,
+            "failed": 34,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785912655983,
+            "stop": 1785912659123
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_schema_shape",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 2778,
+                "start": 1785912656047,
+                "stop": 1785912658825,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7e0e74ffa6d0>\n\n    def test_schema_shape(client):\n        rows = client.query(\n            \"\"\"\n            select schema::ObjectType {\n              name,\n              pointers: {\n                name,\n                required,\n                cardinality,\n                target: { name }\n              } filter .name != '__type__'\n            }\n            filter .name in {\n              'default::Worker', 'default::Shift', 'default::AvailabilityWindow'\n            }\n            \"\"\"\n        )\n        by_type = {}\n        for row in rows:\n            by_type[row.name] = {\n                p.name: (p.target.name if p.target else None, str(p.cardinality), p.required)\n                for p in row.pointers\n            }\n    \n        for expected in (\n            \"default::Worker\",\n            \"default::Shift\",\n            \"default::AvailabilityWindow\",\n        ):\n>           assert expected in by_type, (\n                f\"Object type `{expected}` is missing from the schema. Found: \"\n                f\"{sorted(by_type)}\"\n            )\nE           AssertionError: Object type `default::Worker` is missing from the schema. Found: []\nE           assert 'default::Worker' in {}\n\n/tests/test_final_state.py:267: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_worker_code_is_exclusive",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 100,
+                "start": 1785912658831,
+                "stop": 1785912658931,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7e0e74ffa6d0>\n\n    def test_worker_code_is_exclusive(client):\n        rows = client.query(\n            \"\"\"\n            select schema::ObjectType {\n              properties: { name, constraints: { name } }\n            }\n            filter .name = 'default::Worker'\n            \"\"\"\n        )\n>       assert rows, \"Object type `default::Worker` was not found.\"\nE       AssertionError: Object type `default::Worker` was not found.\nE       assert []\n\n/tests/test_final_state.py:318: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migrations_exist_and_are_in_sync",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 6,
+                "start": 1785912658931,
+                "stop": 1785912658937,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x7e0e74ffa6d0>\n\n    def test_migrations_exist_and_are_in_sync(client):\n        files = sorted(glob.glob(os.path.join(MIGRATIONS_DIR, \"*.edgeql\")))\n>       assert files, (\n            f\"No migration files found in {MIGRATIONS_DIR}; the schema must be \"\n            \"delivered as a real Gel migration.\"\n        )\nE       AssertionError: No migration files found in /home/user/shiftops/dbschema/migrations; the schema must be delivered as a real Gel migration.\nE       assert []\n\n/tests/test_final_state.py:331: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_span_is_derived_and_half_open",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912658937,
+                "stop": 1785912658943,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_overlap_invariant_rejects_raw_edgeql_overlap",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912658943,
+                "stop": 1785912658948,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_overlap_invariant_allows_exactly_adjacent_raw_insert",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912658948,
+                "stop": 1785912658954,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_overlap_invariant_rejects_conflicting_update",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912658954,
+                "stop": 1785912658959,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_different_workers_may_share_identical_spans",
+                "status": "failed",
+                "duration": 11,
+                "start": 1785912658960,
+                "stop": 1785912658971,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_degenerate_shift_spans_are_rejected",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912658971,
+                "stop": 1785912658977,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_availability_windows_are_rejected",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912658977,
+                "stop": 1785912658982,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_assign_shift_reports_single_conflict",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912658982,
+                "stop": 1785912658988,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_assign_shift_reports_multiple_conflicts_in_order",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912658988,
+                "stop": 1785912658993,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_assign_shift_rejects_unknown_worker",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912658993,
+                "stop": 1785912658999,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_assign_shift_rejects_empty_span",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912658999,
+                "stop": 1785912659004,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_assign_shift_check_precedence",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659004,
+                "stop": 1785912659009,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_week_report_handles_dst_spring_forward",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912659009,
+                "stop": 1785912659015,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_week_report_overtime_boundary_is_exclusive",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659015,
+                "stop": 1785912659020,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_week_report_attributes_by_local_start",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659020,
+                "stop": 1785912659025,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_week_report_handles_dst_fall_back",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659026,
+                "stop": 1785912659031,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_unknown_worker_raises_lookup_error",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659032,
+                "stop": 1785912659037,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_weekly_totals_for_a_busy_week",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659037,
+                "stop": 1785912659042,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_weekly_totals_for_sparse_and_empty_weeks",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659043,
+                "stop": 1785912659048,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_free_slots_around_a_day_shift",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659048,
+                "stop": 1785912659053,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_free_slots_fully_consumed_window",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912659053,
+                "stop": 1785912659059,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_free_slots_with_two_windows_on_one_day",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659059,
+                "stop": 1785912659064,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_free_slots_without_availability",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659064,
+                "stop": 1785912659069,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_free_slots_touching_shift_consumes_nothing",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659070,
+                "stop": 1785912659075,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_free_slots_clips_shift_started_the_previous_evening",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659075,
+                "stop": 1785912659080,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_free_slots_untouched_window",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659080,
+                "stop": 1785912659085,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_empty_database",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659086,
+                "stop": 1785912659091,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_mutation_then_recompute",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659091,
+                "stop": 1785912659096,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_fractional_hours_are_rounded_half_up",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785912659096,
+                "stop": 1785912659102,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_reports_are_deterministic",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785912659102,
+                "stop": 1785912659107,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    @pytest.fixture(scope=\"session\")\n    def engine(gel_server):\n>       assert os.path.isfile(ENGINE_PATH), (\n            f\"Expected the scheduling module at {ENGINE_PATH}, but it does not exist.\"\n        )\nE       AssertionError: Expected the scheduling module at /home/user/shiftops/shiftops_engine.py, but it does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7e0e75da4220>('/home/user/shiftops/shiftops_engine.py')\nE        +    where <function isfile at 0x7e0e75da4220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:134: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_engine_imports_without_a_database_connection",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 16,
+                "start": 1785912659107,
+                "stop": 1785912659123,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_engine_imports_without_a_database_connection(gel_server):\n        env = dict(os.environ)\n        env[\"GEL_INSTANCE\"] = \"no_such_instance_zzz\"\n        env.pop(\"GEL_DSN\", None)\n        proc = subprocess.run(\n            [sys.executable, \"-c\", \"import shiftops_engine; print('IMPORT_OK')\"],\n            cwd=PROJECT_DIR,\n            env=env,\n            capture_output=True,\n            text=True,\n            timeout=300,\n        )\n>       assert proc.returncode == 0 and \"IMPORT_OK\" in proc.stdout, (\n            \"`shiftops_engine` must import cleanly without any usable database \"\n            f\"connection. exit={proc.returncode} stdout={proc.stdout!r} \"\n            f\"stderr={proc.stderr!r}\"\n        )\nE       AssertionError: `shiftops_engine` must import cleanly without any usable database connection. exit=1 stdout='' stderr='Traceback (most recent call last):\\n  File \"<string>\", line 1, in <module>\\nModuleNotFoundError: No module named \\'shiftops_engine\\'\\n'\nE       assert (1 == 0)\nE        +  where 1 = CompletedProcess(args=['/usr/bin/python3', '-c', \"import shiftops_engine; print('IMPORT_OK')\"], returncode=1, stdout='...ecent call last):\\n  File \"<string>\", line 1, in <module>\\nModuleNotFoundError: No module named \\'shiftops_engine\\'\\n').returncode\n\n/tests/test_final_state.py:962: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

@@ -1,0 +1,199 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T08:15:47.947876+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 18,
+            "passed": 12,
+            "failed": 6,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785917745181,
+            "stop": 1785917747947
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_history_applied_and_in_sync",
+                "status": "passed",
+                "duration": 1485,
+                "start": 1785917745263,
+                "stop": 1785917746748,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_schema_types_and_pointers",
+                "status": "passed",
+                "duration": 131,
+                "start": 1785917746749,
+                "stop": 1785917746880,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unique_constraints",
+                "status": "passed",
+                "duration": 229,
+                "start": 1785917746881,
+                "stop": 1785917747110,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_archived_at_is_populated_automatically",
+                "status": "passed",
+                "duration": 25,
+                "start": 1785917747110,
+                "stop": 1785917747135,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_workspace_delete_cascades_to_folders_and_documents",
+                "status": "passed",
+                "duration": 44,
+                "start": 1785917747136,
+                "stop": 1785917747180,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_folder_delete_cascades_to_documents_only",
+                "status": "passed",
+                "duration": 51,
+                "start": 1785917747180,
+                "stop": 1785917747231,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_orphan_attachments_removed_on_direct_document_delete",
+                "status": "passed",
+                "duration": 82,
+                "start": 1785917747232,
+                "stop": 1785917747314,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_orphan_attachments_removed_through_workspace_cascade",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 60,
+                "start": 1785917747315,
+                "stop": 1785917747375,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x775c4d48cc10>\n\n    def test_orphan_attachments_removed_through_workspace_cascade(client):\n        seed_graph_with_attachments(client)\n    \n        client.execute('delete Workspace filter .name = \"acme\"')\n    \n        remaining = attachment_filenames(client)\n>       assert remaining == [\"shared.pdf\"], (\n            \"Cascading the purge of 'acme' must delete 'solo.pdf', 'lonely.pdf' and \"\n            \"'spec.pdf' while keeping 'shared.pdf' (still linked by 'memo'); \"\n            f\"remaining attachments: {remaining}.\"\n        )\nE       AssertionError: Cascading the purge of 'acme' must delete 'solo.pdf', 'lonely.pdf' and 'spec.pdf' while keeping 'shared.pdf' (still linked by 'memo'); remaining attachments: ['lonely.pdf', 'shared.pdf', 'solo.pdf', 'spec.pdf'].\nE       assert ['lonely.pdf'...', 'spec.pdf'] == ['shared.pdf']\nE         At index 0 diff: 'lonely.pdf' != 'shared.pdf'\nE         Left contains 3 more items, first extra item: 'shared.pdf'\nE         Use -v to get more diff\n\n/tests/test_final_state.py:492: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_archived_document_cannot_be_deleted_directly",
+                "status": "passed",
+                "duration": 48,
+                "start": 1785917747375,
+                "stop": 1785917747423,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_archived_document_blocks_folder_and_workspace_cascade",
+                "status": "passed",
+                "duration": 41,
+                "start": 1785917747423,
+                "stop": 1785917747464,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_editor_protection_is_deferred_until_commit",
+                "status": "passed",
+                "duration": 167,
+                "start": 1785917747464,
+                "stop": 1785917747631,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_editor_deletion_fails_at_commit_when_still_referenced",
+                "status": "passed",
+                "duration": 198,
+                "start": 1785917747631,
+                "stop": 1785917747829,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unreferenced_editor_can_be_deleted",
+                "status": "passed",
+                "duration": 21,
+                "start": 1785917747830,
+                "stop": 1785917747851,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_happy_path",
+                "status": "failed",
+                "duration": 18,
+                "start": 1785917747851,
+                "stop": 1785917747869,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x775c4d48cc10>\n\n    @pytest.fixture(scope=\"session\")\n    def purge_module(client):\n>       assert os.path.isfile(PURGE_MODULE), f\"Expected the purge module at {PURGE_MODULE}.\"\nE       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.\nE       assert False\nE        +  where False = <function isfile at 0x775c4e1c0220>('/home/user/docmgr/purge.py')\nE        +    where <function isfile at 0x775c4e1c0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:66: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_unknown_name_raises_lookup_error",
+                "status": "failed",
+                "duration": 16,
+                "start": 1785917747870,
+                "stop": 1785917747886,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x775c4d48cc10>\n\n    @pytest.fixture(scope=\"session\")\n    def purge_module(client):\n>       assert os.path.isfile(PURGE_MODULE), f\"Expected the purge module at {PURGE_MODULE}.\"\nE       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.\nE       assert False\nE        +  where False = <function isfile at 0x775c4e1c0220>('/home/user/docmgr/purge.py')\nE        +    where <function isfile at 0x775c4e1c0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:66: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_refused_purge_is_atomic",
+                "status": "failed",
+                "duration": 21,
+                "start": 1785917747887,
+                "stop": 1785917747908,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x775c4d48cc10>\n\n    @pytest.fixture(scope=\"session\")\n    def purge_module(client):\n>       assert os.path.isfile(PURGE_MODULE), f\"Expected the purge module at {PURGE_MODULE}.\"\nE       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.\nE       assert False\nE        +  where False = <function isfile at 0x775c4e1c0220>('/home/user/docmgr/purge.py')\nE        +    where <function isfile at 0x775c4e1c0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:66: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_reports_real_numbers",
+                "status": "failed",
+                "duration": 17,
+                "start": 1785917747908,
+                "stop": 1785917747925,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x775c4d48cc10>\n\n    @pytest.fixture(scope=\"session\")\n    def purge_module(client):\n>       assert os.path.isfile(PURGE_MODULE), f\"Expected the purge module at {PURGE_MODULE}.\"\nE       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.\nE       assert False\nE        +  where False = <function isfile at 0x775c4e1c0220>('/home/user/docmgr/purge.py')\nE        +    where <function isfile at 0x775c4e1c0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:66: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_keeps_editors",
+                "status": "failed",
+                "duration": 21,
+                "start": 1785917747926,
+                "stop": 1785917747947,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x775c4d48cc10>\n\n    @pytest.fixture(scope=\"session\")\n    def purge_module(client):\n>       assert os.path.isfile(PURGE_MODULE), f\"Expected the purge module at {PURGE_MODULE}.\"\nE       AssertionError: Expected the purge module at /home/user/docmgr/purge.py.\nE       assert False\nE        +  where False = <function isfile at 0x775c4e1c0220>('/home/user/docmgr/purge.py')\nE        +    where <function isfile at 0x775c4e1c0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:66: AssertionError"
+            }
+        ]
+    }
+}

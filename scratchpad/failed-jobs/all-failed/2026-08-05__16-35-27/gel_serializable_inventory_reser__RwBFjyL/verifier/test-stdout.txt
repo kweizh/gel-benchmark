@@ -1,0 +1,1689 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 31 items
+
+../tests/test_final_state.py FFF.FFFFFFFFFFFFFFFFFFFFFFFFFF.             [100%]
+
+=================================== FAILURES ===================================
+______________________ test_service_module_and_cli_exist _______________________
+
+    def test_service_module_and_cli_exist() -> None:
+>       assert os.path.isfile(MODULE_FILE), (
+            f"The service module {MODULE_FILE} was not created."
+        )
+E       AssertionError: The service module /home/user/inventory/src/reservations.ts was not created.
+E       assert False
+E        +  where False = <function isfile at 0x7aee67760220>('/home/user/inventory/src/reservations.ts')
+E        +    where <function isfile at 0x7aee67760220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:307: AssertionError
+___________________ test_service_module_exports_required_api ___________________
+
+    def test_service_module_exports_required_api() -> None:
+>       source = open(MODULE_FILE, encoding="utf-8").read()
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/inventory/src/reservations.ts'
+
+/tests/test_final_state.py:320: FileNotFoundError
+__________________________ test_migration_files_exist __________________________
+
+    def test_migration_files_exist() -> None:
+>       assert os.path.isdir(MIGRATIONS_DIR), (
+            f"No migration directory at {MIGRATIONS_DIR}; the schema must be migrated."
+        )
+E       AssertionError: No migration directory at /home/user/inventory/dbschema/migrations; the schema must be migrated.
+E       assert False
+E        +  where False = <function isdir at 0x7aee677602c0>('/home/user/inventory/dbschema/migrations')
+E        +    where <function isdir at 0x7aee677602c0> = <module 'posixpath' (frozen)>.isdir
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:333: AssertionError
+_______________ test_schema_declares_required_types_and_pointers _______________
+
+client = None
+
+    def test_schema_declares_required_types_and_pointers(client: None) -> None:
+        rows = gel_query_json(
+            "select schema::ObjectType { name, pointers: { name } } "
+            "filter .name in {"
+            "'default::StockItem', 'default::Reservation', "
+            "'default::ReservationLine', 'default::LedgerEntry'}"
+        )
+        found = {row["name"]: {p["name"] for p in row["pointers"]} for row in rows}
+        expected = {
+            "default::StockItem": {"sku", "stock", "reserved"},
+            "default::Reservation": {"key", "state"},
+            "default::ReservationLine": {"reservation", "item", "quantity"},
+            "default::LedgerEntry": {"reservation", "item", "delta", "kind"},
+        }
+        for type_name, pointers in expected.items():
+>           assert type_name in found, (
+                f"The schema does not declare {type_name}; found only {sorted(found)}."
+            )
+E           AssertionError: The schema does not declare default::StockItem; found only [].
+E           assert 'default::StockItem' in {}
+
+/tests/test_final_state.py:385: AssertionError
+_________________ test_transaction_retry_budget_is_configured __________________
+
+client = None
+
+    def test_transaction_retry_budget_is_configured(client: None) -> None:
+>       result = run_cli({"op": "retryAttempts"})
+
+/tests/test_final_state.py:401: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'op': 'retryAttempts'}, timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'retryAttempts' exited with code 1; expected 0.
+E         payload: {"op": "retryAttempts"}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664217:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664217:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664217:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664217:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________________ test_single_reservation_happy_path ______________________
+
+client = None
+
+    def test_single_reservation_happy_path(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}])
+
+/tests/test_final_state.py:420: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 10}, {'sku': 'BETA', 'stock': 4}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664895:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664895:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664895:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919664895:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+___________________________ test_snapshot_is_sorted ____________________________
+
+client = None
+
+    def test_snapshot_is_sorted(client: None) -> None:
+>       reset([{"sku": "ZETA", "stock": 5}, {"sku": "ALPHA", "stock": 5}, {"sku": "MIKE", "stock": 5}])
+
+/tests/test_final_state.py:456: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ZETA', 'stock': 5}, {'sku': 'ALPHA', 'stock': 5}, {'sku': 'MIKE', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ZETA", "stock": 5}, {"sku": "ALPHA", "stock": 5}, {"sku": "MIKE", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919665592:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919665592:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919665592:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919665592:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________________ test_idempotent_replay_is_a_no_op _______________________
+
+client = None
+
+    def test_idempotent_replay_is_a_no_op(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}])
+
+/tests/test_final_state.py:489: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 10}, {'sku': 'BETA', 'stock': 4}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666274:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666274:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666274:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666274:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+__________________ test_idempotency_key_conflict_is_rejected ___________________
+
+client = None
+
+    def test_idempotency_key_conflict_is_rejected(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}])
+
+/tests/test_final_state.py:511: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 10}, {'sku': 'BETA', 'stock': 4}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666990:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666990:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666990:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919666990:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+___________________ test_basket_equality_ignores_line_order ____________________
+
+client = None
+
+    def test_basket_equality_ignores_line_order(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}])
+
+/tests/test_final_state.py:530: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 10}, {'sku': 'BETA', 'stock': 4}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 10}, {"sku": "BETA", "stock": 4}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919667680:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919667680:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919667680:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919667680:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+___________________ test_unknown_sku_lists_every_unknown_sku ___________________
+
+client = None
+
+    def test_unknown_sku_lists_every_unknown_sku(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}])
+
+/tests/test_final_state.py:553: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919668376:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919668376:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919668376:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919668376:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+_________________ test_unknown_sku_outranks_insufficient_stock _________________
+
+client = None
+
+    def test_unknown_sku_outranks_insufficient_stock(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 1}])
+
+/tests/test_final_state.py:575: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 1}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 1}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669102:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669102:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669102:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669102:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+_______________________ test_multi_item_basket_is_atomic _______________________
+
+client = None
+
+    def test_multi_item_basket_is_atomic(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}, {"sku": "BETA", "stock": 0}])
+
+/tests/test_final_state.py:583: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}, {'sku': 'BETA', 'stock': 0}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}, {"sku": "BETA", "stock": 0}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669774:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669774:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669774:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919669774:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________ test_insufficient_stock_lists_every_offending_sku _______________
+
+client = None
+
+    def test_insufficient_stock_lists_every_offending_sku(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 0}, {"sku": "BETA", "stock": 0}])
+
+/tests/test_final_state.py:603: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 0}, {'sku': 'BETA', 'stock': 0}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 0}, {"sku": "BETA", "stock": 0}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919670489:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919670489:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919670489:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919670489:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+_________________ test_invalid_requests_are_rejected[-basket0] _________________
+
+client = None, key = '', basket = [{'quantity': 1, 'sku': 'ALPHA'}]
+
+    @pytest.mark.parametrize(
+        "key,basket",
+        [
+            ("", [{"sku": "ALPHA", "quantity": 1}]),
+            ("k-bad1", []),
+            ("k-bad2", [{"sku": "ALPHA", "quantity": 0}]),
+            ("k-bad3", [{"sku": "ALPHA", "quantity": -2}]),
+            ("k-bad4", [{"sku": "ALPHA", "quantity": 1}, {"sku": "ALPHA", "quantity": 1}]),
+        ],
+    )
+    def test_invalid_requests_are_rejected(
+        client: None, key: str, basket: List[Dict[str, Any]]
+    ) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}])
+
+/tests/test_final_state.py:623: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671224:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671224:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671224:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671224:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________ test_invalid_requests_are_rejected[k-bad1-basket1] ______________
+
+client = None, key = 'k-bad1', basket = []
+
+    @pytest.mark.parametrize(
+        "key,basket",
+        [
+            ("", [{"sku": "ALPHA", "quantity": 1}]),
+            ("k-bad1", []),
+            ("k-bad2", [{"sku": "ALPHA", "quantity": 0}]),
+            ("k-bad3", [{"sku": "ALPHA", "quantity": -2}]),
+            ("k-bad4", [{"sku": "ALPHA", "quantity": 1}, {"sku": "ALPHA", "quantity": 1}]),
+        ],
+    )
+    def test_invalid_requests_are_rejected(
+        client: None, key: str, basket: List[Dict[str, Any]]
+    ) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}])
+
+/tests/test_final_state.py:623: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671904:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671904:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671904:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919671904:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________ test_invalid_requests_are_rejected[k-bad2-basket2] ______________
+
+client = None, key = 'k-bad2', basket = [{'quantity': 0, 'sku': 'ALPHA'}]
+
+    @pytest.mark.parametrize(
+        "key,basket",
+        [
+            ("", [{"sku": "ALPHA", "quantity": 1}]),
+            ("k-bad1", []),
+            ("k-bad2", [{"sku": "ALPHA", "quantity": 0}]),
+            ("k-bad3", [{"sku": "ALPHA", "quantity": -2}]),
+            ("k-bad4", [{"sku": "ALPHA", "quantity": 1}, {"sku": "ALPHA", "quantity": 1}]),
+        ],
+    )
+    def test_invalid_requests_are_rejected(
+        client: None, key: str, basket: List[Dict[str, Any]]
+    ) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}])
+
+/tests/test_final_state.py:623: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919672672:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919672672:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919672672:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919672672:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________ test_invalid_requests_are_rejected[k-bad3-basket3] ______________
+
+client = None, key = 'k-bad3', basket = [{'quantity': -2, 'sku': 'ALPHA'}]
+
+    @pytest.mark.parametrize(
+        "key,basket",
+        [
+            ("", [{"sku": "ALPHA", "quantity": 1}]),
+            ("k-bad1", []),
+            ("k-bad2", [{"sku": "ALPHA", "quantity": 0}]),
+            ("k-bad3", [{"sku": "ALPHA", "quantity": -2}]),
+            ("k-bad4", [{"sku": "ALPHA", "quantity": 1}, {"sku": "ALPHA", "quantity": 1}]),
+        ],
+    )
+    def test_invalid_requests_are_rejected(
+        client: None, key: str, basket: List[Dict[str, Any]]
+    ) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}])
+
+/tests/test_final_state.py:623: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919673390:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919673390:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919673390:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919673390:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________ test_invalid_requests_are_rejected[k-bad4-basket4] ______________
+
+client = None, key = 'k-bad4'
+basket = [{'quantity': 1, 'sku': 'ALPHA'}, {'quantity': 1, 'sku': 'ALPHA'}]
+
+    @pytest.mark.parametrize(
+        "key,basket",
+        [
+            ("", [{"sku": "ALPHA", "quantity": 1}]),
+            ("k-bad1", []),
+            ("k-bad2", [{"sku": "ALPHA", "quantity": 0}]),
+            ("k-bad3", [{"sku": "ALPHA", "quantity": -2}]),
+            ("k-bad4", [{"sku": "ALPHA", "quantity": 1}, {"sku": "ALPHA", "quantity": 1}]),
+        ],
+    )
+    def test_invalid_requests_are_rejected(
+        client: None, key: str, basket: List[Dict[str, Any]]
+    ) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}])
+
+/tests/test_final_state.py:623: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674095:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674095:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674095:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674095:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+_________________ test_no_oversell_under_concurrent_processes __________________
+
+client = None
+
+    def test_no_oversell_under_concurrent_processes(client: None) -> None:
+>       reset([{"sku": "WIDGET", "stock": 3}])
+
+/tests/test_final_state.py:640: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'WIDGET', 'stock': 3}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "WIDGET", "stock": 3}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674775:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674775:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674775:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919674775:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+________________ test_concurrent_multi_item_baskets_stay_atomic ________________
+
+client = None
+
+    def test_concurrent_multi_item_baskets_stay_atomic(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 5}, {"sku": "BETA", "stock": 5}])
+
+/tests/test_final_state.py:680: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 5}, {'sku': 'BETA', 'stock': 5}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 5}, {"sku": "BETA", "stock": 5}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919675488:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919675488:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919675488:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919675488:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+_______________ test_concurrent_replays_of_one_key_reserve_once ________________
+
+client = None
+
+    def test_concurrent_replays_of_one_key_reserve_once(client: None) -> None:
+>       reset([{"sku": "GADGET", "stock": 9}])
+
+/tests/test_final_state.py:720: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'GADGET', 'stock': 9}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "GADGET", "stock": 9}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676237:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676237:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676237:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676237:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+________________ test_in_process_fan_out_respects_stock_budget _________________
+
+client = None
+
+    def test_in_process_fan_out_respects_stock_budget(client: None) -> None:
+>       reset([{"sku": "BOLT", "stock": 7}])
+
+/tests/test_final_state.py:749: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'BOLT', 'stock': 7}], 'op': 'reset'}, timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "BOLT", "stock": 7}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676900:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676900:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676900:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919676900:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+______________ test_release_frees_stock_and_allows_re_reservation ______________
+
+client = None
+
+    def test_release_frees_stock_and_allows_re_reservation(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 2}])
+
+/tests/test_final_state.py:790: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 2}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 2}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919677641:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919677641:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919677641:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919677641:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+___________________________ test_release_edge_cases ____________________________
+
+client = None
+
+    def test_release_edge_cases(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 2}])
+
+/tests/test_final_state.py:821: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 2}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 2}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678289:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678289:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678289:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678289:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+________________ test_replay_after_release_does_not_re_reserve _________________
+
+client = None
+
+    def test_replay_after_release_does_not_re_reserve(client: None) -> None:
+>       reset([{"sku": "ALPHA", "stock": 4}])
+
+/tests/test_final_state.py:842: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 4}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 4}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678973:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678973:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678973:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919678973:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+__________________ test_expiry_releases_only_due_reservations __________________
+
+client = None
+
+    def test_expiry_releases_only_due_reservations(client: None) -> None:
+>       ids = _seed_expiry_state()
+
+/tests/test_final_state.py:893: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:869: in _seed_expiry_state
+    reset([{"sku": "ALPHA", "stock": 10}])
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 10}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 10}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919679673:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919679673:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919679673:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919679673:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+____________________ test_ledger_explains_reserved_amounts _____________________
+
+client = None
+
+    def test_ledger_explains_reserved_amounts(client: None) -> None:
+>       _seed_expiry_state()
+
+/tests/test_final_state.py:925: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:869: in _seed_expiry_state
+    reset([{"sku": "ALPHA", "stock": 10}])
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 10}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 10}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919680315:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919680315:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919680315:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919680315:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+__________________ test_database_rejects_invariant_violations __________________
+
+client = None
+
+    def test_database_rejects_invariant_violations(client: None) -> None:
+>       _seed_expiry_state()
+
+/tests/test_final_state.py:958: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:869: in _seed_expiry_state
+    reset([{"sku": "ALPHA", "stock": 10}])
+/tests/test_final_state.py:179: in reset
+    result = run_cli({"op": "reset", "items": list(items)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = {'items': [{'sku': 'ALPHA', 'stock': 10}], 'op': 'reset'}
+timeout = 300
+
+    def run_cli(payload: Dict[str, Any], timeout: int = CLI_TIMEOUT) -> Any:
+        """Run one CLI command and return the decoded JSON result."""
+        proc = subprocess.run(
+            CLI_COMMAND,
+            cwd=PROJECT_DIR,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=_env(),
+        )
+        context = f"CLI command {payload.get('op')!r}"
+>       assert proc.returncode == 0, (
+            f"{context} exited with code {proc.returncode}; expected 0.\n"
+            f"payload: {json.dumps(payload)[:2000]}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: CLI command 'reset' exited with code 1; expected 0.
+E         payload: {"op": "reset", "items": [{"sku": "ALPHA", "stock": 10}]}
+E         stdout: 
+E         stderr: 
+E         node:internal/modules/run_main:123
+E             triggerUncaughtException(
+E             ^
+E         Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/user/inventory/src/cli.ts' imported from /home/user/inventory/
+E             at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+E             at moduleResolve (node:internal/modules/esm/resolve:861:10)
+E             at defaultResolve (node:internal/modules/esm/resolve:985:11)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at resolveBase (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919681028:2:3744)
+E             at resolveDirectory (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919681028:2:4243)
+E             at resolveTsPaths (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919681028:2:4984)
+E             at resolve (file:///home/user/inventory/node_modules/tsx/dist/esm/index.mjs?1785919681028:2:5361)
+E             at nextResolve (node:internal/modules/esm/hooks:748:28)
+E             at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+E           code: 'ERR_MODULE_NOT_FOUND',
+E           url: 'file:///home/user/inventory/src/cli.ts'
+E         }
+E         
+E         Node.js v22.23.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts'], returncode=1, stdout='', stderr="\nnode:internal/modules/run_main:...:240:30) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/user/inventory/src/cli.ts'\n}\n\nNode.js v22.23.2\n").returncode
+
+/tests/test_final_state.py:91: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_history_is_in_sync
+PASSED ../tests/test_final_state.py::test_migration_history_still_in_sync_at_the_end
+FAILED ../tests/test_final_state.py::test_service_module_and_cli_exist - Asse...
+FAILED ../tests/test_final_state.py::test_service_module_exports_required_api
+FAILED ../tests/test_final_state.py::test_migration_files_exist - AssertionEr...
+FAILED ../tests/test_final_state.py::test_schema_declares_required_types_and_pointers
+FAILED ../tests/test_final_state.py::test_transaction_retry_budget_is_configured
+FAILED ../tests/test_final_state.py::test_single_reservation_happy_path - Ass...
+FAILED ../tests/test_final_state.py::test_snapshot_is_sorted - AssertionError...
+FAILED ../tests/test_final_state.py::test_idempotent_replay_is_a_no_op - Asse...
+FAILED ../tests/test_final_state.py::test_idempotency_key_conflict_is_rejected
+FAILED ../tests/test_final_state.py::test_basket_equality_ignores_line_order
+FAILED ../tests/test_final_state.py::test_unknown_sku_lists_every_unknown_sku
+FAILED ../tests/test_final_state.py::test_unknown_sku_outranks_insufficient_stock
+FAILED ../tests/test_final_state.py::test_multi_item_basket_is_atomic - Asser...
+FAILED ../tests/test_final_state.py::test_insufficient_stock_lists_every_offending_sku
+FAILED ../tests/test_final_state.py::test_invalid_requests_are_rejected[-basket0]
+FAILED ../tests/test_final_state.py::test_invalid_requests_are_rejected[k-bad1-basket1]
+FAILED ../tests/test_final_state.py::test_invalid_requests_are_rejected[k-bad2-basket2]
+FAILED ../tests/test_final_state.py::test_invalid_requests_are_rejected[k-bad3-basket3]
+FAILED ../tests/test_final_state.py::test_invalid_requests_are_rejected[k-bad4-basket4]
+FAILED ../tests/test_final_state.py::test_no_oversell_under_concurrent_processes
+FAILED ../tests/test_final_state.py::test_concurrent_multi_item_baskets_stay_atomic
+FAILED ../tests/test_final_state.py::test_concurrent_replays_of_one_key_reserve_once
+FAILED ../tests/test_final_state.py::test_in_process_fan_out_respects_stock_budget
+FAILED ../tests/test_final_state.py::test_release_frees_stock_and_allows_re_reservation
+FAILED ../tests/test_final_state.py::test_release_edge_cases - AssertionError...
+FAILED ../tests/test_final_state.py::test_replay_after_release_does_not_re_reserve
+FAILED ../tests/test_final_state.py::test_expiry_releases_only_due_reservations
+FAILED ../tests/test_final_state.py::test_ledger_explains_reserved_amounts - ...
+FAILED ../tests/test_final_state.py::test_database_rejects_invariant_violations
+======================== 29 failed, 2 passed in 19.87s =========================

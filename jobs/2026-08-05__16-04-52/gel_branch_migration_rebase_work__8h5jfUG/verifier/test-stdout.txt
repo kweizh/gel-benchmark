@@ -1,0 +1,80 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 22 items
+
+../../../tests/test_final_state.py ...................FFF                [100%]
+
+=================================== FAILURES ===================================
+______________ test_reproduction_script_is_present_and_executable ______________
+
+    def test_reproduction_script_is_present_and_executable():
+>       assert os.path.isfile(SCRIPT_PATH), "Reproduction script {} is missing.".format(SCRIPT_PATH)
+E       AssertionError: Reproduction script /home/user/branchlab/reconcile.sh is missing.
+E       assert False
+E        +  where False = <function isfile at 0x725aed880220>('/home/user/branchlab/reconcile.sh')
+E        +    where <function isfile at 0x725aed880220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:399: AssertionError
+__________________________ test_report_file_contents ___________________________
+
+gel_server = True
+
+    def test_report_file_contents(gel_server):
+>       assert os.path.isfile(REPORT_PATH), "Report file {} is missing.".format(REPORT_PATH)
+E       AssertionError: Report file /home/user/branchlab/reconcile-report.json is missing.
+E       assert False
+E        +  where False = <function isfile at 0x725aed880220>('/home/user/branchlab/reconcile-report.json')
+E        +    where <function isfile at 0x725aed880220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:417: AssertionError
+________ test_zz_reproduction_script_is_rerunnable_and_state_preserved _________
+
+gel_server = True
+
+    def test_zz_reproduction_script_is_rerunnable_and_state_preserved(gel_server):
+        """Run last: the script must be safe to re-run on the already reconciled project."""
+        proc = _run(["bash", SCRIPT_PATH], timeout=600)
+>       assert proc.returncode == 0, (
+            "Re-running {} must exit 0, got {}:\nSTDOUT:\n{}\nSTDERR:\n{}".format(
+                SCRIPT_PATH, proc.returncode, proc.stdout[-4000:], proc.stderr[-4000:]
+            )
+        )
+E       AssertionError: Re-running /home/user/branchlab/reconcile.sh must exit 0, got 127:
+E         STDOUT:
+E         
+E         STDERR:
+E         bash: /home/user/branchlab/reconcile.sh: No such file or directory
+E         
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', '/home/user/branchlab/reconcile.sh'], returncode=127, stdout='', stderr='bash: /home/user/branchlab/reconcile.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:469: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../../../tests/test_final_state.py::test_branch_set_is_exactly_main_and_feat_review
+PASSED ../../../tests/test_final_state.py::test_active_branch_is_main
+PASSED ../../../tests/test_final_state.py::test_main_has_tag_object_type
+PASSED ../../../tests/test_final_state.py::test_main_tag_label_is_required_str_and_exclusive
+PASSED ../../../tests/test_final_state.py::test_main_article_tags_link
+PASSED ../../../tests/test_final_state.py::test_main_article_review_state_property
+PASSED ../../../tests/test_final_state.py::test_feat_review_carries_both_features
+PASSED ../../../tests/test_final_state.py::test_main_migration_history_is_linear_with_three_migrations
+PASSED ../../../tests/test_final_state.py::test_each_feature_contributed_one_migration
+PASSED ../../../tests/test_final_state.py::test_feat_review_history_matches_main
+PASSED ../../../tests/test_final_state.py::test_migration_status_in_sync_on_main
+PASSED ../../../tests/test_final_state.py::test_migration_status_in_sync_on_feat_review
+PASSED ../../../tests/test_final_state.py::test_migrations_directory_has_exactly_three_files
+PASSED ../../../tests/test_final_state.py::test_schema_source_file_exists
+PASSED ../../../tests/test_final_state.py::test_authors_preserved_in_place
+PASSED ../../../tests/test_final_state.py::test_articles_preserved_in_place
+PASSED ../../../tests/test_final_state.py::test_review_state_backfill_values
+PASSED ../../../tests/test_final_state.py::test_single_longform_tag_exists
+PASSED ../../../tests/test_final_state.py::test_longform_tagging_matches_word_count_boundary
+FAILED ../../../tests/test_final_state.py::test_reproduction_script_is_present_and_executable
+FAILED ../../../tests/test_final_state.py::test_report_file_contents - Assert...
+FAILED ../../../tests/test_final_state.py::test_zz_reproduction_script_is_rerunnable_and_state_preserved
+========================= 3 failed, 19 passed in 4.97s =========================

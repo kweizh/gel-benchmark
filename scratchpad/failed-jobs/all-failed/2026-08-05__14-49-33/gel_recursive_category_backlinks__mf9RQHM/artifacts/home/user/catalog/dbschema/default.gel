@@ -1,0 +1,44 @@
+module default {
+  abstract type Node {
+    required slug: str {
+      constraint exclusive;
+    }
+    required label: str;
+  }
+
+  type Category extending Node {
+    parent: Category;
+    required rank: int64 {
+      default := 0;
+    }
+    multi link children := .<parent[is Category];
+    multi link products := .<category[is Product];
+    link audit := .<category[is CategoryAudit];
+  }
+
+  abstract type Listing extending Node {
+    required category: Category;
+    required price_cents: int64 {
+      constraint min_value(0);
+    }
+  }
+
+  type Product extending Listing {
+    required in_stock: bool {
+      default := true;
+    }
+  }
+
+  type Bundle extending Listing {
+    required item_count: int64 {
+      constraint min_value(2);
+    }
+  }
+
+  type CategoryAudit {
+    required category: Category {
+      constraint exclusive;
+    }
+    required checked_by: str;
+  }
+}

@@ -1,0 +1,30 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-7.2.1, pluggy-1.0.0+repack
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3, anyio-4.14.2
+collected 22 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_supporting_python_packages_importable PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_project_is_a_gel_project PASSED
+../bootstrap/test_initial_state.py::test_schema_file_present_with_expected_types PASSED
+../bootstrap/test_initial_state.py::test_migrations_present PASSED
+../bootstrap/test_initial_state.py::test_schema_checksum_recorded PASSED
+../bootstrap/test_initial_state.py::test_app_package_skeleton_present PASSED
+../bootstrap/test_initial_state.py::test_query_files_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_no_generated_modules_yet PASSED
+../bootstrap/test_initial_state.py::test_solution_artifacts_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_service_port_is_free PASSED
+../bootstrap/test_initial_state.py::test_connection_environment_configured PASSED
+../bootstrap/test_initial_state.py::test_gel_server_starts_and_answers_queries PASSED
+../bootstrap/test_initial_state.py::test_migrations_are_applied PASSED
+../bootstrap/test_initial_state.py::test_schema_types_exist_in_database PASSED
+../bootstrap/test_initial_state.py::test_seeded_object_counts PASSED
+../bootstrap/test_initial_state.py::test_seeded_regions PASSED
+../bootstrap/test_initial_state.py::test_seeded_grower_sample PASSED
+../bootstrap/test_initial_state.py::test_seeded_batch_samples PASSED
+../bootstrap/test_initial_state.py::test_seeded_region_totals PASSED
+
+============================== 22 passed in 8.95s ==============================

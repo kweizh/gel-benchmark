@@ -1,0 +1,243 @@
+- Initializing MCP connections...
+You
+# In-Database Pricing Library: Multi-Module Gel Schema ## Background A billing team is tired of every service re-implementing money arithmetic slightly differently, so the rules must live **inside the database** as a reusable library: generic money helpers in one schema module, the billing domain in another, and read models in a third. A Gel 6 project skeleton and a local Gel server are already available in this container. No cloud instance, hosted database or external service is involved: everything runs locally inside the container. ## Requirements Deliver a migrated Gel schema, split across **three modules** (`util`, `billing`, `reports`), that satisfies every contract below. Everything is verified over EdgeQL against the live local instance using fully-qualified names, so names, parameter names, parameter kinds, cardinalities and numeric results must match exactly. All rounding in this task is **decimal** rounding with ties going **away from zero** (Gel `decimal` semantics), never floating-point rounding. Percentages are whole or fractional percents (`10` means 10%). ### Module `util` - reusable, data-independent functions Declare these schema functions with exactly these names, parameter names, parameter kinds and return types: 1. `util::money_round(amount: decimal) -> decimal` - `amount` rounded to 2 decimal places. 2. `util::money_round(amount: decimal, places: int64) -> decimal` - `amount` rounded to `places` decimal places; `places` may be zero or negative. It must coexist with (1) as an overload of the same name, and a three-argument call must not resolve. 3. `util::total_of(variadic amounts: decimal) -> decimal` - the sum of all supplied amounts, rounded to 2 decimal places. A call with no arguments must yield `0`. 4. `util::apply_discount(amount: decimal, pct: decimal, floor_amount: optional decimal) -> decimal` - let `d` be `amount` reduced by `pct` percent and then rounded to 2 decimal places. When `floor_amount` is a non-empty value the result is the greater of `d` and `floor_amount`; when `floor_amount` is an empty set the result is `d`. `floor_amount` is the only `optional` parameter anywhere in this task. 5. `util::gross_with_tax(net: decimal, named only tax_pct: decimal = 0) -> decimal` - `net` increased by `tax_pct` percent, rounded to 2 decimal places. `tax_pct` must be passable **only** by name and must default to `0`, so a two-positional-argument call must not resolve. 6. `util::installments(total: decimal, count: int64) -> set of decimal` - returns a **set** (not an array, not a single value) of exactly `count` amounts whose sum is exactly `total`: the first `count - 1` elements each equal `total / count` rounded to 2 decimal places, and the final element is `total` minus the sum of those. Returns the empty set when `count < 1`. Its declared return type must be set-returning. ### Module `billing` - domain types and one data-dependent function - `billing::Customer`: required `name: str` (unique across customers), required `discount_pct: decimal` defaulting to `0`. - `billing::LineItem`: required link `invoice` to `billing::Invoice`, required `description: str`, required `qty: int64`, required `unit_price: decimal`, plus a single computed `line_total` equal to `qty` times `unit_price` rounded to 2 decimal places. A `LineItem` whose `unit_price` differs from its own 2-decimal-place rounding (e.g. `1.234`) must be rejected at write time by a schema constraint. - `billing::Invoice`: required `code: str` (unique across invoices), required link `customer` to `billing::Customer`, required `paid: bool` defaulting to `false`, an optional single `minimum_charge: decimal`, required `installment_count: int64` defaulting to `1`, plus these computeds: - `lines`: the (possibly empty) set of `billing::LineItem` objects whose `invoice` points at this invoice. - `subtotal` (single): the sum of `line_total` over `lines`, rounded to 2 decimal places; `0` when the invoice has no lines. - `total_due` (single): the invoice `subtotal` discounted by its customer `discount_pct` and floored by the invoice `minimum_charge` when that property is set, with exactly the semantics of `util::apply_discount`. - `billing::customer_outstanding(customer_name: str) -> decimal` - the sum of `total_due` over the unpaid invoices of the customer with that exact `name`, rounded to 2 decimal places; `0` when there is no such customer or no unpaid invoice. Its effective volatility must be `Stable`. - The computed pointers `billing::LineItem.line_total`, `billing::Invoice.subtotal` and `billing::Invoice.total_due` must be defined by calling the `util` functions across the module boundary instead of re-implementing the arithmetic: their stored expressions must reference the `util` module. ### Module `reports` - read models as schema aliases Declare these three as schema **aliases** (introspectable as aliases) that all live in `reports`: - `reports::UnpaidInvoice` - the invoices whose `paid` is `false`; selecting it yields invoice objects, so `code`, `subtotal` and `total_due` are selectable from it. - `reports::CustomerBalance` - customers, each additionally exposing a single computed `outstanding`: the sum of `total_due` over that customer unpaid invoices, rounded to 2 decimal places (`0` when there are none). It must reflect data changes immediately, so marking an invoice paid changes it. - `reports::InvoicePlan` - invoices, each additionally exposing a multi computed `plan`: the installment amounts obtained by splitting the invoice `total_due` into `installment_count` parts exactly as `util::installments` does. ## Implementation Hints - Project path: `/home/user/pricing` (it already contains `gel.toml` and `dbschema/`). - The local Gel server is not necessarily running: `gel-start` (already on `PATH`) starts it if needed and returns once it accepts connections. `GEL_DSN` and the TLS setting are already exported in the environment, so the CLI and client libraries connect with no extra flags. - File layout: module `util` must be declared in `dbschema/util.gel`, module `billing` in `dbschema/billing.gel`, and module `reports` in `dbschema/reports.gel`. - Nothing this task introduces may end up in the `default` module: after your work there must be no non-builtin object type, function or alias whose name starts with `default::`. - The work must be committed as migration files under `dbschema/migrations/` and applied to the running instance, leaving the instance and the schema directory in sync (a fresh `gel migration status` must report being up to date). - The verifier deletes every `billing::LineItem`, `billing::Invoice` and `billing::Customer` object and inserts its own fixtures, so do not depend on any pre-existing or self-seeded data; the schema must work on an empty database. - Decimal values are compared numerically, so trailing zeros do not matter, but the numeric value must be exact.   
+
+Pochi
+I'll start by exploring the existing project structure and understanding what's already set up.   
+📂 Listing files in /home/user/pricing recursively ✔ 
+💫 Executing cat /home/user/pricing/gel.toml ✔ 
+📖 Reading /home/user/pricing/dbschema/default.gel ✔ 
+💫 Executing which gel-start && gel-start 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel migration status 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT sys::get_version_as_str()" 2>&1 ✔ 
+Good, the project is set up with Gel 6.11, the server is running, and the database is up to date. Now let me look at the existing migration and understand the schema structure.   
+📂 Listing files in /home/user/pricing/dbschema recursively ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Module {name, id} FILTER .name LIKE 'std%' OR .builtin = false" 2>&1 ✔ 
+Now I have a clear picture. Let me plan the implementation: 1. Create `dbschema/util.gel` with all the utility functions 2. Create `dbschema/billing.gel` with domain types and the `customer_outstanding` function 3. Create `dbschema/reports.gel` with the three aliases 4. Remove the `default` module from `default.gel` (or leave it empty — but requirements say nothing from this task may end up in `default`) Let me now research Gel 6 specific syntax for module declarations, overloaded functions, variadic parameters, named-only parameters, computed pointers, constraints, and aliases.   
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Function {name, module: .__type__.name} FILTER .module.name = 'default'" 2>&1 ✖ "Command exited with code 1"
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::ObjectType {name} FILTER .name NOT LIKE 'std%' AND .name NOT LIKE 'cfg%' AND .name NOT LIKE 'schema%' AND .name NOT LIKE 'sys%'" 2>&1 ✖ "Tool call was cancelled because a previous tool call failed."
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Function {name, __type__: {name}}" ✔ 
+Now let me look at how Gel handles `std::round` to understand the rounding semantics, and also check how Gel handles SDL syntax for the features I need (variadic, named only, overloads, etc.):   
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Function {name, params: {name, kind, type: {name}}, return_type: {name}} FILTER .name = 'std::round'" 2>&1 ✔ 
+Good, `std::round` on decimal with a second parameter for decimal places already exists. Now let me check the Gel 6 SDL documentation for the specific syntax features I need. Let me look at what the Gel 6 docs say about SDL function declarations:   
+🔎 Searching the web for Gel EdgeDB 6 SDL function declaration variadic named only parameter syntax ✔ 
+Now let me check the specific SDL syntax for Gel 6, particularly for computed properties and aliases:   
+🌐 Fetching https://docs.geldata.com/reference/datamodel/functions ✔ 
+Now let me check the alias and computed property syntax:   
+🌐 Fetching https://docs.geldata.com/reference/datamodel/aliases ✔ 
+🌐 Fetching https://docs.geldata.com/reference/datamodel/computeds ✔ 
+Now let me check the constraints reference to understand how to add a constraint on `unit_price`:   
+🌐 Fetching https://docs.geldata.com/reference/datamodel/constraints ✔ 
+Now I have a solid understanding of the Gel 6 SDL syntax. Let me also check how `__source__` works in computed expressions and how to reference the util module from billing. Let me also check for the `std::round` behavior with decimal and negative places:   
+💫 Executing cd /home/user/pricing && gel query "SELECT std::round(123.456n, 2)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT std::round(123.456n, 0)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT std::round(123.456n, -1)" 2>&1 ✔ 
+Good, `std::round` handles decimal with negative places correctly. Now let me check how `std::round` on decimal handles the case with no second argument (defaults to 0 decimal places):   
+💫 Executing cd /home/user/pricing && gel query "SELECT std::round(123.456n)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT std::round(123.456n, 2) = 123.46n" 2>&1 ✔ 
+Now let me understand the `round` behavior for ties. The spec says "ties going away from zero" which is what Gel decimal does:   
+💫 Executing cd /home/user/pricing && gel query "SELECT (std::round(1.235n, 2), std::round(1.225n, 2), std::round(-1.235n, 2), std::round(-1.225n, 2))" 2>&1 ✔ 
+Hmm, `round(1.225, 2)` gives `1.23` which is "round half to even" (banker's rounding), not "away from zero". Let me verify more carefully:   
+💫 Executing cd /home/user/pricing && gel query "SELECT (std::round(1.235n, 2), std::round(1.225n, 2), std::round(1.215n, 2), std::round(1.205n, 2))" 2>&1 ✔ 
+That's round-half-to-even (banker's rounding). But the task says "ties going away from zero (Gel decimal semantics)". Let me check what the Gel documentation says about decimal rounding:   
+🔎 Searching the web for Gel EdgeDB decimal round half away from zero ties ✔ 
+The Gel docs say: "But the `decimal` tie is rounded away from zero". Let me verify:   
+💫 Executing cd /home/user/pricing && gel query "SELECT (std::round(1.5n), std::round(2.5n), std::round(-1.5n), std::round(-2.5n))" 2>&1 ✔ 
+OK, so `round` on `decimal` with no second argument rounds to integer with ties away from zero. But what about `round(1.225n, 2)`? Let me check with more precision:   
+💫 Executing cd /home/user/pricing && gel query "SELECT (std::round(1.225n, 2), std::round(1.235n, 2), std::round(1.215n, 2))" 2>&1 ✔ 
+So `round(1.225, 2)` gives `1.23` which is round-half-to-even. But `round(1.5, 0)` gives `2` which is away from zero. Let me test more carefully:   
+💫 Executing cd /home/user/pricing && gel query "SELECT (std::round(1.25n, 1), std::round(1.35n, 1), std::round(1.15n, 1))" 2>&1 ✔ 
+`round(1.25, 1)` = `1.3` (away from zero), `round(1.15, 1)` = `1.2` (away from zero). OK so rounding to 1 decimal place with ties gives away from zero. But `round(1.225, 2)` = `1.23` seems like round-half-to-even... Let me check if this is a precision issue with the decimal literal:   
+💫 Executing cd /home/user/pricing && gel query "SELECT (1.225n, std::round(1.225n, 2), std::round(1.225n, 3))" 2>&1 ✔ 
+Interesting, `round(1.225, 2)` = `1.23` and `round(1.225, 3)` = `1.225`. So when rounding to 2 decimal places, 1.225 rounds to 1.23 which IS away from zero (since 1.225 is exactly halfway between 1.22 and 1.23, and 1.23 is further from zero). Wait, 1.225 is exactly halfway between 1.22 and 1.23. Going away from zero would give 1.23, and going to even would give 1.22 (since 2 is even). But we got 1.23, which is away from zero. So this IS away from zero. I was confused earlier - 1.225 rounds to 1.23 with away-from-zero, which matches. Let me recheck:   
+💫 Executing cd /home/user/pricing && gel query "SELECT (std::round(1.225n, 2), std::round(1.235n, 2), std::round(1.245n, 2), std::round(1.255n, 2))" 2>&1 ✔ 
+1.225 → 1.23 (away from zero ✓) 1.235 → 1.24 (away from zero ✓) 1.245 → 1.25 (away from zero ✓) 1.255 → 1.26 (away from zero ✓) All correct, ties away from zero. My earlier analysis was wrong - `round(1.225, 2)` = `1.23` IS away from zero. Great. Now I have everything I need. Let me create the schema files. I'll write all three module files and then create the migration. Let me plan each module carefully: ### util.gel 1. `money_round(amount: decimal) -> decimal` — wraps `std::round(amount, 2)` 2. `money_round(amount: decimal, places: int64) -> decimal` — wraps `std::round(amount, places)` 3. `total_of(variadic amounts: decimal) -> decimal` — sum of variadic args, rounded to 2 places 4. `apply_discount(amount: decimal, pct: decimal, floor_amount: optional decimal) -> decimal` — discount logic 5. `gross_with_tax(net: decimal, named only tax_pct: decimal = 0) -> decimal` — tax logic 6. `installments(total: decimal, count: int64) -> set of decimal` — installment split ### billing.gel - Types: Customer, LineItem, Invoice with computeds - Function: `customer_outstanding` ### reports.gel - Aliases: UnpaidInvoice, CustomerBalance, InvoicePlan Let me now write the files:   
+✏️  Writing /home/user/pricing/dbschema/util.gel ✔ 
+Now let me test the util module before proceeding. Let me create a migration and apply it:   
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel migration apply 2>&1 ✔ 
+Good, migration applied. Let me test the util functions:   
+💫 Executing cd /home/user/pricing && gel query "SELECT util::money_round(123.456n)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::money_round(123.456n, 1)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::money_round(123.456n, 0)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::money_round(123.456n, -1)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::total_of(10.00n, 20.00n, 30.00n)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::total_of()" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::apply_discount(100.00n, 10, <decimal>{})" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::apply_discount(100.00n, 10, 95.00n)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::gross_with_tax(100.00n, tax_pct := 20)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::gross_with_tax(100.00n)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::installments(100.00n, 3)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::installments(100.00n, 1)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::installments(100.00n, 0)" 2>&1 ✖ "Command exited with code 1"
+The `installments` function fails when `count < 1` because it divides by zero before the `if` check. I need to restructure it so the division only happens when count >= 1. Let me fix that:   
+🔧 Applying diff to /home/user/pricing/dbschema/util.gel ✔ 
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel migration apply 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::installments(100.00n, 0)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::installments(100.00n, 3)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::installments(100.00n, -1)" 2>&1 ✔ 
+Now let me verify the installment sum is exactly 100:   
+💫 Executing cd /home/user/pricing && gel query "SELECT sum(util::installments(100.00n, 3))" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT sum(util::installments(100.00n, 6))" 2>&1 ✔ 
+Now let me also check that `installments(100.00n, 1)` returns just `{100.00}` not `{100.00, 100.00}`:   
+💫 Executing cd /home/user/pricing && gel query "SELECT util::installments(100.00n, 1)" 2>&1 ✔ 
+Good, just one element now. But wait, when count=1, we return `{total}` which is a singleton set. But the `count - 1` in `std::array_fill` would be 0, and `array_unpack(array_fill(x, 0))` returns empty set. Then `last = total - 0 = total`. So the `union` of empty set and `{total}` gives `{total}`. But actually the `if count = 1` branch handles this explicitly, so it should work fine. Now, let me also verify the `apply_discount` function works correctly with all edge cases:   
+💫 Executing cd /home/user/pricing && gel query "SELECT util::apply_discount(100.00n, 0, <decimal>{})" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::apply_discount(100.00n, 100, <decimal>{})" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::apply_discount(100.00n, 10, 95.00n)" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT util::apply_discount(100.00n, 10, 85.00n)" 2>&1 ✔ 
+All util functions working. Now let me verify the overload resolution works correctly — three-argument call to `money_round` should not resolve:   
+💫 Executing cd /home/user/pricing && gel query "SELECT util::money_round(123.456n, 2, 3)" 2>&1 ✖ "Command exited with code 1"
+Good, three-argument call doesn't resolve. Now let me also verify that `gross_with_tax` with two positional arguments doesn't resolve:   
+💫 Executing cd /home/user/pricing && gel query "SELECT util::gross_with_tax(100.00n, 20)" 2>&1 ✖ "Command exited with code 1"
+Now let me check that `total_of` with no arguments returns `0`:   
+💫 Executing cd /home/user/pricing && gel query "SELECT util::total_of() = 0n" 2>&1 ✔ 
+Now let me also check that `installments` return type is `set of decimal`:   
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Function {name, return_type: {name}, return_typemod} FILTER .name LIKE 'util::%'" 2>&1 ✔ 
+`installments` has `SetOfType` return_typemod. Now let me write the `billing.gel` module.   
+✏️  Writing /home/user/pricing/dbschema/billing.gel ✔ 
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 ✖ "Command exited with code 1"
+The `set volatility` syntax is DDL-only. In SDL, I need to use a different syntax. Let me check the SDL function syntax again. In SDL, the function body uses the block syntax with `{ }` and inside you can use `volatility := ...`:   
+🔧 Applying diff to /home/user/pricing/dbschema/billing.gel ✔ 
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 ✖ "Command exited with code 1"
+The backlink syntax doesn't work in a function body because there's no implicit source. I need to reference the customer explicitly:   
+🔧 Applying diff to /home/user/pricing/dbschema/billing.gel ✔ 
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel migration apply 2>&1 ✔ 
+Good. Let me test the billing module:   
+💫 Executing cd /home/user/pricing && gel query "
+WITH
+    c := (INSERT billing::Customer { name := 'Acme', discount_pct := 10 }),
+    inv := (INSERT billing::Invoice { code := 'INV-001', customer := c, minimum_charge := 50.00n, installment_count := 3 }),
+    li1 := (INSERT billing::LineItem { invoice := inv, description := 'Widget', qty := 2, unit_price := 25.00n }),
+    li2 := (INSERT billing::LineItem { invoice := inv, description := 'Gadget', qty := 1, unit_price := 50.00n }),
+SELECT inv { code, subtotal, total_due, lines: { description, line_total } }
+" 2>&1 ✔ 
+The computeds are returning data but `lines` is empty and `subtotal` is 0. This is because computed properties are evaluated at query time and the INSERT hasn't been committed yet in the same query. Let me try in separate steps:   
+💫 Executing cd /home/user/pricing && gel query "
+INSERT billing::Customer { name := 'Acme', discount_pct := 10 };
+" 2>&1 ✖ "Command exited with code 1"
+There's already a customer from the previous test. Let me clean up:   
+💫 Executing cd /home/user/pricing && gel query "DELETE billing::LineItem; DELETE billing::Invoice; DELETE billing::Customer;" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "
+INSERT billing::Customer { name := 'Acme', discount_pct := 10 };
+" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "
+WITH c := (SELECT billing::Customer FILTER .name = 'Acme' LIMIT 1)
+INSERT billing::Invoice { code := 'INV-001', customer := c, minimum_charge := 50.00n, installment_count := 3 };
+" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "
+WITH inv := (SELECT billing::Invoice FILTER .code = 'INV-001' LIMIT 1)
+INSERT billing::LineItem { invoice := inv, description := 'Widget', qty := 2, unit_price := 25.00n };
+" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "
+WITH inv := (SELECT billing::Invoice FILTER .code = 'INV-001' LIMIT 1)
+INSERT billing::LineItem { invoice := inv, description := 'Gadget', qty := 1, unit_price := 50.00n };
+" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "
+SELECT billing::Invoice { code, subtotal, total_due, lines: { description, line_total } }
+" 2>&1 ✔ 
+Working correctly: - `subtotal` = 2*25 + 1*50 = 100 - `total_due` = apply_discount(100, 10%, floor=50) = max(90, 50) = 90 Let me test the unit_price constraint:   
+💫 Executing cd /home/user/pricing && gel query "
+WITH inv := (SELECT billing::Invoice FILTER .code = 'INV-001' LIMIT 1)
+INSERT billing::LineItem { invoice := inv, description := 'Bad Item', qty := 1, unit_price := 1.234n };
+" 2>&1 ✖ "Command exited with code 1"
+The constraint works. Now let me test `customer_outstanding`:   
+💫 Executing cd /home/user/pricing && gel query "SELECT billing::customer_outstanding('Acme')" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT billing::customer_outstanding('NoSuchCustomer')" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "UPDATE billing::Invoice FILTER .code = 'INV-001' SET { paid := true }" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT billing::customer_outstanding('Acme')" 2>&1 ✔ 
+The `customer_outstanding` function works correctly. Now let me verify its volatility:   
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Function {name, volatility} FILTER .name = 'billing::customer_outstanding'" 2>&1 ✔ 
+Now let me also verify that the `lines` computed link works correctly on the Invoice when there are no line items:   
+💫 Executing cd /home/user/pricing && gel query "
+WITH c := (SELECT billing::Customer FILTER .name = 'Acme' LIMIT 1)
+INSERT billing::Invoice { code := 'INV-002', customer := c };
+" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT billing::Invoice { code, subtotal, total_due } FILTER .code = 'INV-002'" 2>&1 ✔ 
+Invoice with no lines has subtotal 0 and total_due 0. Now let me write the `reports.gel` module:   
+✏️  Writing /home/user/pricing/dbschema/reports.gel ✔ 
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel migration apply 2>&1 ✔ 
+Now let me test the reports aliases:   
+💫 Executing cd /home/user/pricing && gel query "SELECT reports::UnpaidInvoice { code, subtotal, total_due }" 2>&1 ✔ 
+Only INV-002 is unpaid (INV-001 was marked paid). Good.   
+💫 Executing cd /home/user/pricing && gel query "SELECT reports::CustomerBalance { name, outstanding }" 2>&1 ✔ 
+CustomerBalance shows 0 outstanding since the only unpaid invoice has subtotal 0. Let me mark INV-001 as unpaid again and check:   
+💫 Executing cd /home/user/pricing && gel query "UPDATE billing::Invoice FILTER .code = 'INV-001' SET { paid := false }" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT reports::CustomerBalance { name, outstanding }" 2>&1 ✔ 
+CustomerBalance reflects data changes immediately. Now test InvoicePlan:   
+💫 Executing cd /home/user/pricing && gel query "SELECT reports::InvoicePlan { code, total_due, installment_count, plan }" 2>&1 ✔ 
+Wait, for INV-001: total_due=90, installment_count=3. 90/3 = 30. So 30, 30, 30. Sum = 90. That's correct. Let me also verify that the aliases are introspectable as aliases:   
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Alias {name} FILTER .name LIKE 'reports::%'" 2>&1 ✔ 
+All three are introspectable as `schema::Alias`. Now let me check the migration status:   
+💫 Executing cd /home/user/pricing && gel migration status 2>&1 ✔ 
+Now let me check that nothing ended up in the `default` module:   
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::ObjectType {name} FILTER .name LIKE 'default::%' AND NOT .builtin" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Function {name} FILTER .name LIKE 'default::%'" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Alias {name} FILTER .name LIKE 'default::%'" 2>&1 ✔ 
+No non-builtin objects, functions, or aliases in the `default` module. Now let me clean up test data and run a final comprehensive verification:   
+💫 Executing cd /home/user/pricing && gel query "DELETE billing::LineItem; DELETE billing::Invoice; DELETE billing::Customer;" 2>&1 ✔ 
+Let me now do a comprehensive verification of all the requirements. I'll write a thorough test script. First, let me verify the `installments` function with a non-evenly-divisible case more carefully:   
+💫 Executing cd /home/user/pricing && gel query "
+WITH parts := util::installments(100.00n, 3)
+SELECT (parts, sum(parts))
+" 2>&1 ✔ 
+Let me try differently:   
+💫 Executing cd /home/user/pricing && gel query "SELECT sum(util::installments(100.00n, 3)) = 100.00n" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT count(util::installments(100.00n, 3))" 2>&1 ✔ 
+Good. Now let me also test the constraint on unit_price more thoroughly:   
+💫 Executing cd /home/user/pricing && gel query "
+WITH
+    c := (INSERT billing::Customer { name := 'TestCo', discount_pct := 5 }),
+    inv := (INSERT billing::Invoice { code := 'TEST-001', customer := c }),
+SELECT {
+    -- test valid unit_price
+    test_valid := (
+        INSERT billing::LineItem {
+            invoice := inv,
+            description := 'OK',
+            qty := 1,
+            unit_price := 12.34n
+        }
+    ).unit_price,
+}
+" 2>&1 ✖ "Command exited with code 1"
+💫 Executing cd /home/user/pricing && gel query "
+WITH
+    c := (INSERT billing::Customer { name := 'TestCo', discount_pct := 5 }),
+    inv := (INSERT billing::Invoice { code := 'TEST-001', customer := c }),
+SELECT (
+    INSERT billing::LineItem {
+        invoice := inv,
+        description := 'OK',
+        qty := 1,
+        unit_price := 12.34n
+    }
+).unit_price
+" 2>&1 ✔ 
+Good, 12.34 is valid (already at 2 decimal places). Let me verify 1.234 is rejected:   
+💫 Executing cd /home/user/pricing && gel query "
+WITH
+    inv := (SELECT billing::Invoice FILTER .code = 'TEST-001' LIMIT 1),
+SELECT (
+    INSERT billing::LineItem {
+        invoice := inv,
+        description := 'Bad',
+        qty := 1,
+        unit_price := 1.234n
+    }
+).unit_price
+" 2>&1 ✖ "Command exited with code 1"
+Now let me clean up and verify the final state. Let me also check that the `CustomerBalance` alias works correctly with `outstanding` as a computed field:   
+💫 Executing cd /home/user/pricing && gel query "DESCRIBE SCHEMA reports::CustomerBalance" 2>&1 ✖ "Command exited with code 1"
+💫 Executing cd /home/user/pricing && gel query "DESCRIBE SCHEMA TYPE reports::CustomerBalance" 2>&1 ✖ "Command exited with code 1"
+💫 Executing cd /home/user/pricing && gel query "DESCRIBE OBJECT reports::CustomerBalance" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "DESCRIBE ALIAS reports::CustomerBalance" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel describe object reports::CustomerBalance 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel describe alias reports::CustomerBalance 2>&1 ✖ "Command exited with code 2"
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Alias {name, expr} FILTER .name = 'reports::CustomerBalance'" 2>&1 ✔ 
+Now let me also verify the computed pointers in billing reference the util module correctly:   
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Pointer {name, expr} FILTER .name LIKE 'billing::%' AND exists .expr" 2>&1 ✔ 
+💫 Executing cd /home/user/pricing && gel query "SELECT schema::Pointer {name, expr} FILTER .name LIKE '%line_total%' OR .name LIKE '%subtotal%' OR .name LIKE '%total_due%'" 2>&1 ✔ 

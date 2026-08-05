@@ -1,0 +1,29 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 18 items
+
+../../../tests/test_final_state.py ..................                    [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../../../tests/test_final_state.py::test_migration_history_applied_and_in_sync
+PASSED ../../../tests/test_final_state.py::test_schema_types_and_pointers
+PASSED ../../../tests/test_final_state.py::test_unique_constraints
+PASSED ../../../tests/test_final_state.py::test_archived_at_is_populated_automatically
+PASSED ../../../tests/test_final_state.py::test_workspace_delete_cascades_to_folders_and_documents
+PASSED ../../../tests/test_final_state.py::test_folder_delete_cascades_to_documents_only
+PASSED ../../../tests/test_final_state.py::test_orphan_attachments_removed_on_direct_document_delete
+PASSED ../../../tests/test_final_state.py::test_orphan_attachments_removed_through_workspace_cascade
+PASSED ../../../tests/test_final_state.py::test_archived_document_cannot_be_deleted_directly
+PASSED ../../../tests/test_final_state.py::test_archived_document_blocks_folder_and_workspace_cascade
+PASSED ../../../tests/test_final_state.py::test_editor_protection_is_deferred_until_commit
+PASSED ../../../tests/test_final_state.py::test_editor_deletion_fails_at_commit_when_still_referenced
+PASSED ../../../tests/test_final_state.py::test_unreferenced_editor_can_be_deleted
+PASSED ../../../tests/test_final_state.py::test_purge_workspace_happy_path
+PASSED ../../../tests/test_final_state.py::test_purge_workspace_unknown_name_raises_lookup_error
+PASSED ../../../tests/test_final_state.py::test_purge_workspace_refused_purge_is_atomic
+PASSED ../../../tests/test_final_state.py::test_purge_workspace_reports_real_numbers
+PASSED ../../../tests/test_final_state.py::test_purge_workspace_keeps_editors
+============================== 18 passed in 2.84s ==============================

@@ -1,0 +1,182 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 10 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_python_gel_client_importable PASSED
+../bootstrap/test_initial_state.py::test_python3_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_dbschema_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_generator_not_yet_written PASSED
+../bootstrap/test_initial_state.py::test_gel_server_is_reachable ERROR
+../bootstrap/test_initial_state.py::test_project_is_linked_to_instance ERROR
+../bootstrap/test_initial_state.py::test_starting_schema_has_no_user_object_types ERROR
+
+==================================== ERRORS ====================================
+________________ ERROR at setup of test_gel_server_is_reachable ________________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server is running before any DB-dependent check."""
+        start = shutil.which(START_SCRIPT)
+        assert start is not None, (
+            f"The '{START_SCRIPT}' helper script is not available in PATH; "
+            "the local Gel server cannot be started."
+        )
+        proc = subprocess.run([start], capture_output=True, text=True, timeout=600)
+>       assert proc.returncode == 0, (
+            f"'{START_SCRIPT}' failed with exit code {proc.returncode}.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'start-gel' failed with exit code 1.
+E         stdout: 
+E         stderr: the local Gel server did not become ready; see /var/log/gel/server.log
+E             self._sock.connect(sockname)
+E         ConnectionRefusedError: [Errno 111] Connection refused
+E         Exception ignored in: <function _after_fork at 0x71163af97f60>
+E         Traceback (most recent call last):
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1677, in _after_fork
+E             threads = set(_enumerate())
+E                           ^^^^^^^^^^^^
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1529, in _enumerate
+E             def _enumerate():
+E             
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 158, in <lambda>
+E             signal.signal(signal.SIGTERM, lambda *_: exit(os.EX_OK))
+E                                                      ^^^^^^^^^^^^^^
+E           File "<frozen _sitebuiltins>", line 26, in __call__
+E         SystemExit: 0
+E         Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker.py", line 378, in <module>
+E             worker_proc.main(get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 208, in main
+E             run_worker(args.sockname, args.version_serial, get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 83, in run_worker
+E             worker(sockname, version_serial, get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 44, in worker
+E             con = amsg.WorkerConnection(sockname, version_serial)
+E                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/amsg.py", line 152, in __init__
+E             self._sock.connect(sockname)
+E         ConnectionRefusedError: [Errno 111] Connection refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/start-gel'], returncode=1, stdout='', stderr='the local Gel server did not become ready; see /var/log/gel/server.log\n    self._sock.connect(sockname)\nConnectionRefusedError: [Errno 111] Connection refused\nException ignored in: <function _after_fork at 0x71163af97f60>\nTraceback (most recent call last):\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1677, in _after_fork\n    threads = set(_enumerate())\n                  ^^^^^^^^^^^^\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1529, in _enumerate\n    def _enumerate():\n    \n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 158, in <lambda>\n    signal.signal(signal.SIGTERM, lambda *_: exit(os.EX_OK))\n                                             ^^^^^^^^^^^^^^\n  File "<frozen _sitebuiltins>", line 26, in __call__\nSystemExit: 0\nTraceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker.py", line 378, in <module>\n    worker_proc.main(get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 208, in main\n    run_worker(args.sockname, args.version_serial, get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 83, in run_worker\n    worker(sockname, version_serial, get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 44, in worker\n    con = amsg.WorkerConnection(sockname, version_serial)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/amsg.py", line 152, in __init__\n    self._sock.connect(sockname)\nConnectionRefusedError: [Errno 111] Connection refused\n').returncode
+
+/bootstrap/test_initial_state.py:21: AssertionError
+_____________ ERROR at setup of test_project_is_linked_to_instance _____________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server is running before any DB-dependent check."""
+        start = shutil.which(START_SCRIPT)
+        assert start is not None, (
+            f"The '{START_SCRIPT}' helper script is not available in PATH; "
+            "the local Gel server cannot be started."
+        )
+        proc = subprocess.run([start], capture_output=True, text=True, timeout=600)
+>       assert proc.returncode == 0, (
+            f"'{START_SCRIPT}' failed with exit code {proc.returncode}.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'start-gel' failed with exit code 1.
+E         stdout: 
+E         stderr: the local Gel server did not become ready; see /var/log/gel/server.log
+E             self._sock.connect(sockname)
+E         ConnectionRefusedError: [Errno 111] Connection refused
+E         Exception ignored in: <function _after_fork at 0x71163af97f60>
+E         Traceback (most recent call last):
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1677, in _after_fork
+E             threads = set(_enumerate())
+E                           ^^^^^^^^^^^^
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1529, in _enumerate
+E             def _enumerate():
+E             
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 158, in <lambda>
+E             signal.signal(signal.SIGTERM, lambda *_: exit(os.EX_OK))
+E                                                      ^^^^^^^^^^^^^^
+E           File "<frozen _sitebuiltins>", line 26, in __call__
+E         SystemExit: 0
+E         Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker.py", line 378, in <module>
+E             worker_proc.main(get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 208, in main
+E             run_worker(args.sockname, args.version_serial, get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 83, in run_worker
+E             worker(sockname, version_serial, get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 44, in worker
+E             con = amsg.WorkerConnection(sockname, version_serial)
+E                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/amsg.py", line 152, in __init__
+E             self._sock.connect(sockname)
+E         ConnectionRefusedError: [Errno 111] Connection refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/start-gel'], returncode=1, stdout='', stderr='the local Gel server did not become ready; see /var/log/gel/server.log\n    self._sock.connect(sockname)\nConnectionRefusedError: [Errno 111] Connection refused\nException ignored in: <function _after_fork at 0x71163af97f60>\nTraceback (most recent call last):\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1677, in _after_fork\n    threads = set(_enumerate())\n                  ^^^^^^^^^^^^\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1529, in _enumerate\n    def _enumerate():\n    \n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 158, in <lambda>\n    signal.signal(signal.SIGTERM, lambda *_: exit(os.EX_OK))\n                                             ^^^^^^^^^^^^^^\n  File "<frozen _sitebuiltins>", line 26, in __call__\nSystemExit: 0\nTraceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker.py", line 378, in <module>\n    worker_proc.main(get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 208, in main\n    run_worker(args.sockname, args.version_serial, get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 83, in run_worker\n    worker(sockname, version_serial, get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 44, in worker\n    con = amsg.WorkerConnection(sockname, version_serial)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/amsg.py", line 152, in __init__\n    self._sock.connect(sockname)\nConnectionRefusedError: [Errno 111] Connection refused\n').returncode
+
+/bootstrap/test_initial_state.py:21: AssertionError
+_______ ERROR at setup of test_starting_schema_has_no_user_object_types ________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server is running before any DB-dependent check."""
+        start = shutil.which(START_SCRIPT)
+        assert start is not None, (
+            f"The '{START_SCRIPT}' helper script is not available in PATH; "
+            "the local Gel server cannot be started."
+        )
+        proc = subprocess.run([start], capture_output=True, text=True, timeout=600)
+>       assert proc.returncode == 0, (
+            f"'{START_SCRIPT}' failed with exit code {proc.returncode}.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'start-gel' failed with exit code 1.
+E         stdout: 
+E         stderr: the local Gel server did not become ready; see /var/log/gel/server.log
+E             self._sock.connect(sockname)
+E         ConnectionRefusedError: [Errno 111] Connection refused
+E         Exception ignored in: <function _after_fork at 0x71163af97f60>
+E         Traceback (most recent call last):
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1677, in _after_fork
+E             threads = set(_enumerate())
+E                           ^^^^^^^^^^^^
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1529, in _enumerate
+E             def _enumerate():
+E             
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 158, in <lambda>
+E             signal.signal(signal.SIGTERM, lambda *_: exit(os.EX_OK))
+E                                                      ^^^^^^^^^^^^^^
+E           File "<frozen _sitebuiltins>", line 26, in __call__
+E         SystemExit: 0
+E         Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker.py", line 378, in <module>
+E             worker_proc.main(get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 208, in main
+E             run_worker(args.sockname, args.version_serial, get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 83, in run_worker
+E             worker(sockname, version_serial, get_handler)
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 44, in worker
+E             con = amsg.WorkerConnection(sockname, version_serial)
+E                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/amsg.py", line 152, in __init__
+E             self._sock.connect(sockname)
+E         ConnectionRefusedError: [Errno 111] Connection refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/start-gel'], returncode=1, stdout='', stderr='the local Gel server did not become ready; see /var/log/gel/server.log\n    self._sock.connect(sockname)\nConnectionRefusedError: [Errno 111] Connection refused\nException ignored in: <function _after_fork at 0x71163af97f60>\nTraceback (most recent call last):\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1677, in _after_fork\n    threads = set(_enumerate())\n                  ^^^^^^^^^^^^\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/threading.py", line 1529, in _enumerate\n    def _enumerate():\n    \n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 158, in <lambda>\n    signal.signal(signal.SIGTERM, lambda *_: exit(os.EX_OK))\n                                             ^^^^^^^^^^^^^^\n  File "<frozen _sitebuiltins>", line 26, in __call__\nSystemExit: 0\nTraceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker.py", line 378, in <module>\n    worker_proc.main(get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 208, in main\n    run_worker(args.sockname, args.version_serial, get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 83, in run_worker\n    worker(sockname, version_serial, get_handler)\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/worker_proc.py", line 44, in worker\n    con = amsg.WorkerConnection(sockname, version_serial)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/x86_64-linux-gnu/gel-server-6/lib/python3.12/site-packages/edb/server/compiler_pool/amsg.py", line 152, in __init__\n    self._sock.connect(sockname)\nConnectionRefusedError: [Errno 111] Connection refused\n').returncode
+
+/bootstrap/test_initial_state.py:21: AssertionError
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_gel_server_is_reachable - Asse...
+ERROR ../bootstrap/test_initial_state.py::test_project_is_linked_to_instance
+ERROR ../bootstrap/test_initial_state.py::test_starting_schema_has_no_user_object_types
+=================== 7 passed, 3 errors in 195.57s (0:03:15) ====================

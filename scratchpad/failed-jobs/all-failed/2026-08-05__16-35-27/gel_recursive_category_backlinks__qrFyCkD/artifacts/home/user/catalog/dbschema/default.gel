@@ -1,0 +1,53 @@
+module default {
+  abstract type Node {
+    required slug: str {
+      constraint exclusive;
+    }
+    required label: str;
+  }
+
+  type Category extending Node {
+    parent: Category;
+    required rank: int64 {
+      default := 0;
+    }
+
+    # Derived views over existing links (not stored, no bookkeeping).
+    # Every Category whose `parent` is this category.
+    link children := .<parent[is Category];
+
+    # Every Product whose `category` is this category. Bundles are excluded
+    # by the [is Product] type filter, even though they also point here.
+    link products := .<category[is Product];
+
+    # The single CategoryAudit row for this category, if any. assert_single
+    # makes this an at-most-one (single, optional) link rather than a set.
+    link audit := assert_single(.<category[is CategoryAudit]);
+  }
+
+  abstract type Listing extending Node {
+    required category: Category;
+    required price_cents: int64 {
+      constraint min_value(0);
+    }
+  }
+
+  type Product extending Listing {
+    required in_stock: bool {
+      default := true;
+    }
+  }
+
+  type Bundle extending Listing {
+    required item_count: int64 {
+      constraint min_value(2);
+    }
+  }
+
+  type CategoryAudit {
+    required category: Category {
+      constraint exclusive;
+    }
+    required checked_by: str;
+  }
+}

@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_deletion_policies_referential_integrity",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_deletion_policies_referentia__tLQkhwb",
+    "trials_dir": "jobs/2026-08-05__16-35-27",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "zai/glm-5.2",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "2360e39d-a662-44c0-b6b7-ce67a043e52d"
+}

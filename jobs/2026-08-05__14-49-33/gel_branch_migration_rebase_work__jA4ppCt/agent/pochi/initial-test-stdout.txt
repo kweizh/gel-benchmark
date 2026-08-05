@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 18 items
+
+../../../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../../../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../../../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../../../bootstrap/test_initial_state.py::test_project_manifest_exists PASSED
+../../../bootstrap/test_initial_state.py::test_schema_source_file_exists PASSED
+../../../bootstrap/test_initial_state.py::test_initial_schema_has_no_feature_objects PASSED
+../../../bootstrap/test_initial_state.py::test_exactly_one_initial_migration_file PASSED
+../../../bootstrap/test_initial_state.py::test_project_is_a_git_repository PASSED
+../../../bootstrap/test_initial_state.py::test_build_time_fixtures_exist PASSED
+../../../bootstrap/test_initial_state.py::test_deliverables_do_not_exist_yet PASSED
+../../../bootstrap/test_initial_state.py::test_instance_starts_and_is_reachable PASSED
+../../../bootstrap/test_initial_state.py::test_only_main_branch_exists PASSED
+../../../bootstrap/test_initial_state.py::test_active_branch_is_main PASSED
+../../../bootstrap/test_initial_state.py::test_single_applied_migration PASSED
+../../../bootstrap/test_initial_state.py::test_seed_data_present PASSED
+../../../bootstrap/test_initial_state.py::test_feature_schema_absent PASSED
+../../../bootstrap/test_initial_state.py::test_migration_status_is_in_sync PASSED
+../../../bootstrap/test_initial_state.py::test_project_directory_is_writable_by_user PASSED
+
+============================= 18 passed in 40.22s ==============================

@@ -1,0 +1,32 @@
+module default {
+  scalar type ActorRole extending enum<admin, agent, readonly>;
+  scalar type TicketStatus extending enum<open, pending, closed>;
+
+  global current_actor_email: str;
+
+  type Tenant {
+    required slug: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Actor {
+    required email: str {
+      constraint exclusive;
+    }
+    required tenant: Tenant;
+    required role: ActorRole;
+  }
+
+  type Ticket {
+    required ref: str;
+    required subject: str;
+    required status: TicketStatus {
+      default := TicketStatus.open;
+    }
+    required tenant: Tenant;
+
+    index on (.ref);
+  }
+}

@@ -1,0 +1,16 @@
+module default {
+  type Author {
+    required name: str {
+      constraint exclusive;
+    }
+    required country: str;
+  }
+
+  type Article {
+    required title: str {
+      constraint exclusive;
+    }
+    required word_count: int64;
+    required author: Author;
+  }
+}

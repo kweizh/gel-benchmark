@@ -1,0 +1,39 @@
+module util {
+
+    function money_round(amount: decimal) -> decimal {
+        using (round(amount, 2))
+    }
+
+    function money_round(amount: decimal, places: int64) -> decimal {
+        using (round(amount, places))
+    }
+
+    function total_of(variadic amounts: decimal) -> decimal {
+        using (money_round(sum(amounts)))
+    }
+
+    function apply_discount(amount: decimal, pct: decimal, floor_amount: optional decimal) -> decimal {
+        using (max({money_round(amount * (<decimal>1 - pct / <decimal>100)), floor_amount}))
+    }
+
+    function gross_with_tax(net: decimal, named only tax_pct: decimal = 0) -> decimal {
+        using (money_round(net * (<decimal>1 + tax_pct / <decimal>100)))
+    }
+
+    function installments(total: decimal, count: int64) -> set of decimal {
+        using (
+            with
+                safe_count := count if count > 0 else 1,
+                per := money_round(total / <decimal>safe_count, 2)
+            select (
+                if count < 1 then <decimal>{}
+                else (
+                    for i in range_unpack(range(0, count)) union (
+                        if i < count - 1 then per
+                        else total - <decimal>(count - 1) * per
+                    )
+                )
+            )
+        )
+    }
+}

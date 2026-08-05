@@ -1,0 +1,77 @@
+# Referential Integrity for a Document Workspace Graph (Gel)
+
+## Background
+
+A small document-management product stores its data in a **Gel 6.11** database (a local, single-container instance is already installed and its project skeleton is already created). The product team keeps losing data integrity: purging a workspace leaves orphaned folders and documents behind, shared file blobs are deleted while other documents still point at them, documents that legal has already archived get wiped by careless cleanup scripts, and a batch job that releases editors breaks whenever a document is still checked out.
+
+Management has decided that **the database itself** must guarantee these rules, so that no application, script or REPL session can violate them. Your job is to design the graph schema that encodes the rules and to deliver the workspace purge routine that the product will call.
+
+## Requirements
+
+### 1. Schema
+
+Define these object types in the `default` module, with exactly these names, properties, links and cardinalities:
+
+- `Workspace`
+  - `name`: required `str`, unique across all workspaces
+- `Folder`
+  - `name`: required `str`
+  - `workspace`: required single link to `Workspace`
+- `Attachment`
+  - `filename`: required `str`, unique across all attachments
+  - `byte_size`: required `int64`
+- `Editor`
+  - `email`: required `str`, unique across all editors
+- `Document`
+  - `title`: required `str`
+  - `folder`: required single link to `Folder`
+  - `attachments`: optional `multi` link to `Attachment`
+  - `checked_out_by`: optional single link to `Editor`
+- `ArchivedRecord`
+  - `label`: required `str`, unique across all archived records
+  - `document`: required single link to `Document`
+  - `archived_at`: required `datetime` that is populated automatically when a record is inserted without it
+
+Apart from `archived_at`, no other property or link may be required beyond the list above: objects are created supplying only the fields listed here, so any extra field you add must have a default.
+
+The schema must be delivered through the project's migration history (`dbschema/migrations/`) and must be fully applied to the running instance, with no pending or divergent migrations.
+
+### 2. Integrity rules enforced by the database
+
+All of the rules below must hold for **plain EdgeQL `delete` statements executed directly against the database**, with no application code, trigger scripts, or manual clean-up steps involved:
+
+1. **Container purge cascades.** Deleting a `Workspace` also removes every `Folder` of that workspace and every `Document` in those folders. Deleting a single `Folder` also removes every `Document` in it. No orphaned `Folder` or `Document` may survive.
+2. **Shared blobs are garbage-collected, but only when orphaned.** When a `Document` disappears (whether deleted directly or removed as part of a cascade), every `Attachment` it linked through `attachments` is deleted **unless** at least one surviving `Document` still links that same `Attachment` through `attachments`; such still-referenced attachments must survive intact.
+3. **Archived documents are protected.** Any deletion that would remove a `Document` that is referenced by `ArchivedRecord.document` must fail with a Gel constraint-violation error (a `gel.errors.ConstraintViolationError`) and must leave the database unchanged. This includes indirect attempts, i.e. deleting the `Folder` or the `Workspace` that contains such a document, which must fail as well.
+4. **Checked-out editors are protected only until the end of the transaction.** Deleting an `Editor` that is still referenced by `Document.checked_out_by` must fail with a Gel constraint-violation error and leave both the editor and the referencing documents in place. However, the violation must **not** be reported while the transaction is still open: a single transaction that first deletes the `Editor` and only afterwards stops the referencing documents from pointing at it must commit successfully. Deleting an `Editor` that no document references must succeed and must never delete or modify any `Document`.
+
+### 3. Purge routine
+
+Deliver a Python module `purge.py` in the project root exposing:
+
+```python
+async def purge_workspace(client, workspace_name: str) -> dict
+```
+
+`client` is an already-connected `gel` asynchronous client. The routine purges the workspace with the given `name` and reports what the purge removed. It must:
+
+- perform the whole purge (and the bookkeeping it needs) inside a **single database transaction**, so that a purge that is refused by the database leaves absolutely no trace;
+- raise `LookupError` and change nothing if no `Workspace` has that name;
+- let a database integrity error propagate to the caller unwrapped (the caller must receive the original `gel.errors.ConstraintViolationError`) and leave the database exactly as it was;
+- return a `dict` with exactly the keys `workspace`, `folders_deleted`, `documents_deleted`, `attachments_deleted`, `attachments_kept`, where:
+  - `workspace` is the purged workspace's `name` (`str`);
+  - `folders_deleted` (`int`) is how many `Folder` objects of that workspace existed before the call and no longer exist after it;
+  - `documents_deleted` (`int`) is how many `Document` objects in those folders existed before the call and no longer exist after it;
+  - `attachments_deleted` (`int`) is how many distinct `Attachment` objects were linked through `attachments` by those documents before the call and no longer exist after it;
+  - `attachments_kept` (`int`) is how many distinct `Attachment` objects were linked through `attachments` by those documents before the call and still exist after it.
+
+The reported numbers must be derived from the actual database state after the purge, not from assumptions about what the schema does.
+
+## Implementation Hints
+
+- Project path: `/home/user/docmgr` (already contains `gel.toml` and `dbschema/default.gel`).
+- The Gel server for this project runs locally inside this container and listens on `127.0.0.1:5656`; connection settings are already provided through the environment, so `gel` CLI commands run from the project directory and `gel.create_async_client()` both connect without extra configuration. If the server is not running yet, run `gel-serve` (a helper on `PATH` that starts the local server in the background and returns once it accepts connections). There is no network access to any external service.
+- Python module path: `/home/user/docmgr/purge.py`; it must be importable on its own (`import purge` from the project directory) without side effects at import time.
+- Everything must live in the `default` module of the branch the environment connects to (`main`).
+- Keep the data volume tiny; the verification graph contains only a few dozen objects.
+

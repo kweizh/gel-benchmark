@@ -1,0 +1,84 @@
+# Concurrency-Safe Inventory Reservation Service on Gel (TypeScript)
+
+## Background
+A warehouse platform needs a reservation service that holds stock for multi-item baskets while a checkout is in flight. The service is backed by a **Gel 6** instance (graph-relational database, formerly EdgeDB) that is already installed, bootstrapped and running inside this container. Many checkout workers hit the service at the same time for the same SKUs, so the service must never oversell, never leave a basket half-reserved, and must be safe to call again with the same idempotency key after a client-side timeout.
+
+The container is fully offline. A Node.js project skeleton already exists with every dependency vendored into `node_modules` (including the `gel` client and `tsx`). The `gel` CLI is on `PATH` and is already able to reach the local instance; the Gel client library also picks the instance up automatically. Do not attempt to download anything.
+
+## Requirements
+- Design and migrate a Gel schema that models stock items, reservations, the individual basket lines of a reservation, and an append-only stock ledger.
+- The schema itself must make overselling impossible: the database must reject any state in which an item's reserved amount is negative or greater than its stock, even when the offending change is issued as a raw EdgeQL statement from the CLI. The same applies to non-positive basket line quantities and to duplicate idempotency keys.
+- Implement the reservation service in TypeScript and expose it through a JSON command-line adapter (contract below).
+- Reserving a basket must be **all-or-nothing**: either every line is reserved, or nothing in the database changes.
+- Reserving must be safe under heavy concurrency from independent OS processes. Given a fixed stock budget, the number of successful reservations must be exactly what the budget allows — no more, no less — and every rejected caller must get a structured rejection, not a crash.
+- Reserving must be idempotent per idempotency key: replaying the same key with the same basket must return the original reservation and must not consume additional stock or append additional ledger rows, even when the replays are issued concurrently. Replaying the same key with a different basket must be rejected.
+- Support releasing a reservation, and releasing all reservations that are due at a caller-supplied instant. Released stock becomes available again.
+- Every stock movement must be recorded in the ledger, and the ledger must always explain the current reserved amount of every item.
+- The migration history on disk must stay in sync with the database.
+
+## Implementation Hints
+- Project path: `/home/user/inventory` (the project root, already containing `gel.toml`, `dbschema/`, `package.json`, `tsconfig.json` and a populated `node_modules`). Work inside it; do not create a second project elsewhere.
+- The local instance listens on `127.0.0.1:5656`; `GEL_DSN` and `GEL_CLIENT_TLS_SECURITY` are already exported for you. If the server is ever not answering, `/usr/local/bin/start-gel` brings it back up idempotently (it is safe to run at any time and blocks until the instance is ready).
+- Put the service in the module file `/home/user/inventory/src/reservations.ts` and the command-line adapter in `/home/user/inventory/src/cli.ts`. `src/cli.ts` must import its behaviour from `./reservations`.
+- Command: `npx tsx src/cli.ts`, run with `/home/user/inventory` as the working directory. It reads **one** JSON object from stdin, writes **one** JSON object as the last non-empty line of stdout, and exits with code `0` within 60 seconds. A structured rejection is a normal result and must still exit `0`; only a malformed or unknown command may exit non-zero.
+- `src/reservations.ts` must export these async functions (the adapter is a thin wrapper over them) plus the TypeScript types used in their signatures: `resetCatalog`, `reserve`, `reserveMany`, `release`, `expireDue`, `snapshot`, `getRetryAttempts`.
+- Schema naming, in module `default`. These exact names are queried directly by the grader:
+  - `StockItem` with properties `sku` (`str`, unique), `stock` (`int64`) and `reserved` (`int64`).
+  - `Reservation` with properties `key` (`str`, unique, the idempotency key) and `state`, where `state` serialises to the JSON string `"active"` or `"released"`.
+  - `ReservationLine` with links `reservation` -> `Reservation` and `item` -> `StockItem`, and property `quantity` (`int64`).
+  - `LedgerEntry` with links `reservation` -> `Reservation` and `item` -> `StockItem`, and properties `delta` (`int64`) and `kind`, where `kind` serialises to the JSON string `"reserve"` or `"release"`.
+  - A reserve movement writes one `LedgerEntry` per basket line with `kind` `"reserve"` and a negative `delta` equal to minus the line quantity; a release movement writes one `LedgerEntry` per basket line with `kind` `"release"` and a positive `delta` equal to the line quantity. For every `StockItem`, `reserved` must always equal the negated sum of the `delta` of its ledger entries.
+- Transaction retry budget: your database client must be configured to make **at least 16** attempts for a retryable transaction, and the `retryAttempts` command must report that configured number.
+- Command payloads and results (all keys are required and spelled exactly as shown; numbers are JSON numbers, ids are the `id` UUID of the corresponding `Reservation`, rendered as a lowercase string):
+
+  ```jsonc
+  // ReserveRequest
+  {
+    "idempotencyKey": string,
+    "basket": [{ "sku": string, "quantity": number }],
+    "expiresAt": string | null   // optional; ISO-8601 UTC instant
+  }
+
+  // ReserveOutcome — success
+  { "status": "reserved", "reservationId": string, "idempotent": boolean }
+  // ReserveOutcome — rejection
+  { "status": "rejected", "reason": string, "details": string[] }
+
+  // ReleaseOutcome — success
+  { "status": "released", "reservationId": string }
+  // ReleaseOutcome — rejection
+  { "status": "rejected", "reason": string, "details": string[] }
+  ```
+
+- Commands, keyed by `op`:
+  - `{"op": "reset", "items": [{"sku": string, "stock": number}]}` -> `{"ok": true}`. Removes every reservation, reservation line, ledger entry and stock item, then creates the listed items with `reserved` at `0`.
+  - `{"op": "reserve", "request": ReserveRequest}` -> a `ReserveOutcome`.
+  - `{"op": "reserveMany", "requests": [ReserveRequest]}` -> `{"outcomes": [ReserveOutcome]}`, one per request in the same order, with all of the requests in flight simultaneously rather than one after another.
+  - `{"op": "release", "reservationId": string}` -> a `ReleaseOutcome`.
+  - `{"op": "expire", "now": string}` -> `{"released": string[]}`, the ascending-sorted ids of the reservations that were still active and whose expiry instant is at or before the supplied ISO-8601 instant. Expiry is never automatic; only this command performs it. A reservation created without an expiry instant is never expired.
+  - `{"op": "snapshot"}` -> the state of the world:
+
+    ```jsonc
+    {
+      "items": [{ "sku": string, "stock": number, "reserved": number, "available": number }],
+      "reservations": [{
+        "reservationId": string,
+        "idempotencyKey": string,
+        "state": "active" | "released",
+        "lines": [{ "sku": string, "quantity": number }]
+      }],
+      "ledger": [{ "reservationId": string, "sku": string, "kind": "reserve" | "release", "delta": number }]
+    }
+    ```
+
+    `available` is `stock` minus `reserved`. `items` is sorted by `sku` ascending, `reservations` by `reservationId` ascending, each `lines` array by `sku` ascending; `ledger` may be in any order.
+  - `{"op": "retryAttempts"}` -> `{"attempts": number}`.
+- Reservation outcome rules, evaluated in exactly this order, so that an earlier rule wins over a later one:
+  1. **`INVALID_REQUEST`** — the idempotency key is empty, the basket is empty, the basket names the same SKU more than once, or some line quantity is not a positive integer. `details` may hold anything (it must still be an array of strings).
+  2. **Idempotent replay** — a reservation already exists for this idempotency key. If its basket is the same set of `(sku, quantity)` pairs, ignoring order, return `{"status": "reserved", "reservationId": <the existing id>, "idempotent": true}` whatever that reservation's current state is, without touching stock or the ledger. Otherwise reject with reason **`IDEMPOTENCY_KEY_CONFLICT`** and `details` `[]`.
+  3. **`UNKNOWN_SKU`** — at least one SKU in the basket has no `StockItem`. `details` is the ascending-sorted list of exactly those unknown SKUs.
+  4. **`INSUFFICIENT_STOCK`** — at least one line asks for more than the item's available amount. `details` is the ascending-sorted list of exactly those SKUs.
+  A brand-new successful reservation returns `"idempotent": false`.
+- Release rules: releasing an active reservation returns it and frees its stock; releasing a reservation that is already released is rejected with reason `ALREADY_RELEASED`; releasing an id that is not a reservation is rejected with reason `UNKNOWN_RESERVATION`. Both rejections carry `details` `[]`. A malformed UUID must still produce the `UNKNOWN_RESERVATION` rejection and exit `0`.
+- Keep the container's resource budget in mind: the grader runs at most a few dozen concurrent operations, so avoid unbounded retry loops, busy waiting and sleeping.
+

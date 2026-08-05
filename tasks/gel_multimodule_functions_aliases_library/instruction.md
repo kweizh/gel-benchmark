@@ -1,0 +1,45 @@
+# In-Database Pricing Library: Multi-Module Gel Schema
+
+## Background
+A billing team is tired of every service re-implementing money arithmetic slightly differently, so the rules must live **inside the database** as a reusable library: generic money helpers in one schema module, the billing domain in another, and read models in a third. A Gel 6 project skeleton and a local Gel server are already available in this container. No cloud instance, hosted database or external service is involved: everything runs locally inside the container.
+
+## Requirements
+Deliver a migrated Gel schema, split across **three modules** (`util`, `billing`, `reports`), that satisfies every contract below. Everything is verified over EdgeQL against the live local instance using fully-qualified names, so names, parameter names, parameter kinds, cardinalities and numeric results must match exactly.
+
+All rounding in this task is **decimal** rounding with ties going **away from zero** (Gel `decimal` semantics), never floating-point rounding. Percentages are whole or fractional percents (`10` means 10%).
+
+### Module `util` - reusable, data-independent functions
+Declare these schema functions with exactly these names, parameter names, parameter kinds and return types:
+
+1. `util::money_round(amount: decimal) -> decimal` - `amount` rounded to 2 decimal places.
+2. `util::money_round(amount: decimal, places: int64) -> decimal` - `amount` rounded to `places` decimal places; `places` may be zero or negative. It must coexist with (1) as an overload of the same name, and a three-argument call must not resolve.
+3. `util::total_of(variadic amounts: decimal) -> decimal` - the sum of all supplied amounts, rounded to 2 decimal places. A call with no arguments must yield `0`.
+4. `util::apply_discount(amount: decimal, pct: decimal, floor_amount: optional decimal) -> decimal` - let `d` be `amount` reduced by `pct` percent and then rounded to 2 decimal places. When `floor_amount` is a non-empty value the result is the greater of `d` and `floor_amount`; when `floor_amount` is an empty set the result is `d`. `floor_amount` is the only `optional` parameter anywhere in this task.
+5. `util::gross_with_tax(net: decimal, named only tax_pct: decimal = 0) -> decimal` - `net` increased by `tax_pct` percent, rounded to 2 decimal places. `tax_pct` must be passable **only** by name and must default to `0`, so a two-positional-argument call must not resolve.
+6. `util::installments(total: decimal, count: int64) -> set of decimal` - returns a **set** (not an array, not a single value) of exactly `count` amounts whose sum is exactly `total`: the first `count - 1` elements each equal `total / count` rounded to 2 decimal places, and the final element is `total` minus the sum of those. Returns the empty set when `count < 1`. Its declared return type must be set-returning.
+
+### Module `billing` - domain types and one data-dependent function
+- `billing::Customer`: required `name: str` (unique across customers), required `discount_pct: decimal` defaulting to `0`.
+- `billing::LineItem`: required link `invoice` to `billing::Invoice`, required `description: str`, required `qty: int64`, required `unit_price: decimal`, plus a single computed `line_total` equal to `qty` times `unit_price` rounded to 2 decimal places. A `LineItem` whose `unit_price` differs from its own 2-decimal-place rounding (e.g. `1.234`) must be rejected at write time by a schema constraint.
+- `billing::Invoice`: required `code: str` (unique across invoices), required link `customer` to `billing::Customer`, required `paid: bool` defaulting to `false`, an optional single `minimum_charge: decimal`, required `installment_count: int64` defaulting to `1`, plus these computeds:
+  - `lines`: the (possibly empty) set of `billing::LineItem` objects whose `invoice` points at this invoice.
+  - `subtotal` (single): the sum of `line_total` over `lines`, rounded to 2 decimal places; `0` when the invoice has no lines.
+  - `total_due` (single): the invoice `subtotal` discounted by its customer `discount_pct` and floored by the invoice `minimum_charge` when that property is set, with exactly the semantics of `util::apply_discount`.
+- `billing::customer_outstanding(customer_name: str) -> decimal` - the sum of `total_due` over the unpaid invoices of the customer with that exact `name`, rounded to 2 decimal places; `0` when there is no such customer or no unpaid invoice. Its effective volatility must be `Stable`.
+- The computed pointers `billing::LineItem.line_total`, `billing::Invoice.subtotal` and `billing::Invoice.total_due` must be defined by calling the `util` functions across the module boundary instead of re-implementing the arithmetic: their stored expressions must reference the `util` module.
+
+### Module `reports` - read models as schema aliases
+Declare these three as schema **aliases** (introspectable as aliases) that all live in `reports`:
+- `reports::UnpaidInvoice` - the invoices whose `paid` is `false`; selecting it yields invoice objects, so `code`, `subtotal` and `total_due` are selectable from it.
+- `reports::CustomerBalance` - customers, each additionally exposing a single computed `outstanding`: the sum of `total_due` over that customer unpaid invoices, rounded to 2 decimal places (`0` when there are none). It must reflect data changes immediately, so marking an invoice paid changes it.
+- `reports::InvoicePlan` - invoices, each additionally exposing a multi computed `plan`: the installment amounts obtained by splitting the invoice `total_due` into `installment_count` parts exactly as `util::installments` does.
+
+## Implementation Hints
+- Project path: `/home/user/pricing` (it already contains `gel.toml` and `dbschema/`).
+- The local Gel server is not necessarily running: `gel-start` (already on `PATH`) starts it if needed and returns once it accepts connections. `GEL_DSN` and the TLS setting are already exported in the environment, so the CLI and client libraries connect with no extra flags.
+- File layout: module `util` must be declared in `dbschema/util.gel`, module `billing` in `dbschema/billing.gel`, and module `reports` in `dbschema/reports.gel`.
+- Nothing this task introduces may end up in the `default` module: after your work there must be no non-builtin object type, function or alias whose name starts with `default::`.
+- The work must be committed as migration files under `dbschema/migrations/` and applied to the running instance, leaving the instance and the schema directory in sync (a fresh `gel migration status` must report being up to date).
+- The verifier deletes every `billing::LineItem`, `billing::Invoice` and `billing::Customer` object and inserts its own fixtures, so do not depend on any pre-existing or self-seeded data; the schema must work on an empty database.
+- Decimal values are compared numerically, so trailing zeros do not matter, but the numeric value must be exact.
+

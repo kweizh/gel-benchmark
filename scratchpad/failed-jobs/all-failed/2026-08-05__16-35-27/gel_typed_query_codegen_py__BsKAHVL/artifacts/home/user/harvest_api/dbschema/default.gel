@@ -1,0 +1,43 @@
+module default {
+  type Region {
+    required code: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Grower {
+    required slug: str {
+      constraint exclusive;
+    }
+    required name: str;
+    required region: Region;
+  }
+
+  type Batch {
+    required code: str {
+      constraint exclusive;
+    }
+    required grower: Grower;
+    required kilograms: float64;
+    required harvested_on: cal::local_date;
+    multi certifications: str;
+
+    index on (.code);
+  }
+
+  type Defect {
+    required code: str;
+    required severity: int64;
+  }
+
+  type Inspection {
+    required batch: Batch;
+    required inspector: str;
+    required passed: bool;
+    required recorded_at: datetime {
+      default := datetime_of_statement();
+    }
+    multi defects: Defect;
+  }
+}

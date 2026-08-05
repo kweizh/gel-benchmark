@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_link_properties_social_graph",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_link_properties_social_graph__eV93uRy",
+    "trials_dir": "jobs/2026-08-05__16-04-52",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "deepseek/deepseek-4-pro",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "8ade98e6-e272-4dc4-a88b-dd3009fb0e24"
+}

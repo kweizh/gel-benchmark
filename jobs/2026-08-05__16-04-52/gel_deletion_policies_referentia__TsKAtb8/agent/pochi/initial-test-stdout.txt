@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 9 items
+
+../../../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../../../bootstrap/test_initial_state.py::test_gel_cli_is_the_real_binary PASSED
+../../../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../../../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../../../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../../../bootstrap/test_initial_state.py::test_default_schema_file_exists PASSED
+../../../bootstrap/test_initial_state.py::test_connection_settings_present_in_environment PASSED
+../../../bootstrap/test_initial_state.py::test_server_reachable_from_project_directory PASSED
+../../../bootstrap/test_initial_state.py::test_default_module_has_no_user_types_yet PASSED
+
+============================== 9 passed in 15.32s ==============================

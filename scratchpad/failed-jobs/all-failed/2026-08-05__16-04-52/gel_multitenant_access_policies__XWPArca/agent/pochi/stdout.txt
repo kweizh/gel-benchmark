@@ -1,0 +1,820 @@
+- Initializing MCP connections...
+You
+# Database-enforced multi-tenant isolation (Gel 7.1, Python) ## Background `/home/user/tenantdesk` holds a small support-ticket service backed by a **Gel 7.1** instance that runs inside this container. Today the CLI decides what a caller may see by filtering in Python and by trusting the tenant name the caller passes in, so any new query path — or anyone who simply opens their own connection to the database — can read and rewrite another tenant's tickets. Rebuild it so that tenant isolation is enforced by the database for every connection, and expose a small CLI that runs each command under a per-invocation caller identity. ## The data model Everything lives in module `default`, declared in `/home/user/tenantdesk/dbschema/default.gel`. These names are part of the contract and are queried literally by the graders: - `Tenant` — `slug` (unique) and `name`. - `Actor` — `email` (unique), a link `tenant` to `Tenant`, and `role`, one of `admin`, `agent`, `readonly`. - `Ticket` — `ref`, `subject`, `status` (one of `open`, `pending`, `closed`) and a link `tenant` to `Tenant`. - `current_actor_email` — a session-level variable of type `str` in module `default` that a client sets on its own connection to declare who it is; it carries the `email` of an `Actor`. This is the only identity input the database accepts, and any client may set it to any value it likes. `Ticket.ref` must be unique within a tenant, and two different tenants must be able to use the same `ref` at the same time. ## Isolation rules Let the caller's identity be the `Actor` whose `email` equals `current_actor_email`, with tenant T and role R. All of the following must hold on **every** connection to the database, including connections that never run any of your code and that supply arbitrary values for `current_actor_email`: 1. Tickets belonging to any tenant other than T are invisible: they never show up in query results, counts or aggregates. 2. When `current_actor_email` is unset, or holds a value matching no `Actor`, no `Ticket` is visible and no `Ticket` can be created, changed or removed. 3. A `Ticket` may be created only when R is `admin` or `agent` and the new ticket's `tenant` is T. 4. A `Ticket` may be changed only when R is `admin` or `agent` and the ticket belongs to T. No identity, whatever its role, may ever cause an existing ticket's `tenant` to end up pointing at a different `Tenant`. 5. A `Ticket` may be removed only when R is `admin` and the ticket belongs to T. 6. `Tenant` and `Actor` objects must stay readable on every connection, whatever `current_actor_email` is set to. ## The CLI Command: `python3 app.py <subcommand> [options]`, run with `/home/user/tenantdesk` as the working directory. Every subcommand except `load-seed` takes a required `--actor <email>`, which is the identity the whole command runs under. On success: exit code 0, and stdout containing exactly one JSON document and nothing else. On failure: stdout empty, and stderr containing exactly one line: - exit 4, `error: unknown-actor` — `--actor` matches no `Actor`. - exit 3, `error: denied` — the database refuses the operation, or the ticket named by `--ref` is not visible to the identity. A ticket that belongs to another tenant and a `ref` that exists nowhere must be indistinguishable. - exit 5, `error: conflict` — `create-ticket` was given a `ref` that the identity's own tenant already uses. - exit 2 — malformed invocation (missing or unknown options, or a `--status` outside the three allowed values). Subcommands, with the JSON each must print (every object carries exactly the listed keys): - `whoami --actor <email>` → `{"actor": <email>, "tenant": <slug>, "role": <role>, "visible_tickets": <int>}`, where `visible_tickets` is how many tickets this identity can see. - `list-tickets --actor <email>` → a JSON array of `{"ref": <ref>, "subject": <subject>, "status": <status>, "tenant": <slug>}`, sorted by `ref` in ascending lexicographic order. - `create-ticket --actor <email> --tenant <slug> --ref <ref> --subject <text>` → the created ticket as that same four-key object; a new ticket's status is `open`. `--tenant` comes from the caller and must not be trusted: when it names anything other than the identity's own tenant, the command fails with exit 3. - `update-ticket --actor <email> --ref <ref> [--subject <text>] [--status <status>] [--tenant <slug>]` → the ticket as that same four-key object after the change; at least one of the three optional values must be supplied. `--tenant` asks for the ticket to be moved to that tenant and must fail with exit 3 whenever it names a tenant other than the ticket's current one. - `delete-ticket --actor <email> --ref <ref>` → `{"ref": <ref>, "deleted": true}`. - `load-seed --file <path>` (no `--actor`) → `{"tenants": <int>, "actors": <int>, "tickets": <int>}`, each value being the number of entries from the file that exist in the database when the command finishes. Two further behaviours are graded: - **Concurrent creation.** When several `create-ticket` processes race for the same tenant and `ref`, exactly one must exit 0 and every other one must exit 5 with `error: conflict`. Transient database-level conflicts must be absorbed internally: they may never reach stdout or stderr, and may never produce any other exit code. - **Repeatable loading.** `load-seed` must be safe to run any number of times: it always exits 0, never creates duplicates, and leaves every field equal to the file's contents. ## Implementation hints - Project path: `/home/user/tenantdesk`. Schema file: `/home/user/tenantdesk/dbschema/default.gel`. CLI entry point: `/home/user/tenantdesk/app.py`. Dataset: `/home/user/tenantdesk/seed/dataset.json` (already present; do not modify it). - The Gel 7.1 server runs in this container with its data in `/var/lib/gel-data`. Run `gel-up` to start it and wait until it is ready; that command is safe to run repeatedly, and the server may need to be started before anything else works. - Connection settings are already in the environment (`GEL_DSN`, `GEL_CLIENT_TLS_SECURITY`) and must be left as they are, as must the server's instance-level configuration: nothing in the database's access-control machinery may be switched off or weakened to make the work easier. - The database starts out with no schema and no data. When you are done, the schema must be in place and every entry of the dataset must exist in the database. - Python 3 and the `gel` package are installed system-wide; run everything with `python3`, and use only the standard library plus `gel`. No network access is available. - The graders open their own connections to the database and set `current_actor_email` themselves, so anything they must observe has to be true of the database itself, not only of `app.py`.   
+
+Pochi
+Let me start by understanding the project structure and existing code.   
+📂 Listing files in /home/user/tenantdesk recursively ✔ 
+📖 Reading /home/user/tenantdesk/dbschema/default.gel ✔ 
+📖 Reading /home/user/tenantdesk/app.py ✔ 
+📖 Reading /home/user/tenantdesk/seed/dataset.json ✔ 
+Let me check the Gel version and see what tools are available for schema management:   
+💫 Executing which gel-up && which gel && python3 -c "import gel; print(gel.__version__)" ✔ 
+💫 Executing gel-up 2>&1 ✔ 
+Good, the server is ready. Now let me understand the Gel 7.1 capabilities for access policies and global variables. Let me check the Gel CLI version and documentation:   
+💫 Executing gel --version 2>&1 ✔ 
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Check what version the server reports
+result = client.query('select sys::get_version_as_str()')
+print(result)
+client.close()
+" ✔ 
+Gel 7.1 server. Now let me research Gel 7.1's access policy system, which is the key mechanism for database-enforced isolation:   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Try to understand what's available for access policies
+help_text = client.query('''
+  describe type gel::AccessPolicy as text
+''')
+client.close()
+" 2>&1 ✖ "Command exited with code 1"
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Check for access policies in Gel 7.1
+result = client.query('''
+  select schema::ObjectType {
+    name
+  }
+  filter .name like '%access%' or .name like '%policy%'
+''')
+print('Access policy types:', result)
+client.close()
+" 2>&1 ✔ 
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Gel 7.1 - access policies are called 'access policies' in Gel, let me check the docs
+# Let's try the correct syntax for Gel 7.x
+result = client.query('''
+  select schema::ObjectType {
+    name
+  }
+  filter .name ilike '%access%'
+''')
+print('Access types:', result)
+client.close()
+" 2>&1 ✔ 
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+result = client.query('''
+  describe type schema::AccessPolicy as text
+''')
+print(result)
+client.close()
+" 2>&1 ✔ 
+Now I have a clear picture. Gel 7.1 has access policies. Let me design the solution: **Strategy:** 1. Use Gel access policies on the `Ticket` type to enforce tenant isolation at the database level 2. Add a unique constraint on `(ref, tenant)` for Ticket to ensure ref uniqueness within a tenant 3. Use `global current_actor_email` in access policy conditions to look up the actor and filter by tenant 4. Rewrite `app.py` to use proper CLI parsing and database-enforced isolation Let me check the Gel 7.1 access policy syntax and features:   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Check what access_kinds exist
+result = client.query('select schema::AccessKind')
+print('AccessKinds:', result)
+client.close()
+" 2>&1 ✖ "Command exited with code 1"
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+result = client.query('select <schema::AccessKind>$0', gel.enum('schema::AccessKind', 'Select'))
+print(result)
+client.close()
+" 2>&1 ✖ "Command exited with code 1"
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Let's check the schema for access policy kinds
+result = client.query('''
+  with module schema
+  select enum_values(AccessKind)
+''')
+print(result)
+client.close()
+" 2>&1 ✖ "Command exited with code 1"
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Check Gel docs for access policy kinds
+result = client.query('''
+  select schema::AccessKind.__members__;
+''')
+print(result)
+client.close()
+" 2>&1 ✖ "Command exited with code 1"
+Let me look at Gel 7.1 access policy documentation and examples:   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Try to create a simple access policy to test syntax
+# First, let's apply a migration with access policies
+client.close()
+" 2>&1 ✔ 
+Let me research Gel 7.1 access policy syntax properly:   
+🔎 Searching the web for Gel database 7.x access policy syntax EdgeQL example ✔ 
+🌐 Fetching https://docs.geldata.com/reference/datamodel/access_policies ✔ 
+Now I have a thorough understanding of Gel access policies. Let me also check the exact syntax for `global` declarations and how they interact with access policies in Gel 7.1:   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Check how to reference globals in access policies
+# Let's test the exact syntax for global
+result = client.query('''
+  describe type schema::Global as text
+''')
+print(result)
+client.close()
+" 2>&1 ✔ 
+Now let me plan the full solution. Here's my approach: ### Schema changes (`default.gel`): 1. Add `constraint exclusive on (.ref, .tenant)` to `Ticket` for per-tenant ref uniqueness 2. Add access policies on `Ticket` to enforce all 6 isolation rules 3. Keep `global current_actor_email` as-is ### Access policies on `Ticket`: 1. **Select policy**: Only show tickets where `current_actor_email` matches an Actor and the ticket's tenant matches that Actor's tenant 2. **Insert policy**: Only allow insert when the actor is admin/agent AND the new ticket's tenant matches the actor's tenant 3. **Update read policy**: Only allow updating tickets belonging to the actor's tenant, and the actor must be admin/agent 4. **Update write policy**: The ticket's tenant must not change (or must remain the same) 5. **Delete policy**: Only allow delete when actor is admin AND ticket belongs to actor's tenant ### app.py rewrite: - Full CLI with all subcommands - Sets `current_actor_email` on each connection via `with_globals` - Handles all error cases with proper exit codes Let me now write the schema and app:   
+✏️  Writing /home/user/tenantdesk/dbschema/default.gel ✔ 
+Now let me apply the schema migration:   
+💫 Executing cd /home/user/tenantdesk && gel migration create --non-interactive 2>&1 ✖ "Command exited with code 1"
+Gel 7.1 may not support composite exclusive constraints with that syntax. Let me check the correct syntax:   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# Check constraint syntax
+result = client.query('''
+  describe type schema::Constraint as text
+''')
+print(result)
+client.close()
+" 2>&1 ✔ 
+🔎 Searching the web for gel edgedb constraint exclusive composite on multiple properties syntax ✔ 
+The correct syntax for composite exclusive constraint uses parentheses around the tuple: `constraint exclusive on ((.ref, .tenant))`. Let me fix the schema:   
+🔧 Applying diff to /home/user/tenantdesk/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/tenantdesk && gel migration create --non-interactive 2>&1 ✔ 
+The migration was created successfully despite the warnings. Let me apply it:   
+💫 Executing cd /home/user/tenantdesk && gel migrate 2>&1 ✔ 
+Schema is applied. Let me test the access policies work correctly:   
+💫 Executing python3 -c "
+import gel
+
+# Create a client without globals - should see no tickets
+client = gel.create_client()
+
+# Try to select tickets with no global set
+result = client.query('select Ticket { ref, subject, status, tenant: { slug } }')
+print('No global - tickets:', len(result))
+
+# Set current_actor_email to a valid actor
+client2 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+result2 = client2.query('select Ticket { ref, subject, status, tenant: { slug } }')
+print('ava@acme - tickets:', len(result2))
+
+# Set to non-existent actor
+client3 = gel.create_client().with_globals({'current_actor_email': 'nobody@nowhere.example'})
+result3 = client3.query('select Ticket { ref, subject, status, tenant: { slug } }')
+print('nobody - tickets:', len(result3))
+
+# Check that Tenant and Actor are readable without global
+result4 = client.query('select Tenant { slug, name }')
+print('Tenants without global:', len(result4))
+
+result5 = client.query('select Actor { email, role }')
+print('Actors without global:', len(result5))
+
+client.close()
+client2.close()
+client3.close()
+" 2>&1 ✔ 
+The access policies are working - no tickets are visible without a valid global, and there are 0 tickets currently (no seed data loaded). But the warnings about "possibly more than one element" are concerning. Let me fix the access policy expressions to use `assert_single` or restructure them to avoid the cardinality issue. The issue is that `select Actor filter .email = global current_actor_email` could theoretically return multiple elements (even though email is unique, the type system doesn't know that at policy evaluation time). Let me fix the schema to use a different approach - extract the actor lookup into a computed or use `exists` with a more specific pattern:   
+✏️  Writing /home/user/tenantdesk/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/tenantdesk && gel migration create --non-interactive 2>&1 ✖ "Command exited with code 1"
+The using expression can't return an empty set. I need to use `exists` or handle the empty case. Let me use a different approach with `exists`:   
+✏️  Writing /home/user/tenantdesk/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/tenantdesk && gel migration create --non-interactive 2>&1 ✖ "Command exited with code 4"
+The migration says "No schema changes detected" - the schema is the same as what was previously applied. The warnings are just about cardinality inference in the policy expressions. Let me check the current schema state:   
+💫 Executing cd /home/user/tenantdesk && gel describe schema --output ddl 2>&1 | head -100 ✔ 
+💫 Executing cd /home/user/tenantdesk && gel describe schema 2>&1 | head -120 ✔ 
+The schema is correctly applied with all access policies. Now let me write the `app.py`:   
+✏️  Writing /home/user/tenantdesk/app.py ✔ 
+Now let me test the CLI:   
+💫 Executing cd /home/user/tenantdesk && python3 app.py load-seed --file seed/dataset.json 2>&1 ✖ "Command exited with code 3"
+The issue is that `load-seed` runs without setting `current_actor_email`, so the access policies block ticket creation. I need to fix `load_seed` to properly use per-tenant admin identities. But the issue is also that the base client (without global) can't even query tickets to check existence. Let me restructure `load_seed`:   
+✏️  Writing /home/user/tenantdesk/app.py ✔ 
+💫 Executing cd /home/user/tenantdesk && python3 app.py load-seed --file seed/dataset.json 2>&1 ✖ "Command exited with code 3"
+The issue is that `with_globals` creates a new client but it's not actually using the global properly. Let me debug this:   
+💫 Executing python3 -c "
+import gel
+
+# Test with_globals
+client = gel.create_client()
+
+# First insert tenants and actors without globals (no access policies on those)
+client.query('insert Tenant { slug := \"acme\", name := \"Acme\" } unless conflict on .slug else (select Tenant)')
+client.query('insert Actor { email := \"ava@acme.example\", tenant := (select Tenant filter .slug = \"acme\"), role := \"admin\" } unless conflict on .email else (select Actor)')
+
+# Now test with_globals
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+result = client2.query('select global current_actor_email')
+print('Global value:', result)
+
+# Try to insert a ticket
+try:
+    result2 = client2.query('''
+        insert Ticket {
+            ref := \"TEST-001\",
+            subject := \"test\",
+            tenant := (select Tenant filter .slug = \"acme\"),
+        }
+    ''')
+    print('Insert result:', result2)
+except Exception as e:
+    print('Insert error:', type(e).__name__, e)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+The global is being set correctly, but the access policy is still rejecting the insert. The issue must be in the access policy expression. Let me debug the policy:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Check if the actor exists
+actor = client2.query_single('''
+    select Actor {
+        email,
+        role,
+        tenant: { slug }
+    }
+    filter .email = 'ava@acme.example'
+''')
+print('Actor:', actor)
+
+# Check if the access policy expression evaluates correctly
+result = client2.query('''
+    select exists (
+        select Actor
+        filter .email = global current_actor_email
+           and .role in {ActorRole.admin, ActorRole.agent}
+           and .tenant = (select Tenant filter .slug = 'acme')
+    )
+''')
+print('Policy check:', result)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+The policy expression evaluates correctly when run as a standalone query. The issue is that in the access policy, `Ticket.tenant` refers to the ticket being inserted. The problem might be that during the `insert` policy check, the ticket object hasn't been fully resolved yet, and the `.tenant` link might not be accessible the way I'm referencing it. Let me check how the policy expression is being evaluated:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Test with a simpler policy expression
+# Let's try the insert with explicit tenant reference
+try:
+    result2 = client2.query('''
+        with T := (select Tenant filter .slug = \"acme\")
+        select (
+            insert Ticket {
+                ref := \"TEST-002\",
+                subject := \"test\",
+                tenant := T,
+            }
+        ) { ref, subject, status, tenant: { slug } }
+    ''')
+    print('Insert result:', result2)
+except Exception as e:
+    print('Insert error:', type(e).__name__, e)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+Let me investigate more carefully. The access policy uses `Ticket.tenant` in the expression. During an insert policy check, `Ticket` refers to the new object. Let me check if the issue is with how the tenant link is referenced:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Let's check: can we reference Ticket.tenant in the context of an insert?
+# Maybe the issue is that during insert policy check, .tenant is a link that 
+# hasn't been persisted yet.
+# Let's try the policy check manually with the values we're inserting:
+result = client2.query('''
+    with 
+        new_tenant := (select Tenant filter .slug = 'acme'),
+        actor := (select Actor filter .email = global current_actor_email
+                  and .role in {ActorRole.admin, ActorRole.agent})
+    select (
+        new_tenant = actor.tenant
+    )
+''')
+print('Manual check:', result)
+
+# Also check what the policy expression actually resolves to:
+# Let me look at the actual policy expression  
+result2 = client2.query('''
+    with 
+        new_tenant := (select Tenant filter .slug = 'acme')
+    select exists (
+        select Actor
+        filter .email = global current_actor_email
+           and .role in {ActorRole.admin, ActorRole.agent}
+           and .tenant = new_tenant
+    )
+''')
+print('Policy with explicit tenant:', result2)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+The logic is correct. The access policy should work. Let me check if the issue is that the `Ticket.tenant` link in the policy expression isn't being resolved during the `insert` check. In Gel, during an insert policy check, the new object's links should be available. Let me check if there's a subtlety with the `exists` pattern:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+
+# Let's drop all access policies and re-add them, testing one at a time
+# First, let's check the current schema
+result = client.query('''
+    select schema::AccessPolicy {
+        name,
+        subject: { name },
+        expr,
+        access_kinds,
+        action,
+    }
+    filter .subject.name = 'default::Ticket'
+''')
+for r in result:
+    print(f'Policy: {r.name}, action: {r.action}, expr: {r.expr}, kinds: {r.access_kinds}')
+
+client.close()
+" 2>&1 ✔ 
+The policies look correct. Let me try a simpler test - maybe the issue is that the `select` policy is also blocking the insert (since if you can't select, you can't insert either):   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# The select policy also needs to pass for insert to work.
+# Let's check: can ava@acme see tickets?
+result = client2.query('select count(Ticket)')
+print('Ticket count for ava:', result)
+
+# Let's check: what does the select policy expression evaluate to for an existing ticket?
+result2 = client2.query('''
+    with T := (select Ticket limit 1)
+    select exists (
+        select Actor
+        filter .email = global current_actor_email
+           and .tenant = T.tenant
+    )
+''')
+print('Select policy check on existing ticket:', result2)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+The select policy check returns False! That means the policy expression isn't matching. The issue is the cardinality warning - the `exists` expression has a cardinality issue. The problem is that `select Actor filter .email = global current_actor_email` could return multiple elements (even though email is unique, the type system doesn't know that), and the `exists` function might not handle this correctly in a policy context. Let me try a different approach - use `assert_exists` or `any()` to handle the cardinality:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Try with any()
+result = client2.query('''
+    with T := (select Ticket limit 1)
+    select any(
+        select Actor
+        filter .email = global current_actor_email
+           and .tenant = T.tenant
+    )
+''')
+print('any() check:', result)
+
+# Try with assert_exists
+result2 = client2.query('''
+    with T := (select Ticket limit 1)
+    select exists (
+        assert_exists((
+            select Actor
+            filter .email = global current_actor_email
+        )).tenant = T.tenant
+    )
+''')
+print('assert_exists check:', result2)
+
+client2.close()
+client.close()
+" 2>&1 ✖ "Command exited with code 1"
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Try with assert_exists
+result2 = client2.query('''
+    with T := (select Ticket limit 1)
+    select exists (
+        assert_exists((
+            select Actor
+            filter .email = global current_actor_email
+        )).tenant = T.tenant
+    )
+''')
+print('assert_exists check:', result2)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+The `assert_exists` check also returns False. Let me check if there are actually no tickets yet:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+
+# Check what's in the database
+result = client.query('select count(Tenant)')
+print('Tenants:', result)
+result = client.query('select count(Actor)')
+print('Actors:', result)
+result = client.query('select count(Ticket)')
+print('Tickets:', result)
+
+# List tenants
+result = client.query('select Tenant { slug, name }')
+print('Tenant list:', result)
+
+# List actors
+result = client.query('select Actor { email, role, tenant: { slug } }')
+print('Actor list:', result)
+
+client.close()
+" 2>&1 ✔ 
+OK so the tenants and actors from the earlier load-seed attempt were inserted (since those don't have access policies), but tickets have 0 because the ticket inserts failed. The earlier `assert_exists` check returned False because `Ticket limit 1` returned an empty set (no tickets). Let me test the policy properly:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Test the policy logic without referencing any ticket:
+result = client2.query('''
+    select exists (
+        select Actor
+        filter .email = global current_actor_email
+           and .tenant = (select Tenant filter .slug = 'acme')
+    )
+''')
+print('Policy check (acme):', result)
+
+# Now test with a non-existent tenant:
+result2 = client2.query('''
+    select exists (
+        select Actor
+        filter .email = global current_actor_email
+           and .tenant = (select Tenant filter .slug = 'globex')
+    )
+''')
+print('Policy check (globex):', result2)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+The logic works. The issue must be in how the access policy resolves `Ticket.tenant` during an insert. Let me try to understand this better by temporarily disabling the select policy and testing: Actually, wait. The cardinality warning says "possibly more than one element returned by an expression in a FILTER clause". This is a hint that the expression `select Actor filter .email = global current_actor_email` might return more than one element. But since `email` has an `exclusive` constraint, it can only return one. However, during schema definition, the type system doesn't know about the constraint. The key insight from the Gel docs: "Policy expressions themselves do not take other policies into account (since EdgeDB 3)." But there's also a note about cardinality - the `exists` function expects a set but the filter might have ambiguous cardinality. Let me try wrapping the actor lookup in `assert_single`:   
+✏️  Writing /home/user/tenantdesk/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/tenantdesk && gel migration create --non-interactive 2>&1 ✔ 
+💫 Executing cd /home/user/tenantdesk && gel migrate 2>&1 ✔ 
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client()
+client2 = client.with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Try insert now
+try:
+    result = client2.query('''
+        insert Ticket {
+            ref := \"TEST-001\",
+            subject := \"test\",
+            tenant := (select Tenant filter .slug = \"acme\"),
+        }
+    ''')
+    print('Insert result:', result)
+except Exception as e:
+    print('Insert error:', type(e).__name__, e)
+
+# Check select
+result2 = client2.query('select Ticket { ref, subject, status, tenant: { slug } }')
+print('Tickets visible to ava:', result2)
+
+client2.close()
+client.close()
+" 2>&1 ✔ 
+The access policies are now working. Let me clean up the test data and run the full seed load:   
+💫 Executing cd /home/user/tenantdesk && python3 app.py load-seed --file seed/dataset.json 2>&1 ✔ 
+Seed load works. Now let me run the full test suite:   
+💫 Executing cd /home/user/tenantdesk && python3 app.py whoami --actor "ava@acme.example" 2>&1 ✔ 
+💫 Executing cd /home/user/tenantdesk && python3 app.py whoami --actor "ben@acme.example" 2>&1 ✔ 
+💫 Executing cd /home/user/tenantdesk && python3 app.py whoami --actor "dan@globex.example" 2>&1 ✔ 
+💫 Executing cd /home/user/tenantdesk && python3 app.py whoami --actor "nobody@nowhere.example" 2>&1; echo "exit: $?" ✔ 
+Wait, ava has 301 tickets and dan has 200. But looking at the dataset, acme has 300 tickets and globex has 200. Plus I inserted a test ticket (TEST-001) earlier. Let me clean that up and also check the counts are correct:   
+💫 Executing cd /home/user/tenantdesk && python3 app.py delete-ticket --actor "ava@acme.example" --ref "TEST-001" 2>&1 ✖ "Command exited with code 3"
+The delete failed because the ticket was found (it exists in acme and ava is admin), but... wait, ava IS admin. Let me check:   
+💫 Executing cd /home/user/tenantdesk && python3 -c "
+import gel
+client = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+ticket = client.query_single('select Ticket {ref, subject, status, tenant: {slug}} filter .ref = \"TEST-001\"')
+print('Ticket:', ticket)
+client.close()
+" 2>&1 ✖ "Command exited with code 1"
+There are multiple TEST-001 tickets (from the repeated load-seed that inserted test data plus the seed data). Let me check:   
+💫 Executing cd /home/user/tenantdesk && python3 -c "
+import gel
+client = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+tickets = client.query('select Ticket {ref, subject, status, tenant: {slug}} filter .ref = \"TEST-001\"')
+print('Tickets:', len(tickets))
+for t in tickets:
+    print(t)
+client.close()
+" 2>&1 ✔ 
+Only one TEST-001. The `query_single` issue is because access policies don't guarantee singletons. But the delete should work. Let me debug the delete:   
+💫 Executing cd /home/user/tenantdesk && python3 -c "
+import gel
+client = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Find the ticket
+ticket = client.query('select Ticket {ref} filter .ref = \"TEST-001\"')
+print('Found:', len(ticket), 'tickets')
+
+# Try delete
+try:
+    result = client.query('select (delete Ticket filter .ref = \"TEST-001\") {ref}')
+    print('Delete result:', result)
+except Exception as e:
+    print('Delete error:', type(e).__name__, e)
+
+client.close()
+" 2>&1 ✔ 
+The delete works directly. The issue might be in my `cmd_delete_ticket` function - it uses `query_single` which fails because the access policy doesn't guarantee cardinality. Let me fix the app.py to use `query` instead of `query_single` where appropriate: The problem is that `query_single` requires the query to return at most one result, but with access policies, the type system can't guarantee that. Let me fix all the query methods:   
+✏️  Writing /home/user/tenantdesk/app.py ✔ 
+Now let me run comprehensive tests:   
+💫 Executing cd /home/user/tenantdesk && python3 app.py load-seed --file seed/dataset.json 2>&1 ✔ 
+💫 Executing cd /home/user/tenantdesk && echo "=== whoami ===" && python3 app.py whoami --actor "ava@acme.example" 2>&1 && echo "exit: $?" && echo "" && echo "=== whoami ben ===" && python3 app.py whoami --actor "ben@acme.example" 2>&1 && echo "exit: $?" && echo "" && echo "=== whoami cleo ===" && python3 app.py whoami --actor "cleo@acme.example" 2>&1 && echo "exit: $?" && echo "" && echo "=== whoami dan ===" && python3 app.py whoami --actor "dan@globex.example" 2>&1 && echo "exit: $?" && echo "" && echo "=== whoami nobody ===" && python3 app.py whoami --actor "nobody@nowhere.example" 2>&1; echo "exit: $?" ✔ 
+💫 Executing cd /home/user/tenantdesk && echo "=== list-tickets ava ===" && python3 app.py list-tickets --actor "ava@acme.example" 2>&1 | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'{len(d)} tickets'); print(d[:3])" && echo "" && echo "=== create-ticket ava ===" && python3 app.py create-ticket --actor "ava@acme.example" --tenant "acme" --ref "ACME-NEW" --subject "new ticket" 2>&1 && echo "exit: $?" && echo "" && echo "=== create-ticket ben ===" && python3 app.py create-ticket --actor "ben@acme.example" --tenant "acme" --ref "ACME-NEW2" --subject "new ticket 2" 2>&1 && echo "exit: $?" && echo "" && echo "=== create-ticket cleo (readonly) ===" && python3 app.py create-ticket --actor "cleo@acme.example" --tenant "acme" --ref "ACME-NEW3" --subject "should fail" 2>&1; echo "exit: $?" ✔ 
+💫 Executing cd /home/user/tenantdesk && echo "=== create-ticket wrong tenant ===" && python3 app.py create-ticket --actor "ava@acme.example" --tenant "globex" --ref "WRONG" --subject "wrong" 2>&1; echo "exit: $?" && echo "" && echo "=== create-ticket conflict ===" && python3 app.py create-ticket --actor "ava@acme.example" --tenant "acme" --ref "ACME-0001" --subject "dup" 2>&1; echo "exit: $?" && echo "" && echo "=== update-ticket ===" && python3 app.py update-ticket --actor "ava@acme.example" --ref "ACME-NEW" --subject "updated" --status "pending" 2>&1 && echo "exit: $?" && echo "" && echo "=== update-ticket readonly ===" && python3 app.py update-ticket --actor "cleo@acme.example" --ref "ACME-NEW" --subject "fail" 2>&1; echo "exit: $?" ✔ 
+💫 Executing cd /home/user/tenantdesk && echo "=== update-ticket cross-tenant ===" && python3 app.py update-ticket --actor "ava@acme.example" --ref "ACME-NEW" --tenant "globex" 2>&1; echo "exit: $?" && echo "" && echo "=== delete-ticket ava admin ===" && python3 app.py delete-ticket --actor "ava@acme.example" --ref "ACME-NEW2" 2>&1 && echo "exit: $?" && echo "" && echo "=== delete-ticket ben agent ===" && python3 app.py delete-ticket --actor "ben@acme.example" --ref "ACME-NEW" 2>&1; echo "exit: $?" && echo "" && echo "=== delete-ticket cleo readonly ===" && python3 app.py delete-ticket --actor "cleo@acme.example" --ref "ACME-0001" 2>&1; echo "exit: $?" ✔ 
+All isolation rules are working correctly. Let me now test the repeatable loading and cross-tenant visibility:   
+💫 Executing cd /home/user/tenantdesk && echo "=== Repeatable load ===" && python3 app.py load-seed --file seed/dataset.json 2>&1 && python3 app.py load-seed --file seed/dataset.json 2>&1 && echo "" && echo "=== Cross-tenant visibility ===" && python3 app.py list-tickets --actor "ava@acme.example" 2>&1 | python3 -c "import json,sys; d=json.load(sys.stdin); slugs=set(t['tenant'] for t in d); print(f'{len(d)} tickets, tenants: {slugs}')" && python3 app.py list-tickets --actor "dan@globex.example" 2>&1 | python3 -c "import json,sys; d=json.load(sys.stdin); slugs=set(t['tenant'] for t in d); print(f'{len(d)} tickets, tenants: {slugs}')" && echo "" && echo "=== whoami after reload ===" && python3 app.py whoami --actor "ava@acme.example" 2>&1 ✔ 
+Repeatable loading works (no duplicates, counts stay the same). Cross-tenant isolation is enforced - ava sees only acme tickets, dan sees only globex tickets. The 301 count includes the ACME-NEW ticket we created earlier (which wasn't in the seed data, so it wasn't cleaned up by load-seed). Let me clean it up:   
+💫 Executing cd /home/user/tenantdesk && python3 app.py delete-ticket --actor "ava@acme.example" --ref "ACME-NEW" 2>&1 ✔ 
+Now let me verify the database-level isolation by connecting directly without going through app.py:   
+💫 Executing python3 -c "
+import gel
+
+# Test 1: No global set - should see no tickets
+client = gel.create_client()
+result = client.query('select count(Ticket)')
+print('No global - ticket count:', result)
+
+# Test 2: Valid actor - should see only their tenant's tickets
+client2 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+result2 = client2.query('select count(Ticket)')
+print('ava@acme - ticket count:', result2)
+
+# Test 3: Non-existent actor - should see no tickets
+client3 = gel.create_client().with_globals({'current_actor_email': 'nobody@nowhere.example'})
+result3 = client3.query('select count(Ticket)')
+print('nobody - ticket count:', result3)
+
+# Test 4: Tenant and Actor are readable without global
+result4 = client.query('select count(Tenant)')
+print('Tenants without global:', result4)
+result5 = client.query('select count(Actor)')
+print('Actors without global:', result5)
+
+# Test 5: Can't insert ticket without global
+try:
+    client.query('''
+        insert Ticket {
+            ref := \"EVIL-001\",
+            subject := \"evil\",
+            tenant := (select Tenant filter .slug = \"acme\"),
+        }
+    ''')
+    print('Insert without global: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Insert without global:', type(e).__name__)
+
+# Test 6: Can't insert ticket with wrong tenant
+try:
+    client5 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+    client5.query('''
+        insert Ticket {
+            ref := \"EVIL-002\",
+            subject := \"evil\",
+            tenant := (select Tenant filter .slug = \"globex\"),
+        }
+    ''')
+    print('Insert cross-tenant: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Insert cross-tenant:', type(e).__name__)
+
+# Test 7: Readonly can't insert
+try:
+    client6 = gel.create_client().with_globals({'current_actor_email': 'cleo@acme.example'})
+    client6.query('''
+        insert Ticket {
+            ref := \"EVIL-003\",
+            subject := \"evil\",
+            tenant := (select Tenant filter .slug = \"acme\"),
+        }
+    ''')
+    print('Insert readonly: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Insert readonly:', type(e).__name__)
+
+# Test 8: Agent can't delete
+try:
+    client7 = gel.create_client().with_globals({'current_actor_email': 'ben@acme.example'})
+    client7.query('delete Ticket filter .ref = \"ACME-0001\"')
+    print('Delete agent: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Delete agent:', type(e).__name__)
+
+# Test 9: Admin CAN delete
+try:
+    client8 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+    result9 = client8.query('select count((delete Ticket filter .ref = \"ACME-0300\"))')
+    print('Delete admin ACME-0300:', result9)
+except Exception as e:
+    print('Delete admin:', type(e).__name__, e)
+
+client.close()
+client2.close()
+client3.close()
+" 2>&1 ✖ "Command exited with code 1"
+The `assert_exists` in the select policy is failing when the global is unset or doesn't match an actor. The policy expression must handle the empty case gracefully. Let me fix the select policy to not use `assert_exists`:   
+✏️  Writing /home/user/tenantdesk/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/tenantdesk && gel migration create --non-interactive 2>&1 && gel migrate 2>&1 ✖ "Command exited with code 1"
+The issue is that `select Actor.tenant` changes the scope, and then `filter .email` refers to `Tenant.email` (which doesn't exist). I need to filter before projecting:   
+✏️  Writing /home/user/tenantdesk/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/tenantdesk && gel migration create --non-interactive 2>&1 && gel migrate 2>&1 ✔ 
+Now let me re-run the comprehensive tests:   
+💫 Executing python3 -c "
+import gel
+
+# Test 1: No global set - should see no tickets
+client = gel.create_client()
+result = client.query('select count(Ticket)')
+print('No global - ticket count:', result)
+
+# Test 2: Valid actor
+client2 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+result2 = client2.query('select count(Ticket)')
+print('ava@acme - ticket count:', result2)
+
+# Test 3: Non-existent actor
+client3 = gel.create_client().with_globals({'current_actor_email': 'nobody@nowhere.example'})
+result3 = client3.query('select count(Ticket)')
+print('nobody - ticket count:', result3)
+
+# Test 4: Tenant and Actor readable without global
+result4 = client.query('select count(Tenant)')
+print('Tenants without global:', result4)
+result5 = client.query('select count(Actor)')
+print('Actors without global:', result5)
+
+# Test 5: Can't insert ticket without global
+try:
+    client.query('''
+        insert Ticket {
+            ref := \"EVIL-001\",
+            subject := \"evil\",
+            tenant := (select Tenant filter .slug = \"acme\"),
+        }
+    ''')
+    print('Insert without global: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Insert without global:', type(e).__name__)
+
+# Test 6: Can't insert cross-tenant
+try:
+    client5 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+    client5.query('''
+        insert Ticket {
+            ref := \"EVIL-002\",
+            subject := \"evil\",
+            tenant := (select Tenant filter .slug = \"globex\"),
+        }
+    ''')
+    print('Insert cross-tenant: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Insert cross-tenant:', type(e).__name__)
+
+# Test 7: Readonly can't insert
+try:
+    client6 = gel.create_client().with_globals({'current_actor_email': 'cleo@acme.example'})
+    client6.query('''
+        insert Ticket {
+            ref := \"EVIL-003\",
+            subject := \"evil\",
+            tenant := (select Tenant filter .slug = \"acme\"),
+        }
+    ''')
+    print('Insert readonly: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Insert readonly:', type(e).__name__)
+
+# Test 8: Agent can't delete
+try:
+    client7 = gel.create_client().with_globals({'current_actor_email': 'ben@acme.example'})
+    client7.query('delete Ticket filter .ref = \"ACME-0001\"')
+    print('Delete agent: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Delete agent:', type(e).__name__)
+
+# Test 9: Admin CAN delete
+try:
+    client8 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+    result9 = client8.query('select count((delete Ticket filter .ref = \"ACME-0300\"))')
+    print('Delete admin ACME-0300:', result9)
+except Exception as e:
+    print('Delete admin:', type(e).__name__, e)
+
+# Test 10: Can't change ticket tenant
+try:
+    client10 = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+    client10.query('''
+        update Ticket filter .ref = \"ACME-0001\"
+        set { tenant := (select Tenant filter .slug = \"globex\") }
+    ''')
+    print('Change tenant: SUCCEEDED (BAD!)')
+except Exception as e:
+    print('Change tenant:', type(e).__name__)
+
+client.close()
+client2.close()
+client3.close()
+" 2>&1 ✔ 
+Almost everything works! But "Delete agent: SUCCEEDED" is a problem. An agent (ben@acme.example) was able to delete ACME-0001. Let me check:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client().with_globals({'current_actor_email': 'ben@acme.example'})
+
+# Check if ACME-0001 still exists
+result = client.query('select Ticket {ref} filter .ref = \"ACME-0001\"')
+print('ACME-0001 visible to ben:', len(result), 'tickets')
+
+# Try to delete another one
+try:
+    result2 = client.query('select count((delete Ticket filter .ref = \"ACME-0002\"))')
+    print('Delete ACME-0002 by ben:', result2)
+except Exception as e:
+    print('Delete ACME-0002 error:', type(e).__name__, e)
+
+client.close()
+" 2>&1 ✔ 
+The delete returned 0 (nothing deleted), not an error. The `delete` statement with access policies silently filters out objects that don't match the policy rather than throwing an error. That's the documented behavior for `delete` - it just doesn't delete objects that aren't allowed. But wait - ACME-0001 was deleted by ben in the earlier test (it showed "SUCCEEDED (BAD!)" but actually returned 0 deleted). Let me verify:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client().with_globals({'current_actor_email': 'ava@acme.example'})
+
+# Check ACME-0001
+result = client.query('select Ticket {ref} filter .ref = \"ACME-0001\"')
+print('ACME-0001:', result)
+
+# Check ACME-0002
+result2 = client.query('select Ticket {ref} filter .ref = \"ACME-0002\"')
+print('ACME-0002:', result2)
+
+# Check ACME-0300
+result3 = client.query('select Ticket {ref} filter .ref = \"ACME-0300\"')
+print('ACME-0300:', result3)
+
+client.close()
+" 2>&1 ✔ 
+ACME-0001 still exists (ben's delete was silently ignored), and ACME-0300 was deleted by ava (admin). The earlier test was misleading because `client7.query('delete ...')` doesn't throw an error - it just returns empty. The access policy correctly prevents the delete. Now the issue is that in `app.py`, `cmd_delete_ticket` tries to detect if the delete succeeded by looking at the result. The current code does `query_one` on the delete result which should work since the delete returns the deleted object. Let me verify:   
+💫 Executing cd /home/user/tenantdesk && python3 app.py delete-ticket --actor "ben@acme.example" --ref "ACME-0001" 2>&1; echo "exit: $?" ✔ 
+This is a problem! The CLI says "deleted: true" for an agent deleting a ticket. The issue is in `cmd_delete_ticket` - it does `query_one` on the delete result, but the delete with access policies returns the deleted objects. If the agent can't delete, the result should be empty. Let me debug:   
+💫 Executing python3 -c "
+import gel
+
+client = gel.create_client().with_globals({'current_actor_email': 'ben@acme.example'})
+
+# Check what the delete returns
+result = client.query('select (delete Ticket filter .ref = \"ACME-0001\") {ref}')
+print('Delete result:', result)
+print('Count:', len(result))
+
+# Check if ticket still exists
+result2 = client.query('select Ticket {ref} filter .ref = \"ACME-0001\"')
+print('After delete:', result2)
+
+client.close()
+" 2>&1 ✔ 
+The delete returns empty set (0 results). But my `cmd_delete_ticket` still printed `{"ref": "ACME-0001", "deleted": true}`. Let me look at the function again: The issue is that `cmd_delete_ticket` first checks if the ticket is visible (line with `query_one`), and if visible, it proceeds to delete. But the delete itself may silently fail (return empty), and the code doesn't check the result. Let me fix this:   

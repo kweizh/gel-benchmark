@@ -1,0 +1,80 @@
+# Gel 7.1 — Category Hierarchy Reporting CLI
+
+## Background
+
+A product catalog is stored in a **Gel 7.1** database (module `default`). Categories form a tree of arbitrary depth, and sellable listings hang off categories at every level. Operations needs a re-runnable command line tool that answers hierarchy questions about any category — where it sits in the tree, what its whole subtree adds up to, how deep its deepest branch goes — plus a safe way to move a category under a different parent. The database already exists, already has a schema, and is already populated; your job is to extend the schema and build the tool on top of it.
+
+## Environment
+
+- A Gel 7.1 server runs **inside this container**. Run `gel-start` to guarantee it is up; the command is idempotent and only returns once the server is ready to accept queries. Run it before anything that touches the database.
+- Project path: `/home/user/catalog`. Schema files live in `/home/user/catalog/dbschema`, migration history in `/home/user/catalog/dbschema/migrations`.
+- Connection details are already supplied through the process environment: the `gel` CLI and the installed Python client (`import gel`) both reach the running instance with no extra configuration, from any directory. Branch: `main`.
+- Nothing needs to be downloaded: `python3`, the `gel` CLI and the Gel Python client are already installed, and every component the solution talks to runs on this machine.
+- The instance currently holds roughly 2,500 objects, including one category chain that is dozens of levels deep, and a small handful of categories whose `parent` links form a closed loop (bad legacy data that will not be cleaned up).
+
+The `default` module already declares, and you must keep declaring, exactly these types and pointers:
+
+- `Node` (abstract): `slug` (`str`, exclusive), `label` (`str`)
+- `Category` (extends `Node`): `parent` (optional link to `Category`), `rank` (`int64`)
+- `Listing` (abstract, extends `Node`): `category` (required link to `Category`), `price_cents` (`int64`)
+- `Product` (extends `Listing`): `in_stock` (`bool`)
+- `Bundle` (extends `Listing`): `item_count` (`int64`)
+- `CategoryAudit`: `category` (required, exclusive link to `Category`), `checked_by` (`str`)
+
+Do not delete, modify, or re-insert any seeded object, and do not remove or alter any of the above types, pointers, or constraints. The only write your work may ever perform on existing data is the `--reparent` operation specified below.
+
+## Requirements
+
+### 1. Schema
+
+`default::Category` must expose exactly three additional pointers — no more, no fewer — and no other type may gain, lose, or change a pointer:
+
+- `children`: every `Category` whose `parent` is this category. May resolve to many objects.
+- `products`: every `Product` whose `category` is this category. It must never yield a `Bundle`, even though bundles are also attached to categories. May resolve to many objects.
+- `audit`: the `CategoryAudit` row for this category. It must resolve to **at most one object, not a set of objects**; a query asking for `audit` must come back with a single object (or nothing), never a collection.
+
+All three must be *derived* views over the links that already exist: they must not be backed by any stored pointer, and no data may be duplicated or maintained by application code, triggers, or defaults. Newly inserted objects must show up through them immediately, with no extra bookkeeping step.
+
+The committed files under `/home/user/catalog/dbschema` must remain the single source of truth: once you are done, the instance's schema must be fully in sync with the schema directory and its migration history (nothing pending, nothing applied that is not recorded there).
+
+### 2. `report.py`
+
+Create `/home/user/catalog/report.py`, invoked from `/home/user/catalog` as:
+
+- `python3 report.py --slug <slug>` — report mode
+- `python3 report.py --slug <slug> --reparent <parent_slug>` — move mode
+
+**Report mode.** On success: exit code `0`, and stdout contains exactly one JSON object (nothing else) with exactly these keys:
+
+- `slug` (string): the requested slug.
+- `path` (array of strings): slugs from the top-most ancestor down to and including the target.
+- `depth` (integer): number of ancestors above the target (`0` for a category with no parent).
+- `parent` (string or null): the parent's slug, or `null`.
+- `children` (array of strings): the slugs of the categories whose parent is the target, ascending by Unicode code point.
+- `audit_checked_by` (string or null): the `checked_by` value of the target's audit row, or `null` when it has none.
+- `rollup` (object): computed over the target **and every descendant category at every depth**, with exactly these keys, all integers:
+  - `category_count`: number of categories, counting the target itself.
+  - `product_count`: number of `Product` objects attached anywhere in that set of categories.
+  - `bundle_count`: number of `Bundle` objects attached anywhere in that set of categories.
+  - `listing_count`: `product_count + bundle_count`.
+  - `price_cents_total`: sum of `price_cents` over those products *and* bundles; `0` when there are none.
+  - `in_stock_product_count`: number of those products whose `in_stock` is true.
+- `deepest_branch` (array of strings): the longest chain of slugs that starts at the target and follows parent-to-child steps downward (so its first element is always the target, and a childless target yields a one-element array). When two or more chains tie for the maximum length, emit the one that is smallest when the two slug sequences are compared element by element by Unicode code point.
+
+**Move mode.** Sets the target category's `parent` to the category named by `--reparent`, then prints the report document for the target (reflecting the new position) and exits `0`.
+
+**Failure contract.** For every failure below, stdout must be completely empty, exit with the stated code, and write exactly one JSON object to stderr. Checks are applied in this exact order, and the first one that fires decides the outcome:
+
+1. `--slug` names no object at all → exit `4`, stderr `{"error": "unknown_slug", "slug": "<the --slug value>"}`.
+2. `--slug` names an object that is not a `Category` → exit `5`, stderr `{"error": "not_a_category", "slug": "<the --slug value>"}`.
+3. In move mode, `--reparent` names no object at all → exit `4`, stderr `{"error": "unknown_slug", "slug": "<the --reparent value>"}`.
+4. In move mode, `--reparent` names an object that is not a `Category` → exit `5`, stderr `{"error": "not_a_category", "slug": "<the --reparent value>"}`.
+5. Walking upward from `--slug` never reaches a category without a parent → exit `3`, stderr `{"error": "cycle_detected", "slug": "<the --slug value>"}`.
+6. In move mode, walking upward from `--reparent` never reaches a category without a parent → exit `3`, stderr `{"error": "cycle_detected", "slug": "<the --reparent value>"}`.
+7. In move mode, the move would place the target inside its own subtree (including reparenting a category onto itself) → exit `6`, stderr `{"error": "would_create_cycle", "slug": "<the --slug value>", "reparent": "<the --reparent value>"}`.
+
+A failed invocation must leave the database byte-for-byte as it was: no partially applied move, no stray objects.
+
+### 3. Behaviour under load
+
+Every invocation must terminate on its own within 60 seconds of wall clock time, including for the largest subtree in the database, and must never hang or crash on the looped legacy categories. Both modes must be re-runnable any number of times and must produce identical output for identical data.

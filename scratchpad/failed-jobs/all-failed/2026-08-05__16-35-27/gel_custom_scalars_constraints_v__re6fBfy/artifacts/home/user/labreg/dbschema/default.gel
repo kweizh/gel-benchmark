@@ -1,0 +1,110 @@
+module default {
+    # ------------------------------------------------------------------
+    # Custom scalar types
+    # ------------------------------------------------------------------
+
+    scalar type SpecimenCode extending str {
+        constraint regexp(r'^SPC-\d{6}-[A-Z]{2}$') {
+            errmessage := 'invalid specimen code';
+        }
+    }
+
+    scalar type AnalyteCode extending str {
+        constraint regexp(r'^[A-Z][A-Z0-9]{2,7}$') {
+            errmessage := 'invalid analyte code';
+        }
+    }
+
+    scalar type MeasuredValue extending float64 {
+        constraint min_value(0.0) {
+            errmessage := 'value must not be negative';
+        }
+        constraint max_value(100000.0) {
+            errmessage := 'value exceeds instrument ceiling';
+        }
+    }
+
+    scalar type Unit extending enum<'mg_per_dL', 'mmol_per_L', 'g_per_L', 'IU_per_L'>;
+    scalar type ReviewState extending enum<'pending', 'validated', 'rejected'>;
+
+    # ------------------------------------------------------------------
+    # Reusable abstract constraint
+    # ------------------------------------------------------------------
+
+    abstract constraint clean_label(max_len: int64) {
+        using (len(__subject__) > 0
+               and str_trim(__subject__) = __subject__
+               and len(__subject__) <= max_len);
+        errmessage := 'malformed label';
+    }
+
+    # ------------------------------------------------------------------
+    # Object types
+    # ------------------------------------------------------------------
+
+    abstract type Sample {
+        required property specimen_code: SpecimenCode;
+        required property label: str {
+            constraint clean_label(40);
+        }
+        required property volume_ml: float64 {
+            constraint expression on (__subject__ > 0.0) {
+                errmessage := 'volume must be positive';
+            }
+        }
+    }
+
+    type BloodSample extending Sample {
+        required property tube_count: int16 {
+            constraint expression on (__subject__ >= 1 and __subject__ <= 6) {
+                errmessage := 'tube count out of range';
+            }
+        }
+        constraint expression on (__subject__.volume_ml <= 10.0) {
+            errmessage := 'blood volume exceeds 10 ml';
+        }
+        constraint exclusive on (__subject__.specimen_code) {
+            errmessage := 'specimen code already registered';
+        }
+    }
+
+    type UrineSample extending Sample {
+        constraint expression on (__subject__.volume_ml <= 500.0) {
+            errmessage := 'urine volume exceeds 500 ml';
+        }
+        constraint exclusive on (__subject__.specimen_code) {
+            errmessage := 'specimen code already registered';
+        }
+    }
+
+    type Measurement {
+        required link sample: Sample;
+        required property analyte: AnalyteCode;
+        required property value: MeasuredValue;
+        required property unit: Unit;
+        required property state: ReviewState {
+            default := <ReviewState>'pending';
+        }
+        required property ref_low: float64;
+        required property ref_high: float64;
+        required property label: str {
+            constraint clean_label(80);
+        }
+
+        constraint expression on (__subject__.ref_low < __subject__.ref_high) {
+            errmessage := 'reference interval not ascending';
+        }
+
+        constraint expression on (
+            __subject__.state != <ReviewState>'validated'
+            or (__subject__.value >= __subject__.ref_low
+                and __subject__.value <= __subject__.ref_high)
+        ) {
+            errmessage := 'validated value outside reference interval';
+        }
+
+        constraint exclusive on ((__subject__.sample, __subject__.analyte)) {
+            errmessage := 'duplicate analyte for sample';
+        }
+    }
+}

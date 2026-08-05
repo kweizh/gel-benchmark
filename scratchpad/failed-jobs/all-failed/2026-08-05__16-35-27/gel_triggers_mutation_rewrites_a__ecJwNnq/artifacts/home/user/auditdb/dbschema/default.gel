@@ -1,0 +1,160 @@
+module default {
+  type Document {
+    required slug: str {
+      constraint exclusive;
+    }
+    required title: str;
+    required body: str;
+
+    # Row metadata -- produced by the database, never by the client.
+    required version: int64 {
+      default := 1;
+      rewrite insert using (1);
+      rewrite update using (__old__.version + 1);
+    }
+    required created_at: datetime {
+      default := datetime_current();
+      rewrite insert using (datetime_of_statement());
+      # created_at must never change after insert: keep the previous value
+      # and silently discard anything a client tries to assign.
+      rewrite update using (__old__.created_at);
+    }
+    required modified_at: datetime {
+      default := datetime_current();
+      rewrite insert using (datetime_of_statement());
+      rewrite update using (datetime_of_statement());
+    }
+
+    trigger audit_insert after insert for each do (
+      insert AuditEntry {
+        action := 'insert',
+        entity_type := 'Document',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.created_at,
+        snapshot := <json>{
+          slug := __new__.slug,
+          title := __new__.title,
+          version := __new__.version,
+        },
+      }
+    );
+    trigger audit_update after update for each do (
+      insert AuditEntry {
+        action := 'update',
+        entity_type := 'Document',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.modified_at,
+        snapshot := <json>{
+          slug := __new__.slug,
+          title := __new__.title,
+          version := __new__.version,
+        },
+      }
+    );
+    trigger audit_delete after delete for each do (
+      insert AuditEntry {
+        action := 'delete',
+        entity_type := 'Document',
+        entity_id := __old__.id,
+        version := __old__.version,
+        at := datetime_of_statement(),
+        snapshot := <json>{
+          slug := __old__.slug,
+          title := __old__.title,
+          version := __old__.version,
+        },
+      }
+    );
+  }
+
+  type Comment {
+    required body: str;
+    required document: Document {
+      # Deleting a Document must remove its comments.
+      on target delete delete source;
+    }
+
+    # Denormalized parent key -- always mirrors the linked Document's slug.
+    required document_slug: str {
+      rewrite insert using (__subject__.document.slug);
+      rewrite update using (__subject__.document.slug);
+    }
+    required version: int64 {
+      default := 1;
+      rewrite insert using (1);
+      rewrite update using (__old__.version + 1);
+    }
+    required created_at: datetime {
+      default := datetime_current();
+      rewrite insert using (datetime_of_statement());
+      rewrite update using (__old__.created_at);
+    }
+    required modified_at: datetime {
+      default := datetime_current();
+      rewrite insert using (datetime_of_statement());
+      rewrite update using (datetime_of_statement());
+    }
+
+    trigger audit_insert after insert for each do (
+      insert AuditEntry {
+        action := 'insert',
+        entity_type := 'Comment',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.created_at,
+        snapshot := <json>{
+          body := __new__.body,
+          document_slug := __new__.document_slug,
+          version := __new__.version,
+        },
+      }
+    );
+    trigger audit_update after update for each do (
+      insert AuditEntry {
+        action := 'update',
+        entity_type := 'Comment',
+        entity_id := __new__.id,
+        version := __new__.version,
+        at := __new__.modified_at,
+        snapshot := <json>{
+          body := __new__.body,
+          document_slug := __new__.document_slug,
+          version := __new__.version,
+        },
+      }
+    );
+    trigger audit_delete after delete for each do (
+      insert AuditEntry {
+        action := 'delete',
+        entity_type := 'Comment',
+        entity_id := __old__.id,
+        version := __old__.version,
+        at := datetime_of_statement(),
+        snapshot := <json>{
+          body := __old__.body,
+          document_slug := __old__.document_slug,
+          version := __old__.version,
+        },
+      }
+    );
+  }
+
+  # Append-only audit log. Every entry is created purely as a side effect of
+  # an insert/update/delete on Document or Comment.
+  type AuditEntry {
+    required action: str;
+    required entity_type: str;
+    required entity_id: uuid;
+    required version: int64;
+    required at: datetime;
+    required snapshot: json;
+
+    # The log is immutable: any update or delete targeting an AuditEntry must
+    # fail and leave the log byte-for-byte unchanged.
+    trigger immutable after update, delete for each do (
+      assert(false, message := 'AuditEntry is immutable')
+    );
+  }
+}

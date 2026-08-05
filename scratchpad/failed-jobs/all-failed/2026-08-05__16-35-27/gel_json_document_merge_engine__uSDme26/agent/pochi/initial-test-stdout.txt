@@ -1,0 +1,79 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-7.2.1, pluggy-1.0.0+repack
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 17 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_python_gel_client_importable PASSED
+../bootstrap/test_initial_state.py::test_python3_available PASSED
+../bootstrap/test_initial_state.py::test_start_script_exists PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_directory_and_migration_exist PASSED
+../bootstrap/test_initial_state.py::test_solution_entrypoint_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_server_is_reachable PASSED
+../bootstrap/test_initial_state.py::test_schema_types_present PASSED
+../bootstrap/test_initial_state.py::test_settings_layer_properties PASSED
+../bootstrap/test_initial_state.py::test_settings_record_properties_and_link_property FAILED
+../bootstrap/test_initial_state.py::test_seeded_object_counts PASSED
+../bootstrap/test_initial_state.py::test_seeded_curated_layers PASSED
+../bootstrap/test_initial_state.py::test_seeded_records_and_chains PASSED
+../bootstrap/test_initial_state.py::test_migration_state_is_in_sync PASSED
+../bootstrap/test_initial_state.py::test_gel_cli_can_query PASSED
+
+=================================== FAILURES ===================================
+______________ test_settings_record_properties_and_link_property _______________
+
+client = <gel.blocking_client.Client object at 0x7ef46b21aa30>
+
+    def test_settings_record_properties_and_link_property(client):
+>       rows = _query_json(
+            client,
+            """
+            select schema::ObjectType {
+                pointers: { name, pointers: { name } }
+            }
+            filter .name = 'default::SettingsRecord'
+            """,
+        )
+
+/bootstrap/test_initial_state.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:73: in _query_json
+    return json.loads(client.query_json(query, **kwargs))
+/usr/local/lib/python3.11/dist-packages/gel/abstract.py:259: in query_json
+    return self._query(QueryContext(
+/usr/local/lib/python3.11/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+/usr/local/lib/python3.11/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.11/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.11/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+/usr/local/lib/python3.11/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.11/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.11/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.11/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type 'schema::Pointer' has no link or property 'pointers'
+E     ┌─ query:3:31
+E     │ 
+E   3 │               pointers: { name, pointers: { name } }
+E     │                                 ^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+=========================== short test summary info ============================
+FAILED ../bootstrap/test_initial_state.py::test_settings_record_properties_and_link_property
+======================== 1 failed, 16 passed in 11.84s =========================

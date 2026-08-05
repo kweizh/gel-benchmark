@@ -1,0 +1,14 @@
+{
+  "name": "inventory",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Concurrency-safe inventory reservation service backed by Gel",
+  "dependencies": {
+    "gel": "2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.8",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  }
+}

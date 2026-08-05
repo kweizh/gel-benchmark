@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 14 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_node_toolchain_available PASSED
+../bootstrap/test_initial_state.py::test_python_test_runner_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_dbschema_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_package_json_exists PASSED
+../bootstrap/test_initial_state.py::test_tsconfig_exists PASSED
+../bootstrap/test_initial_state.py::test_src_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_node_modules_are_vendored PASSED
+../bootstrap/test_initial_state.py::test_tsx_runner_works_offline PASSED
+../bootstrap/test_initial_state.py::test_gel_client_library_is_importable PASSED
+../bootstrap/test_initial_state.py::test_gel_server_answers_queries PASSED
+../bootstrap/test_initial_state.py::test_service_types_are_not_predefined PASSED
+
+============================== 14 passed in 1.44s ==============================

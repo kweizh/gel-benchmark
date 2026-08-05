@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 28 items
+
+../tests/test_final_state.py ............................                [100%]
+
+==================================== PASSES ====================================
+___________________________ test_three_modules_exist ___________________________
+---------------------------- Captured stdout setup -----------------------------
+gel-start stdout:
+Gel server is already running on 127.0.0.1:5656.
+
+gel-start stderr:
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_three_modules_exist
+PASSED ../tests/test_final_state.py::test_each_module_is_declared_in_its_own_schema_file
+PASSED ../tests/test_final_state.py::test_migration_files_exist
+PASSED ../tests/test_final_state.py::test_nothing_was_declared_in_the_default_module
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+PASSED ../tests/test_final_state.py::test_money_round_overloads_are_declared
+PASSED ../tests/test_final_state.py::test_total_of_is_variadic
+PASSED ../tests/test_final_state.py::test_apply_discount_has_single_optional_parameter
+PASSED ../tests/test_final_state.py::test_gross_with_tax_has_named_only_parameter_with_default
+PASSED ../tests/test_final_state.py::test_installments_returns_a_set
+PASSED ../tests/test_final_state.py::test_function_volatilities
+PASSED ../tests/test_final_state.py::test_money_round_values
+PASSED ../tests/test_final_state.py::test_empty_set_into_non_optional_parameter_yields_empty_set
+PASSED ../tests/test_final_state.py::test_calls_that_match_no_overload_are_rejected
+PASSED ../tests/test_final_state.py::test_total_of_variadic_behaviour
+PASSED ../tests/test_final_state.py::test_apply_discount_optional_argument_behaviour
+PASSED ../tests/test_final_state.py::test_gross_with_tax_named_only_behaviour
+PASSED ../tests/test_final_state.py::test_installments_set_semantics
+PASSED ../tests/test_final_state.py::test_invoice_computeds_over_seeded_data
+PASSED ../tests/test_final_state.py::test_invoice_lines_and_line_totals
+PASSED ../tests/test_final_state.py::test_computed_pointers_reference_the_util_module
+PASSED ../tests/test_final_state.py::test_unit_price_precision_constraint
+PASSED ../tests/test_final_state.py::test_customer_outstanding_function
+PASSED ../tests/test_final_state.py::test_report_aliases_are_declared_as_aliases
+PASSED ../tests/test_final_state.py::test_unpaid_invoice_alias_contents
+PASSED ../tests/test_final_state.py::test_customer_balance_alias_contents
+PASSED ../tests/test_final_state.py::test_invoice_plan_alias_contents
+PASSED ../tests/test_final_state.py::test_aliases_and_function_react_to_data_changes
+============================== 28 passed in 3.64s ==============================

@@ -1,0 +1,81 @@
+module default {
+  scalar type ActorRole extending enum<admin, agent, readonly>;
+  scalar type TicketStatus extending enum<open, pending, closed>;
+
+  global current_actor_email: str;
+
+  # The Actor (if any) identified by `current_actor_email`. Empty when the
+  # session has not set the global, or when it names no existing Actor.
+  global current_actor := assert_single((
+    select Actor filter .email = global current_actor_email
+  ));
+
+  type Tenant {
+    required slug: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Actor {
+    required email: str {
+      constraint exclusive;
+    }
+    required tenant: Tenant;
+    required role: ActorRole;
+  }
+
+  type Ticket {
+    required ref: str;
+    required subject: str;
+    required status: TicketStatus {
+      default := TicketStatus.open;
+    }
+    # Immutable once set: the database itself refuses any attempt to change
+    # which tenant a ticket belongs to, for every identity and every
+    # connection, regardless of access policies below.
+    required tenant: Tenant {
+      readonly := true;
+    }
+
+    # `ref` only has to be unique within a single tenant.
+    constraint exclusive on ((.ref, .tenant));
+
+    index on (.ref);
+
+    # Rule 1 & 2: only tickets belonging to the caller's own tenant are
+    # visible; when there is no valid caller identity, current_actor (and
+    # thus current_actor.tenant) is empty, so nothing matches.
+    access policy select_own_tenant
+      allow select
+      using (.tenant ?= global current_actor.tenant);
+
+    # Rule 3: only admins/agents may create a ticket, and only for their own
+    # tenant.
+    access policy insert_own_tenant
+      allow insert
+      using (
+        ((global current_actor.role in {ActorRole.admin, ActorRole.agent}) ?? false)
+        and .tenant ?= global current_actor.tenant
+      );
+
+    # Rule 4: only admins/agents may change a ticket, and only one that
+    # belongs to their own tenant. (Tenant reassignment is separately and
+    # unconditionally blocked by the `readonly` link above.)
+    access policy update_own_tenant
+      allow update
+      using (
+        ((global current_actor.role in {ActorRole.admin, ActorRole.agent}) ?? false)
+        and .tenant ?= global current_actor.tenant
+      );
+
+    # Rule 5: only admins may delete a ticket, and only one that belongs to
+    # their own tenant.
+    access policy delete_own_tenant
+      allow delete
+      using (
+        global current_actor.role ?= ActorRole.admin
+        and .tenant ?= global current_actor.tenant
+      );
+  }
+}

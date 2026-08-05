@@ -1,0 +1,434 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 30 items
+
+../tests/test_final_state.py ..FF..F.FFF...F.FFF.FFFFFFFFF.              [100%]
+
+=================================== FAILURES ===================================
+________________________ test_seeded_documents_survived ________________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+
+    def test_seeded_documents_survived(client):
+        expected = {
+            "seed-alpha": ("Alpha Doc", "alpha body"),
+            "seed-beta": ("Beta Doc", "beta body"),
+            "seed-gamma": ("Gamma Doc", "gamma body"),
+        }
+        for slug, (title, body) in expected.items():
+            doc = fetch_document(client, slug)
+>           assert doc is not None, f"Pre-existing Document '{slug}' no longer exists."
+E           AssertionError: Pre-existing Document 'seed-beta' no longer exists.
+E           assert None is not None
+
+/tests/test_final_state.py:442: AssertionError
+________________________ test_seeded_comments_survived _________________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+
+    def test_seeded_comments_survived(client):
+        expected = {
+            "alpha comment one": "seed-alpha",
+            "alpha comment two": "seed-alpha",
+            "beta comment one": "seed-beta",
+        }
+        for body, slug in expected.items():
+            comment = fetch_comment(client, body)
+>           assert comment is not None, f"Pre-existing Comment '{body}' no longer exists."
+E           AssertionError: Pre-existing Comment 'beta comment one' no longer exists.
+E           assert None is not None
+
+/tests/test_final_state.py:466: AssertionError
+_________________________ test_document_snapshot_shape _________________________
+
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_document_snapshot_shape(doc_a):
+        inserts = [e for e in doc_a["entries"] if e["action"] == "insert"]
+        snapshot = inserts[0]["snapshot"]
+>       assert isinstance(snapshot, dict), f"snapshot must be a JSON object, got {snapshot!r}."
+E       AssertionError: snapshot must be a JSON object, got '{"slug": "doc-a-e8a4b9eb", "title": "A", "version": 1}'.
+E       assert False
+E        +  where False = isinstance('{"slug": "doc-a-e8a4b9eb", "title": "A", "version": 1}', dict)
+
+/tests/test_final_state.py:521: AssertionError
+_________________________ test_noop_update_is_audited __________________________
+
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_noop_update_is_audited(doc_a):
+        updates = [e for e in doc_a["entries"] if e["action"] == "update" and e["version"] == 2]
+        assert len(updates) == 1, (
+            f"Exactly one 'update' audit entry with version 2 is expected, got {len(updates)}: "
+            f"{doc_a['entries']}"
+        )
+        entry = updates[0]
+        assert entry["at"] == doc_a["after_noop"].modified_at, (
+            "The update entry's 'at' must equal the modified_at written by the same statement "
+            f"({doc_a['after_noop'].modified_at!r}), got {entry['at']!r}."
+        )
+>       assert entry["snapshot"] == {"slug": doc_a["slug"], "title": "A", "version": 2}, (
+            f"Unexpected snapshot for the no-op update entry: {entry['snapshot']}."
+        )
+E       AssertionError: Unexpected snapshot for the no-op update entry: {"slug": "doc-a-e8a4b9eb", "title": "A", "version": 2}.
+E       assert '{"slug": "doc-a-e8a4b9eb", "title": "A", "version": 2}' == {'slug': 'doc-a-e8a4b9eb', 'title': 'A', 'version': 2}
+
+/tests/test_final_state.py:564: AssertionError
+_________________ test_update_ignores_client_supplied_metadata _________________
+
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_update_ignores_client_supplied_metadata(doc_a):
+        doc = doc_a["after_forged"]
+        low, high = doc_a["forged_window"]
+        assert doc.version == 3, (
+            "An update that explicitly sets version := 42 must still result in the previous "
+            f"version plus one (3), got {doc.version}."
+        )
+>       assert doc.created_at == doc_a["after_insert"].created_at, (
+            "created_at must be immutable, but a client managed to change it to "
+            f"{doc.created_at!r} (insert value was {doc_a['after_insert'].created_at!r})."
+        )
+E       AssertionError: created_at must be immutable, but a client managed to change it to datetime.datetime(1990, 1, 1, 0, 0, tzinfo=datetime.timezone.utc) (insert value was datetime.datetime(2026, 8, 5, 8, 15, 32, 707057, tzinfo=datetime.timezone.utc)).
+E       assert datetime.datetime(1990, 1, 1, 0, 0, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 8, 5, 8, 15, 32, 707057, tzinfo=datetime.timezone.utc)
+E        +  where datetime.datetime(1990, 1, 1, 0, 0, tzinfo=datetime.timezone.utc) = Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', body := 'a', versi...=datetime.timezone.utc), modified_at := datetime.datetime(2026, 8, 5, 8, 15, 32, 864380, tzinfo=datetime.timezone.utc)}.created_at
+E        +  and   datetime.datetime(2026, 8, 5, 8, 15, 32, 707057, tzinfo=datetime.timezone.utc) = Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A', body := 'a', versio...=datetime.timezone.utc), modified_at := datetime.datetime(2026, 8, 5, 8, 15, 32, 707057, tzinfo=datetime.timezone.utc)}.created_at
+
+/tests/test_final_state.py:576: AssertionError
+________________________ test_forged_update_is_audited _________________________
+
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_forged_update_is_audited(doc_a):
+        updates = [e for e in doc_a["entries"] if e["action"] == "update" and e["version"] == 3]
+        assert len(updates) == 1, (
+            f"Exactly one 'update' audit entry with version 3 is expected, got {len(updates)}: "
+            f"{doc_a['entries']}"
+        )
+        entry = updates[0]
+        assert entry["at"] == doc_a["after_forged"].modified_at, (
+            "The update entry's 'at' must equal the modified_at written by the same statement, "
+            f"got {entry['at']!r} vs {doc_a['after_forged'].modified_at!r}."
+        )
+>       assert entry["snapshot"] == {"slug": doc_a["slug"], "title": "A2", "version": 3}, (
+            f"Unexpected snapshot for the forged update entry: {entry['snapshot']}."
+        )
+E       AssertionError: Unexpected snapshot for the forged update entry: {"slug": "doc-a-e8a4b9eb", "title": "A2", "version": 3}.
+E       assert '{"slug": "doc-a-e8a4b9eb", "title": "A2", "version": 3}' == {'slug': 'doc-a-e8a4b9eb', 'title': 'A2', 'version': 3}
+
+/tests/test_final_state.py:595: AssertionError
+________________ test_bulk_insert_creates_one_entry_per_object _________________
+
+bulk_docs = {'entries': {'doc-b1-e8a4b9eb': [{'action': 'insert', 'at': datetime.datetime(2026, 8, 5, 8, 15, 33, 161904, tzinfo=da...atetime.timezone.utc), modified_at := datetime.datetime(2026, 8, 5, 8, 15, 33, 240412, tzinfo=datetime.timezone.utc)}}}
+
+    def test_bulk_insert_creates_one_entry_per_object(bulk_docs):
+        ats = set()
+        for slug in bulk_docs["slugs"]:
+            inserts = [e for e in bulk_docs["entries"][slug] if e["action"] == "insert"]
+            assert len(inserts) == 1, (
+                f"Exactly one 'insert' entry is expected for {slug} after the bulk insert, got {inserts}."
+            )
+            assert inserts[0]["version"] == 1, (
+                f"The bulk-inserted document {slug} must be audited with version 1, got {inserts[0]['version']}."
+            )
+>           assert inserts[0]["snapshot"] == {"slug": slug, "title": "x", "version": 1}, (
+                f"Unexpected snapshot for bulk insert of {slug}: {inserts[0]['snapshot']}."
+            )
+E           AssertionError: Unexpected snapshot for bulk insert of doc-b1-e8a4b9eb: {"slug": "doc-b1-e8a4b9eb", "title": "x", "version": 1}.
+E           assert '{"slug": "doc-b1-e8a4b9eb", "title": "x", "version": 1}' == {'slug': 'doc-b1-e8a4b9eb', 'title': 'x', 'version': 1}
+
+/tests/test_final_state.py:682: AssertionError
+_________________ test_comment_document_slug_cannot_be_forged __________________
+
+moved_comment = {'after_insert': Object{id := UUID('d473483c-90a5-11f1-8880-5753711bbc7b'), body := 'cmt-e8a4b9eb', version := 1, crea...info=datetime.timezone.utc), 'entity_id': 'd473483c-90a5-11f1-8880-5753711bbc7b', 'entity_type': 'Comment', ...}], ...}
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_comment_document_slug_cannot_be_forged(moved_comment, doc_a):
+        comment = moved_comment["after_insert"]
+        assert comment is not None, f"Comment '{moved_comment['body']}' was not inserted."
+        assert comment.document_slug == doc_a["slug"], (
+            "document_slug must be derived from the linked Document even when the client sends "
+            f"'FORGED', got {comment.document_slug!r}."
+        )
+        assert comment.version == 1, f"A new Comment must have version 1, got {comment.version}."
+        inserts = [e for e in moved_comment["entries"] if e["action"] == "insert"]
+        assert len(inserts) == 1, (
+            f"Exactly one 'insert' audit entry is expected for the comment, got {inserts}."
+        )
+        assert inserts[0]["entity_type"] == "Comment", (
+            f"entity_type must be 'Comment', got {inserts[0]['entity_type']!r}."
+        )
+>       assert set(inserts[0]["snapshot"]) == COMMENT_SNAPSHOT_KEYS, (
+            f"A Comment snapshot must have exactly the keys {sorted(COMMENT_SNAPSHOT_KEYS)}, "
+            f"got {sorted(inserts[0]['snapshot'])}."
+        )
+E       AssertionError: A Comment snapshot must have exactly the keys ['body', 'document_slug', 'version'], got [' ', ' ', ' ', ' ', ' ', '"', '"', '"', '"', '"', '"', '"', '"', '"', '"', ',', ',', '-', '-', '-', '1', '4', '4', '8', '8', '9', '9', ':', ':', ':', '_', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'd', 'd', 'd', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'i', 'l', 'm', 'm', 'n', 'n', 'o', 'o', 'o', 'o', 'r', 's', 's', 't', 't', 'u', 'u', 'v', 'y', '{', '}'].
+E       assert {' ', '"', ',...'1', '4', ...} == {'body', 'doc...g', 'version'}
+E         Extra items in the left set:
+E         'c'
+E         'v'
+E         'y'
+E         'b'
+E         's'
+E         '_'...
+E         
+E         ...Full output truncated (28 lines hidden), use '-vv' to show
+
+/tests/test_final_state.py:739: AssertionError
+________________ test_comment_document_slug_follows_link_change ________________
+
+moved_comment = {'after_insert': Object{id := UUID('d473483c-90a5-11f1-8880-5753711bbc7b'), body := 'cmt-e8a4b9eb', version := 1, crea...info=datetime.timezone.utc), 'entity_id': 'd473483c-90a5-11f1-8880-5753711bbc7b', 'entity_type': 'Comment', ...}], ...}
+
+    def test_comment_document_slug_follows_link_change(moved_comment):
+        comment = moved_comment["after_move"]
+        assert comment.document_slug == moved_comment["target_slug"], (
+            "After re-pointing the document link, document_slug must follow the new parent "
+            f"({moved_comment['target_slug']}), got {comment.document_slug!r}."
+        )
+        assert comment.version == 2, f"The moved Comment must have version 2, got {comment.version}."
+        updates = [e for e in moved_comment["entries"] if e["action"] == "update"]
+        assert len(updates) == 1, f"Exactly one 'update' entry is expected for the comment, got {updates}."
+>       assert updates[0]["snapshot"] == {
+            "body": moved_comment["body"],
+            "document_slug": moved_comment["target_slug"],
+            "version": 2,
+        }, f"Unexpected snapshot for the moved comment: {updates[0]['snapshot']}."
+E       AssertionError: Unexpected snapshot for the moved comment: {"body": "cmt-e8a4b9eb", "document_slug": "doc-b1-e8a4b9eb", "version": 2}.
+E       assert '{"body": "cmt-e8a4b9eb", "document_slug": "doc-b1-e8a4b9eb", "version": 2}' == {'body': 'cmt-e8a4b9eb', 'document_slug': 'doc-b1-e8a4b9eb', 'version': 2}
+
+/tests/test_final_state.py:759: AssertionError
+__________________ test_direct_comment_delete_is_audited_once __________________
+
+solo_comment = {'body': 'cmt-solo-e8a4b9eb', 'entries': [{'action': 'delete', 'at': datetime.datetime(2026, 8, 5, 8, 15, 33, 653097, ...80-cf1b7b99d930', 'entity_type': 'Comment', ...}], 'id': 'd4964576-90a5-11f1-8880-cf1b7b99d930', 'still_exists': False}
+
+    def test_direct_comment_delete_is_audited_once(solo_comment):
+        assert not solo_comment["still_exists"], (
+            f"Comment '{solo_comment['body']}' should have been deleted."
+        )
+        deletes = [e for e in solo_comment["entries"] if e["action"] == "delete"]
+        assert len(deletes) == 1, (
+            f"Exactly one 'delete' audit entry is expected for a directly deleted comment, got {deletes}."
+        )
+        entry = deletes[0]
+        assert entry["entity_type"] == "Comment", (
+            f"entity_type must be 'Comment', got {entry['entity_type']!r}."
+        )
+        assert entry["entity_id"] == solo_comment["id"], (
+            f"entity_id must be {solo_comment['id']}, got {entry['entity_id']}."
+        )
+        assert entry["version"] == 1, f"The deleted comment's version was 1, got {entry['version']}."
+>       assert entry["snapshot"]["body"] == solo_comment["body"], (
+            f"Unexpected snapshot for the deleted comment: {entry['snapshot']}."
+        )
+E       TypeError: string indices must be integers, not 'str'
+
+/tests/test_final_state.py:787: TypeError
+______________ test_document_delete_audits_document_and_children _______________
+
+cascade = {'bodies': ['cd1x-e8a4b9eb', 'cd2-e8a4b9eb', 'cd3-e8a4b9eb'], 'comment_entries': [], 'comment_ids': {'cd1-e8a4b9eb': '...4b757e8-90a5-11f1-8880-f3c3491acf94', 'cd3-e8a4b9eb': 'd4b75a40-90a5-11f1-8880-174471581dd3'}, 'comments_left': 0, ...}
+
+    def test_document_delete_audits_document_and_children(cascade):
+        doc_deletes = [e for e in cascade["doc_entries"] if e["action"] == "delete"]
+>       assert len(doc_deletes) == 1, (
+            f"Exactly one 'delete' entry is expected for the document, got {doc_deletes}."
+        )
+E       AssertionError: Exactly one 'delete' entry is expected for the document, got [].
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:809: AssertionError
+_____________________ test_audit_entry_update_is_rejected ______________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_audit_entry_update_is_rejected(client, doc_a):
+        entries = document_entries_for_slug(client, doc_a["slug"])
+>       assert entries, f"No audit entries found for {doc_a['slug']}."
+E       AssertionError: No audit entries found for doc-a-e8a4b9eb.
+E       assert []
+
+/tests/test_final_state.py:861: AssertionError
+_____________________ test_audit_entry_delete_is_rejected ______________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_audit_entry_delete_is_rejected(client, doc_a):
+        before = document_entries_for_slug(client, doc_a["slug"])
+>       assert before, f"No audit entries found for {doc_a['slug']}."
+E       AssertionError: No audit entries found for doc-a-e8a4b9eb.
+E       assert []
+
+/tests/test_final_state.py:906: AssertionError
+___________________ test_audit_entry_bulk_delete_is_rejected ___________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+
+    def test_audit_entry_bulk_delete_is_rejected(client, doc_a):
+        before = document_entries_for_slug(client, doc_a["slug"])
+>       with pytest.raises(GEL_ERRORS):
+E       Failed: DID NOT RAISE (<class 'gel.errors._base.EdgeDBError'>,)
+
+/tests/test_final_state.py:935: Failed
+__________________________ test_report_script_exists ___________________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+
+    def test_report_script_exists(client):
+>       assert os.path.isfile(REPORT_SCRIPT), f"{REPORT_SCRIPT} does not exist."
+E       AssertionError: /home/user/auditdb/audit_report.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x78ee99d70220>('/home/user/auditdb/audit_report.py')
+E        +    where <function isfile at 0x78ee99d70220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:957: AssertionError
+________________________ test_report_for_populated_slug ________________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+moved_comment = {'after_insert': Object{id := UUID('d473483c-90a5-11f1-8880-5753711bbc7b'), body := 'cmt-e8a4b9eb', version := 1, crea...info=datetime.timezone.utc), 'entity_id': 'd473483c-90a5-11f1-8880-5753711bbc7b', 'entity_type': 'Comment', ...}], ...}
+solo_comment = {'body': 'cmt-solo-e8a4b9eb', 'entries': [{'action': 'delete', 'at': datetime.datetime(2026, 8, 5, 8, 15, 33, 653097, ...80-cf1b7b99d930', 'entity_type': 'Comment', ...}], 'id': 'd4964576-90a5-11f1-8880-cf1b7b99d930', 'still_exists': False}
+
+    def test_report_for_populated_slug(client, doc_a, moved_comment, solo_comment):
+>       payload = report_json("--slug", doc_a["slug"])
+
+/tests/test_final_state.py:961: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--slug', 'doc-a-e8a4b9eb')
+proc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-e8a4b9eb'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n")
+@py_assert1 = 2, @py_assert4 = 0
+
+    def report_json(*args):
+        proc = run_report(*args)
+>       assert proc.returncode == 0, (
+            f"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: python3 /home/user/auditdb/audit_report.py --slug doc-a-e8a4b9eb exited 2. stdout='' stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-e8a4b9eb'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_______________________ test_report_for_deleted_document _______________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+cascade = {'bodies': ['cd1x-e8a4b9eb', 'cd2-e8a4b9eb', 'cd3-e8a4b9eb'], 'comment_entries': [], 'comment_ids': {'cd1-e8a4b9eb': '...4b757e8-90a5-11f1-8880-f3c3491acf94', 'cd3-e8a4b9eb': 'd4b75a40-90a5-11f1-8880-174471581dd3'}, 'comments_left': 0, ...}
+
+    def test_report_for_deleted_document(client, cascade):
+>       payload = report_json("--slug", cascade["slug"])
+
+/tests/test_final_state.py:984: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--slug', 'doc-del-e8a4b9eb')
+proc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-del-e8a4b9eb'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n")
+@py_assert1 = 2, @py_assert4 = 0
+
+    def report_json(*args):
+        proc = run_report(*args)
+>       assert proc.returncode == 0, (
+            f"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: python3 /home/user/auditdb/audit_report.py --slug doc-del-e8a4b9eb exited 2. stdout='' stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-del-e8a4b9eb'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_________________________ test_report_for_unknown_slug _________________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+token = 'e8a4b9eb'
+
+    def test_report_for_unknown_slug(client, token):
+        unknown = f"no-such-slug-{token}"
+>       payload = report_json("--slug", unknown)
+
+/tests/test_final_state.py:1008: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--slug', 'no-such-slug-e8a4b9eb')
+proc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'no-such-slug-e8a4b9eb'], returncode...dout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n")
+@py_assert1 = 2, @py_assert4 = 0
+
+    def report_json(*args):
+        proc = run_report(*args)
+>       assert proc.returncode == 0, (
+            f"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: python3 /home/user/auditdb/audit_report.py --slug no-such-slug-e8a4b9eb exited 2. stdout='' stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'no-such-slug-e8a4b9eb'], returncode...dout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+___________________________ test_report_is_read_only ___________________________
+
+client = <gel.blocking_client.Client object at 0x78ee99e0f250>
+doc_a = {'after_forged': Object{id := UUID('d410dbf2-90a5-11f1-894b-8332fc2c25e3'), slug := 'doc-a-e8a4b9eb', title := 'A2', b...nfo=datetime.timezone.utc), 'entity_id': 'd410dbf2-90a5-11f1-894b-8332fc2c25e3', 'entity_type': 'Document', ...}], ...}
+moved_comment = {'after_insert': Object{id := UUID('d473483c-90a5-11f1-8880-5753711bbc7b'), body := 'cmt-e8a4b9eb', version := 1, crea...info=datetime.timezone.utc), 'entity_id': 'd473483c-90a5-11f1-8880-5753711bbc7b', 'entity_type': 'Comment', ...}], ...}
+solo_comment = {'body': 'cmt-solo-e8a4b9eb', 'entries': [{'action': 'delete', 'at': datetime.datetime(2026, 8, 5, 8, 15, 33, 653097, ...80-cf1b7b99d930', 'entity_type': 'Comment', ...}], 'id': 'd4964576-90a5-11f1-8880-cf1b7b99d930', 'still_exists': False}
+
+    def test_report_is_read_only(client, doc_a, moved_comment, solo_comment):
+        entries_before = len(document_entries_for_slug(client, doc_a["slug"])) + len(
+            comment_entries_for_slug(client, doc_a["slug"])
+        )
+>       first = report_json("--slug", doc_a["slug"])
+
+/tests/test_final_state.py:1034: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--slug', 'doc-a-e8a4b9eb')
+proc = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-e8a4b9eb'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n")
+@py_assert1 = 2, @py_assert4 = 0
+
+    def report_json(*args):
+        proc = run_report(*args)
+>       assert proc.returncode == 0, (
+            f"{' '.join(['python3', REPORT_SCRIPT, *args])} exited {proc.returncode}. "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: python3 /home/user/auditdb/audit_report.py --slug doc-a-e8a4b9eb exited 2. stdout='' stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', '/home/user/auditdb/audit_report.py', '--slug', 'doc-a-e8a4b9eb'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/auditdb/audit_report.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_status_reports_up_to_date
+PASSED ../tests/test_final_state.py::test_schema_changes_are_recorded_as_migrations
+PASSED ../tests/test_final_state.py::test_insert_ignores_client_supplied_metadata
+PASSED ../tests/test_final_state.py::test_insert_produces_exactly_one_audit_entry
+PASSED ../tests/test_final_state.py::test_noop_update_still_bumps_version
+PASSED ../tests/test_final_state.py::test_no_extra_entries_for_doc_a
+PASSED ../tests/test_final_state.py::test_multi_statement_transaction_versions
+PASSED ../tests/test_final_state.py::test_rolled_back_transaction_leaves_no_audit_trail
+PASSED ../tests/test_final_state.py::test_bulk_update_creates_one_entry_per_object
+PASSED ../tests/test_final_state.py::test_document_delete_removes_its_comments
+PASSED ../tests/test_final_state.py::test_report_requires_slug_argument
+FAILED ../tests/test_final_state.py::test_seeded_documents_survived - Asserti...
+FAILED ../tests/test_final_state.py::test_seeded_comments_survived - Assertio...
+FAILED ../tests/test_final_state.py::test_document_snapshot_shape - Assertion...
+FAILED ../tests/test_final_state.py::test_noop_update_is_audited - AssertionE...
+FAILED ../tests/test_final_state.py::test_update_ignores_client_supplied_metadata
+FAILED ../tests/test_final_state.py::test_forged_update_is_audited - Assertio...
+FAILED ../tests/test_final_state.py::test_bulk_insert_creates_one_entry_per_object
+FAILED ../tests/test_final_state.py::test_comment_document_slug_cannot_be_forged
+FAILED ../tests/test_final_state.py::test_comment_document_slug_follows_link_change
+FAILED ../tests/test_final_state.py::test_direct_comment_delete_is_audited_once
+FAILED ../tests/test_final_state.py::test_document_delete_audits_document_and_children
+FAILED ../tests/test_final_state.py::test_audit_entry_update_is_rejected - As...
+FAILED ../tests/test_final_state.py::test_audit_entry_delete_is_rejected - As...
+FAILED ../tests/test_final_state.py::test_audit_entry_bulk_delete_is_rejected
+FAILED ../tests/test_final_state.py::test_report_script_exists - AssertionErr...
+FAILED ../tests/test_final_state.py::test_report_for_populated_slug - Asserti...
+FAILED ../tests/test_final_state.py::test_report_for_deleted_document - Asser...
+FAILED ../tests/test_final_state.py::test_report_for_unknown_slug - Assertion...
+FAILED ../tests/test_final_state.py::test_report_is_read_only - AssertionErro...
+======================== 19 failed, 11 passed in 3.60s =========================

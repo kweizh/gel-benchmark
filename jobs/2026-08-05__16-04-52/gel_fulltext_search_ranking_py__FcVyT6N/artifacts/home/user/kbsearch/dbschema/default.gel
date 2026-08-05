@@ -1,0 +1,32 @@
+module default {
+    scalar type ArticleStatus extending enum<draft, published, archived>;
+
+    type Article {
+        required property slug -> str {
+            constraint exclusive;
+        }
+        required property title -> str;
+        required property summary -> str;
+        required property body -> str;
+        required property status -> ArticleStatus;
+        multi property tags -> str;
+
+        index fts::index on ((
+            fts::with_options(
+                .title,
+                language := fts::Language.eng,
+                weight_category := fts::Weight.A,
+            ),
+            fts::with_options(
+                .summary,
+                language := fts::Language.eng,
+                weight_category := fts::Weight.B,
+            ),
+            fts::with_options(
+                .body,
+                language := fts::Language.eng,
+                weight_category := fts::Weight.C,
+            ),
+        ));
+    }
+}

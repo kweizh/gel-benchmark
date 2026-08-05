@@ -1,0 +1,13 @@
+{
+  "main_branch": "main",
+  "feature_branches": [
+    "feat_review",
+    "feat_tags"
+  ],
+  "surviving_branches": [
+    "feat_review",
+    "main"
+  ],
+  "final_migration_count": 3,
+  "reproduction_script": "/home/user/branchlab/reconcile.sh"
+}

@@ -1,0 +1,458 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 45 items
+
+../tests/test_final_state.py ....................EEEEEEEEEEEEEEEEEEEEEEE [ 95%]
+EE                                                                       [100%]
+
+==================================== ERRORS ====================================
+___________ ERROR at setup of test_register_sample_blood_happy_path ____________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_____ ERROR at setup of test_register_sample_same_code_other_kind_accepted _____
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_______ ERROR at setup of test_register_sample_boundary_values_accepted ________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+____________ ERROR at setup of test_register_sample_missing_fields _____________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_____________ ERROR at setup of test_register_sample_invalid_kind ______________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_________ ERROR at setup of test_register_sample_invalid_specimen_code _________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+________ ERROR at setup of test_register_sample_duplicate_specimen_code ________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+____________ ERROR at setup of test_register_sample_malformed_label ____________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+__________ ERROR at setup of test_register_sample_volume_not_positive __________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+________ ERROR at setup of test_register_sample_volume_above_kind_limit ________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+________ ERROR at setup of test_register_sample_tube_count_out_of_range ________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_______ ERROR at setup of test_register_sample_rejections_leave_no_rows ________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_____________ ERROR at setup of test_submit_measurement_happy_path _____________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+___ ERROR at setup of test_submit_measurement_validated_boundaries_accepted ____
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+______ ERROR at setup of test_submit_measurement_accepts_every_enum_label ______
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+___________ ERROR at setup of test_submit_measurement_missing_fields ___________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+___________ ERROR at setup of test_submit_measurement_unknown_sample ___________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+__________ ERROR at setup of test_submit_measurement_invalid_analyte ___________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+____________ ERROR at setup of test_submit_measurement_value_bounds ____________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+________ ERROR at setup of test_submit_measurement_invalid_enum_labels _________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+__________ ERROR at setup of test_submit_measurement_malformed_label ___________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_______ ERROR at setup of test_submit_measurement_interval_not_ascending _______
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+__ ERROR at setup of test_submit_measurement_validated_value_outside_interval __
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_________ ERROR at setup of test_submit_measurement_duplicate_analyte __________
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+______ ERROR at setup of test_submit_measurement_rejections_leave_no_rows ______
+
+client = <gel.blocking_client.Client object at 0x79bf2f4bd710>
+
+    @pytest.fixture(scope="session")
+    def validation(client):
+        """Import the executor's validation module from the project."""
+        module_path = os.path.join(PROJECT_DIR, "labreg", "validation.py")
+>       assert os.path.isfile(module_path), f"Expected the module {module_path} to exist."
+E       AssertionError: Expected the module /home/user/labreg/labreg/validation.py to exist.
+E       assert False
+E        +  where False = <function isfile at 0x79bf301e0220>('/home/user/labreg/labreg/validation.py')
+E        +    where <function isfile at 0x79bf301e0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_custom_scalar_types_exist
+PASSED ../tests/test_final_state.py::test_enum_labels_are_exact_and_ordered
+PASSED ../tests/test_final_state.py::test_abstract_constraint_clean_label_exists
+PASSED ../tests/test_final_state.py::test_object_types_and_property_targets
+PASSED ../tests/test_final_state.py::test_migration_files_exist_and_history_applied
+PASSED ../tests/test_final_state.py::test_migration_status_reports_in_sync
+PASSED ../tests/test_final_state.py::test_specimen_code_format_enforced_by_database
+PASSED ../tests/test_final_state.py::test_specimen_code_exclusivity_is_delegated_to_subtypes
+PASSED ../tests/test_final_state.py::test_label_rules_enforced_by_database
+PASSED ../tests/test_final_state.py::test_volume_must_be_positive
+PASSED ../tests/test_final_state.py::test_blood_volume_limit_enforced
+PASSED ../tests/test_final_state.py::test_urine_volume_limit_enforced
+PASSED ../tests/test_final_state.py::test_tube_count_range_enforced
+PASSED ../tests/test_final_state.py::test_analyte_code_format_enforced_by_database
+PASSED ../tests/test_final_state.py::test_measured_value_bounds_enforced_by_database
+PASSED ../tests/test_final_state.py::test_reference_interval_must_be_ascending
+PASSED ../tests/test_final_state.py::test_validated_measurement_must_sit_inside_reference_interval
+PASSED ../tests/test_final_state.py::test_analyte_is_unique_per_sample
+PASSED ../tests/test_final_state.py::test_measurement_state_defaults_to_pending
+PASSED ../tests/test_final_state.py::test_unknown_enum_labels_rejected_by_database
+ERROR ../tests/test_final_state.py::test_register_sample_blood_happy_path - A...
+ERROR ../tests/test_final_state.py::test_register_sample_same_code_other_kind_accepted
+ERROR ../tests/test_final_state.py::test_register_sample_boundary_values_accepted
+ERROR ../tests/test_final_state.py::test_register_sample_missing_fields - Ass...
+ERROR ../tests/test_final_state.py::test_register_sample_invalid_kind - Asser...
+ERROR ../tests/test_final_state.py::test_register_sample_invalid_specimen_code
+ERROR ../tests/test_final_state.py::test_register_sample_duplicate_specimen_code
+ERROR ../tests/test_final_state.py::test_register_sample_malformed_label - As...
+ERROR ../tests/test_final_state.py::test_register_sample_volume_not_positive
+ERROR ../tests/test_final_state.py::test_register_sample_volume_above_kind_limit
+ERROR ../tests/test_final_state.py::test_register_sample_tube_count_out_of_range
+ERROR ../tests/test_final_state.py::test_register_sample_rejections_leave_no_rows
+ERROR ../tests/test_final_state.py::test_submit_measurement_happy_path - Asse...
+ERROR ../tests/test_final_state.py::test_submit_measurement_validated_boundaries_accepted
+ERROR ../tests/test_final_state.py::test_submit_measurement_accepts_every_enum_label
+ERROR ../tests/test_final_state.py::test_submit_measurement_missing_fields - ...
+ERROR ../tests/test_final_state.py::test_submit_measurement_unknown_sample - ...
+ERROR ../tests/test_final_state.py::test_submit_measurement_invalid_analyte
+ERROR ../tests/test_final_state.py::test_submit_measurement_value_bounds - As...
+ERROR ../tests/test_final_state.py::test_submit_measurement_invalid_enum_labels
+ERROR ../tests/test_final_state.py::test_submit_measurement_malformed_label
+ERROR ../tests/test_final_state.py::test_submit_measurement_interval_not_ascending
+ERROR ../tests/test_final_state.py::test_submit_measurement_validated_value_outside_interval
+ERROR ../tests/test_final_state.py::test_submit_measurement_duplicate_analyte
+ERROR ../tests/test_final_state.py::test_submit_measurement_rejections_leave_no_rows
+======================== 20 passed, 25 errors in 3.72s =========================

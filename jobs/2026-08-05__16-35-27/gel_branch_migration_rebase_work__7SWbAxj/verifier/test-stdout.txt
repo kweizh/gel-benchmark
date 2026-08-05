@@ -1,0 +1,436 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 22 items
+
+../../../tests/test_final_state.py F.FFFFFFFF.FF..FFFFFFF                [100%]
+
+=================================== FAILURES ===================================
+_______________ test_branch_set_is_exactly_main_and_feat_review ________________
+
+gel_server = True
+
+    def test_branch_set_is_exactly_main_and_feat_review(gel_server):
+        branches = _branch_names()
+>       assert branches == EXPECTED_BRANCHES, (
+            "Expected exactly the branches {} to survive, found {}. `feat_tags` must be dropped "
+            "and no temporary branch may be left behind.".format(EXPECTED_BRANCHES, branches)
+        )
+E       AssertionError: Expected exactly the branches ['feat_review', 'main'] to survive, found ['main']. `feat_tags` must be dropped and no temporary branch may be left behind.
+E       assert ['main'] == ['feat_review', 'main']
+E         At index 0 diff: 'main' != 'feat_review'
+E         Right contains one more item: 'main'
+E         Use -v to get more diff
+
+/tests/test_final_state.py:133: AssertionError
+________________________ test_main_has_tag_object_type _________________________
+
+gel_server = True
+
+    def test_main_has_tag_object_type(gel_server):
+        rows = _query(
+            "select schema::ObjectType { name } filter .name = 'default::Tag'", branch="main"
+        )
+>       assert len(rows) == 1, "Object type `default::Tag` is missing on branch `main`."
+E       AssertionError: Object type `default::Tag` is missing on branch `main`.
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:150: AssertionError
+______________ test_main_tag_label_is_required_str_and_exclusive _______________
+
+gel_server = True
+
+    def test_main_tag_label_is_required_str_and_exclusive(gel_server):
+        rows = _query(
+            "select schema::Property { name, required, target: { name }, constraints: { name } } "
+            "filter .source.name = 'default::Tag' and .name = 'label'",
+            branch="main",
+        )
+>       assert len(rows) == 1, "Property `Tag.label` is missing on branch `main`."
+E       AssertionError: Property `Tag.label` is missing on branch `main`.
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:159: AssertionError
+_________________________ test_main_article_tags_link __________________________
+
+gel_server = True
+
+    def test_main_article_tags_link(gel_server):
+        rows = _query(
+            "select schema::Link { name, cardinality, target: { name } } "
+            "filter .source.name = 'default::Article' and .name = 'tags'",
+            branch="main",
+        )
+>       assert len(rows) == 1, "Link `Article.tags` is missing on branch `main`."
+E       AssertionError: Link `Article.tags` is missing on branch `main`.
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:177: AssertionError
+___________________ test_main_article_review_state_property ____________________
+
+gel_server = True
+
+    def test_main_article_review_state_property(gel_server):
+        rows = _query(
+            "select schema::Property { name, required, cardinality, target: { name } } "
+            "filter .source.name = 'default::Article' and .name = 'review_state'",
+            branch="main",
+        )
+>       assert len(rows) == 1, "Property `Article.review_state` is missing on branch `main`."
+E       AssertionError: Property `Article.review_state` is missing on branch `main`.
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:193: AssertionError
+____________________ test_feat_review_carries_both_features ____________________
+
+gel_server = True
+
+    def test_feat_review_carries_both_features(gel_server):
+>       tags_type = _query(
+            "select schema::ObjectType { name } filter .name = 'default::Tag'", branch="feat_review"
+        )
+
+/tests/test_final_state.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "select schema::ObjectType { name } filter .name = 'default::Tag'"
+branch = 'feat_review'
+
+    def _query(query, branch=None):
+        """One-shot EdgeQL query; never holds a connection open across tests."""
+        argv = ["gel"]
+        if branch:
+            argv += ["-b", branch]
+        argv += ["query", "-F", "json", query]
+        proc = _run(argv)
+>       assert proc.returncode == 0, "gel query failed on branch {}: {}\n{}".format(
+            branch or "<current>", query, proc.stderr
+        )
+E       AssertionError: gel query failed on branch feat_review: select schema::ObjectType { name } filter .name = 'default::Tag'
+E         [2026-08-05T08:47:16Z ERROR gel_tokio::raw::connection] Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist
+E         gel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', '-b', 'feat_review', 'query', '-F', 'json', "select schema::ObjectType { name } filter ....ew' does not exist\ngel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\n").returncode
+
+/tests/test_final_state.py:63: AssertionError
+_________ test_main_migration_history_is_linear_with_three_migrations __________
+
+gel_server = True
+
+    def test_main_migration_history_is_linear_with_three_migrations(gel_server):
+        count = _query("select count(schema::Migration)", branch="main")
+>       assert count == [3], (
+            "Branch `main` must end with exactly three migrations, found {}.".format(count)
+        )
+E       AssertionError: Branch `main` must end with exactly three migrations, found [1].
+E       assert [1] == [3]
+E         At index 0 diff: 1 != 3
+E         Use -v to get more diff
+
+/tests/test_final_state.py:254: AssertionError
+_________________ test_each_feature_contributed_one_migration __________________
+
+gel_server = True
+
+    def test_each_feature_contributed_one_migration(gel_server):
+        rows = _query("select schema::Migration { name, script }", branch="main")
+        scripts = {r["name"]: r["script"] for r in rows}
+        chain = _migration_chain("main")
+        feature_migrations = chain[1:]
+        tag_migrations = [n for n in feature_migrations if "default::Tag" in scripts[n]]
+        review_migrations = [n for n in feature_migrations if "review_state" in scripts[n]]
+>       assert len(tag_migrations) == 1, (
+            "Exactly one non-root migration on `main` must introduce `default::Tag`, found {}.".format(
+                tag_migrations
+            )
+        )
+E       AssertionError: Exactly one non-root migration on `main` must introduce `default::Tag`, found [].
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:277: AssertionError
+____________________ test_feat_review_history_matches_main _____________________
+
+gel_server = True
+
+    def test_feat_review_history_matches_main(gel_server):
+>       count = _query("select count(schema::Migration)", branch="feat_review")
+
+/tests/test_final_state.py:294: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(schema::Migration)', branch = 'feat_review'
+
+    def _query(query, branch=None):
+        """One-shot EdgeQL query; never holds a connection open across tests."""
+        argv = ["gel"]
+        if branch:
+            argv += ["-b", branch]
+        argv += ["query", "-F", "json", query]
+        proc = _run(argv)
+>       assert proc.returncode == 0, "gel query failed on branch {}: {}\n{}".format(
+            branch or "<current>", query, proc.stderr
+        )
+E       AssertionError: gel query failed on branch feat_review: select count(schema::Migration)
+E         [2026-08-05T08:47:17Z ERROR gel_tokio::raw::connection] Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist
+E         gel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', '-b', 'feat_review', 'query', '-F', 'json', 'select count(schema::Migration)'], returnco...ew' does not exist\ngel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\n").returncode
+
+/tests/test_final_state.py:63: AssertionError
+_________________ test_migration_status_in_sync_on_feat_review _________________
+
+gel_server = True
+
+    def test_migration_status_in_sync_on_feat_review(gel_server):
+        proc = _run(["gel", "-b", "feat_review", "migration", "status", "--quiet"])
+>       assert proc.returncode == 0, (
+            "`gel migration status` on `feat_review` must exit 0, got {}: {}{}".format(
+                proc.returncode, proc.stdout, proc.stderr
+            )
+        )
+E       AssertionError: `gel migration status` on `feat_review` must exit 0, got 1: [2026-08-05T08:47:18Z ERROR gel_tokio::raw::connection] Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist
+E         gel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', '-b', 'feat_review', 'migration', 'status', '--quiet'], returncode=1, stdout='', stderr=...ew' does not exist\ngel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\n").returncode
+
+/tests/test_final_state.py:314: AssertionError
+______________ test_migrations_directory_has_exactly_three_files _______________
+
+    def test_migrations_directory_has_exactly_three_files():
+        files = sorted(f for f in os.listdir(MIGRATIONS_DIR) if f.endswith(".edgeql"))
+>       assert len(files) == 3, (
+            "dbschema/migrations must contain exactly three .edgeql files, found {}.".format(files)
+        )
+E       AssertionError: dbschema/migrations must contain exactly three .edgeql files, found ['00001-m1fp7i5.edgeql'].
+E       assert 1 == 3
+E        +  where 1 = len(['00001-m1fp7i5.edgeql'])
+
+/tests/test_final_state.py:323: AssertionError
+_______________________ test_articles_preserved_in_place _______________________
+
+gel_server = True
+
+    def test_articles_preserved_in_place(gel_server):
+>       rows = _articles("main")
+
+/tests/test_final_state.py:346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:109: in _articles
+    return _query(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title'
+branch = 'main'
+
+    def _query(query, branch=None):
+        """One-shot EdgeQL query; never holds a connection open across tests."""
+        argv = ["gel"]
+        if branch:
+            argv += ["-b", branch]
+        argv += ["query", "-F", "json", query]
+        proc = _run(argv)
+>       assert proc.returncode == 0, "gel query failed on branch {}: {}\n{}".format(
+            branch or "<current>", query, proc.stderr
+        )
+E       AssertionError: gel query failed on branch main: select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title
+E         error: InvalidReferenceError: object type 'default::Article' has no link or property 'review_state'
+E           ┌─ <query>:1:41
+E           │
+E         1 │ select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title
+E           │                                         ^^^^^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select Article { id, title, word_count, review_sta...ame, country }, tags: { label } } order by .title\n  │                                         ^^^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:63: AssertionError
+______________________ test_review_state_backfill_values _______________________
+
+gel_server = True
+
+    def test_review_state_backfill_values(gel_server):
+>       rows = _articles("main")
+
+/tests/test_final_state.py:366: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:109: in _articles
+    return _query(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title'
+branch = 'main'
+
+    def _query(query, branch=None):
+        """One-shot EdgeQL query; never holds a connection open across tests."""
+        argv = ["gel"]
+        if branch:
+            argv += ["-b", branch]
+        argv += ["query", "-F", "json", query]
+        proc = _run(argv)
+>       assert proc.returncode == 0, "gel query failed on branch {}: {}\n{}".format(
+            branch or "<current>", query, proc.stderr
+        )
+E       AssertionError: gel query failed on branch main: select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title
+E         error: InvalidReferenceError: object type 'default::Article' has no link or property 'review_state'
+E           ┌─ <query>:1:41
+E           │
+E         1 │ select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title
+E           │                                         ^^^^^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select Article { id, title, word_count, review_sta...ame, country }, tags: { label } } order by .title\n  │                                         ^^^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:63: AssertionError
+_______________________ test_single_longform_tag_exists ________________________
+
+gel_server = True
+
+    def test_single_longform_tag_exists(gel_server):
+>       count = _query("select count(Tag)", branch="main")
+
+/tests/test_final_state.py:375: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(Tag)', branch = 'main'
+
+    def _query(query, branch=None):
+        """One-shot EdgeQL query; never holds a connection open across tests."""
+        argv = ["gel"]
+        if branch:
+            argv += ["-b", branch]
+        argv += ["query", "-F", "json", query]
+        proc = _run(argv)
+>       assert proc.returncode == 0, "gel query failed on branch {}: {}\n{}".format(
+            branch or "<current>", query, proc.stderr
+        )
+E       AssertionError: gel query failed on branch main: select count(Tag)
+E         error: InvalidReferenceError: object type or alias 'default::Tag' does not exist
+E           ┌─ <query>:1:14
+E           │
+E         1 │ select count(Tag)
+E           │              ^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select count(Tag)'], returncode=1, stdout='', stde...or alias 'default::Tag' does not exist\n  ┌─ <query>:1:14\n  │\n1 │ select count(Tag)\n  │              ^^^ error\n\n").returncode
+
+/tests/test_final_state.py:63: AssertionError
+______________ test_longform_tagging_matches_word_count_boundary _______________
+
+gel_server = True
+
+    def test_longform_tagging_matches_word_count_boundary(gel_server):
+>       rows = _articles("main")
+
+/tests/test_final_state.py:384: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:109: in _articles
+    return _query(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title'
+branch = 'main'
+
+    def _query(query, branch=None):
+        """One-shot EdgeQL query; never holds a connection open across tests."""
+        argv = ["gel"]
+        if branch:
+            argv += ["-b", branch]
+        argv += ["query", "-F", "json", query]
+        proc = _run(argv)
+>       assert proc.returncode == 0, "gel query failed on branch {}: {}\n{}".format(
+            branch or "<current>", query, proc.stderr
+        )
+E       AssertionError: gel query failed on branch main: select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title
+E         error: InvalidReferenceError: object type 'default::Article' has no link or property 'review_state'
+E           ┌─ <query>:1:41
+E           │
+E         1 │ select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title
+E           │                                         ^^^^^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select Article { id, title, word_count, review_sta...ame, country }, tags: { label } } order by .title\n  │                                         ^^^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:63: AssertionError
+______________ test_reproduction_script_is_present_and_executable ______________
+
+    def test_reproduction_script_is_present_and_executable():
+>       assert os.path.isfile(SCRIPT_PATH), "Reproduction script {} is missing.".format(SCRIPT_PATH)
+E       AssertionError: Reproduction script /home/user/branchlab/reconcile.sh is missing.
+E       assert False
+E        +  where False = <function isfile at 0x740ef2348220>('/home/user/branchlab/reconcile.sh')
+E        +    where <function isfile at 0x740ef2348220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:399: AssertionError
+__________________________ test_report_file_contents ___________________________
+
+gel_server = True
+
+    def test_report_file_contents(gel_server):
+>       assert os.path.isfile(REPORT_PATH), "Report file {} is missing.".format(REPORT_PATH)
+E       AssertionError: Report file /home/user/branchlab/reconcile-report.json is missing.
+E       assert False
+E        +  where False = <function isfile at 0x740ef2348220>('/home/user/branchlab/reconcile-report.json')
+E        +    where <function isfile at 0x740ef2348220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:417: AssertionError
+________ test_zz_reproduction_script_is_rerunnable_and_state_preserved _________
+
+gel_server = True
+
+    def test_zz_reproduction_script_is_rerunnable_and_state_preserved(gel_server):
+        """Run last: the script must be safe to re-run on the already reconciled project."""
+        proc = _run(["bash", SCRIPT_PATH], timeout=600)
+>       assert proc.returncode == 0, (
+            "Re-running {} must exit 0, got {}:\nSTDOUT:\n{}\nSTDERR:\n{}".format(
+                SCRIPT_PATH, proc.returncode, proc.stdout[-4000:], proc.stderr[-4000:]
+            )
+        )
+E       AssertionError: Re-running /home/user/branchlab/reconcile.sh must exit 0, got 127:
+E         STDOUT:
+E         
+E         STDERR:
+E         bash: /home/user/branchlab/reconcile.sh: No such file or directory
+E         
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', '/home/user/branchlab/reconcile.sh'], returncode=127, stdout='', stderr='bash: /home/user/branchlab/reconcile.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:469: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../../../tests/test_final_state.py::test_active_branch_is_main
+PASSED ../../../tests/test_final_state.py::test_migration_status_in_sync_on_main
+PASSED ../../../tests/test_final_state.py::test_schema_source_file_exists
+PASSED ../../../tests/test_final_state.py::test_authors_preserved_in_place
+FAILED ../../../tests/test_final_state.py::test_branch_set_is_exactly_main_and_feat_review
+FAILED ../../../tests/test_final_state.py::test_main_has_tag_object_type - As...
+FAILED ../../../tests/test_final_state.py::test_main_tag_label_is_required_str_and_exclusive
+FAILED ../../../tests/test_final_state.py::test_main_article_tags_link - Asse...
+FAILED ../../../tests/test_final_state.py::test_main_article_review_state_property
+FAILED ../../../tests/test_final_state.py::test_feat_review_carries_both_features
+FAILED ../../../tests/test_final_state.py::test_main_migration_history_is_linear_with_three_migrations
+FAILED ../../../tests/test_final_state.py::test_each_feature_contributed_one_migration
+FAILED ../../../tests/test_final_state.py::test_feat_review_history_matches_main
+FAILED ../../../tests/test_final_state.py::test_migration_status_in_sync_on_feat_review
+FAILED ../../../tests/test_final_state.py::test_migrations_directory_has_exactly_three_files
+FAILED ../../../tests/test_final_state.py::test_articles_preserved_in_place
+FAILED ../../../tests/test_final_state.py::test_review_state_backfill_values
+FAILED ../../../tests/test_final_state.py::test_single_longform_tag_exists - ...
+FAILED ../../../tests/test_final_state.py::test_longform_tagging_matches_word_count_boundary
+FAILED ../../../tests/test_final_state.py::test_reproduction_script_is_present_and_executable
+FAILED ../../../tests/test_final_state.py::test_report_file_contents - Assert...
+FAILED ../../../tests/test_final_state.py::test_zz_reproduction_script_is_rerunnable_and_state_preserved
+========================= 18 failed, 4 passed in 3.49s =========================

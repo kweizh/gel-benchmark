@@ -1,0 +1,52 @@
+module default {
+  type Workspace {
+    required name: str {
+      constraint exclusive;
+    }
+  }
+
+  type Folder {
+    required name: str;
+    required workspace: Workspace {
+      on target delete delete source;
+    }
+  }
+
+  type Attachment {
+    required filename: str {
+      constraint exclusive;
+    }
+    required byte_size: int64;
+  }
+
+  type Editor {
+    required email: str {
+      constraint exclusive;
+    }
+  }
+
+  type Document {
+    required title: str;
+    required folder: Folder {
+      on target delete delete source;
+    }
+    multi attachments: Attachment {
+      on source delete delete target if orphan;
+    }
+    checked_out_by: Editor {
+      on target delete deferred restrict;
+    }
+  }
+
+  type ArchivedRecord {
+    required label: str {
+      constraint exclusive;
+    }
+    required document: Document {
+      on target delete restrict;
+    }
+    required archived_at: datetime {
+      default := datetime_current();
+    }
+  }
+}

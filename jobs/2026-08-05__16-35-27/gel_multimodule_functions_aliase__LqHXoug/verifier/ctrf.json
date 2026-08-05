@@ -1,0 +1,340 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T08:47:19.047485+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 28,
+            "passed": 3,
+            "failed": 25,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785919637331,
+            "stop": 1785919639047
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_three_modules_exist",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 212,
+                "start": 1785919637414,
+                "stop": 1785919637626,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_three_modules_exist(client):\n        names = _jq(client, \"select schema::Module.name\")\n        for expected in (\"util\", \"billing\", \"reports\"):\n>           assert expected in names, (\n                f\"Schema module {expected!r} does not exist in the instance. Found: {sorted(names)}\"\n            )\nE           AssertionError: Schema module 'util' does not exist in the instance. Found: ['cfg', 'default', 'ext', 'schema', 'std', 'std::cal', 'std::enc', 'std::fts', 'std::lang', 'std::lang::go', 'std::lang::js', 'std::lang::py', 'std::lang::rs', 'std::math', 'std::net', 'std::net::http', 'std::pg', 'sys']\nE           assert 'util' in ['std', 'ext', 'std::lang', 'std::lang::go', 'std::lang::js', 'std::lang::py', ...]\n\n/tests/test_final_state.py:110: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_each_module_is_declared_in_its_own_schema_file",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785919637626,
+                "stop": 1785919637627,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_exist",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 8,
+                "start": 1785919637627,
+                "stop": 1785919637635,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_migration_files_exist():\n>       assert os.path.isdir(MIGRATIONS_DIR), (\n            f\"Migration directory {MIGRATIONS_DIR} does not exist; the schema was never migrated.\"\n        )\nE       AssertionError: Migration directory /home/user/pricing/dbschema/migrations does not exist; the schema was never migrated.\nE       assert False\nE        +  where False = <function isdir at 0x76ef3c8602c0>('/home/user/pricing/dbschema/migrations')\nE        +    where <function isdir at 0x76ef3c8602c0> = <module 'posixpath' (frozen)>.isdir\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:130: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_nothing_was_declared_in_the_default_module",
+                "status": "passed",
+                "duration": 71,
+                "start": 1785919637635,
+                "stop": 1785919637706,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_is_in_sync",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 420,
+                "start": 1785919637706,
+                "stop": 1785919638126,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    def test_migration_status_is_in_sync(server):\n        proc = subprocess.run(\n            [\"gel\", \"migration\", \"status\", \"--quiet\"],\n            cwd=PROJECT_DIR,\n            capture_output=True,\n            text=True,\n            timeout=120,\n        )\n>       assert proc.returncode == 0, (\n            \"'gel migration status --quiet' reports that the instance and dbschema/ are not in sync.\\n\"\n            f\"stdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: 'gel migration status --quiet' reports that the instance and dbschema/ are not in sync.\nE         stdout: \nE         stderr: error: Unexpected 'line_total'\nE            \u250c\u2500 /home/user/pricing/dbschema/billing.gel:19:18\nE            \u2502\nE         19 \u2502         computed line_total: decimal {\nE            \u2502                  ^^^^^^^^^^ error\nE         \nE         gel error: cannot proceed until schema files are fixed\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'migration', 'status', '--quiet'], returncode=1, stdout='', stderr=\"error: Unexpected 'l..._total: decimal {\\n   \u2502                  ^^^^^^^^^^ error\\n\\ngel error: cannot proceed until schema files are fixed\\n\").returncode\n\n/tests/test_final_state.py:166: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_money_round_overloads_are_declared",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 139,
+                "start": 1785919638126,
+                "stop": 1785919638265,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_money_round_overloads_are_declared(client):\n        funcs = _functions(client)\n        one = funcs.get((\"util::money_round\", (\"amount\",)))\n        two = funcs.get((\"util::money_round\", (\"amount\", \"places\")))\n>       assert one is not None, (\n            \"util::money_round(amount: decimal) is missing. Found: \" + str(sorted(funcs))\n        )\nE       AssertionError: util::money_round(amount: decimal) is missing. Found: []\nE       assert None is not None\n\n/tests/test_final_state.py:200: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_total_of_is_variadic",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 35,
+                "start": 1785919638266,
+                "stop": 1785919638301,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_total_of_is_variadic(client):\n        funcs = _functions(client)\n        fn = funcs.get((\"util::total_of\", (\"amounts\",)))\n>       assert fn is not None, (\n            \"util::total_of(variadic amounts: decimal) is missing. Found: \" + str(sorted(funcs))\n        )\nE       AssertionError: util::total_of(variadic amounts: decimal) is missing. Found: []\nE       assert None is not None\n\n/tests/test_final_state.py:235: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_apply_discount_has_single_optional_parameter",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 30,
+                "start": 1785919638302,
+                "stop": 1785919638332,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_apply_discount_has_single_optional_parameter(client):\n        funcs = _functions(client)\n        fn = funcs.get((\"util::apply_discount\", (\"amount\", \"pct\", \"floor_amount\")))\n>       assert fn is not None, (\n            \"util::apply_discount(amount, pct, floor_amount) is missing. Found: \"\n            + str(sorted(funcs))\n        )\nE       AssertionError: util::apply_discount(amount, pct, floor_amount) is missing. Found: []\nE       assert None is not None\n\n/tests/test_final_state.py:254: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_gross_with_tax_has_named_only_parameter_with_default",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 27,
+                "start": 1785919638332,
+                "stop": 1785919638359,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_gross_with_tax_has_named_only_parameter_with_default(client):\n        funcs = _functions(client)\n        fn = funcs.get((\"util::gross_with_tax\", (\"net\", \"tax_pct\")))\n>       assert fn is not None, (\n            \"util::gross_with_tax(net, named only tax_pct) is missing. Found: \" + str(sorted(funcs))\n        )\nE       AssertionError: util::gross_with_tax(net, named only tax_pct) is missing. Found: []\nE       assert None is not None\n\n/tests/test_final_state.py:275: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_installments_returns_a_set",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 24,
+                "start": 1785919638359,
+                "stop": 1785919638383,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_installments_returns_a_set(client):\n        funcs = _functions(client)\n        fn = funcs.get((\"util::installments\", (\"total\", \"count\")))\n>       assert fn is not None, (\n            \"util::installments(total: decimal, count: int64) is missing. Found: \"\n            + str(sorted(funcs))\n        )\nE       AssertionError: util::installments(total: decimal, count: int64) is missing. Found: []\nE       assert None is not None\n\n/tests/test_final_state.py:292: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_function_volatilities",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 28,
+                "start": 1785919638383,
+                "stop": 1785919638411,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_function_volatilities(client):\n        funcs = _functions(client)\n        money_round = funcs.get((\"util::money_round\", (\"amount\",)))\n>       assert money_round is not None, \"util::money_round(amount: decimal) is missing.\"\nE       AssertionError: util::money_round(amount: decimal) is missing.\nE       assert None is not None\n\n/tests/test_final_state.py:312: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_money_round_values",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 35,
+                "start": 1785919638412,
+                "stop": 1785919638447,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_money_round_values(client):\n        cases = [\n            (\"select util::money_round(<decimal>'2.345')\", D(\"2.35\")),\n            (\"select util::money_round(<decimal>'-2.345')\", D(\"-2.35\")),\n            (\"select util::money_round(<decimal>'2.5')\", D(\"2.5\")),\n            (\"select util::money_round(<decimal>'2.345', 1)\", D(\"2.3\")),\n            (\"select util::money_round(<decimal>'163.278', -1)\", D(\"160\")),\n            (\"select util::money_round(<decimal>'163.278', 0)\", D(\"163\")),\n        ]\n        for query, expected in cases:\n>           got = client.query_single(query)\n\n/tests/test_final_state.py:345: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single\n    return self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query\n    return self._iter_coroutine(super()._query(query_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query\n    return await con.raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query\n    return await super().raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner\n    res = await self._protocol.query(ctx)\ngel/protocol/protocol.pyx:595: in query\n    ???\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: function 'util::money_round' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   select util::money_round(<decimal>'2.345')\nE     \u2502          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_empty_set_into_non_optional_parameter_yields_empty_set",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 29,
+                "start": 1785919638448,
+                "stop": 1785919638477,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_empty_set_into_non_optional_parameter_yields_empty_set(client):\n>       rows = client.query(\"select util::money_round(<decimal>{})\")\n\n/tests/test_final_state.py:350: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query\n    return self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query\n    return self._iter_coroutine(super()._query(query_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query\n    return await con.raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query\n    return await super().raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner\n    res = await self._protocol.query(ctx)\ngel/protocol/protocol.pyx:595: in query\n    ???\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: function 'util::money_round' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   select util::money_round(<decimal>{})\nE     \u2502          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_calls_that_match_no_overload_are_rejected",
+                "status": "passed",
+                "duration": 5,
+                "start": 1785919638478,
+                "stop": 1785919638483,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_total_of_variadic_behaviour",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 30,
+                "start": 1785919638483,
+                "stop": 1785919638513,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_total_of_variadic_behaviour(client):\n        cases = [\n            (\"select util::total_of()\", D(\"0\")),\n            (\"select util::total_of(<decimal>'1.005', <decimal>'2.5')\", D(\"3.51\")),\n            (\"select util::total_of(<decimal>'1.111')\", D(\"1.11\")),\n            (\"select util::total_of(<decimal>'-1.005', <decimal>'1')\", D(\"-0.01\")),\n        ]\n        for query, expected in cases:\n>           got = client.query_single(query)\n\n/tests/test_final_state.py:372: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single\n    return self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query\n    return self._iter_coroutine(super()._query(query_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query\n    return await con.raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query\n    return await super().raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner\n    res = await self._protocol.query(ctx)\ngel/protocol/protocol.pyx:595: in query\n    ???\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: function 'util::total_of' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   select util::total_of()\nE     \u2502          ^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_apply_discount_optional_argument_behaviour",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 40,
+                "start": 1785919638513,
+                "stop": 1785919638553,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_apply_discount_optional_argument_behaviour(client):\n        cases = [\n            (\"select util::apply_discount(<decimal>'100', <decimal>'10', <decimal>{})\", D(\"90\")),\n            (\"select util::apply_discount(<decimal>'100', <decimal>'10', <decimal>'95')\", D(\"95\")),\n            (\"select util::apply_discount(<decimal>'100', <decimal>'0', <decimal>{})\", D(\"100\")),\n            (\"select util::apply_discount(<decimal>'19.99', <decimal>'33', <decimal>{})\", D(\"13.39\")),\n        ]\n        for query, expected in cases:\n>           got = client.query_single(query)\n\n/tests/test_final_state.py:384: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single\n    return self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query\n    return self._iter_coroutine(super()._query(query_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query\n    return await con.raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query\n    return await super().raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner\n    res = await self._protocol.query(ctx)\ngel/protocol/protocol.pyx:595: in query\n    ???\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: function 'util::apply_discount' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   select util::apply_discount(<decimal>'100', <decimal>'10', <decimal>{})\nE     \u2502          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_gross_with_tax_named_only_behaviour",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 31,
+                "start": 1785919638554,
+                "stop": 1785919638585,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_gross_with_tax_named_only_behaviour(client):\n        cases = [\n            (\"select util::gross_with_tax(<decimal>'100', tax_pct := <decimal>'8.25')\", D(\"108.25\")),\n            (\"select util::gross_with_tax(<decimal>'19.99', tax_pct := <decimal>'7.5')\", D(\"21.49\")),\n            (\"select util::gross_with_tax(<decimal>'100')\", D(\"100\")),\n        ]\n        for query, expected in cases:\n>           got = client.query_single(query)\n\n/tests/test_final_state.py:395: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single\n    return self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query\n    return self._iter_coroutine(super()._query(query_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query\n    return await con.raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query\n    return await super().raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner\n    res = await self._protocol.query(ctx)\ngel/protocol/protocol.pyx:595: in query\n    ???\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: function 'util::gross_with_tax' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   select util::gross_with_tax(<decimal>'100', tax_pct := <decimal>'8.25')\nE     \u2502          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_installments_set_semantics",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 46,
+                "start": 1785919638585,
+                "stop": 1785919638631,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_installments_set_semantics(client):\n>       got = sorted(client.query(\"select util::installments(<decimal>'100.00', 3)\"))\n\n/tests/test_final_state.py:402: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query\n    return self._query(QueryContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query\n    return self._iter_coroutine(super()._query(query_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query\n    return await con.raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query\n    return await super().raw_query(query_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner\n    res = await self._protocol.query(ctx)\ngel/protocol/protocol.pyx:595: in query\n    ???\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: function 'util::installments' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   select util::installments(<decimal>'100.00', 3)\nE     \u2502          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_invoice_computeds_over_seeded_data",
+                "status": "failed",
+                "duration": 36,
+                "start": 1785919638632,
+                "stop": 1785919638668,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            },
+            {
+                "name": "test_final_state.py::test_invoice_lines_and_line_totals",
+                "status": "failed",
+                "duration": 33,
+                "start": 1785919638668,
+                "stop": 1785919638701,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            },
+            {
+                "name": "test_final_state.py::test_computed_pointers_reference_the_util_module",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 136,
+                "start": 1785919638701,
+                "stop": 1785919638837,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_computed_pointers_reference_the_util_module(client):\n        rows = _jq(\n            client,\n            \"\"\"\n            select schema::ObjectType {\n                name,\n                pointers: { name, expr, cardinality }\n            }\n            filter .name in {'billing::LineItem', 'billing::Invoice'}\n            \"\"\",\n        )\n        pointers = {}\n        for row in rows:\n            for pointer in row[\"pointers\"]:\n                pointers[(row[\"name\"], pointer[\"name\"])] = pointer\n    \n        for type_name, pointer_name in (\n            (\"billing::LineItem\", \"line_total\"),\n            (\"billing::Invoice\", \"subtotal\"),\n            (\"billing::Invoice\", \"total_due\"),\n        ):\n            pointer = pointers.get((type_name, pointer_name))\n>           assert pointer is not None, f\"{type_name} has no pointer named {pointer_name!r}.\"\nE           AssertionError: billing::LineItem has no pointer named 'line_total'.\nE           assert None is not None\n\n/tests/test_final_state.py:490: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_unit_price_precision_constraint",
+                "status": "failed",
+                "duration": 35,
+                "start": 1785919638837,
+                "stop": 1785919638872,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            },
+            {
+                "name": "test_final_state.py::test_customer_outstanding_function",
+                "status": "failed",
+                "duration": 33,
+                "start": 1785919638872,
+                "stop": 1785919638905,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            },
+            {
+                "name": "test_final_state.py::test_report_aliases_are_declared_as_aliases",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 8,
+                "start": 1785919638905,
+                "stop": 1785919638913,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    def test_report_aliases_are_declared_as_aliases(client):\n        names = _jq(client, \"select (schema::Alias.name) filter schema::Alias.name like 'reports::%'\")\n        for expected in (\n            \"reports::UnpaidInvoice\",\n            \"reports::CustomerBalance\",\n            \"reports::InvoicePlan\",\n        ):\n>           assert expected in names, (\n                f\"{expected} is not declared as a schema alias. Found: {sorted(names)}\"\n            )\nE           AssertionError: reports::UnpaidInvoice is not declared as a schema alias. Found: []\nE           assert 'reports::UnpaidInvoice' in []\n\n/tests/test_final_state.py:558: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_unpaid_invoice_alias_contents",
+                "status": "failed",
+                "duration": 34,
+                "start": 1785919638913,
+                "stop": 1785919638947,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            },
+            {
+                "name": "test_final_state.py::test_customer_balance_alias_contents",
+                "status": "failed",
+                "duration": 34,
+                "start": 1785919638948,
+                "stop": 1785919638982,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            },
+            {
+                "name": "test_final_state.py::test_invoice_plan_alias_contents",
+                "status": "failed",
+                "duration": 32,
+                "start": 1785919638982,
+                "stop": 1785919639014,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            },
+            {
+                "name": "test_final_state.py::test_aliases_and_function_react_to_data_changes",
+                "status": "failed",
+                "duration": 33,
+                "start": 1785919639014,
+                "stop": 1785919639047,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = <gel.blocking_client.Client object at 0x76ef3bcb0410>\n\n    @pytest.fixture()\n    def seeded(client):\n>       _wipe(client)\n\n/tests/test_final_state.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:89: in _wipe\n    client.execute(stmt)\n/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute\n    self._execute(ExecuteContext(\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute\n    self._iter_coroutine(super()._execute(execute_context))\n/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine\n    coro.send(None)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute\n    await con._execute(execute_context)\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute\n    return await self._retry_operation(\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation\n    raise e\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation\n    return await func()\n/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner\n    res = await self._protocol.execute(ctx)\ngel/protocol/protocol.pyx:592: in execute\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n>   ???\nE   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist\nE     \u250c\u2500 query:1:8\nE     \u2502 \nE   1 \u2502   delete billing::LineItem;\nE     \u2502          ^^^^^^^^^^^^^^^^^ error\n\ngel/protocol/protocol.pyx:545: InvalidReferenceError"
+            }
+        ]
+    }
+}

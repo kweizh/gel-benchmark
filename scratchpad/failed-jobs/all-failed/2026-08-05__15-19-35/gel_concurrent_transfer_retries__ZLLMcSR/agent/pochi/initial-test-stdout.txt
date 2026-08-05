@@ -1,0 +1,248 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-7.2.1, pluggy-1.0.0+repack
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3, anyio-4.14.2
+collected 14 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_python_gel_client_importable PASSED
+../bootstrap/test_initial_state.py::test_helper_scripts_present PASSED
+../bootstrap/test_initial_state.py::test_project_skeleton_present PASSED
+../bootstrap/test_initial_state.py::test_start_script_not_created_yet PASSED
+../bootstrap/test_initial_state.py::test_app_port_not_served_yet PASSED
+../bootstrap/test_initial_state.py::test_gel_server_is_reachable ERROR
+../bootstrap/test_initial_state.py::test_gel_cli_can_query_instance ERROR
+../bootstrap/test_initial_state.py::test_account_type_exists_with_expected_pointers ERROR
+../bootstrap/test_initial_state.py::test_account_code_is_exclusive ERROR
+../bootstrap/test_initial_state.py::test_ledger_entry_type_does_not_exist_yet ERROR
+../bootstrap/test_initial_state.py::test_seeded_filler_accounts ERROR
+../bootstrap/test_initial_state.py::test_seeded_reserved_accounts ERROR
+../bootstrap/test_initial_state.py::test_no_ledger_data_seeded ERROR
+
+==================================== ERRORS ====================================
+________________ ERROR at setup of test_gel_server_is_reachable ________________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+______________ ERROR at setup of test_gel_cli_can_query_instance _______________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+______ ERROR at setup of test_account_type_exists_with_expected_pointers _______
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+_______________ ERROR at setup of test_account_code_is_exclusive _______________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+_________ ERROR at setup of test_ledger_entry_type_does_not_exist_yet __________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+________________ ERROR at setup of test_seeded_filler_accounts _________________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+_______________ ERROR at setup of test_seeded_reserved_accounts ________________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+_________________ ERROR at setup of test_no_ledger_data_seeded _________________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Start the bundled Gel server (idempotent) and wait until it is ready."""
+        if not _server_ready():
+            proc = subprocess.run(
+                ["bash", GEL_START_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=900,
+            )
+            if proc.returncode != 0 and not _server_ready():
+>               pytest.fail(
+                    "Failed to start the local Gel server via "
+                    f"{GEL_START_SCRIPT}: rc={proc.returncode}\n"
+                    f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+                )
+E               Failed: Failed to start the local Gel server via /usr/local/bin/start-gel.sh: rc=1
+E               stdout:
+E               starting local Gel server, logging to /var/log/gel-server.log
+E               
+E               stderr:
+E               the local Gel server did not become ready within 300s
+E               ERROR: GEL_SERVER_PORT and GEL_PORT are exclusive, but both are set.
+
+/bootstrap/test_initial_state.py:59: Failed
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_gel_server_is_reachable - Fail...
+ERROR ../bootstrap/test_initial_state.py::test_gel_cli_can_query_instance - F...
+ERROR ../bootstrap/test_initial_state.py::test_account_type_exists_with_expected_pointers
+ERROR ../bootstrap/test_initial_state.py::test_account_code_is_exclusive - Fa...
+ERROR ../bootstrap/test_initial_state.py::test_ledger_entry_type_does_not_exist_yet
+ERROR ../bootstrap/test_initial_state.py::test_seeded_filler_accounts - Faile...
+ERROR ../bootstrap/test_initial_state.py::test_seeded_reserved_accounts - Fai...
+ERROR ../bootstrap/test_initial_state.py::test_no_ledger_data_seeded - Failed...
+=================== 6 passed, 8 errors in 302.95s (0:05:02) ====================

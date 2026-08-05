@@ -1,0 +1,206 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-7.2.1, pluggy-1.0.0+repack
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 16 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_connection_settings_exported PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_dbschema_directory_exists_and_is_empty PASSED
+../bootstrap/test_initial_state.py::test_seed_file_exists PASSED
+../bootstrap/test_initial_state.py::test_seed_file_structure PASSED
+../bootstrap/test_initial_state.py::test_graph_entrypoint_not_created_yet PASSED
+../bootstrap/test_initial_state.py::test_server_answers_queries ERROR
+../bootstrap/test_initial_state.py::test_server_version_is_gel_7_1 ERROR
+../bootstrap/test_initial_state.py::test_current_branch_is_main ERROR
+../bootstrap/test_initial_state.py::test_gel_cli_can_query_the_server ERROR
+../bootstrap/test_initial_state.py::test_default_module_has_no_object_types_yet ERROR
+../bootstrap/test_initial_state.py::test_no_members_exist_yet ERROR
+
+==================================== ERRORS ====================================
+________________ ERROR at setup of test_server_answers_queries _________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        _start_server()
+>       connection = _wait_for_client()
+
+/bootstrap/test_initial_state.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+deadline_seconds = 600
+
+    def _wait_for_client(deadline_seconds: int = 600) -> gel.Client:
+        last_error = None
+        deadline = time.time() + deadline_seconds
+        while time.time() < deadline:
+            try:
+                candidate = gel.create_client(timeout=120)
+                candidate.query_single("select 1")
+                return candidate
+            except Exception as exc:  # noqa: BLE001 - server may still be booting
+                last_error = exc
+                time.sleep(3)
+>       raise AssertionError(
+            "The local Gel server never became ready for queries. Last error: %r" % (last_error,)
+        )
+E       AssertionError: The local Gel server never became ready for queries. Last error: ClientConnectionFailedTemporarilyError("[Errno 111] Connection refused\n\tAfter 275 attempts in 30.0 sec\n\tIs the server running on host '127.0.0.1' and accepting \n\tTCP/IP connections on port 5656?")
+
+/bootstrap/test_initial_state.py:44: AssertionError
+_______________ ERROR at setup of test_server_version_is_gel_7_1 _______________
+
+    @pytest.fixture(scope="session")
+    def client():
+        _start_server()
+>       connection = _wait_for_client()
+
+/bootstrap/test_initial_state.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+deadline_seconds = 600
+
+    def _wait_for_client(deadline_seconds: int = 600) -> gel.Client:
+        last_error = None
+        deadline = time.time() + deadline_seconds
+        while time.time() < deadline:
+            try:
+                candidate = gel.create_client(timeout=120)
+                candidate.query_single("select 1")
+                return candidate
+            except Exception as exc:  # noqa: BLE001 - server may still be booting
+                last_error = exc
+                time.sleep(3)
+>       raise AssertionError(
+            "The local Gel server never became ready for queries. Last error: %r" % (last_error,)
+        )
+E       AssertionError: The local Gel server never became ready for queries. Last error: ClientConnectionFailedTemporarilyError("[Errno 111] Connection refused\n\tAfter 275 attempts in 30.0 sec\n\tIs the server running on host '127.0.0.1' and accepting \n\tTCP/IP connections on port 5656?")
+
+/bootstrap/test_initial_state.py:44: AssertionError
+________________ ERROR at setup of test_current_branch_is_main _________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        _start_server()
+>       connection = _wait_for_client()
+
+/bootstrap/test_initial_state.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+deadline_seconds = 600
+
+    def _wait_for_client(deadline_seconds: int = 600) -> gel.Client:
+        last_error = None
+        deadline = time.time() + deadline_seconds
+        while time.time() < deadline:
+            try:
+                candidate = gel.create_client(timeout=120)
+                candidate.query_single("select 1")
+                return candidate
+            except Exception as exc:  # noqa: BLE001 - server may still be booting
+                last_error = exc
+                time.sleep(3)
+>       raise AssertionError(
+            "The local Gel server never became ready for queries. Last error: %r" % (last_error,)
+        )
+E       AssertionError: The local Gel server never became ready for queries. Last error: ClientConnectionFailedTemporarilyError("[Errno 111] Connection refused\n\tAfter 275 attempts in 30.0 sec\n\tIs the server running on host '127.0.0.1' and accepting \n\tTCP/IP connections on port 5656?")
+
+/bootstrap/test_initial_state.py:44: AssertionError
+_____________ ERROR at setup of test_gel_cli_can_query_the_server ______________
+
+    @pytest.fixture(scope="session")
+    def client():
+        _start_server()
+>       connection = _wait_for_client()
+
+/bootstrap/test_initial_state.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+deadline_seconds = 600
+
+    def _wait_for_client(deadline_seconds: int = 600) -> gel.Client:
+        last_error = None
+        deadline = time.time() + deadline_seconds
+        while time.time() < deadline:
+            try:
+                candidate = gel.create_client(timeout=120)
+                candidate.query_single("select 1")
+                return candidate
+            except Exception as exc:  # noqa: BLE001 - server may still be booting
+                last_error = exc
+                time.sleep(3)
+>       raise AssertionError(
+            "The local Gel server never became ready for queries. Last error: %r" % (last_error,)
+        )
+E       AssertionError: The local Gel server never became ready for queries. Last error: ClientConnectionFailedTemporarilyError("[Errno 111] Connection refused\n\tAfter 275 attempts in 30.0 sec\n\tIs the server running on host '127.0.0.1' and accepting \n\tTCP/IP connections on port 5656?")
+
+/bootstrap/test_initial_state.py:44: AssertionError
+________ ERROR at setup of test_default_module_has_no_object_types_yet _________
+
+    @pytest.fixture(scope="session")
+    def client():
+        _start_server()
+>       connection = _wait_for_client()
+
+/bootstrap/test_initial_state.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+deadline_seconds = 600
+
+    def _wait_for_client(deadline_seconds: int = 600) -> gel.Client:
+        last_error = None
+        deadline = time.time() + deadline_seconds
+        while time.time() < deadline:
+            try:
+                candidate = gel.create_client(timeout=120)
+                candidate.query_single("select 1")
+                return candidate
+            except Exception as exc:  # noqa: BLE001 - server may still be booting
+                last_error = exc
+                time.sleep(3)
+>       raise AssertionError(
+            "The local Gel server never became ready for queries. Last error: %r" % (last_error,)
+        )
+E       AssertionError: The local Gel server never became ready for queries. Last error: ClientConnectionFailedTemporarilyError("[Errno 111] Connection refused\n\tAfter 275 attempts in 30.0 sec\n\tIs the server running on host '127.0.0.1' and accepting \n\tTCP/IP connections on port 5656?")
+
+/bootstrap/test_initial_state.py:44: AssertionError
+_________________ ERROR at setup of test_no_members_exist_yet __________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        _start_server()
+>       connection = _wait_for_client()
+
+/bootstrap/test_initial_state.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+deadline_seconds = 600
+
+    def _wait_for_client(deadline_seconds: int = 600) -> gel.Client:
+        last_error = None
+        deadline = time.time() + deadline_seconds
+        while time.time() < deadline:
+            try:
+                candidate = gel.create_client(timeout=120)
+                candidate.query_single("select 1")
+                return candidate
+            except Exception as exc:  # noqa: BLE001 - server may still be booting
+                last_error = exc
+                time.sleep(3)
+>       raise AssertionError(
+            "The local Gel server never became ready for queries. Last error: %r" % (last_error,)
+        )
+E       AssertionError: The local Gel server never became ready for queries. Last error: ClientConnectionFailedTemporarilyError("[Errno 111] Connection refused\n\tAfter 275 attempts in 30.0 sec\n\tIs the server running on host '127.0.0.1' and accepting \n\tTCP/IP connections on port 5656?")
+
+/bootstrap/test_initial_state.py:44: AssertionError
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_server_answers_queries - Asser...
+ERROR ../bootstrap/test_initial_state.py::test_server_version_is_gel_7_1 - As...
+ERROR ../bootstrap/test_initial_state.py::test_current_branch_is_main - Asser...
+ERROR ../bootstrap/test_initial_state.py::test_gel_cli_can_query_the_server
+ERROR ../bootstrap/test_initial_state.py::test_default_module_has_no_object_types_yet
+ERROR ../bootstrap/test_initial_state.py::test_no_members_exist_yet - Asserti...
+================== 10 passed, 6 errors in 1532.41s (0:25:32) ===================

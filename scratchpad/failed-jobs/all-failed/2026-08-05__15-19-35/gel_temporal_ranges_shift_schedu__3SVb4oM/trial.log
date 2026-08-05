@@ -1,0 +1,144 @@
+Selected strategy: _DaytonaDirect
+Building environment from /home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_temporal_ranges_shift_scheduling/environment/Dockerfile
+Running command: set -euo pipefail; mkdir -p /logs/agent/pochi && pochi --version
+Command outputs captured
+Running command: mkdir -p ~/.pochi && mkdir -p /logs/agent/pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/MINIMAX_API_KEY/${MINIMAX_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.6": {
+          "name": "kimi-K2.6"
+        },
+        "deepseek-ai/DeepSeek-V4-Pro": {
+          "name": "DeepSeek-V4-Pro"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    },
+    "minimax": {
+      "kind": "minimax",
+      "apiKey": "MINIMAX_API_KEY",
+      "models": {
+        "MiniMax-M3": {
+          "maxTokens": 10000,
+          "contextWindow": 1000000
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: if [ -f /bootstrap/test_initial_state.py ]; then pytest -s --log-cli-level=DEBUG /bootstrap/test_initial_state.py > >(tee /logs/agent/pochi/initial-test-stdout.txt) 2> >(tee /logs/agent/pochi/initial-test-stderr.txt >&2); fi
+Command outputs captured
+Running command: cat > /tmp/pochi_cmd.sh << 'CMD_EOF'
+set -o pipefail
+pochi --model anthropic/claude-5-sonnet --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl --experimental-stream-trajectory-strip-duplicates > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Gel Shift-Scheduling & Availability Engine
+
+## Background
+
+`Nightshift Logistics` runs a 24/7 warehouse in New York. Scheduling bugs there are always *time* bugs: a supervisor double-books a picker, an overnight shift silently gains or loses an hour when daylight saving time flips, or a payroll report attributes Sunday-night hours to the wrong week. The company wants the invariants pushed **into the database** instead of living in fragile application code.
+
+A **Gel 6.11** server is already installed in this environment together with the Gel CLI (7.x) and the `gel` Python client library (importable from the system `python3`). A scaffolded, already-linked Gel project lives at `/home/user/shiftops`; the local instance is named `shiftdb` and `GEL_INSTANCE=shiftdb` is exported for every shell, so the CLI and the Python client both resolve the connection automatically. The database server is **not** running by default — run `gel-start` to start it (it is idempotent and returns once the server is accepting connections).
+
+Your job is to deliver the schema **and** a Python query module that answers the scheduling questions payroll and dispatch ask every week.
+
+## Requirements
+
+### 1. Schema and migration
+
+Model the domain in module `default` of `/home/user/shiftops/dbschema/default.gel`, and ship it as a **real, applied Gel migration** (the migration history under `dbschema/migrations/` must exist, be applied to `shiftdb`, and be reported as in sync with the schema file).
+
+The following object types, properties and links must exist with **exactly** these names:
+
+- `Worker`
+  - `code`: `str`, required, unique across all workers
+  - `full_name`: `str`, required
+- `Shift`
+  - `worker`: required link to `Worker`
+  - `role`: `str`, required
+  - `starts_at`: `datetime`, required
+  - `ends_at`: `datetime`, required
+  - `span`: a **single, required** `range<datetime>` that always equals the half-open interval from `starts_at` (included) to `ends_at` (excluded); it must never have to be supplied or maintained by the writer
+- `AvailabilityWindow`
+  - `worker`: required link to `Worker`
+  - `iso_weekday`: `int64`, required, only values `1` (Monday) through `7` (Sunday) are accepted
+  - `start_time`: `cal::local_time`, required
+  - `end_time`: `cal::local_time`, required
+
+### 2. Invariants enforced by the database itself
+
+These must hold for **any** writer, including a raw EdgeQL statement typed straight into the CLI — not only for writes that go through your Python module:
+
+- A `Shift` whose `ends_at` is not strictly after its `starts_at` must be rejected.
+- An `AvailabilityWindow` whose `end_time` is not strictly after its `start_time` must be rejected.
+- **Two shifts belonging to the same worker must never overlap in time.** Overlap uses half-open `[starts_at, ends_at)` semantics, so two shifts that merely touch (one ends at the exact instant the other begins) are *legal*. The rule applies to `insert` **and** to `update` (an update that moves a shift onto one of the same worker's other shifts must be rejected). Different workers may hold identical spans.
+- A rejected write must leave the database unchanged and must surface as a Gel server error to the client.
+
+### 3. Python scheduling module
+
+Create `/home/user/shiftops/shiftops_engine.py`. It must import cleanly with no database connection available (nothing may connect at import time), and it must expose exactly these four callables. Every one of them takes an already-connected **synchronous** Gel client object as its first positional parameter, and none of them may consult the current wall-clock time — all answers are functions of the stored data and the arguments alone.
+
+```python
+assign_shift(client, worker_code: str, role: str, starts_at: str, ends_at: str) -> dict
+worker_week_report(client, worker_code: str, iso_year: int, iso_week: int) -> dict
+weekly_totals(client, iso_year: int, iso_week: int) -> list
+free_slots(client, worker_code: str, local_date: str) -> list
+```
+
+## Implementation Hints
+
+- Project path: `/home/user/shiftops`
+- Python module path: `/home/user/shiftops/shiftops_engine.py`, imported as `shiftops_engine` with `/home/user/shiftops` on `sys.path`.
+- **Fixed timezone**: every "local" value in this task means wall-clock time in the IANA zone `America/New_York`. This zone is a hard-coded property of the system; it is never passed in as an argument.
+- **String formats.** UTC instants are `YYYY-MM-DDTHH:MM:SSZ` (always ending in a literal `Z`) — this is both the accepted input format and the emitted output format. Local date-times are `YYYY-MM-DDTHH:MM:SS` with no suffix. Local times of day are `HH:MM:SS`. Local dates are `YYYY-MM-DD`. All fields are zero-padded.
+- **Hours.** A shift's `hours` is the *elapsed absolute time* between `starts_at` and `ends_at` expressed in hours; because of daylight saving transitions this is not always equal to the difference of the local wall-clock readings. Any `hours`-flavoured number in a payload is a `float` rounded **half-up to 2 decimals**; aggregates are computed from unrounded values and rounded only once, at the end.
+- **Week attribution.** A shift belongs to the ISO-8601 week (ISO year + ISO week number, weeks starting Monday) that contains the shift's **local start** wall-clock instant. The whole shift counts toward that week even when it ends in the next day, month or week.
+- **Overtime.** Per worker, per ISO week: `overtime_hours` is the amount by which the week's total exceeds **40.0** hours (never negative), and `regular_hours` is the rest of the total. A week totalling exactly 40.0 hours has zero overtime.
+- `assign_shift` takes UTC instant strings and must persist a new `Shift` for the worker identified by `worker_code`. It returns:
+  - `{"status": "created", "shift_id": <str uuid of the new shift>}` on success;
+  - `{"status": "invalid", "reason": "unknown_worker"}` when no worker has that `code`;
+  - `{"status": "invalid", "reason": "empty_span"}` when `ends_at` is not strictly after `starts_at`;
+  - `{"status": "conflict", "conflicts": [<str uuid>, ...]}` when the requested span would overlap one or more of that worker's existing shifts, listing every conflicting existing shift ordered by its `starts_at` ascending and, for equal `starts_at`, by its id string ascending.
+
+  The checks are applied in that order (unknown worker, then empty span, then conflict). In every non-`created` case nothing whatsoever may be persisted. The dict has exactly the keys shown for its status and no others.
+- `worker_week_report` returns a dict with exactly the keys `worker_code`, `iso_year`, `iso_week`, `week_start_local`, `week_end_local`, `total_hours`, `regular_hours`, `overtime_hours`, `shifts`. `week_start_local` is the local date-time of Monday 00:00:00 that opens the requested ISO week and `week_end_local` is the local date-time of the following Monday 00:00:00. `shifts` is a list, ordered by `starts_at` ascending, of dicts with exactly the keys `shift_id`, `role`, `starts_at_utc`, `ends_at_utc`, `starts_at_local`, `ends_at_local`, `hours`. A worker with no shifts in that week yields zeroed totals and an empty list. An unknown `worker_code` raises `LookupError`.
+- `weekly_totals` returns a list, ordered by `worker_code` ascending, containing one dict per worker that has at least one shift attributed to the requested ISO week, with exactly the keys `worker_code`, `total_hours`, `regular_hours`, `overtime_hours`, `shift_count`. Workers with no shifts in that week are omitted; a week with no shifts at all yields an empty list.
+- `free_slots` answers "when is this worker still bookable on this local calendar date?". Take the worker's `AvailabilityWindow`s whose `iso_weekday` matches the ISO weekday of `local_date`; each contributes the half-open local interval from `start_time` to `end_time` **on that date**. Subtract from them the local wall-clock time that the worker's shifts occupy on that same calendar date — a shift contributes the intersection of its local interval with `[local_date 00:00:00, next day 00:00:00)`, so a shift that began the previous evening still blocks the early hours of `local_date`, and a shift that merely touches a window boundary blocks nothing. Return the surviving intervals, ordered by start ascending, as dicts with exactly the keys `start_local`, `end_local`, `minutes` (whole minutes, `int`). Fully-consumed windows are omitted, and a date with no matching availability yields an empty list. An unknown `worker_code` raises `LookupError`.
+- Do not seed, fixture or hard-code any scheduling data: the graders wipe the database and load their own workers, availability windows and shifts before calling your code.
+- No network access, no cloud instance and no services other than the local Gel server may be used.
+
+
+EOF
+CMD_EOF
+setsid --wait bash /tmp/pochi_cmd.sh &
+SETSID_PID=$!
+echo $SETSID_PID > /tmp/setsid_bash_pochi_cmd.pid
+wait $SETSID_PID 2>/dev/null
+Command failed
+Running command: if [ -f /tmp/setsid_bash_pochi_cmd.pid ]; then
+SETSID_PID=$(cat /tmp/setsid_bash_pochi_cmd.pid)
+kill -TERM -- -$SETSID_PID 2>/dev/null || true
+sleep 2
+kill -9 -- -$SETSID_PID 2>/dev/null || true
+fi
+rm -f ~/.pochi/config.jsonc /tmp/pochi_cmd.sh /tmp/setsid_bash_pochi_cmd.pid
+Command outputs captured
+Collecting main service artifacts

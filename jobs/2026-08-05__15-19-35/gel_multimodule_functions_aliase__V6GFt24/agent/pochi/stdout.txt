@@ -1,0 +1,153 @@
+- Initializing MCP connections...
+You
+# In-Database Pricing Library: Multi-Module Gel Schema ## Background A billing team is tired of every service re-implementing money arithmetic slightly differently, so the rules must live **inside the database** as a reusable library: generic money helpers in one schema module, the billing domain in another, and read models in a third. A Gel 6 project skeleton and a local Gel server are already available in this container. No cloud instance, hosted database or external service is involved: everything runs locally inside the container. ## Requirements Deliver a migrated Gel schema, split across **three modules** (`util`, `billing`, `reports`), that satisfies every contract below. Everything is verified over EdgeQL against the live local instance using fully-qualified names, so names, parameter names, parameter kinds, cardinalities and numeric results must match exactly. All rounding in this task is **decimal** rounding with ties going **away from zero** (Gel `decimal` semantics), never floating-point rounding. Percentages are whole or fractional percents (`10` means 10%). ### Module `util` - reusable, data-independent functions Declare these schema functions with exactly these names, parameter names, parameter kinds and return types: 1. `util::money_round(amount: decimal) -> decimal` - `amount` rounded to 2 decimal places. 2. `util::money_round(amount: decimal, places: int64) -> decimal` - `amount` rounded to `places` decimal places; `places` may be zero or negative. It must coexist with (1) as an overload of the same name, and a three-argument call must not resolve. 3. `util::total_of(variadic amounts: decimal) -> decimal` - the sum of all supplied amounts, rounded to 2 decimal places. A call with no arguments must yield `0`. 4. `util::apply_discount(amount: decimal, pct: decimal, floor_amount: optional decimal) -> decimal` - let `d` be `amount` reduced by `pct` percent and then rounded to 2 decimal places. When `floor_amount` is a non-empty value the result is the greater of `d` and `floor_amount`; when `floor_amount` is an empty set the result is `d`. `floor_amount` is the only `optional` parameter anywhere in this task. 5. `util::gross_with_tax(net: decimal, named only tax_pct: decimal = 0) -> decimal` - `net` increased by `tax_pct` percent, rounded to 2 decimal places. `tax_pct` must be passable **only** by name and must default to `0`, so a two-positional-argument call must not resolve. 6. `util::installments(total: decimal, count: int64) -> set of decimal` - returns a **set** (not an array, not a single value) of exactly `count` amounts whose sum is exactly `total`: the first `count - 1` elements each equal `total / count` rounded to 2 decimal places, and the final element is `total` minus the sum of those. Returns the empty set when `count < 1`. Its declared return type must be set-returning. ### Module `billing` - domain types and one data-dependent function - `billing::Customer`: required `name: str` (unique across customers), required `discount_pct: decimal` defaulting to `0`. - `billing::LineItem`: required link `invoice` to `billing::Invoice`, required `description: str`, required `qty: int64`, required `unit_price: decimal`, plus a single computed `line_total` equal to `qty` times `unit_price` rounded to 2 decimal places. A `LineItem` whose `unit_price` differs from its own 2-decimal-place rounding (e.g. `1.234`) must be rejected at write time by a schema constraint. - `billing::Invoice`: required `code: str` (unique across invoices), required link `customer` to `billing::Customer`, required `paid: bool` defaulting to `false`, an optional single `minimum_charge: decimal`, required `installment_count: int64` defaulting to `1`, plus these computeds: - `lines`: the (possibly empty) set of `billing::LineItem` objects whose `invoice` points at this invoice. - `subtotal` (single): the sum of `line_total` over `lines`, rounded to 2 decimal places; `0` when the invoice has no lines. - `total_due` (single): the invoice `subtotal` discounted by its customer `discount_pct` and floored by the invoice `minimum_charge` when that property is set, with exactly the semantics of `util::apply_discount`. - `billing::customer_outstanding(customer_name: str) -> decimal` - the sum of `total_due` over the unpaid invoices of the customer with that exact `name`, rounded to 2 decimal places; `0` when there is no such customer or no unpaid invoice. Its effective volatility must be `Stable`. - The computed pointers `billing::LineItem.line_total`, `billing::Invoice.subtotal` and `billing::Invoice.total_due` must be defined by calling the `util` functions across the module boundary instead of re-implementing the arithmetic: their stored expressions must reference the `util` module. ### Module `reports` - read models as schema aliases Declare these three as schema **aliases** (introspectable as aliases) that all live in `reports`: - `reports::UnpaidInvoice` - the invoices whose `paid` is `false`; selecting it yields invoice objects, so `code`, `subtotal` and `total_due` are selectable from it. - `reports::CustomerBalance` - customers, each additionally exposing a single computed `outstanding`: the sum of `total_due` over that customer unpaid invoices, rounded to 2 decimal places (`0` when there are none). It must reflect data changes immediately, so marking an invoice paid changes it. - `reports::InvoicePlan` - invoices, each additionally exposing a multi computed `plan`: the installment amounts obtained by splitting the invoice `total_due` into `installment_count` parts exactly as `util::installments` does. ## Implementation Hints - Project path: `/home/user/pricing` (it already contains `gel.toml` and `dbschema/`). - The local Gel server is not necessarily running: `gel-start` (already on `PATH`) starts it if needed and returns once it accepts connections. `GEL_DSN` and the TLS setting are already exported in the environment, so the CLI and client libraries connect with no extra flags. - File layout: module `util` must be declared in `dbschema/util.gel`, module `billing` in `dbschema/billing.gel`, and module `reports` in `dbschema/reports.gel`. - Nothing this task introduces may end up in the `default` module: after your work there must be no non-builtin object type, function or alias whose name starts with `default::`. - The work must be committed as migration files under `dbschema/migrations/` and applied to the running instance, leaving the instance and the schema directory in sync (a fresh `gel migration status` must report being up to date). - The verifier deletes every `billing::LineItem`, `billing::Invoice` and `billing::Customer` object and inserts its own fixtures, so do not depend on any pre-existing or self-seeded data; the schema must work on an empty database. - Decimal values are compared numerically, so trailing zeros do not matter, but the numeric value must be exact.   
+
+Pochi
+💭 Thinking for 53 characters   
+📂 Listing files in /home/user/pricing recursively ✔ 
+📖 Reading /home/user/pricing/dbschema/default.gel ✔ 
+📖 Reading /home/user/pricing/gel.toml ✔ 
+💭 Thinking for 54 characters   
+💫 Executing which gel-start gel; env | grep -i GEL ✔ 
+💫 Executing gel-start ✔ 
+💭 Thinking for 536 characters   
+🔎 Searching the web for gel edgedb std::round decimal function signature ✔ 
+💭 Thinking for 8726 characters   
+🔎 Searching the web for edgedb gel schema alias computed property "will have all the properties" example alias Type { computed := } ✔ 
+💭 Thinking for 1820 characters   
+🔎 Searching the web for gel edgedb implicit cast int64 to decimal arithmetic operators table ✔ 
+💭 Thinking for 5487 characters   
+✏️  Writing /home/user/pricing/dbschema/util.gel ✔ 
+✏️  Writing /home/user/pricing/dbschema/billing.gel ✔ 
+✏️  Writing /home/user/pricing/dbschema/reports.gel ✔ 
+Now let's create and apply the migration.   
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 | tail -100 ✔ 
+💭 Thinking for 587 characters   
+🔧 Applying diff to /home/user/pricing/dbschema/util.gel ✔ 
+💫 Executing cd /home/user/pricing && gel migration create --non-interactive 2>&1 | tail -150 ✔ 
+💭 Thinking for 34 characters   
+💫 Executing cd /home/user/pricing && ls dbschema/migrations 2>&1; gel migration status 2>&1 ✖ "Command exited with code 3"
+💫 Executing cd /home/user/pricing && gel migrate 2>&1 | tail -100 ✔ 
+Migration applied successfully. Now let's verify status is clean and test the functions/types with real queries.   
+💫 Executing cd /home/user/pricing && gel migration status 2>&1 ✔ 
+Now let's run functional tests against the live instance.   
+💫 Executing cd /home/user/pricing && gel query "select util::money_round(1.005);" 2>&1
+gel query "select util::money_round(1.2345, 2);" 2>&1
+gel query "select util::money_round(1234.5, -2);" 2>&1
+gel query "select util::total_of();" 2>&1
+gel query "select util::total_of(1.1, 2.2, 3.3);" 2>&1
+gel query "select util::apply_discount(100, 10, <optional decimal>{});" 2>&1
+gel query "select util::apply_discount(100, 50, 60);" 2>&1
+gel query "select util::apply_discount(100, 50, 30);" 2>&1
+gel query "select util::gross_with_tax(100);" 2>&1
+gel query "select util::gross_with_tax(100, tax_pct := 21);" 2>&1
+gel query "select util::installments(10, 3);" 2>&1
+gel query "select util::installments(10, 0);" 2>&1
+gel query "select util::installments(10, -5);" 2>&1 ✔ 
+💭 Thinking for 1344 characters   
+💫 Executing cd /home/user/pricing && gel query "select util::money_round(1.005n);" 2>&1
+gel query "select util::money_round(1.015n);" 2>&1
+gel query "select util::money_round(1.2345n, 2);" 2>&1
+gel query "select util::money_round(1234.5n, -2);" 2>&1
+gel query "select util::total_of(1.1n, 2.2n, 3.3n);" 2>&1
+gel query "select util::installments(10n, 0);" 2>&1
+gel query "select util::installments(10n, -5);" 2>&1
+gel query "select util::gross_with_tax(100n, 21n);" 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 1037 characters   
+💫 Executing cd /home/user/pricing && gel query "select util::money_round(1.0n, 2, 3);" 2>&1
+gel query "select util::gross_with_tax(100n, tax_pct := 21n);" 2>&1 ✔ 
+All good. Now let's test the billing domain types with sample data (insert, verify computeds, constraints, then clean up).   
+💫 Executing cd /home/user/pricing && gel query "
+select (insert billing::Customer { name := 'Acme', discount_pct := 10n });
+" ✔ 
+💫 Executing cd /home/user/pricing && gel query "
+select (insert billing::Invoice {
+  code := 'INV-1',
+  customer := (select billing::Customer filter .name = 'Acme'),
+  minimum_charge := 50n,
+  installment_count := 3,
+});
+"
+gel query "
+select (insert billing::LineItem {
+  invoice := (select billing::Invoice filter .code = 'INV-1'),
+  description := 'Widget',
+  qty := 3,
+  unit_price := 10.5n,
+});
+"
+gel query "
+select (insert billing::LineItem {
+  invoice := (select billing::Invoice filter .code = 'INV-1'),
+  description := 'Gadget',
+  qty := 2,
+  unit_price := 2.25n,
+});
+" ✔ 
+💭 Thinking for 197 characters   
+💫 Executing cd /home/user/pricing && gel query "
+select billing::Invoice {
+  code, subtotal, total_due, installment_count
+} filter .code = 'INV-1';
+"
+gel query "select billing::customer_outstanding('Acme');"
+gel query "select billing::customer_outstanding('NoSuchCustomer');" ✔ 
+All correct (subtotal=36, discounted=32.4, floored by minimum_charge=50 → total_due=50). Now let's test the reports aliases and the constraint rejection.   
+💫 Executing cd /home/user/pricing && gel query "
+select reports::UnpaidInvoice { code, subtotal, total_due };
+"
+gel query "
+select reports::CustomerBalance { name, outstanding };
+"
+gel query "
+select reports::InvoicePlan { code, plan };
+" ✔ 
+💭 Thinking for 254 characters   
+💫 Executing cd /home/user/pricing && gel query "
+insert billing::LineItem {
+  invoice := (select billing::Invoice filter .code = 'INV-1'),
+  description := 'Bad',
+  qty := 1,
+  unit_price := 1.234n,
+};
+" 2>&1
+echo "---mark paid---"
+gel query "update billing::Invoice filter .code = 'INV-1' set { paid := true };"
+gel query "select reports::UnpaidInvoice { code };"
+gel query "select reports::CustomerBalance { name, outstanding };" ✔ 
+💭 Thinking for 629 characters   
+💫 Executing cd /home/user/pricing && gel query "
+select schema::Function {
+  name, volatility
+} filter .name = 'billing::customer_outstanding';
+" ✔ 
+Volatility confirmed as `Stable`. Now let's clean up test fixtures and verify introspection for aliases, functions, and default module emptiness.   
+💫 Executing cd /home/user/pricing && gel query "delete billing::LineItem;"
+gel query "delete billing::Invoice;"
+gel query "delete billing::Customer;"
+echo "---introspect---"
+gel query "select schema::Alias { name } filter .name like 'reports::%';"
+gel query "select schema::Function { name } filter .name like 'default::%' and not .builtin;"
+gel query "select schema::ObjectType { name } filter .name like 'default::%' and not .builtin;"
+gel query "select schema::Alias { name } filter .name like 'default::%' and not .builtin;" ✔ 
+💭 Thinking for 447 characters   
+💫 Executing cd /home/user/pricing && gel migration status 2>&1 ✔ 
+The schema is fully implemented, migrated, and verified against the live instance.   
+🎉 Task Completed
+Implemented the three-module Gel schema at `/home/user/pricing/dbschema/`:
+
+- **`util.gel`**: `money_round/1`, `money_round/2` (2-decimal / arbitrary-place overloads), `total_of` (variadic, sum+round, 0 for no args), `apply_discount` (with `optional decimal floor_amount`, using `?? d` coalescing to keep cardinality single and avoid the "may return empty" compile error), `gross_with_tax` (named-only `tax_pct` defaulting to `<decimal>0`, unresolvable positionally), and `installments` (`set of decimal`, guards the range bound so `count < 1` never divides by zero and always yields the empty set).
+- **`billing.gel`**: `Customer` (exclusive `name`, `discount_pct` default 0), `Invoice` (exclusive `code`, required `customer`, `paid` default false, optional `minimum_charge`, `installment_count` default 1, computed `lines` backlink, `subtotal` and `total_due` calling `util::money_round`/`util::apply_discount` across the module boundary), `LineItem` (`line_total` via `util::money_round`, plus an `expression` constraint on `unit_price` rejecting values that aren't already 2-decimal-rounded), and the `Stable` function `billing::customer_outstanding`.
+- **`reports.gel`**: schema aliases `UnpaidInvoice` (filtered `billing::Invoice`), `CustomerBalance` (`billing::Customer` + computed `outstanding`), `InvoicePlan` (`billing::Invoice` + computed multi `plan` via `util::installments`).
+
+Verification performed against the live local instance:
+- Migration created and applied (`00001-m1lh24n.edgeql`); `gel migration status` reports up to date.
+- Overload/resolution rules confirmed: 3-arg `money_round` and 2-positional-arg `gross_with_tax` both fail to resolve as required; named-only `tax_pct` call works.
+- Rounding verified (ties away from zero, negative places, `total_of()` → 0, `installments` with `count <= 0` → empty set, no division-by-zero error).
+- `apply_discount` verified both with and without `floor_amount`, including the floor actually taking effect.
+- Inserted sample `Customer`/`Invoice`/`LineItem` fixtures: `subtotal`, `total_due` (discount + minimum_charge floor), `customer_outstanding`, and all three `reports::*` aliases returned correct, live-updating values; marking an invoice paid immediately zeroed `CustomerBalance.outstanding` and removed it from `UnpaidInvoice`.
+- Constraint test: inserting a `LineItem` with `unit_price := 1.234n` was correctly rejected by the `expression` constraint.
+- `billing::customer_outstanding` introspects with `volatility = "Stable"`.
+- Confirmed no non-builtin `default::` object types, functions, or aliases exist.
+- All test fixtures were deleted afterward, leaving the database empty (schema works against an empty database, as required by the verifier).   
+  

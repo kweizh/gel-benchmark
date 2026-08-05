@@ -1,0 +1,47 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 22 items
+
+../../../tests/test_final_state.py ....................F.                [100%]
+
+=================================== FAILURES ===================================
+__________________________ test_report_file_contents ___________________________
+
+gel_server = True
+
+    def test_report_file_contents(gel_server):
+>       assert os.path.isfile(REPORT_PATH), "Report file {} is missing.".format(REPORT_PATH)
+E       AssertionError: Report file /home/user/branchlab/reconcile-report.json is missing.
+E       assert False
+E        +  where False = <function isfile at 0x7b5d836e4220>('/home/user/branchlab/reconcile-report.json')
+E        +    where <function isfile at 0x7b5d836e4220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:417: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../../../tests/test_final_state.py::test_branch_set_is_exactly_main_and_feat_review
+PASSED ../../../tests/test_final_state.py::test_active_branch_is_main
+PASSED ../../../tests/test_final_state.py::test_main_has_tag_object_type
+PASSED ../../../tests/test_final_state.py::test_main_tag_label_is_required_str_and_exclusive
+PASSED ../../../tests/test_final_state.py::test_main_article_tags_link
+PASSED ../../../tests/test_final_state.py::test_main_article_review_state_property
+PASSED ../../../tests/test_final_state.py::test_feat_review_carries_both_features
+PASSED ../../../tests/test_final_state.py::test_main_migration_history_is_linear_with_three_migrations
+PASSED ../../../tests/test_final_state.py::test_each_feature_contributed_one_migration
+PASSED ../../../tests/test_final_state.py::test_feat_review_history_matches_main
+PASSED ../../../tests/test_final_state.py::test_migration_status_in_sync_on_main
+PASSED ../../../tests/test_final_state.py::test_migration_status_in_sync_on_feat_review
+PASSED ../../../tests/test_final_state.py::test_migrations_directory_has_exactly_three_files
+PASSED ../../../tests/test_final_state.py::test_schema_source_file_exists
+PASSED ../../../tests/test_final_state.py::test_authors_preserved_in_place
+PASSED ../../../tests/test_final_state.py::test_articles_preserved_in_place
+PASSED ../../../tests/test_final_state.py::test_review_state_backfill_values
+PASSED ../../../tests/test_final_state.py::test_single_longform_tag_exists
+PASSED ../../../tests/test_final_state.py::test_longform_tagging_matches_word_count_boundary
+PASSED ../../../tests/test_final_state.py::test_reproduction_script_is_present_and_executable
+PASSED ../../../tests/test_final_state.py::test_zz_reproduction_script_is_rerunnable_and_state_preserved
+FAILED ../../../tests/test_final_state.py::test_report_file_contents - Assert...
+========================= 1 failed, 21 passed in 8.93s =========================

@@ -1,0 +1,6 @@
+{
+  "library_name": "Gel",
+  "task_name": "gel_concurrent_transfer_retries_py",
+  "research_plan_path": "plan.md",
+  "output_dir": "scratchpad/pending-tasks"
+}

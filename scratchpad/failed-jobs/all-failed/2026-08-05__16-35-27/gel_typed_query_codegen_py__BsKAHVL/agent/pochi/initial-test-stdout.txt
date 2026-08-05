@@ -1,0 +1,1112 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-7.2.1, pluggy-1.0.0+repack
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3, anyio-4.14.2
+collected 22 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_supporting_python_packages_importable PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_project_is_a_gel_project PASSED
+../bootstrap/test_initial_state.py::test_schema_file_present_with_expected_types PASSED
+../bootstrap/test_initial_state.py::test_migrations_present PASSED
+../bootstrap/test_initial_state.py::test_schema_checksum_recorded PASSED
+../bootstrap/test_initial_state.py::test_app_package_skeleton_present PASSED
+../bootstrap/test_initial_state.py::test_query_files_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_no_generated_modules_yet PASSED
+../bootstrap/test_initial_state.py::test_solution_artifacts_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_service_port_is_free PASSED
+../bootstrap/test_initial_state.py::test_connection_environment_configured PASSED
+../bootstrap/test_initial_state.py::test_gel_server_starts_and_answers_queries ERROR
+../bootstrap/test_initial_state.py::test_migrations_are_applied ERROR
+../bootstrap/test_initial_state.py::test_schema_types_exist_in_database ERROR
+../bootstrap/test_initial_state.py::test_seeded_object_counts ERROR
+../bootstrap/test_initial_state.py::test_seeded_regions ERROR
+../bootstrap/test_initial_state.py::test_seeded_grower_sample ERROR
+../bootstrap/test_initial_state.py::test_seeded_batch_samples ERROR
+../bootstrap/test_initial_state.py::test_seeded_region_totals ERROR
+
+==================================== ERRORS ====================================
+_________ ERROR at setup of test_gel_server_starts_and_answers_queries _________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+________________ ERROR at setup of test_migrations_are_applied _________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+____________ ERROR at setup of test_schema_types_exist_in_database _____________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+_________________ ERROR at setup of test_seeded_object_counts __________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+____________________ ERROR at setup of test_seeded_regions _____________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+_________________ ERROR at setup of test_seeded_grower_sample __________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+_________________ ERROR at setup of test_seeded_batch_samples __________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+_________________ ERROR at setup of test_seeded_region_totals __________________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """A connected blocking Gel client; guarantees the server is running and ready."""
+>       _start_gel_server()
+
+/bootstrap/test_initial_state.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _start_gel_server():
+        """Start the local Gel server (idempotent) and fail loudly if it does not come up."""
+        assert shutil.which("gel-start") is not None, (
+            "The 'gel-start' helper is not available in PATH; the image cannot start "
+            "the local Gel server."
+        )
+        proc = subprocess.run(
+            ["gel-start"],
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+>       assert proc.returncode == 0, (
+            "'gel-start' failed to start the local Gel server.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel-start' failed to start the local Gel server.
+E         stdout: 
+E         stderr: error: the local Gel server did not become ready in time
+E         ---- Exception occurred: return type mismatch in function declared to return integer ----
+E         
+E         1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         
+E         ---- Traceback ----
+E         
+E             edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker
+E                 
+E             edb/server/protocol/execute.pyx, line 86, in execute
+E                 > ???
+E             edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute
+E                 > none = NoneConstantType()
+E             edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command
+E                 
+E         
+E         edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer
+E         WARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache
+E         ERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248e803b74be782abc77c1a20574ed3"
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	SQL statement "CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.777 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	PL/pgSQL function inline_code_block line 5 at SQL statement
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: DO LANGUAGE plpgsql $__$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	DECLARE
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	    _dummy_text text;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	BEGIN
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	CREATE  FUNCTION edgedb_v7_2f266bec72.__qh_3248e803b74be782abc77c1a20574ed3()
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	RETURNS SETOF int
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	AS $____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	WITH  "range~1" AS  ( (SELECT "expr-1~2"."Region_value~1" AS "expr~1_identity~1" FROM  LATERAL  (SELECT "Region~2".id AS "Region_value~1" FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~2" ) AS "expr-1~2" )), "dml~1" AS  (DELETE FROM  edgedbpub."f08d7a0c-9099-11f1-b8e8-f1c893d3245b" AS "Region~3" USING "range~1" AS "range~2" WHERE ("Region~3".id = "range~2"."expr~1_identity~1") RETURNING "Region~3".id AS "expr~1_value~1") SELECT count("expr~1_serialized~1") AS "expr~1_serialized~1", TRUE AS sentinel FROM  (SELECT ROW("dml~2"."expr~1_value~1") AS "expr~1_serialized~1" FROM  "dml~1" AS "dml~2" ) AS "aggw~1"
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$____funcbody____$
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	LANGUAGE sql VOLATILE  PARALLEL UNSAFE;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	END;
+E         INFO 255 - 2026-08-05T06:50:30.778 postgres: 	$__$;
+E         INFO 255 - 2026-08-05T06:50:31.061 postgres: received smart shutdown request
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Received signal: 15.
+E         INFO 12 - 2026-08-05T06:50:31.061 edb.server: Shutting down.
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: starting Gel server 7.1+08db576, built on 2025-12-05T18:14Z from revision e0ef1b92d (2025-12-03T01:06Z) for x86_64-unknown-linux-gnu
+E         INFO 204 - 2026-08-05T08:35:48.774 edb.server: instance name: '_unknown'
+E         INFO 204 - 2026-08-05T08:35:48.813 edb.server: Using 3864 max backend connections based on total memory.
+E         CRITICAL 204 - 2026-08-05T08:35:48.840 edb.server: a PostgreSQL instance (PID 255) is already running in data directory "/var/lib/gel-task/data", please stop it to proceed
+E         ---- Exception occurred: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down ----
+E         
+E         2. SystemExit: 1
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 661, in run_server
+E                 > abort(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 87, in abort
+E                 > sys.exit(exit_code)
+E         
+E         SystemExit: 1
+E         
+E         ---- During handling of the above exception, another exception occurred ----
+E         
+E         1. edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E         ---- Traceback ----
+E         
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/bin/gel-server.py, line 7, in <module>
+E                 > sys.exit(main())
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1161, in __call__
+E                 > return self.main(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1082, in main
+E                 > rv = self.invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1675, in invoke
+E                 > rv = super().invoke(ctx)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 1443, in invoke
+E                 > return ctx.invoke(self.callback, **ctx.params)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/core.py, line 788, in invoke
+E                 > return __callback(*args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/click/decorators.py, line 33, in new_func
+E                 > return f(get_current_context(), *args, **kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 871, in main
+E                 > server_main(**kwargs)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main
+E                 > asyncio.run(run_server(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run
+E                 > return runner.run(main)
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run
+E                 > return self._loop.run_until_complete(task)
+E             uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete
+E                 
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server
+E                 > await cluster.stop()
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop
+E                 > await _run_logged_subprocess(
+E             /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess
+E                 > raise ClusterError(
+E         
+E         edb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:
+E             pg_ctl: server does not shut down
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel-start'], returncode=1, stdout='', stderr='error: the local Gel server did not become ready in time\n---- Exception occurred: return type mismatch in function declared to return integer ----\n\n1. edb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\n\n---- Traceback ----\n\n    edb/server/dbview/dbview.pyx, line 288, in edb.server.dbview.dbview.Database.cache_worker\n        \n    edb/server/protocol/execute.pyx, line 86, in execute\n        > ???\n    edb/server/protocol/execute.pyx, line 109, in edb.server.protocol.execute.ExecutionGroup.execute\n        > none = NoneConstantType()\n    edb/server/pgcon/pgcon.pyx, line 758, in wait_for_command\n        \n\nedb.server.pgcon.errors.BackendError: return type mismatch in function declared to return integer\nWARNING 12 _unknown 2026-08-05T06:50:30.776 edb.server: Failed to persist function cache\nERROR 255 - 2026-08-05T06:50:30.777 postgres: return type mismatch in function declared to return integer\nINFO 255 - 2026-08-05T06:50:30.777 postgres: Final statement must return exactly one column.\nINFO 255 - 2026-08-05T06:50:30.777 postgres: SQL function "__qh_3248...ain.py, line 871, in main\n        > server_main(**kwargs)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 845, in server_main\n        > asyncio.run(run_server(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 194, in run\n        > return runner.run(main)\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/asyncio/runners.py, line 118, in run\n        > return self._loop.run_until_complete(task)\n    uvloop/loop.pyx, line 1518, in uvloop.loop.Loop.run_until_complete\n        \n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/main.py, line 774, in run_server\n        > await cluster.stop()\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 644, in stop\n        > await _run_logged_subprocess(\n    /usr/lib/x86_64-linux-gnu/gel-server-7/lib/python3.12/site-packages/edb/server/pgcluster.py, line 1408, in _run_logged_subprocess\n        > raise ClusterError(\n\nedb.server.pgcluster.ClusterError: /usr/lib/x86_64-linux-gnu/gel-server-7/bin/pg_ctl exited with status 1:\n    pg_ctl: server does not shut down\n').returncode
+
+/bootstrap/test_initial_state.py:39: AssertionError
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_gel_server_starts_and_answers_queries
+ERROR ../bootstrap/test_initial_state.py::test_migrations_are_applied - Asser...
+ERROR ../bootstrap/test_initial_state.py::test_schema_types_exist_in_database
+ERROR ../bootstrap/test_initial_state.py::test_seeded_object_counts - Asserti...
+ERROR ../bootstrap/test_initial_state.py::test_seeded_regions - AssertionErro...
+ERROR ../bootstrap/test_initial_state.py::test_seeded_grower_sample - Asserti...
+ERROR ../bootstrap/test_initial_state.py::test_seeded_batch_samples - Asserti...
+ERROR ../bootstrap/test_initial_state.py::test_seeded_region_totals - Asserti...
+=================== 14 passed, 8 errors in 307.31s (0:05:07) ===================

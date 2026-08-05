@@ -1,0 +1,51 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 40 items
+
+../tests/test_final_state.py ........................................    [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+PASSED ../tests/test_final_state.py::test_migration_files_are_committed_to_the_project
+PASSED ../tests/test_final_state.py::test_article_status_enum_declaration
+PASSED ../tests/test_final_state.py::test_article_type_pointers
+PASSED ../tests/test_final_state.py::test_duplicate_slug_is_rejected
+PASSED ../tests/test_final_state.py::test_corpus_is_loaded_exactly
+PASSED ../tests/test_final_state.py::test_seed_script_is_idempotent
+PASSED ../tests/test_final_state.py::test_field_weighting_orders_title_above_summary_above_body
+PASSED ../tests/test_final_state.py::test_multi_term_query_ranking
+PASSED ../tests/test_final_state.py::test_identical_articles_are_tie_broken_by_slug
+PASSED ../tests/test_final_state.py::test_ordering_is_score_desc_then_slug_asc
+PASSED ../tests/test_final_state.py::test_search_is_deterministic_across_calls
+PASSED ../tests/test_final_state.py::test_language_aware_stemming
+PASSED ../tests/test_final_state.py::test_unfiltered_ledger_match_set
+PASSED ../tests/test_final_state.py::test_status_filter
+PASSED ../tests/test_final_state.py::test_tag_filter
+PASSED ../tests/test_final_state.py::test_status_and_tag_filters_combined
+PASSED ../tests/test_final_state.py::test_unknown_tag_yields_no_matches
+PASSED ../tests/test_final_state.py::test_pagination_reproduces_the_full_ordered_list
+PASSED ../tests/test_final_state.py::test_offset_beyond_last_match
+PASSED ../tests/test_final_state.py::test_zero_limit
+PASSED ../tests/test_final_state.py::test_queries_without_matches[]
+PASSED ../tests/test_final_state.py::test_queries_without_matches[   ]
+PASSED ../tests/test_final_state.py::test_queries_without_matches[zzzunmatchableterm]
+PASSED ../tests/test_final_state.py::test_payload_shape_and_echoed_arguments
+PASSED ../tests/test_final_state.py::test_highlight_wraps_matched_title_words
+PASSED ../tests/test_final_state.py::test_highlight_is_unchanged_title_when_nothing_matches
+PASSED ../tests/test_final_state.py::test_negative_limit_raises_value_error
+PASSED ../tests/test_final_state.py::test_negative_offset_raises_value_error
+PASSED ../tests/test_final_state.py::test_unknown_status_raises_value_error
+PASSED ../tests/test_final_state.py::test_search_reflects_live_database
+PASSED ../tests/test_final_state.py::test_cli_exists
+PASSED ../tests/test_final_state.py::test_cli_matches_the_service_payload
+PASSED ../tests/test_final_state.py::test_cli_applies_both_filters
+PASSED ../tests/test_final_state.py::test_cli_rejects_invalid_arguments[args0]
+PASSED ../tests/test_final_state.py::test_cli_rejects_invalid_arguments[args1]
+PASSED ../tests/test_final_state.py::test_cli_rejects_invalid_arguments[args2]
+PASSED ../tests/test_final_state.py::test_cli_rejects_invalid_arguments[args3]
+PASSED ../tests/test_final_state.py::test_cli_rejects_invalid_arguments[args4]
+PASSED ../tests/test_final_state.py::test_cli_empty_result
+============================= 40 passed in 11.63s ==============================

@@ -1,0 +1,191 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T07:26:52.689580+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 18,
+            "passed": 18,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785914809854,
+            "stop": 1785914812689
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_history_applied_and_in_sync",
+                "status": "passed",
+                "duration": 1332,
+                "start": 1785914809934,
+                "stop": 1785914811266,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_schema_types_and_pointers",
+                "status": "passed",
+                "duration": 141,
+                "start": 1785914811267,
+                "stop": 1785914811408,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unique_constraints",
+                "status": "passed",
+                "duration": 220,
+                "start": 1785914811418,
+                "stop": 1785914811638,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_archived_at_is_populated_automatically",
+                "status": "passed",
+                "duration": 24,
+                "start": 1785914811638,
+                "stop": 1785914811662,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_workspace_delete_cascades_to_folders_and_documents",
+                "status": "passed",
+                "duration": 90,
+                "start": 1785914811662,
+                "stop": 1785914811752,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_folder_delete_cascades_to_documents_only",
+                "status": "passed",
+                "duration": 52,
+                "start": 1785914811752,
+                "stop": 1785914811804,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_orphan_attachments_removed_on_direct_document_delete",
+                "status": "passed",
+                "duration": 69,
+                "start": 1785914811805,
+                "stop": 1785914811874,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_orphan_attachments_removed_through_workspace_cascade",
+                "status": "passed",
+                "duration": 57,
+                "start": 1785914811875,
+                "stop": 1785914811932,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_archived_document_cannot_be_deleted_directly",
+                "status": "passed",
+                "duration": 36,
+                "start": 1785914811932,
+                "stop": 1785914811968,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_archived_document_blocks_folder_and_workspace_cascade",
+                "status": "passed",
+                "duration": 61,
+                "start": 1785914811968,
+                "stop": 1785914812029,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_editor_protection_is_deferred_until_commit",
+                "status": "passed",
+                "duration": 117,
+                "start": 1785914812029,
+                "stop": 1785914812146,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_editor_deletion_fails_at_commit_when_still_referenced",
+                "status": "passed",
+                "duration": 103,
+                "start": 1785914812146,
+                "stop": 1785914812249,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unreferenced_editor_can_be_deleted",
+                "status": "passed",
+                "duration": 14,
+                "start": 1785914812249,
+                "stop": 1785914812263,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_happy_path",
+                "status": "passed",
+                "duration": 87,
+                "start": 1785914812263,
+                "stop": 1785914812350,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_unknown_name_raises_lookup_error",
+                "status": "passed",
+                "duration": 87,
+                "start": 1785914812351,
+                "stop": 1785914812438,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_refused_purge_is_atomic",
+                "status": "passed",
+                "duration": 63,
+                "start": 1785914812438,
+                "stop": 1785914812501,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_reports_real_numbers",
+                "status": "passed",
+                "duration": 111,
+                "start": 1785914812502,
+                "stop": 1785914812613,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_purge_workspace_keeps_editors",
+                "status": "passed",
+                "duration": 76,
+                "start": 1785914812613,
+                "stop": 1785914812689,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

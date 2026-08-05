@@ -1,0 +1,62 @@
+module default {
+  scalar type ActorRole extending enum<admin, agent, readonly>;
+  scalar type TicketStatus extending enum<open, pending, closed>;
+
+  global current_actor_email: str;
+  global current_actor := (
+    select Actor filter .email = global current_actor_email
+  );
+
+  type Tenant {
+    required slug: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Actor {
+    required email: str {
+      constraint exclusive;
+    }
+    required tenant: Tenant;
+    required role: ActorRole;
+  }
+
+  type Ticket {
+    required ref: str;
+    required subject: str;
+    required status: TicketStatus {
+      default := TicketStatus.open;
+    }
+    required tenant: Tenant;
+
+    index on (.ref);
+    constraint exclusive on ((.ref, .tenant));
+
+    # Access Policies
+    access policy select_tickets
+      allow select
+      using (.tenant ?= global current_actor.tenant);
+
+    access policy insert_tickets
+      allow insert
+      using (
+        (global current_actor.role ?= <ActorRole>'admin' or global current_actor.role ?= <ActorRole>'agent')
+        and .tenant ?= global current_actor.tenant
+      );
+
+    access policy update_tickets
+      allow update
+      using (
+        (global current_actor.role ?= <ActorRole>'admin' or global current_actor.role ?= <ActorRole>'agent')
+        and .tenant ?= global current_actor.tenant
+      );
+
+    access policy delete_tickets
+      allow delete
+      using (
+        global current_actor.role ?= <ActorRole>'admin'
+        and .tenant ?= global current_actor.tenant
+      );
+  }
+}

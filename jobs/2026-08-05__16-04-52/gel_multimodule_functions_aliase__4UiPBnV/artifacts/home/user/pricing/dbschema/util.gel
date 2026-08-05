@@ -1,0 +1,49 @@
+module util {
+
+    function money_round(amount: decimal) -> decimal
+    using (
+        std::round(amount, 2)
+    );
+
+    function money_round(amount: decimal, places: int64) -> decimal
+    using (
+        std::round(amount, places)
+    );
+
+    function total_of(variadic amounts: decimal) -> decimal
+    using (
+        util::money_round(sum(array_unpack(amounts)))
+    );
+
+    function apply_discount(amount: decimal, pct: decimal, floor_amount: optional decimal) -> decimal
+    using (
+        with
+            d := util::money_round(amount * (1 - pct / 100)),
+        select
+            if exists floor_amount then
+                max({d, floor_amount})
+            else
+                d
+    );
+
+    function gross_with_tax(net: decimal, named only tax_pct: decimal = 0) -> decimal
+    using (
+        util::money_round(net * (1 + tax_pct / 100))
+    );
+
+    function installments(total: decimal, count: int64) -> set of decimal
+    using (
+        if count < 1 then
+            <decimal>{}
+        else if count = 1 then
+            {total}
+        else (
+            with
+                part := util::money_round(total / count),
+                parts := std::array_fill(part, count - 1),
+                last := total - sum(array_unpack(parts)),
+            select array_unpack(parts) union {last}
+        )
+    );
+
+}

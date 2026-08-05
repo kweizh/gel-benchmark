@@ -1,0 +1,281 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T07:27:51.925632+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 28,
+            "passed": 28,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785914868291,
+            "stop": 1785914871925
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_three_modules_exist",
+                "status": "passed",
+                "duration": 196,
+                "start": 1785914868376,
+                "stop": 1785914868572,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_each_module_is_declared_in_its_own_schema_file",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785914868572,
+                "stop": 1785914868573,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785914868573,
+                "stop": 1785914868574,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_nothing_was_declared_in_the_default_module",
+                "status": "passed",
+                "duration": 43,
+                "start": 1785914868574,
+                "stop": 1785914868617,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_is_in_sync",
+                "status": "passed",
+                "duration": 1554,
+                "start": 1785914868617,
+                "stop": 1785914870171,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_money_round_overloads_are_declared",
+                "status": "passed",
+                "duration": 121,
+                "start": 1785914870171,
+                "stop": 1785914870292,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_total_of_is_variadic",
+                "status": "passed",
+                "duration": 8,
+                "start": 1785914870292,
+                "stop": 1785914870300,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_apply_discount_has_single_optional_parameter",
+                "status": "passed",
+                "duration": 9,
+                "start": 1785914870300,
+                "stop": 1785914870309,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_gross_with_tax_has_named_only_parameter_with_default",
+                "status": "passed",
+                "duration": 11,
+                "start": 1785914870310,
+                "stop": 1785914870321,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_installments_returns_a_set",
+                "status": "passed",
+                "duration": 12,
+                "start": 1785914870321,
+                "stop": 1785914870333,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_function_volatilities",
+                "status": "passed",
+                "duration": 9,
+                "start": 1785914870333,
+                "stop": 1785914870342,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_money_round_values",
+                "status": "passed",
+                "duration": 46,
+                "start": 1785914870342,
+                "stop": 1785914870388,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_empty_set_into_non_optional_parameter_yields_empty_set",
+                "status": "passed",
+                "duration": 8,
+                "start": 1785914870388,
+                "stop": 1785914870396,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_calls_that_match_no_overload_are_rejected",
+                "status": "passed",
+                "duration": 7,
+                "start": 1785914870396,
+                "stop": 1785914870403,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_total_of_variadic_behaviour",
+                "status": "passed",
+                "duration": 39,
+                "start": 1785914870403,
+                "stop": 1785914870442,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_apply_discount_optional_argument_behaviour",
+                "status": "passed",
+                "duration": 67,
+                "start": 1785914870442,
+                "stop": 1785914870509,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_gross_with_tax_named_only_behaviour",
+                "status": "passed",
+                "duration": 49,
+                "start": 1785914870510,
+                "stop": 1785914870559,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_installments_set_semantics",
+                "status": "passed",
+                "duration": 84,
+                "start": 1785914870560,
+                "stop": 1785914870644,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invoice_computeds_over_seeded_data",
+                "status": "passed",
+                "duration": 505,
+                "start": 1785914870644,
+                "stop": 1785914871149,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invoice_lines_and_line_totals",
+                "status": "passed",
+                "duration": 78,
+                "start": 1785914871149,
+                "stop": 1785914871227,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_computed_pointers_reference_the_util_module",
+                "status": "passed",
+                "duration": 96,
+                "start": 1785914871228,
+                "stop": 1785914871324,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unit_price_precision_constraint",
+                "status": "passed",
+                "duration": 86,
+                "start": 1785914871325,
+                "stop": 1785914871411,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_customer_outstanding_function",
+                "status": "passed",
+                "duration": 39,
+                "start": 1785914871411,
+                "stop": 1785914871450,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_aliases_are_declared_as_aliases",
+                "status": "passed",
+                "duration": 2,
+                "start": 1785914871450,
+                "stop": 1785914871452,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unpaid_invoice_alias_contents",
+                "status": "passed",
+                "duration": 101,
+                "start": 1785914871452,
+                "stop": 1785914871553,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_customer_balance_alias_contents",
+                "status": "passed",
+                "duration": 130,
+                "start": 1785914871553,
+                "stop": 1785914871683,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invoice_plan_alias_contents",
+                "status": "passed",
+                "duration": 134,
+                "start": 1785914871683,
+                "stop": 1785914871817,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_aliases_and_function_react_to_data_changes",
+                "status": "passed",
+                "duration": 107,
+                "start": 1785914871818,
+                "stop": 1785914871925,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

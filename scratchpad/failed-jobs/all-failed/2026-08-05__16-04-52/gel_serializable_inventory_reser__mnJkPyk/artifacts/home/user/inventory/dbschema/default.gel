@@ -1,0 +1,43 @@
+module default {
+  type StockItem {
+    required property sku -> str {
+      constraint exclusive;
+    }
+    required property stock -> int64 {
+      constraint min_value(0);
+    }
+    required property reserved -> int64 {
+      default := 0;
+    }
+    constraint expression on (
+      .reserved >= 0 and .reserved <= .stock
+    ) {
+      errmessage := 'reserved must be between 0 and stock';
+    }
+  }
+
+  type Reservation {
+    required property key -> str {
+      constraint exclusive;
+    }
+    required property state -> str {
+      default := 'active';
+    }
+    property expires_at -> datetime;
+  }
+
+  type ReservationLine {
+    required link reservation -> Reservation;
+    required link item -> StockItem;
+    required property quantity -> int64 {
+      constraint min_value(1);
+    }
+  }
+
+  type LedgerEntry {
+    required link reservation -> Reservation;
+    required link item -> StockItem;
+    required property delta -> int64;
+    required property kind -> str;
+  }
+}

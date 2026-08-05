@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 15 items
+
+../tests/test_final_state.py ...............                             [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_history_is_in_sync
+PASSED ../tests/test_final_state.py::test_new_migration_file_was_created
+PASSED ../tests/test_final_state.py::test_natural_key_is_exclusive_in_the_database
+PASSED ../tests/test_final_state.py::test_same_external_id_under_another_source_system_is_allowed
+PASSED ../tests/test_final_state.py::test_database_rejects_overlong_name
+PASSED ../tests/test_final_state.py::test_database_rejects_negative_price
+PASSED ../tests/test_final_state.py::test_fresh_insert
+PASSED ../tests/test_final_state.py::test_identical_replay_changes_nothing
+PASSED ../tests/test_final_state.py::test_mixed_insert_update_unchanged_batch
+PASSED ../tests/test_final_state.py::test_name_only_change_counts_as_update
+PASSED ../tests/test_final_state.py::test_dirty_batch_rejects
+PASSED ../tests/test_final_state.py::test_duplicate_of_a_rejected_record_is_not_a_duplicate
+PASSED ../tests/test_final_state.py::test_failed_batch_leaves_no_partial_state
+PASSED ../tests/test_final_state.py::test_round_trip_budget_and_supplied_client_usage
+PASSED ../tests/test_final_state.py::test_small_batch_uses_the_same_budget
+============================== 15 passed in 2.03s ==============================

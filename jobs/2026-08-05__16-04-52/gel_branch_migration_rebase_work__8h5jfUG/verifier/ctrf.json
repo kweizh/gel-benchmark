@@ -1,0 +1,236 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T08:15:35.137683+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 22,
+            "passed": 19,
+            "failed": 3,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785917730170,
+            "stop": 1785917735137
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_branch_set_is_exactly_main_and_feat_review",
+                "status": "passed",
+                "duration": 189,
+                "start": 1785917730206,
+                "stop": 1785917730395,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_active_branch_is_main",
+                "status": "passed",
+                "duration": 78,
+                "start": 1785917730395,
+                "stop": 1785917730473,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_has_tag_object_type",
+                "status": "passed",
+                "duration": 127,
+                "start": 1785917730473,
+                "stop": 1785917730600,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_tag_label_is_required_str_and_exclusive",
+                "status": "passed",
+                "duration": 184,
+                "start": 1785917730600,
+                "stop": 1785917730784,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_tags_link",
+                "status": "passed",
+                "duration": 176,
+                "start": 1785917730785,
+                "stop": 1785917730961,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_review_state_property",
+                "status": "passed",
+                "duration": 169,
+                "start": 1785917730961,
+                "stop": 1785917731130,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_carries_both_features",
+                "status": "passed",
+                "duration": 663,
+                "start": 1785917731131,
+                "stop": 1785917731794,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_migration_history_is_linear_with_three_migrations",
+                "status": "passed",
+                "duration": 199,
+                "start": 1785917731794,
+                "stop": 1785917731993,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_each_feature_contributed_one_migration",
+                "status": "passed",
+                "duration": 165,
+                "start": 1785917731993,
+                "stop": 1785917732158,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_history_matches_main",
+                "status": "passed",
+                "duration": 290,
+                "start": 1785917732159,
+                "stop": 1785917732449,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_main",
+                "status": "passed",
+                "duration": 1058,
+                "start": 1785917732449,
+                "stop": 1785917733507,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_feat_review",
+                "status": "passed",
+                "duration": 1063,
+                "start": 1785917733507,
+                "stop": 1785917734570,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migrations_directory_has_exactly_three_files",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785917734570,
+                "stop": 1785917734571,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_schema_source_file_exists",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785917734571,
+                "stop": 1785917734572,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_authors_preserved_in_place",
+                "status": "passed",
+                "duration": 81,
+                "start": 1785917734572,
+                "stop": 1785917734653,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_articles_preserved_in_place",
+                "status": "passed",
+                "duration": 110,
+                "start": 1785917734653,
+                "stop": 1785917734763,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_review_state_backfill_values",
+                "status": "passed",
+                "duration": 81,
+                "start": 1785917734763,
+                "stop": 1785917734844,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_single_longform_tag_exists",
+                "status": "passed",
+                "duration": 167,
+                "start": 1785917734844,
+                "stop": 1785917735011,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_longform_tagging_matches_word_count_boundary",
+                "status": "passed",
+                "duration": 78,
+                "start": 1785917735011,
+                "stop": 1785917735089,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reproduction_script_is_present_and_executable",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 27,
+                "start": 1785917735090,
+                "stop": 1785917735117,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_reproduction_script_is_present_and_executable():\n>       assert os.path.isfile(SCRIPT_PATH), \"Reproduction script {} is missing.\".format(SCRIPT_PATH)\nE       AssertionError: Reproduction script /home/user/branchlab/reconcile.sh is missing.\nE       assert False\nE        +  where False = <function isfile at 0x725aed880220>('/home/user/branchlab/reconcile.sh')\nE        +    where <function isfile at 0x725aed880220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:399: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_file_contents",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785917735117,
+                "stop": 1785917735127,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_file_contents(gel_server):\n>       assert os.path.isfile(REPORT_PATH), \"Report file {} is missing.\".format(REPORT_PATH)\nE       AssertionError: Report file /home/user/branchlab/reconcile-report.json is missing.\nE       assert False\nE        +  where False = <function isfile at 0x725aed880220>('/home/user/branchlab/reconcile-report.json')\nE        +    where <function isfile at 0x725aed880220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:417: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_zz_reproduction_script_is_rerunnable_and_state_preserved",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785917735128,
+                "stop": 1785917735137,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_zz_reproduction_script_is_rerunnable_and_state_preserved(gel_server):\n        \"\"\"Run last: the script must be safe to re-run on the already reconciled project.\"\"\"\n        proc = _run([\"bash\", SCRIPT_PATH], timeout=600)\n>       assert proc.returncode == 0, (\n            \"Re-running {} must exit 0, got {}:\\nSTDOUT:\\n{}\\nSTDERR:\\n{}\".format(\n                SCRIPT_PATH, proc.returncode, proc.stdout[-4000:], proc.stderr[-4000:]\n            )\n        )\nE       AssertionError: Re-running /home/user/branchlab/reconcile.sh must exit 0, got 127:\nE         STDOUT:\nE         \nE         STDERR:\nE         bash: /home/user/branchlab/reconcile.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/branchlab/reconcile.sh'], returncode=127, stdout='', stderr='bash: /home/user/branchlab/reconcile.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:469: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

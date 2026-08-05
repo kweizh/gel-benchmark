@@ -1,0 +1,27 @@
+module default {
+    # One stored JSON settings document plus its bookkeeping.
+    type SettingsLayer {
+        required key: str {
+            constraint exclusive;
+        }
+        required tier: str;
+        required doc: json;
+        required active: bool {
+            default := true;
+        }
+        required revision: int64 {
+            default := 0;
+        }
+    }
+
+    # A settings target together with its chain of layers.
+    type SettingsRecord {
+        required slug: str {
+            constraint exclusive;
+        }
+        required label: str;
+        multi layers: SettingsLayer {
+            precedence: int64;
+        }
+    }
+}

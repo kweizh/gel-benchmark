@@ -1,0 +1,179 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T08:46:43.223990+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 15,
+            "passed": 0,
+            "failed": 15,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785919548587,
+            "stop": 1785919603223
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_history_is_in_sync",
+                "status": "failed",
+                "duration": 54443,
+                "start": 1785919548688,
+                "stop": 1785919603131,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_new_migration_file_was_created",
+                "status": "failed",
+                "duration": 7,
+                "start": 1785919603131,
+                "stop": 1785919603138,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_natural_key_is_exclusive_in_the_database",
+                "status": "failed",
+                "duration": 14,
+                "start": 1785919603138,
+                "stop": 1785919603152,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_same_external_id_under_another_source_system_is_allowed",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603152,
+                "stop": 1785919603158,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_overlong_name",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603158,
+                "stop": 1785919603164,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_negative_price",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603164,
+                "stop": 1785919603170,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_fresh_insert",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603170,
+                "stop": 1785919603176,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_identical_replay_changes_nothing",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603176,
+                "stop": 1785919603182,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_mixed_insert_update_unchanged_batch",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603182,
+                "stop": 1785919603188,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_name_only_change_counts_as_update",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785919603188,
+                "stop": 1785919603193,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_dirty_batch_rejects",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785919603194,
+                "stop": 1785919603199,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_of_a_rejected_record_is_not_a_duplicate",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785919603200,
+                "stop": 1785919603205,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_failed_batch_leaves_no_partial_state",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603205,
+                "stop": 1785919603211,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_round_trip_budget_and_supplied_client_usage",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603211,
+                "stop": 1785919603217,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_small_batch_uses_the_same_budget",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785919603217,
+                "stop": 1785919603223,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "@pytest.fixture(scope=\"session\")\n    def client():\n        \"\"\"Start the local Gel instance (idempotent) and hand back a blocking client.\"\"\"\n        os.chdir(PROJECT_DIR)\n        if PROJECT_DIR not in sys.path:\n            sys.path.insert(0, PROJECT_DIR)\n    \n        started = _run([\"gel-start-instance\"])\n        assert started.returncode == 0, (\n            \"`gel-start-instance` failed to bring the local Gel instance up: \"\n            f\"stdout={started.stdout!r} stderr={started.stderr!r}\"\n        )\n    \n        last_error = None\n        for _ in range(20):\n            try:\n                c = gel.create_client(timeout=15)\n                c.query_single(\"select 1\")\n                yield c\n                c.close()\n                return\n            except Exception as exc:  # noqa: BLE001\n                last_error = exc\n                time.sleep(2)\n>       raise AssertionError(\n            f\"Could not connect to the local Gel instance '{INSTANCE_NAME}': {last_error}\"\n        )\nE       AssertionError: Could not connect to the local Gel instance 'geltask': Postgres is not available: terminating connection due to unexpected postmaster exit\n\n/tests/test_final_state.py:161: AssertionError"
+            }
+        ]
+    }
+}

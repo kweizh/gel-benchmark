@@ -1,0 +1,38 @@
+{
+    "schema_version": 1,
+    "task": {
+        "name": "gel_typed_query_codegen_py",
+        "type": "local",
+        "digest": "sha256:428870bd00fc1adc818e7ec84b545dea58b84996e2aadbea4fa52d348062f8c8",
+        "source": "pending-tasks",
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_typed_query_codegen_py"
+    },
+    "install_only": false,
+    "timeout_multiplier": 1.0,
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "zai/glm-5.2",
+        "skills": [],
+        "resume_trajectory": false,
+        "extra_allowed_hosts": [],
+        "kwargs": {},
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        },
+        "mcp_servers": []
+    },
+    "skills": [],
+    "environment": {
+        "type": "daytona",
+        "force_build": false,
+        "delete": true,
+        "cpu_enforcement_policy": "auto",
+        "memory_enforcement_policy": "auto",
+        "extra_docker_compose": [],
+        "kwargs": {},
+        "extra_allowed_hosts": []
+    },
+    "verifier": {
+        "disable": false
+    }
+}

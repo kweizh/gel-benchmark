@@ -1,0 +1,85 @@
+- Initializing MCP connections...
+You
+# Referential Integrity for a Document Workspace Graph (Gel) ## Background A small document-management product stores its data in a **Gel 6.11** database (a local, single-container instance is already installed and its project skeleton is already created). The product team keeps losing data integrity: purging a workspace leaves orphaned folders and documents behind, shared file blobs are deleted while other documents still point at them, documents that legal has already archived get wiped by careless cleanup scripts, and a batch job that releases editors breaks whenever a document is still checked out. Management has decided that **the database itself** must guarantee these rules, so that no application, script or REPL session can violate them. Your job is to design the graph schema that encodes the rules and to deliver the workspace purge routine that the product will call. ## Requirements ### 1. Schema Define these object types in the `default` module, with exactly these names, properties, links and cardinalities: - `Workspace` - `name`: required `str`, unique across all workspaces - `Folder` - `name`: required `str` - `workspace`: required single link to `Workspace` - `Attachment` - `filename`: required `str`, unique across all attachments - `byte_size`: required `int64` - `Editor` - `email`: required `str`, unique across all editors - `Document` - `title`: required `str` - `folder`: required single link to `Folder` - `attachments`: optional `multi` link to `Attachment` - `checked_out_by`: optional single link to `Editor` - `ArchivedRecord` - `label`: required `str`, unique across all archived records - `document`: required single link to `Document` - `archived_at`: required `datetime` that is populated automatically when a record is inserted without it Apart from `archived_at`, no other property or link may be required beyond the list above: objects are created supplying only the fields listed here, so any extra field you add must have a default. The schema must be delivered through the project's migration history (`dbschema/migrations/`) and must be fully applied to the running instance, with no pending or divergent migrations. ### 2. Integrity rules enforced by the database All of the rules below must hold for **plain EdgeQL `delete` statements executed directly against the database**, with no application code, trigger scripts, or manual clean-up steps involved: 1. **Container purge cascades.** Deleting a `Workspace` also removes every `Folder` of that workspace and every `Document` in those folders. Deleting a single `Folder` also removes every `Document` in it. No orphaned `Folder` or `Document` may survive. 2. **Shared blobs are garbage-collected, but only when orphaned.** When a `Document` disappears (whether deleted directly or removed as part of a cascade), every `Attachment` it linked through `attachments` is deleted **unless** at least one surviving `Document` still links that same `Attachment` through `attachments`; such still-referenced attachments must survive intact. 3. **Archived documents are protected.** Any deletion that would remove a `Document` that is referenced by `ArchivedRecord.document` must fail with a Gel constraint-violation error (a `gel.errors.ConstraintViolationError`) and must leave the database unchanged. This includes indirect attempts, i.e. deleting the `Folder` or the `Workspace` that contains such a document, which must fail as well. 4. **Checked-out editors are protected only until the end of the transaction.** Deleting an `Editor` that is still referenced by `Document.checked_out_by` must fail with a Gel constraint-violation error and leave both the editor and the referencing documents in place. However, the violation must **not** be reported while the transaction is still open: a single transaction that first deletes the `Editor` and only afterwards stops the referencing documents from pointing at it must commit successfully. Deleting an `Editor` that no document references must succeed and must never delete or modify any `Document`. ### 3. Purge routine Deliver a Python module `purge.py` in the project root exposing: ```python async def purge_workspace(client, workspace_name: str) -> dict ``` `client` is an already-connected `gel` asynchronous client. The routine purges the workspace with the given `name` and reports what the purge removed. It must: - perform the whole purge (and the bookkeeping it needs) inside a **single database transaction**, so that a purge that is refused by the database leaves absolutely no trace; - raise `LookupError` and change nothing if no `Workspace` has that name; - let a database integrity error propagate to the caller unwrapped (the caller must receive the original `gel.errors.ConstraintViolationError`) and leave the database exactly as it was; - return a `dict` with exactly the keys `workspace`, `folders_deleted`, `documents_deleted`, `attachments_deleted`, `attachments_kept`, where: - `workspace` is the purged workspace's `name` (`str`); - `folders_deleted` (`int`) is how many `Folder` objects of that workspace existed before the call and no longer exist after it; - `documents_deleted` (`int`) is how many `Document` objects in those folders existed before the call and no longer exist after it; - `attachments_deleted` (`int`) is how many distinct `Attachment` objects were linked through `attachments` by those documents before the call and no longer exist after it; - `attachments_kept` (`int`) is how many distinct `Attachment` objects were linked through `attachments` by those documents before the call and still exist after it. The reported numbers must be derived from the actual database state after the purge, not from assumptions about what the schema does. ## Implementation Hints - Project path: `/home/user/docmgr` (already contains `gel.toml` and `dbschema/default.gel`). - The Gel server for this project runs locally inside this container and listens on `127.0.0.1:5656`; connection settings are already provided through the environment, so `gel` CLI commands run from the project directory and `gel.create_async_client()` both connect without extra configuration. If the server is not running yet, run `gel-serve` (a helper on `PATH` that starts the local server in the background and returns once it accepts connections). There is no network access to any external service. - Python module path: `/home/user/docmgr/purge.py`; it must be importable on its own (`import purge` from the project directory) without side effects at import time. - Everything must live in the `default` module of the branch the environment connects to (`main`). - Keep the data volume tiny; the verification graph contains only a few dozen objects.   
+
+Pochi
+💭 Thinking for 84 characters   
+I'll start by exploring the existing project structure to understand what's already set up.   
+📂 Listing files in /home/user/docmgr recursively ✔ 
+💭 Thinking for 34 characters   
+📖 Reading /home/user/docmgr/gel.toml ✔ 
+📖 Reading /home/user/docmgr/dbschema/default.gel ✔ 
+💭 Thinking for 132 characters   
+Let me check the Gel environment and CLI availability.   
+💫 Executing which gel gel-serve 2>&1; echo "---"; gel --version 2>&1; echo "---"; python3 --version 2>&1; echo "---"; python3 -c "import gel; print(gel.__version__)" 2>&1 ✔ 
+💫 Executing cd /home/user/docmgr && gel project info 2>&1; echo "---STATUS---"; gel migration log 2>&1 | head -50; echo "---LIST---"; ls -la ✔ 
+💭 Thinking for 98 characters   
+The project needs initialization. Let me start the server and initialize the project.   
+💫 Executing cd /home/user/docmgr && gel-serve 2>&1; echo "---DONE SERVE---" ✔ 
+💫 Executing cd /home/user/docmgr && gel project init --server-instance=local 2>&1; echo "---DONE INIT---" ✔ 
+💭 Thinking for 627 characters   
+The server is already running. Let me check the environment and connection settings.   
+💫 Executing env | grep -i -E "gel|edge" 2>&1; echo "---"; cd /home/user/docmgr && gel project info 2>&1; echo "---PS---"; ps aux | grep -i edge | grep -v grep 2>&1 ✔ 
+💭 Thinking for 988 characters   
+The server is running with `GEL_DSN=gel://admin@127.0.0.1:5656/main`. The `project init` tried to bootstrap a new instance as root which fails. Let me check how to link to the existing running instance.   
+💫 Executing cd /home/user/docmgr && gel project init --help 2>&1 | head -60 ✔ 
+💭 Thinking for 675 characters   
+💫 Executing cd /home/user/docmgr && gel instance list 2>&1; echo "---INFO---"; gel instance info local 2>&1; echo "---DSN TEST---"; gel --dsn "gel://admin@127.0.0.1:5656/main" query "select 1+1" 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 403 characters   
+💫 Executing cd /home/user/docmgr && gel --tls-security=insecure --dsn "gel://admin@127.0.0.1:5656/main" query "select 1+1" 2>&1; echo "---ENV TRY---"; gel query "select 1+1" 2>&1 ✔ 
+💭 Thinking for 1666 characters   
+The CLI picks up env vars. Let me check migration commands and try linking the project.   
+💫 Executing cd /home/user/docmgr && gel migration log --from-db 2>&1 | head -20; echo "---CREATE HELP---"; gel migration create --help 2>&1 | head -40 ✔ 
+💭 Thinking for 52193 characters   
+The CLI works via env vars. The database has no migrations yet. Let me check the Gel link policy documentation to confirm semantics, then design the schema. Let me first try fetching docs and set up a test.   
+🌐 Fetching https://docs.geldata.com/database/reference/links ✔ 
+💭 Thinking for 191 characters   
+Docs URL moved. I'll rely on empirical testing, which is more reliable. Let me write the schema and test the critical behaviors. First, the schema:   
+✏️  Writing /home/user/docmgr/dbschema/default.gel ✔ 
+💭 Thinking for 67 characters   
+Now let me create the migration non-interactively:   
+💫 Executing cd /home/user/docmgr && gel migration create --non-interactive 2>&1; echo "---LOG---"; gel migration log --from-db 2>&1 | head -20; echo "---FS---"; ls -la dbschema/ dbschema/migrations 2>&1 ✔ 
+💭 Thinking for 45 characters   
+📖 Reading /home/user/docmgr/dbschema/migrations/00001-m1yirw3.edgeql ✔ 
+💭 Thinking for 46 characters   
+The migration looks correct. Now let me apply it:   
+💫 Executing cd /home/user/docmgr && gel migrate 2>&1; echo "---STATUS---"; gel migration log --from-db 2>&1 | head; echo "---CHECK---"; gel migration status 2>&1 ✔ 
+💭 Thinking for 1443 characters   
+Migration applied and database is up to date. Now let me empirically test the critical integrity behaviors. Let me write a comprehensive test script:   
+✏️  Writing /home/user/docmgr/test_schema.py ✔ 
+💫 Executing cd /home/user/docmgr && python3 test_schema.py 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 217 characters   
+The async client connects lazily. Let me check the API:   
+💫 Executing cd /home/user/docmgr && python3 -c "import gel; c = gel.create_async_client(); print([m for m in dir(c) if not m.startswith('__')])" 2>&1 ✔ 
+💭 Thinking for 201 characters   
+🔧 Applying diff to /home/user/docmgr/test_schema.py ✔ 
+💫 Executing cd /home/user/docmgr && python3 test_schema.py 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 5609 characters   
+Folder names aren't unique, so the planner needs guaranteed-single expressions. Let me use `assert_single` for non-unique selects:   
+✏️  Writing /home/user/docmgr/test_schema.py ✔ 
+💫 Executing cd /home/user/docmgr && python3 test_schema.py 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 20017 characters   
+Test 1 (cascade) passed, but Test 2 reveals important semantics: `on source delete delete target` raised "deletion of Attachment is prohibited by link target policy" when the attachment was shared. This means it does NOT silently keep shared attachments. Let me research the exact Gel link policy semantics and check for triggers:   
+🔎 Searching the web for Gel EdgeDB link policy "on source delete delete target" "on target delete" default restrict allow semantics ✔ 
+🔎 Searching the web for Gel database 6.x triggers after delete DML trigger schema SDL ✔ 
+💭 Thinking for 2925 characters   
+Excellent! This is the key finding. The default `on target delete` is `restrict` (confirming my test), and there's a **`delete target if orphan`** source policy that "deletes the target if and only if it's no longer linked by any other object via the same link" — exactly the garbage-collection behavior I need. Let me fetch the precise docs:   
+🌐 Fetching https://docs.geldata.com/reference/datamodel/links ✔ 
+💭 Thinking for 10722 characters   
+I now have the precise semantics. Key facts: - Default `on target delete` is `restrict` (confirms my test failure). - `on source delete delete target if orphan` — "deletes the target if and only if it's no longer linked by any other object via the same link" — exactly the GC behavior I need. Let me update the schema to use `delete target if orphan`:   
+🔧 Applying diff to /home/user/docmgr/dbschema/default.gel ✔ 
+💭 Thinking for 635 characters   
+💫 Executing cd /home/user/docmgr && gel migration create --non-interactive 2>&1; echo "---APPLY---"; gel migrate 2>&1; echo "---FILES---"; ls dbschema/migrations/ ✔ 
+💭 Thinking for 65 characters   
+Now let me re-run the test:   
+💫 Executing cd /home/user/docmgr && python3 test_schema.py 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 3861 characters   
+The cascade test passed. There's a syntax error in my test query (can't put `filter` directly after a path step). Let me fix the test queries to use the `in` pattern:   
+🔧 Applying diff to /home/user/docmgr/test_schema.py ✔ 
+🔧 Applying diff to /home/user/docmgr/test_schema.py ✔ 
+🔧 Applying diff to /home/user/docmgr/test_schema.py ✔ 
+💫 Executing cd /home/user/docmgr && python3 test_schema.py 2>&1 ✔ 
+💭 Thinking for 2906 characters   
+All core integrity tests pass. Now let me verify the trickiest attachment-GC cascade scenarios that the purge routine will depend on — especially an attachment shared between two documents **both** in the purged workspace (should be deleted), and an attachment shared with an archived document in another workspace (should be kept):   
+✏️  Writing /home/user/docmgr/test_gc.py ✔ 
+💫 Executing cd /home/user/docmgr && python3 test_gc.py 2>&1 ✔ 

@@ -1,0 +1,26 @@
+module default {
+  type Author {
+    required name: str {
+      constraint exclusive;
+    }
+    required country: str;
+  }
+
+  type Article {
+    required title: str {
+      constraint exclusive;
+    }
+    required word_count: int64;
+    required author: Author;
+    multi tags: Tag;
+    required review_state: str {
+      default := 'needs_review' if .word_count >= 1200 else 'archived';
+    }
+  }
+
+  type Tag {
+    required label: str {
+      constraint exclusive;
+    }
+  }
+}

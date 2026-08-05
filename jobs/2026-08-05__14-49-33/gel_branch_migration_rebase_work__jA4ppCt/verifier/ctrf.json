@@ -1,0 +1,227 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T06:59:06.884150+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 22,
+            "passed": 22,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785913131260,
+            "stop": 1785913146883
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_branch_set_is_exactly_main_and_feat_review",
+                "status": "passed",
+                "duration": 185,
+                "start": 1785913131294,
+                "stop": 1785913131479,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_active_branch_is_main",
+                "status": "passed",
+                "duration": 83,
+                "start": 1785913131479,
+                "stop": 1785913131562,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_has_tag_object_type",
+                "status": "passed",
+                "duration": 147,
+                "start": 1785913131563,
+                "stop": 1785913131710,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_tag_label_is_required_str_and_exclusive",
+                "status": "passed",
+                "duration": 223,
+                "start": 1785913131711,
+                "stop": 1785913131934,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_tags_link",
+                "status": "passed",
+                "duration": 167,
+                "start": 1785913131934,
+                "stop": 1785913132101,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_review_state_property",
+                "status": "passed",
+                "duration": 175,
+                "start": 1785913132101,
+                "stop": 1785913132276,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_carries_both_features",
+                "status": "passed",
+                "duration": 739,
+                "start": 1785913132277,
+                "stop": 1785913133016,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_migration_history_is_linear_with_three_migrations",
+                "status": "passed",
+                "duration": 195,
+                "start": 1785913133017,
+                "stop": 1785913133212,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_each_feature_contributed_one_migration",
+                "status": "passed",
+                "duration": 160,
+                "start": 1785913133212,
+                "stop": 1785913133372,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_history_matches_main",
+                "status": "passed",
+                "duration": 306,
+                "start": 1785913133372,
+                "stop": 1785913133678,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_main",
+                "status": "passed",
+                "duration": 1036,
+                "start": 1785913133679,
+                "stop": 1785913134715,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_feat_review",
+                "status": "passed",
+                "duration": 1022,
+                "start": 1785913134715,
+                "stop": 1785913135737,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migrations_directory_has_exactly_three_files",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785913135737,
+                "stop": 1785913135738,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_schema_source_file_exists",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785913135738,
+                "stop": 1785913135739,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_authors_preserved_in_place",
+                "status": "passed",
+                "duration": 78,
+                "start": 1785913135739,
+                "stop": 1785913135817,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_articles_preserved_in_place",
+                "status": "passed",
+                "duration": 114,
+                "start": 1785913135817,
+                "stop": 1785913135931,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_review_state_backfill_values",
+                "status": "passed",
+                "duration": 72,
+                "start": 1785913135931,
+                "stop": 1785913136003,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_single_longform_tag_exists",
+                "status": "passed",
+                "duration": 147,
+                "start": 1785913136003,
+                "stop": 1785913136150,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_longform_tagging_matches_word_count_boundary",
+                "status": "passed",
+                "duration": 75,
+                "start": 1785913136150,
+                "stop": 1785913136225,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reproduction_script_is_present_and_executable",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785913136226,
+                "stop": 1785913136226,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_file_contents",
+                "status": "passed",
+                "duration": 168,
+                "start": 1785913136226,
+                "stop": 1785913136394,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_zz_reproduction_script_is_rerunnable_and_state_preserved",
+                "status": "passed",
+                "duration": 10488,
+                "start": 1785913136395,
+                "stop": 1785913146883,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

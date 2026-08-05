@@ -1,0 +1,8 @@
+module default {
+    type Account {
+        required code: str {
+            constraint exclusive;
+        }
+        required balance_cents: int64;
+    }
+}

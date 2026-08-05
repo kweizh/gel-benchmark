@@ -1,0 +1,833 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 28 items
+
+../tests/test_final_state.py F.F.FFFFFFFFF.FFFFEEFEEFEEEE                [100%]
+
+==================================== ERRORS ====================================
+__________ ERROR at setup of test_invoice_computeds_over_seeded_data ___________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_____________ ERROR at setup of test_invoice_lines_and_line_totals _____________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+____________ ERROR at setup of test_unit_price_precision_constraint ____________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_____________ ERROR at setup of test_customer_outstanding_function _____________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_____________ ERROR at setup of test_unpaid_invoice_alias_contents _____________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+____________ ERROR at setup of test_customer_balance_alias_contents ____________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+______________ ERROR at setup of test_invoice_plan_alias_contents ______________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+______ ERROR at setup of test_aliases_and_function_react_to_data_changes _______
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    @pytest.fixture()
+    def seeded(client):
+>       _wipe(client)
+
+/tests/test_final_state.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:89: in _wipe
+    client.execute(stmt)
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:316: in execute
+    self._execute(ExecuteContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:407: in _execute
+    self._iter_coroutine(super()._execute(execute_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:760: in _execute
+    await con._execute(execute_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:271: in _execute
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:267: in _inner
+    res = await self._protocol.execute(ctx)
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'billing::LineItem' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   delete billing::LineItem;
+E     │          ^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+=================================== FAILURES ===================================
+___________________________ test_three_modules_exist ___________________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_three_modules_exist(client):
+        names = _jq(client, "select schema::Module.name")
+        for expected in ("util", "billing", "reports"):
+>           assert expected in names, (
+                f"Schema module {expected!r} does not exist in the instance. Found: {sorted(names)}"
+            )
+E           AssertionError: Schema module 'util' does not exist in the instance. Found: ['cfg', 'default', 'ext', 'schema', 'std', 'std::cal', 'std::enc', 'std::fts', 'std::lang', 'std::lang::go', 'std::lang::js', 'std::lang::py', 'std::lang::rs', 'std::math', 'std::net', 'std::net::http', 'std::pg', 'sys']
+E           assert 'util' in ['std', 'ext', 'std::lang', 'std::lang::go', 'std::lang::js', 'std::lang::py', ...]
+
+/tests/test_final_state.py:110: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+gel-start stdout:
+Gel server is already running on 127.0.0.1:5656.
+
+gel-start stderr:
+
+__________________________ test_migration_files_exist __________________________
+
+    def test_migration_files_exist():
+>       assert os.path.isdir(MIGRATIONS_DIR), (
+            f"Migration directory {MIGRATIONS_DIR} does not exist; the schema was never migrated."
+        )
+E       AssertionError: Migration directory /home/user/pricing/dbschema/migrations does not exist; the schema was never migrated.
+E       assert False
+E        +  where False = <function isdir at 0x76ef3c8602c0>('/home/user/pricing/dbschema/migrations')
+E        +    where <function isdir at 0x76ef3c8602c0> = <module 'posixpath' (frozen)>.isdir
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:130: AssertionError
+_______________________ test_migration_status_is_in_sync _______________________
+
+server = True
+
+    def test_migration_status_is_in_sync(server):
+        proc = subprocess.run(
+            ["gel", "migration", "status", "--quiet"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+>       assert proc.returncode == 0, (
+            "'gel migration status --quiet' reports that the instance and dbschema/ are not in sync.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'gel migration status --quiet' reports that the instance and dbschema/ are not in sync.
+E         stdout: 
+E         stderr: error: Unexpected 'line_total'
+E            ┌─ /home/user/pricing/dbschema/billing.gel:19:18
+E            │
+E         19 │         computed line_total: decimal {
+E            │                  ^^^^^^^^^^ error
+E         
+E         gel error: cannot proceed until schema files are fixed
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'migration', 'status', '--quiet'], returncode=1, stdout='', stderr="error: Unexpected 'l..._total: decimal {\n   │                  ^^^^^^^^^^ error\n\ngel error: cannot proceed until schema files are fixed\n").returncode
+
+/tests/test_final_state.py:166: AssertionError
+___________________ test_money_round_overloads_are_declared ____________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_money_round_overloads_are_declared(client):
+        funcs = _functions(client)
+        one = funcs.get(("util::money_round", ("amount",)))
+        two = funcs.get(("util::money_round", ("amount", "places")))
+>       assert one is not None, (
+            "util::money_round(amount: decimal) is missing. Found: " + str(sorted(funcs))
+        )
+E       AssertionError: util::money_round(amount: decimal) is missing. Found: []
+E       assert None is not None
+
+/tests/test_final_state.py:200: AssertionError
+__________________________ test_total_of_is_variadic ___________________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_total_of_is_variadic(client):
+        funcs = _functions(client)
+        fn = funcs.get(("util::total_of", ("amounts",)))
+>       assert fn is not None, (
+            "util::total_of(variadic amounts: decimal) is missing. Found: " + str(sorted(funcs))
+        )
+E       AssertionError: util::total_of(variadic amounts: decimal) is missing. Found: []
+E       assert None is not None
+
+/tests/test_final_state.py:235: AssertionError
+______________ test_apply_discount_has_single_optional_parameter _______________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_apply_discount_has_single_optional_parameter(client):
+        funcs = _functions(client)
+        fn = funcs.get(("util::apply_discount", ("amount", "pct", "floor_amount")))
+>       assert fn is not None, (
+            "util::apply_discount(amount, pct, floor_amount) is missing. Found: "
+            + str(sorted(funcs))
+        )
+E       AssertionError: util::apply_discount(amount, pct, floor_amount) is missing. Found: []
+E       assert None is not None
+
+/tests/test_final_state.py:254: AssertionError
+__________ test_gross_with_tax_has_named_only_parameter_with_default ___________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_gross_with_tax_has_named_only_parameter_with_default(client):
+        funcs = _functions(client)
+        fn = funcs.get(("util::gross_with_tax", ("net", "tax_pct")))
+>       assert fn is not None, (
+            "util::gross_with_tax(net, named only tax_pct) is missing. Found: " + str(sorted(funcs))
+        )
+E       AssertionError: util::gross_with_tax(net, named only tax_pct) is missing. Found: []
+E       assert None is not None
+
+/tests/test_final_state.py:275: AssertionError
+_______________________ test_installments_returns_a_set ________________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_installments_returns_a_set(client):
+        funcs = _functions(client)
+        fn = funcs.get(("util::installments", ("total", "count")))
+>       assert fn is not None, (
+            "util::installments(total: decimal, count: int64) is missing. Found: "
+            + str(sorted(funcs))
+        )
+E       AssertionError: util::installments(total: decimal, count: int64) is missing. Found: []
+E       assert None is not None
+
+/tests/test_final_state.py:292: AssertionError
+__________________________ test_function_volatilities __________________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_function_volatilities(client):
+        funcs = _functions(client)
+        money_round = funcs.get(("util::money_round", ("amount",)))
+>       assert money_round is not None, "util::money_round(amount: decimal) is missing."
+E       AssertionError: util::money_round(amount: decimal) is missing.
+E       assert None is not None
+
+/tests/test_final_state.py:312: AssertionError
+___________________________ test_money_round_values ____________________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_money_round_values(client):
+        cases = [
+            ("select util::money_round(<decimal>'2.345')", D("2.35")),
+            ("select util::money_round(<decimal>'-2.345')", D("-2.35")),
+            ("select util::money_round(<decimal>'2.5')", D("2.5")),
+            ("select util::money_round(<decimal>'2.345', 1)", D("2.3")),
+            ("select util::money_round(<decimal>'163.278', -1)", D("160")),
+            ("select util::money_round(<decimal>'163.278', 0)", D("163")),
+        ]
+        for query, expected in cases:
+>           got = client.query_single(query)
+
+/tests/test_final_state.py:345: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: function 'util::money_round' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   select util::money_round(<decimal>'2.345')
+E     │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_________ test_empty_set_into_non_optional_parameter_yields_empty_set __________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_empty_set_into_non_optional_parameter_yields_empty_set(client):
+>       rows = client.query("select util::money_round(<decimal>{})")
+
+/tests/test_final_state.py:350: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: function 'util::money_round' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   select util::money_round(<decimal>{})
+E     │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______________________ test_total_of_variadic_behaviour _______________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_total_of_variadic_behaviour(client):
+        cases = [
+            ("select util::total_of()", D("0")),
+            ("select util::total_of(<decimal>'1.005', <decimal>'2.5')", D("3.51")),
+            ("select util::total_of(<decimal>'1.111')", D("1.11")),
+            ("select util::total_of(<decimal>'-1.005', <decimal>'1')", D("-0.01")),
+        ]
+        for query, expected in cases:
+>           got = client.query_single(query)
+
+/tests/test_final_state.py:372: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: function 'util::total_of' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   select util::total_of()
+E     │          ^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______________ test_apply_discount_optional_argument_behaviour ________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_apply_discount_optional_argument_behaviour(client):
+        cases = [
+            ("select util::apply_discount(<decimal>'100', <decimal>'10', <decimal>{})", D("90")),
+            ("select util::apply_discount(<decimal>'100', <decimal>'10', <decimal>'95')", D("95")),
+            ("select util::apply_discount(<decimal>'100', <decimal>'0', <decimal>{})", D("100")),
+            ("select util::apply_discount(<decimal>'19.99', <decimal>'33', <decimal>{})", D("13.39")),
+        ]
+        for query, expected in cases:
+>           got = client.query_single(query)
+
+/tests/test_final_state.py:384: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: function 'util::apply_discount' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   select util::apply_discount(<decimal>'100', <decimal>'10', <decimal>{})
+E     │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+___________________ test_gross_with_tax_named_only_behaviour ___________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_gross_with_tax_named_only_behaviour(client):
+        cases = [
+            ("select util::gross_with_tax(<decimal>'100', tax_pct := <decimal>'8.25')", D("108.25")),
+            ("select util::gross_with_tax(<decimal>'19.99', tax_pct := <decimal>'7.5')", D("21.49")),
+            ("select util::gross_with_tax(<decimal>'100')", D("100")),
+        ]
+        for query, expected in cases:
+>           got = client.query_single(query)
+
+/tests/test_final_state.py:395: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: function 'util::gross_with_tax' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   select util::gross_with_tax(<decimal>'100', tax_pct := <decimal>'8.25')
+E     │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______________________ test_installments_set_semantics ________________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_installments_set_semantics(client):
+>       got = sorted(client.query("select util::installments(<decimal>'100.00', 3)"))
+
+/tests/test_final_state.py:402: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: function 'util::installments' does not exist
+E     ┌─ query:1:8
+E     │ 
+E   1 │   select util::installments(<decimal>'100.00', 3)
+E     │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+_______________ test_computed_pointers_reference_the_util_module _______________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_computed_pointers_reference_the_util_module(client):
+        rows = _jq(
+            client,
+            """
+            select schema::ObjectType {
+                name,
+                pointers: { name, expr, cardinality }
+            }
+            filter .name in {'billing::LineItem', 'billing::Invoice'}
+            """,
+        )
+        pointers = {}
+        for row in rows:
+            for pointer in row["pointers"]:
+                pointers[(row["name"], pointer["name"])] = pointer
+    
+        for type_name, pointer_name in (
+            ("billing::LineItem", "line_total"),
+            ("billing::Invoice", "subtotal"),
+            ("billing::Invoice", "total_due"),
+        ):
+            pointer = pointers.get((type_name, pointer_name))
+>           assert pointer is not None, f"{type_name} has no pointer named {pointer_name!r}."
+E           AssertionError: billing::LineItem has no pointer named 'line_total'.
+E           assert None is not None
+
+/tests/test_final_state.py:490: AssertionError
+_________________ test_report_aliases_are_declared_as_aliases __________________
+
+client = <gel.blocking_client.Client object at 0x76ef3bcb0410>
+
+    def test_report_aliases_are_declared_as_aliases(client):
+        names = _jq(client, "select (schema::Alias.name) filter schema::Alias.name like 'reports::%'")
+        for expected in (
+            "reports::UnpaidInvoice",
+            "reports::CustomerBalance",
+            "reports::InvoicePlan",
+        ):
+>           assert expected in names, (
+                f"{expected} is not declared as a schema alias. Found: {sorted(names)}"
+            )
+E           AssertionError: reports::UnpaidInvoice is not declared as a schema alias. Found: []
+E           assert 'reports::UnpaidInvoice' in []
+
+/tests/test_final_state.py:558: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_each_module_is_declared_in_its_own_schema_file
+PASSED ../tests/test_final_state.py::test_nothing_was_declared_in_the_default_module
+PASSED ../tests/test_final_state.py::test_calls_that_match_no_overload_are_rejected
+ERROR ../tests/test_final_state.py::test_invoice_computeds_over_seeded_data
+ERROR ../tests/test_final_state.py::test_invoice_lines_and_line_totals - gel....
+ERROR ../tests/test_final_state.py::test_unit_price_precision_constraint - ge...
+ERROR ../tests/test_final_state.py::test_customer_outstanding_function - gel....
+ERROR ../tests/test_final_state.py::test_unpaid_invoice_alias_contents - gel....
+ERROR ../tests/test_final_state.py::test_customer_balance_alias_contents - ge...
+ERROR ../tests/test_final_state.py::test_invoice_plan_alias_contents - gel.er...
+ERROR ../tests/test_final_state.py::test_aliases_and_function_react_to_data_changes
+FAILED ../tests/test_final_state.py::test_three_modules_exist - AssertionErro...
+FAILED ../tests/test_final_state.py::test_migration_files_exist - AssertionEr...
+FAILED ../tests/test_final_state.py::test_migration_status_is_in_sync - Asser...
+FAILED ../tests/test_final_state.py::test_money_round_overloads_are_declared
+FAILED ../tests/test_final_state.py::test_total_of_is_variadic - AssertionErr...
+FAILED ../tests/test_final_state.py::test_apply_discount_has_single_optional_parameter
+FAILED ../tests/test_final_state.py::test_gross_with_tax_has_named_only_parameter_with_default
+FAILED ../tests/test_final_state.py::test_installments_returns_a_set - Assert...
+FAILED ../tests/test_final_state.py::test_function_volatilities - AssertionEr...
+FAILED ../tests/test_final_state.py::test_money_round_values - gel.errors.Inv...
+FAILED ../tests/test_final_state.py::test_empty_set_into_non_optional_parameter_yields_empty_set
+FAILED ../tests/test_final_state.py::test_total_of_variadic_behaviour - gel.e...
+FAILED ../tests/test_final_state.py::test_apply_discount_optional_argument_behaviour
+FAILED ../tests/test_final_state.py::test_gross_with_tax_named_only_behaviour
+FAILED ../tests/test_final_state.py::test_installments_set_semantics - gel.er...
+FAILED ../tests/test_final_state.py::test_computed_pointers_reference_the_util_module
+FAILED ../tests/test_final_state.py::test_report_aliases_are_declared_as_aliases
+==================== 17 failed, 3 passed, 8 errors in 1.72s ====================

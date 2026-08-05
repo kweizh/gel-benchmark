@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-7.2.1, pluggy-1.0.0+repack
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 18 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../bootstrap/test_initial_state.py::test_python3_available PASSED
+../bootstrap/test_initial_state.py::test_pytest_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_exists PASSED
+../bootstrap/test_initial_state.py::test_migrations_directory_has_initial_migration PASSED
+../bootstrap/test_initial_state.py::test_report_script_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_seeded_schema_declares_base_types PASSED
+../bootstrap/test_initial_state.py::test_seeded_category_pointers PASSED
+../bootstrap/test_initial_state.py::test_computed_pointers_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_migration_history_is_in_sync PASSED
+../bootstrap/test_initial_state.py::test_seeded_object_counts PASSED
+../bootstrap/test_initial_state.py::test_seeded_explicit_tree PASSED
+../bootstrap/test_initial_state.py::test_seeded_spine_and_bins PASSED
+../bootstrap/test_initial_state.py::test_seeded_listings PASSED
+../bootstrap/test_initial_state.py::test_seeded_audits PASSED
+
+============================= 18 passed in 11.37s ==============================

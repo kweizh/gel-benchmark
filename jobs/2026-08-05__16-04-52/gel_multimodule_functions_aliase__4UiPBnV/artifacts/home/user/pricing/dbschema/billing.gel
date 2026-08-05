@@ -1,0 +1,63 @@
+module billing {
+
+    type Customer {
+        required name: str {
+            constraint exclusive;
+        };
+        required discount_pct: decimal {
+            default := 0;
+        };
+    }
+
+    type Invoice {
+        required code: str {
+            constraint exclusive;
+        };
+        required customer: Customer;
+        required paid: bool {
+            default := false;
+        };
+        minimum_charge: decimal;
+        required installment_count: int64 {
+            default := 1;
+        };
+
+        multi lines := .<invoice[is LineItem];
+
+        subtotal := util::money_round(
+            sum(.lines.line_total)
+        );
+
+        total_due := util::apply_discount(
+            .subtotal,
+            .customer.discount_pct,
+            .minimum_charge
+        );
+    }
+
+    type LineItem {
+        required invoice: Invoice;
+        required description: str;
+        required qty: int64;
+        required unit_price: decimal {
+            constraint expression on (
+                __subject__ = util::money_round(__subject__)
+            );
+        };
+
+        line_total := util::money_round(.qty * .unit_price);
+    }
+
+    function customer_outstanding(customer_name: str) -> decimal {
+        volatility := 'Stable';
+        using (
+            with
+                cust := (select Customer filter .name = customer_name),
+                unpaid := (select Invoice filter .customer = cust and not .paid),
+            select util::money_round(
+                sum(unpaid.total_due)
+            )
+        );
+    }
+
+}

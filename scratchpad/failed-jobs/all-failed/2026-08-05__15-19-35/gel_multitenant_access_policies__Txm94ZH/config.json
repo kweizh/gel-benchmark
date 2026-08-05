@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_multitenant_access_policies_py",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_multitenant_access_policies__Txm94ZH",
+    "trials_dir": "jobs/2026-08-05__15-19-35",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "anthropic/claude-5-sonnet",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "c0131d02-e492-460d-8f30-4f96eb3be839"
+}

@@ -1,0 +1,281 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T08:47:19.201303+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "7.4.4"
+        },
+        "summary": {
+            "tests": 22,
+            "passed": 4,
+            "failed": 18,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785919635716,
+            "stop": 1785919639201
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_branch_set_is_exactly_main_and_feat_review",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 263,
+                "start": 1785919635749,
+                "stop": 1785919636012,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_branch_set_is_exactly_main_and_feat_review(gel_server):\n        branches = _branch_names()\n>       assert branches == EXPECTED_BRANCHES, (\n            \"Expected exactly the branches {} to survive, found {}. `feat_tags` must be dropped \"\n            \"and no temporary branch may be left behind.\".format(EXPECTED_BRANCHES, branches)\n        )\nE       AssertionError: Expected exactly the branches ['feat_review', 'main'] to survive, found ['main']. `feat_tags` must be dropped and no temporary branch may be left behind.\nE       assert ['main'] == ['feat_review', 'main']\nE         At index 0 diff: 'main' != 'feat_review'\nE         Right contains one more item: 'main'\nE         Use -v to get more diff\n\n/tests/test_final_state.py:133: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_active_branch_is_main",
+                "status": "passed",
+                "duration": 85,
+                "start": 1785919636012,
+                "stop": 1785919636097,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_has_tag_object_type",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 149,
+                "start": 1785919636098,
+                "stop": 1785919636247,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_main_has_tag_object_type(gel_server):\n        rows = _query(\n            \"select schema::ObjectType { name } filter .name = 'default::Tag'\", branch=\"main\"\n        )\n>       assert len(rows) == 1, \"Object type `default::Tag` is missing on branch `main`.\"\nE       AssertionError: Object type `default::Tag` is missing on branch `main`.\nE       assert 0 == 1\nE        +  where 0 = len([])\n\n/tests/test_final_state.py:150: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_main_tag_label_is_required_str_and_exclusive",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 227,
+                "start": 1785919636247,
+                "stop": 1785919636474,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_main_tag_label_is_required_str_and_exclusive(gel_server):\n        rows = _query(\n            \"select schema::Property { name, required, target: { name }, constraints: { name } } \"\n            \"filter .source.name = 'default::Tag' and .name = 'label'\",\n            branch=\"main\",\n        )\n>       assert len(rows) == 1, \"Property `Tag.label` is missing on branch `main`.\"\nE       AssertionError: Property `Tag.label` is missing on branch `main`.\nE       assert 0 == 1\nE        +  where 0 = len([])\n\n/tests/test_final_state.py:159: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_tags_link",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 231,
+                "start": 1785919636475,
+                "stop": 1785919636706,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_main_article_tags_link(gel_server):\n        rows = _query(\n            \"select schema::Link { name, cardinality, target: { name } } \"\n            \"filter .source.name = 'default::Article' and .name = 'tags'\",\n            branch=\"main\",\n        )\n>       assert len(rows) == 1, \"Link `Article.tags` is missing on branch `main`.\"\nE       AssertionError: Link `Article.tags` is missing on branch `main`.\nE       assert 0 == 1\nE        +  where 0 = len([])\n\n/tests/test_final_state.py:177: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_main_article_review_state_property",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 170,
+                "start": 1785919636706,
+                "stop": 1785919636876,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_main_article_review_state_property(gel_server):\n        rows = _query(\n            \"select schema::Property { name, required, cardinality, target: { name } } \"\n            \"filter .source.name = 'default::Article' and .name = 'review_state'\",\n            branch=\"main\",\n        )\n>       assert len(rows) == 1, \"Property `Article.review_state` is missing on branch `main`.\"\nE       AssertionError: Property `Article.review_state` is missing on branch `main`.\nE       assert 0 == 1\nE        +  where 0 = len([])\n\n/tests/test_final_state.py:193: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_carries_both_features",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 109,
+                "start": 1785919636876,
+                "stop": 1785919636985,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_feat_review_carries_both_features(gel_server):\n>       tags_type = _query(\n            \"select schema::ObjectType { name } filter .name = 'default::Tag'\", branch=\"feat_review\"\n        )\n\n/tests/test_final_state.py:205: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = \"select schema::ObjectType { name } filter .name = 'default::Tag'\"\nbranch = 'feat_review'\n\n    def _query(query, branch=None):\n        \"\"\"One-shot EdgeQL query; never holds a connection open across tests.\"\"\"\n        argv = [\"gel\"]\n        if branch:\n            argv += [\"-b\", branch]\n        argv += [\"query\", \"-F\", \"json\", query]\n        proc = _run(argv)\n>       assert proc.returncode == 0, \"gel query failed on branch {}: {}\\n{}\".format(\n            branch or \"<current>\", query, proc.stderr\n        )\nE       AssertionError: gel query failed on branch feat_review: select schema::ObjectType { name } filter .name = 'default::Tag'\nE         [2026-08-05T08:47:16Z ERROR gel_tokio::raw::connection] Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\nE         gel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', '-b', 'feat_review', 'query', '-F', 'json', \"select schema::ObjectType { name } filter ....ew' does not exist\\ngel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\\n\").returncode\n\n/tests/test_final_state.py:63: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_main_migration_history_is_linear_with_three_migrations",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 94,
+                "start": 1785919636986,
+                "stop": 1785919637080,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_main_migration_history_is_linear_with_three_migrations(gel_server):\n        count = _query(\"select count(schema::Migration)\", branch=\"main\")\n>       assert count == [3], (\n            \"Branch `main` must end with exactly three migrations, found {}.\".format(count)\n        )\nE       AssertionError: Branch `main` must end with exactly three migrations, found [1].\nE       assert [1] == [3]\nE         At index 0 diff: 1 != 3\nE         Use -v to get more diff\n\n/tests/test_final_state.py:254: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_each_feature_contributed_one_migration",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 216,
+                "start": 1785919637081,
+                "stop": 1785919637297,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_each_feature_contributed_one_migration(gel_server):\n        rows = _query(\"select schema::Migration { name, script }\", branch=\"main\")\n        scripts = {r[\"name\"]: r[\"script\"] for r in rows}\n        chain = _migration_chain(\"main\")\n        feature_migrations = chain[1:]\n        tag_migrations = [n for n in feature_migrations if \"default::Tag\" in scripts[n]]\n        review_migrations = [n for n in feature_migrations if \"review_state\" in scripts[n]]\n>       assert len(tag_migrations) == 1, (\n            \"Exactly one non-root migration on `main` must introduce `default::Tag`, found {}.\".format(\n                tag_migrations\n            )\n        )\nE       AssertionError: Exactly one non-root migration on `main` must introduce `default::Tag`, found [].\nE       assert 0 == 1\nE        +  where 0 = len([])\n\n/tests/test_final_state.py:277: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_feat_review_history_matches_main",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 89,
+                "start": 1785919637297,
+                "stop": 1785919637386,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_feat_review_history_matches_main(gel_server):\n>       count = _query(\"select count(schema::Migration)\", branch=\"feat_review\")\n\n/tests/test_final_state.py:294: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select count(schema::Migration)', branch = 'feat_review'\n\n    def _query(query, branch=None):\n        \"\"\"One-shot EdgeQL query; never holds a connection open across tests.\"\"\"\n        argv = [\"gel\"]\n        if branch:\n            argv += [\"-b\", branch]\n        argv += [\"query\", \"-F\", \"json\", query]\n        proc = _run(argv)\n>       assert proc.returncode == 0, \"gel query failed on branch {}: {}\\n{}\".format(\n            branch or \"<current>\", query, proc.stderr\n        )\nE       AssertionError: gel query failed on branch feat_review: select count(schema::Migration)\nE         [2026-08-05T08:47:17Z ERROR gel_tokio::raw::connection] Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\nE         gel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', '-b', 'feat_review', 'query', '-F', 'json', 'select count(schema::Migration)'], returnco...ew' does not exist\\ngel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\\n\").returncode\n\n/tests/test_final_state.py:63: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_main",
+                "status": "passed",
+                "duration": 1032,
+                "start": 1785919637386,
+                "stop": 1785919638418,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync_on_feat_review",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 97,
+                "start": 1785919638418,
+                "stop": 1785919638515,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migration_status_in_sync_on_feat_review(gel_server):\n        proc = _run([\"gel\", \"-b\", \"feat_review\", \"migration\", \"status\", \"--quiet\"])\n>       assert proc.returncode == 0, (\n            \"`gel migration status` on `feat_review` must exit 0, got {}: {}{}\".format(\n                proc.returncode, proc.stdout, proc.stderr\n            )\n        )\nE       AssertionError: `gel migration status` on `feat_review` must exit 0, got 1: [2026-08-05T08:47:18Z ERROR gel_tokio::raw::connection] Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\nE         gel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', '-b', 'feat_review', 'migration', 'status', '--quiet'], returncode=1, stdout='', stderr=...ew' does not exist\\ngel error: Connection error: UnknownDatabaseError: database branch 'feat_review' does not exist\\n\").returncode\n\n/tests/test_final_state.py:314: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migrations_directory_has_exactly_three_files",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 11,
+                "start": 1785919638516,
+                "stop": 1785919638527,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_migrations_directory_has_exactly_three_files():\n        files = sorted(f for f in os.listdir(MIGRATIONS_DIR) if f.endswith(\".edgeql\"))\n>       assert len(files) == 3, (\n            \"dbschema/migrations must contain exactly three .edgeql files, found {}.\".format(files)\n        )\nE       AssertionError: dbschema/migrations must contain exactly three .edgeql files, found ['00001-m1fp7i5.edgeql'].\nE       assert 1 == 3\nE        +  where 1 = len(['00001-m1fp7i5.edgeql'])\n\n/tests/test_final_state.py:323: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_schema_source_file_exists",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785919638527,
+                "stop": 1785919638528,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_authors_preserved_in_place",
+                "status": "passed",
+                "duration": 86,
+                "start": 1785919638528,
+                "stop": 1785919638614,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_articles_preserved_in_place",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 144,
+                "start": 1785919638614,
+                "stop": 1785919638758,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_articles_preserved_in_place(gel_server):\n>       rows = _articles(\"main\")\n\n/tests/test_final_state.py:346: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:109: in _articles\n    return _query(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title'\nbranch = 'main'\n\n    def _query(query, branch=None):\n        \"\"\"One-shot EdgeQL query; never holds a connection open across tests.\"\"\"\n        argv = [\"gel\"]\n        if branch:\n            argv += [\"-b\", branch]\n        argv += [\"query\", \"-F\", \"json\", query]\n        proc = _run(argv)\n>       assert proc.returncode == 0, \"gel query failed on branch {}: {}\\n{}\".format(\n            branch or \"<current>\", query, proc.stderr\n        )\nE       AssertionError: gel query failed on branch main: select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title\nE         error: InvalidReferenceError: object type 'default::Article' has no link or property 'review_state'\nE           \u250c\u2500 <query>:1:41\nE           \u2502\nE         1 \u2502 select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title\nE           \u2502                                         ^^^^^^^^^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select Article { id, title, word_count, review_sta...ame, country }, tags: { label } } order by .title\\n  \u2502                                         ^^^^^^^^^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:63: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_review_state_backfill_values",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 136,
+                "start": 1785919638758,
+                "stop": 1785919638894,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_review_state_backfill_values(gel_server):\n>       rows = _articles(\"main\")\n\n/tests/test_final_state.py:366: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:109: in _articles\n    return _query(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title'\nbranch = 'main'\n\n    def _query(query, branch=None):\n        \"\"\"One-shot EdgeQL query; never holds a connection open across tests.\"\"\"\n        argv = [\"gel\"]\n        if branch:\n            argv += [\"-b\", branch]\n        argv += [\"query\", \"-F\", \"json\", query]\n        proc = _run(argv)\n>       assert proc.returncode == 0, \"gel query failed on branch {}: {}\\n{}\".format(\n            branch or \"<current>\", query, proc.stderr\n        )\nE       AssertionError: gel query failed on branch main: select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title\nE         error: InvalidReferenceError: object type 'default::Article' has no link or property 'review_state'\nE           \u250c\u2500 <query>:1:41\nE           \u2502\nE         1 \u2502 select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title\nE           \u2502                                         ^^^^^^^^^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select Article { id, title, word_count, review_sta...ame, country }, tags: { label } } order by .title\\n  \u2502                                         ^^^^^^^^^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:63: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_single_longform_tag_exists",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 126,
+                "start": 1785919638895,
+                "stop": 1785919639021,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_single_longform_tag_exists(gel_server):\n>       count = _query(\"select count(Tag)\", branch=\"main\")\n\n/tests/test_final_state.py:375: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select count(Tag)', branch = 'main'\n\n    def _query(query, branch=None):\n        \"\"\"One-shot EdgeQL query; never holds a connection open across tests.\"\"\"\n        argv = [\"gel\"]\n        if branch:\n            argv += [\"-b\", branch]\n        argv += [\"query\", \"-F\", \"json\", query]\n        proc = _run(argv)\n>       assert proc.returncode == 0, \"gel query failed on branch {}: {}\\n{}\".format(\n            branch or \"<current>\", query, proc.stderr\n        )\nE       AssertionError: gel query failed on branch main: select count(Tag)\nE         error: InvalidReferenceError: object type or alias 'default::Tag' does not exist\nE           \u250c\u2500 <query>:1:14\nE           \u2502\nE         1 \u2502 select count(Tag)\nE           \u2502              ^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select count(Tag)'], returncode=1, stdout='', stde...or alias 'default::Tag' does not exist\\n  \u250c\u2500 <query>:1:14\\n  \u2502\\n1 \u2502 select count(Tag)\\n  \u2502              ^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:63: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_longform_tagging_matches_word_count_boundary",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 143,
+                "start": 1785919639021,
+                "stop": 1785919639164,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_longform_tagging_matches_word_count_boundary(gel_server):\n>       rows = _articles(\"main\")\n\n/tests/test_final_state.py:384: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:109: in _articles\n    return _query(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title'\nbranch = 'main'\n\n    def _query(query, branch=None):\n        \"\"\"One-shot EdgeQL query; never holds a connection open across tests.\"\"\"\n        argv = [\"gel\"]\n        if branch:\n            argv += [\"-b\", branch]\n        argv += [\"query\", \"-F\", \"json\", query]\n        proc = _run(argv)\n>       assert proc.returncode == 0, \"gel query failed on branch {}: {}\\n{}\".format(\n            branch or \"<current>\", query, proc.stderr\n        )\nE       AssertionError: gel query failed on branch main: select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title\nE         error: InvalidReferenceError: object type 'default::Article' has no link or property 'review_state'\nE           \u250c\u2500 <query>:1:41\nE           \u2502\nE         1 \u2502 select Article { id, title, word_count, review_state, author: { id, name, country }, tags: { label } } order by .title\nE           \u2502                                         ^^^^^^^^^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', '-b', 'main', 'query', '-F', 'json', 'select Article { id, title, word_count, review_sta...ame, country }, tags: { label } } order by .title\\n  \u2502                                         ^^^^^^^^^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:63: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_reproduction_script_is_present_and_executable",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 13,
+                "start": 1785919639165,
+                "stop": 1785919639178,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_reproduction_script_is_present_and_executable():\n>       assert os.path.isfile(SCRIPT_PATH), \"Reproduction script {} is missing.\".format(SCRIPT_PATH)\nE       AssertionError: Reproduction script /home/user/branchlab/reconcile.sh is missing.\nE       assert False\nE        +  where False = <function isfile at 0x740ef2348220>('/home/user/branchlab/reconcile.sh')\nE        +    where <function isfile at 0x740ef2348220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:399: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_file_contents",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 12,
+                "start": 1785919639178,
+                "stop": 1785919639190,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_file_contents(gel_server):\n>       assert os.path.isfile(REPORT_PATH), \"Report file {} is missing.\".format(REPORT_PATH)\nE       AssertionError: Report file /home/user/branchlab/reconcile-report.json is missing.\nE       assert False\nE        +  where False = <function isfile at 0x740ef2348220>('/home/user/branchlab/reconcile-report.json')\nE        +    where <function isfile at 0x740ef2348220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:417: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_zz_reproduction_script_is_rerunnable_and_state_preserved",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 11,
+                "start": 1785919639190,
+                "stop": 1785919639201,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_zz_reproduction_script_is_rerunnable_and_state_preserved(gel_server):\n        \"\"\"Run last: the script must be safe to re-run on the already reconciled project.\"\"\"\n        proc = _run([\"bash\", SCRIPT_PATH], timeout=600)\n>       assert proc.returncode == 0, (\n            \"Re-running {} must exit 0, got {}:\\nSTDOUT:\\n{}\\nSTDERR:\\n{}\".format(\n                SCRIPT_PATH, proc.returncode, proc.stdout[-4000:], proc.stderr[-4000:]\n            )\n        )\nE       AssertionError: Re-running /home/user/branchlab/reconcile.sh must exit 0, got 127:\nE         STDOUT:\nE         \nE         STDERR:\nE         bash: /home/user/branchlab/reconcile.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/branchlab/reconcile.sh'], returncode=127, stdout='', stderr='bash: /home/user/branchlab/reconcile.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:469: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

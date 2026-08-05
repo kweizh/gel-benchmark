@@ -1,0 +1,58 @@
+module default {
+
+    type Workspace {
+        required property name -> str {
+            constraint exclusive;
+        }
+    }
+
+    type Folder {
+        required property name -> str;
+        required link workspace -> Workspace {
+            on target delete delete source;
+        }
+    }
+
+    type Attachment {
+        required property filename -> str {
+            constraint exclusive;
+        }
+        required property byte_size -> int64;
+    }
+
+    type Editor {
+        required property email -> str {
+            constraint exclusive;
+        }
+    }
+
+    type Document {
+        required property title -> str;
+        required link folder -> Folder {
+            on target delete delete source;
+        }
+        multi link attachments -> Attachment;
+        link checked_out_by -> Editor {
+            on target delete deferred restrict;
+        }
+
+        trigger cleanup_orphan_attachments after delete for each do (
+            for att in __old__.attachments union (
+                delete att
+                filter not exists (
+                    select Document filter att in .attachments
+                )
+            )
+        )
+    }
+
+    type ArchivedRecord {
+        required property label -> str {
+            constraint exclusive;
+        }
+        required link document -> Document;
+        required property archived_at -> datetime {
+            default := datetime_of_statement();
+        }
+    }
+}
