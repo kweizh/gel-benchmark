@@ -1,6 +1,6 @@
 # Gel Benchmark
 
-This repository contains benchmarks for [Gel (gel)](https://github.com/geldata/gel), a next-generation version control system.
+This repository contains benchmarks for [Gel](https://github.com/geldata/gel), a next-generation version control system.
 
 You can view the evaluation reports at [kweizh.github.io/gel-benchmark](https://kweizh.github.io/gel-benchmark/).
 
