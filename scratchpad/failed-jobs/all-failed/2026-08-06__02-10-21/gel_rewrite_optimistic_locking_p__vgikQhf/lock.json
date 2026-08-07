@@ -1,0 +1,38 @@
+{
+    "schema_version": 1,
+    "task": {
+        "name": "gel_rewrite_optimistic_locking_py",
+        "type": "local",
+        "digest": "sha256:1fa7f30c92100ad0883271c19f3c34e00560354275b3429590794e68b82cce4e",
+        "source": "pending-tasks",
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_rewrite_optimistic_locking_py"
+    },
+    "install_only": false,
+    "timeout_multiplier": 1.0,
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "zai/glm-5.2",
+        "skills": [],
+        "resume_trajectory": false,
+        "extra_allowed_hosts": [],
+        "kwargs": {},
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        },
+        "mcp_servers": []
+    },
+    "skills": [],
+    "environment": {
+        "type": "daytona",
+        "force_build": false,
+        "delete": true,
+        "cpu_enforcement_policy": "auto",
+        "memory_enforcement_policy": "auto",
+        "extra_docker_compose": [],
+        "kwargs": {},
+        "extra_allowed_hosts": []
+    },
+    "verifier": {
+        "disable": false
+    }
+}

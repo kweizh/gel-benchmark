@@ -1,0 +1,103 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 11 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_start_script_present_and_executable PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_project_files_exist PASSED
+../bootstrap/test_initial_state.py::test_schema_module_is_still_empty PASSED
+../bootstrap/test_initial_state.py::test_no_migrations_created_yet PASSED
+../bootstrap/test_initial_state.py::test_solution_files_absent PASSED
+../bootstrap/test_initial_state.py::test_instance_reachable_and_schema_empty ERROR
+../bootstrap/test_initial_state.py::test_connection_settings_provided_by_environment PASSED
+../bootstrap/test_initial_state.py::test_no_reservations_stored_yet ERROR
+
+==================================== ERRORS ====================================
+__________ ERROR at setup of test_instance_reachable_and_schema_empty __________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+>       proc = subprocess.run(
+            [START_SCRIPT],
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+
+/bootstrap/test_initial_state.py:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 6753641.864474748, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+______________ ERROR at setup of test_no_reservations_stored_yet _______________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+>       proc = subprocess.run(
+            [START_SCRIPT],
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+
+/bootstrap/test_initial_state.py:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 6753641.864474748, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_instance_reachable_and_schema_empty
+ERROR ../bootstrap/test_initial_state.py::test_no_reservations_stored_yet - s...
+=================== 9 passed, 2 errors in 300.23s (0:05:00) ====================

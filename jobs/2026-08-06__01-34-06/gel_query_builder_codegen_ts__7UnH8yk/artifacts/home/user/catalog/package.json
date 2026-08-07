@@ -1,0 +1,15 @@
+{
+  "name": "catalog",
+  "private": true,
+  "version": "1.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "gel": "2.2.0"
+  },
+  "devDependencies": {
+    "@gel/generate": "0.7.1",
+    "@types/node": "20.19.43",
+    "tsx": "4.23.8",
+    "typescript": "5.9.3"
+  }
+}

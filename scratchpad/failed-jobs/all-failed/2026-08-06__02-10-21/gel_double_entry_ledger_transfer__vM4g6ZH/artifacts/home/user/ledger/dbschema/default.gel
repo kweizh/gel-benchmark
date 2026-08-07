@@ -1,0 +1,6 @@
+module default {
+    type Account {
+        required code: str;
+        required opening_balance: decimal;
+    }
+}

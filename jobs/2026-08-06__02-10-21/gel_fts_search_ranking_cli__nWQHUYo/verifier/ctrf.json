@@ -1,0 +1,353 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T18:22:06.314313+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 28,
+            "passed": 4,
+            "failed": 24,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785954123839,
+            "stop": 1785954126314
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_project_files_present",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 14,
+                "start": 1785954123891,
+                "stop": 1785954123905,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_project_files_present():\n        for relative in (\"gel.toml\", \"dbschema/default.gel\", \"scripts/load.sh\", \"scripts/search.sh\"):\n            path = os.path.join(PROJECT_DIR, relative)\n>           assert os.path.isfile(path), f\"Expected {path} to exist.\"\nE           AssertionError: Expected /home/user/kb-search/scripts/load.sh to exist.\nE           assert False\nE            +  where False = <function isfile at 0x7436fca30220>('/home/user/kb-search/scripts/load.sh')\nE            +    where <function isfile at 0x7436fca30220> = <module 'posixpath' (frozen)>.isfile\nE            +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:109: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_corpus_file_unmodified",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785954123905,
+                "stop": 1785954123906,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_reports_up_to_date",
+                "status": "passed",
+                "duration": 1230,
+                "start": 1785954123906,
+                "stop": 1785954125136,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_article_type_has_required_properties",
+                "status": "passed",
+                "duration": 188,
+                "start": 1785954125136,
+                "stop": 1785954125324,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_slug_uniqueness_is_enforced",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 187,
+                "start": 1785954125324,
+                "stop": 1785954125511,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_slug_uniqueness_is_enforced(gel_server):\n        proc = run(\n            [\n                \"gel\",\n                \"query\",\n                \"insert Article { slug := 'alpine-trail-safety', title := 'Duplicate Probe', \"\n                \"summary := 'Duplicate probe.', body := 'Duplicate probe.', \"\n                \"section := 'zz-probe', published := false }\",\n            ]\n        )\n        combined = proc.stdout + proc.stderr\n        try:\n>           assert proc.returncode != 0, (\n                \"Inserting a second Article with an existing slug must fail, but it succeeded: \"\n                f\"{combined!r}\"\n            )\nE           AssertionError: Inserting a second Article with an existing slug must fail, but it succeeded: '{\"id\": \"8fcee024-90fa-11f1-96a8-0f7b05709aa8\"}\\n'\nE           assert 0 != 0\nE            +  where 0 = CompletedProcess(args=['gel', 'query', \"insert Article { slug := 'alpine-trail-safety', title := 'Duplicate Probe', su...'zz-probe', published := false }\"], returncode=0, stdout='{\"id\": \"8fcee024-90fa-11f1-96a8-0f7b05709aa8\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:175: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_weighted_fts_index_is_declared",
+                "status": "passed",
+                "duration": 155,
+                "start": 1785954125511,
+                "stop": 1785954125666,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_corpus_is_loaded",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 86,
+                "start": 1785954125667,
+                "stop": 1785954125753,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_corpus_is_loaded(gel_server):\n        counts = _article_counts()\n>       assert counts[\"total\"] == 31, (\n            f\"Expected 31 Article objects loaded from the corpus, got {counts['total']}.\"\n        )\nE       AssertionError: Expected 31 Article objects loaded from the corpus, got 2.\nE       assert 2 == 31\n\n/tests/test_final_state.py:242: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_loader_is_idempotent",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 101,
+                "start": 1785954125753,
+                "stop": 1785954125854,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_loader_is_idempotent(gel_server):\n>       before = _stored_article(\"harbor-fog-signals\")\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:269: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nslug = 'harbor-fog-signals'\n\n    def _stored_article(slug):\n        rows = gel_query(\n            \"select Article { title, summary, body, section, published } \"\n            f\"filter .slug = '{slug}'\"\n        )\n>       assert len(rows) == 1, f\"Expected exactly one Article with slug {slug!r}, got {rows!r}\"\nE       AssertionError: Expected exactly one Article with slug 'harbor-fog-signals', got []\nE       assert 0 == 1\nE        +  where 0 = len([])\n\n/tests/test_final_state.py:236: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_default_paging_and_tie_break",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 22,
+                "start": 1785954125854,
+                "stop": 1785954125876,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_default_paging_and_tie_break(gel_server):\n>       payload = search(\"trail\")\n                  ^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:287: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('trail',)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh trail exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_title_beats_summary_beats_body",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 19,
+                "start": 1785954125877,
+                "stop": 1785954125896,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_title_beats_summary_beats_body(gel_server):\n>       payload = search(\"aurora\", 10)\n                  ^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:312: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('aurora', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh aurora 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'aurora', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_title_match_outranks_body_match",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 19,
+                "start": 1785954125896,
+                "stop": 1785954125915,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_title_match_outranks_body_match(gel_server):\n>       payload = search(\"harbor\", 10)\n                  ^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:329: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('harbor', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh harbor 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'harbor', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_scores_are_positive_rounded_and_non_increasing",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785954125915,
+                "stop": 1785954125925,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, term = 'trail'\n\n    @pytest.mark.parametrize(\"term\", [\"trail\", \"aurora\", \"harbor\"])\n    def test_scores_are_positive_rounded_and_non_increasing(gel_server, term):\n>       payload = search(term, 10)\n                  ^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:342: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('trail', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh trail 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_scores_are_positive_rounded_and_non_increasing",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785954125926,
+                "stop": 1785954125936,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, term = 'aurora'\n\n    @pytest.mark.parametrize(\"term\", [\"trail\", \"aurora\", \"harbor\"])\n    def test_scores_are_positive_rounded_and_non_increasing(gel_server, term):\n>       payload = search(term, 10)\n                  ^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:342: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('aurora', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh aurora 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'aurora', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_scores_are_positive_rounded_and_non_increasing",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 11,
+                "start": 1785954125936,
+                "stop": 1785954125947,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, term = 'harbor'\n\n    @pytest.mark.parametrize(\"term\", [\"trail\", \"aurora\", \"harbor\"])\n    def test_scores_are_positive_rounded_and_non_increasing(gel_server, term):\n>       payload = search(term, 10)\n                  ^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:342: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('harbor', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh harbor 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'harbor', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_unpublished_articles_are_never_returned",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785954125947,
+                "stop": 1785954125956,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_unpublished_articles_are_never_returned(gel_server):\n>       hidden = search(\"zephyr\", 10)\n                 ^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:359: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('zephyr', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh zephyr 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'zephyr', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_query_without_any_match",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785954125956,
+                "stop": 1785954125965,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_query_without_any_match(gel_server):\n>       payload = search(\"quantum\")\n                  ^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:376: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('quantum',)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh quantum exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'quantum'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_pagination_pages_rebuild_the_full_ordering",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 8,
+                "start": 1785954125965,
+                "stop": 1785954125973,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_pagination_pages_rebuild_the_full_ordering(gel_server):\n>       full = search(\"trail\", 10)\n               ^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:382: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('trail', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh trail 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_offset_past_the_end_returns_empty_page",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785954125974,
+                "stop": 1785954125984,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_offset_past_the_end_returns_empty_page(gel_server):\n>       payload = search(\"trail\", 3, 20)\n                  ^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:407: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('trail', 3, 20)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh trail 3 20 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '3', '20'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_search_reflects_live_database_state",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 231,
+                "start": 1785954125984,
+                "stop": 1785954126215,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_search_reflects_live_database_state(gel_server):\n        insert_title = (\n            \"insert Article { slug := 'zz-probe-title', title := 'Wombat Field Notes', \"\n            \"summary := 'Neutral summary text.', body := 'Neutral body text.', \"\n            \"section := 'zz-probe', published := true }\"\n        )\n        insert_body = (\n            \"insert Article { slug := 'zz-probe-body', title := 'Neutral Title', \"\n            \"summary := 'Neutral summary text.', body := 'A short note about a wombat.', \"\n            \"section := 'zz-probe', published := true }\"\n        )\n        try:\n            gel_query(insert_title)\n            gel_query(insert_body)\n>           payload = search(\"wombat\", 10)\n                      ^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:433: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('wombat', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh wombat 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'wombat', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_search_is_case_and_form_insensitive",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785954126216,
+                "stop": 1785954126226,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, term = 'TRAIL'\n\n    @pytest.mark.parametrize(\"term\", [\"TRAIL\", \"trails\"])\n    def test_search_is_case_and_form_insensitive(gel_server, term):\n>       payload = search(term, 10)\n                  ^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:456: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('TRAIL', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh TRAIL 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'TRAIL', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_search_is_case_and_form_insensitive",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 18,
+                "start": 1785954126226,
+                "stop": 1785954126244,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, term = 'trails'\n\n    @pytest.mark.parametrize(\"term\", [\"TRAIL\", \"trails\"])\n    def test_search_is_case_and_form_insensitive(gel_server, term):\n>       payload = search(term, 10)\n                  ^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:456: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = ('trails', 10)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh trails 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trails', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_query_with_apostrophe_is_echoed_and_matched",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 12,
+                "start": 1785954126244,
+                "stop": 1785954126256,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_query_with_apostrophe_is_echoed_and_matched(gel_server):\n>       payload = search(\"dog's\")\n                  ^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:464: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nargs = (\"dog's\",)\n\n    def search(*args):\n        \"\"\"Invoke the search CLI, assert the success contract and return the payload.\"\"\"\n        argv = [\"bash\", \"scripts/search.sh\"] + [str(a) for a in args]\n        proc = run(argv)\n>       assert proc.returncode == 0, (\n            f\"{' '.join(argv)} exited with {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: bash scripts/search.sh dog's exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n'\nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', \"dog's\"], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:59: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785954126256,
+                "stop": 1785954126265,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, argv = []\n\n    @pytest.mark.parametrize(\n        \"argv\",\n        [\n            [],\n            [\"\"],\n            [\"trail\", \"abc\"],\n            [\"trail\", \"0\"],\n            [\"trail\", \"5\", \"-1\"],\n            [\"a\", \"b\", \"c\", \"d\"],\n        ],\n        ids=[\"no-args\", \"empty-query\", \"non-integer-limit\", \"zero-limit\", \"negative-offset\", \"too-many\"],\n    )\n    def test_argument_errors(gel_server, argv):\n        proc = run([\"bash\", \"scripts/search.sh\"] + argv)\n        printable = \" \".join(repr(a) for a in argv)\n>       assert proc.returncode == 2, (\n            f\"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} \"\n            f\"(stdout={proc.stdout!r} stderr={proc.stderr!r})\"\n        )\nE       AssertionError: scripts/search.sh  must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n')\nE       assert 127 == 2\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:489: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 11,
+                "start": 1785954126265,
+                "stop": 1785954126276,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, argv = ['']\n\n    @pytest.mark.parametrize(\n        \"argv\",\n        [\n            [],\n            [\"\"],\n            [\"trail\", \"abc\"],\n            [\"trail\", \"0\"],\n            [\"trail\", \"5\", \"-1\"],\n            [\"a\", \"b\", \"c\", \"d\"],\n        ],\n        ids=[\"no-args\", \"empty-query\", \"non-integer-limit\", \"zero-limit\", \"negative-offset\", \"too-many\"],\n    )\n    def test_argument_errors(gel_server, argv):\n        proc = run([\"bash\", \"scripts/search.sh\"] + argv)\n        printable = \" \".join(repr(a) for a in argv)\n>       assert proc.returncode == 2, (\n            f\"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} \"\n            f\"(stdout={proc.stdout!r} stderr={proc.stderr!r})\"\n        )\nE       AssertionError: scripts/search.sh '' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n')\nE       assert 127 == 2\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', ''], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:489: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785954126276,
+                "stop": 1785954126286,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, argv = ['trail', 'abc']\n\n    @pytest.mark.parametrize(\n        \"argv\",\n        [\n            [],\n            [\"\"],\n            [\"trail\", \"abc\"],\n            [\"trail\", \"0\"],\n            [\"trail\", \"5\", \"-1\"],\n            [\"a\", \"b\", \"c\", \"d\"],\n        ],\n        ids=[\"no-args\", \"empty-query\", \"non-integer-limit\", \"zero-limit\", \"negative-offset\", \"too-many\"],\n    )\n    def test_argument_errors(gel_server, argv):\n        proc = run([\"bash\", \"scripts/search.sh\"] + argv)\n        printable = \" \".join(repr(a) for a in argv)\n>       assert proc.returncode == 2, (\n            f\"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} \"\n            f\"(stdout={proc.stdout!r} stderr={proc.stderr!r})\"\n        )\nE       AssertionError: scripts/search.sh 'trail' 'abc' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n')\nE       assert 127 == 2\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', 'abc'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:489: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785954126286,
+                "stop": 1785954126296,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, argv = ['trail', '0']\n\n    @pytest.mark.parametrize(\n        \"argv\",\n        [\n            [],\n            [\"\"],\n            [\"trail\", \"abc\"],\n            [\"trail\", \"0\"],\n            [\"trail\", \"5\", \"-1\"],\n            [\"a\", \"b\", \"c\", \"d\"],\n        ],\n        ids=[\"no-args\", \"empty-query\", \"non-integer-limit\", \"zero-limit\", \"negative-offset\", \"too-many\"],\n    )\n    def test_argument_errors(gel_server, argv):\n        proc = run([\"bash\", \"scripts/search.sh\"] + argv)\n        printable = \" \".join(repr(a) for a in argv)\n>       assert proc.returncode == 2, (\n            f\"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} \"\n            f\"(stdout={proc.stdout!r} stderr={proc.stderr!r})\"\n        )\nE       AssertionError: scripts/search.sh 'trail' '0' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n')\nE       assert 127 == 2\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '0'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:489: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 7,
+                "start": 1785954126296,
+                "stop": 1785954126303,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, argv = ['trail', '5', '-1']\n\n    @pytest.mark.parametrize(\n        \"argv\",\n        [\n            [],\n            [\"\"],\n            [\"trail\", \"abc\"],\n            [\"trail\", \"0\"],\n            [\"trail\", \"5\", \"-1\"],\n            [\"a\", \"b\", \"c\", \"d\"],\n        ],\n        ids=[\"no-args\", \"empty-query\", \"non-integer-limit\", \"zero-limit\", \"negative-offset\", \"too-many\"],\n    )\n    def test_argument_errors(gel_server, argv):\n        proc = run([\"bash\", \"scripts/search.sh\"] + argv)\n        printable = \" \".join(repr(a) for a in argv)\n>       assert proc.returncode == 2, (\n            f\"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} \"\n            f\"(stdout={proc.stdout!r} stderr={proc.stderr!r})\"\n        )\nE       AssertionError: scripts/search.sh 'trail' '5' '-1' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n')\nE       assert 127 == 2\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '5', '-1'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:489: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785954126304,
+                "stop": 1785954126314,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, argv = ['a', 'b', 'c', 'd']\n\n    @pytest.mark.parametrize(\n        \"argv\",\n        [\n            [],\n            [\"\"],\n            [\"trail\", \"abc\"],\n            [\"trail\", \"0\"],\n            [\"trail\", \"5\", \"-1\"],\n            [\"a\", \"b\", \"c\", \"d\"],\n        ],\n        ids=[\"no-args\", \"empty-query\", \"non-integer-limit\", \"zero-limit\", \"negative-offset\", \"too-many\"],\n    )\n    def test_argument_errors(gel_server, argv):\n        proc = run([\"bash\", \"scripts/search.sh\"] + argv)\n        printable = \" \".join(repr(a) for a in argv)\n>       assert proc.returncode == 2, (\n            f\"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} \"\n            f\"(stdout={proc.stdout!r} stderr={proc.stderr!r})\"\n        )\nE       AssertionError: scripts/search.sh 'a' 'b' 'c' 'd' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\\n')\nE       assert 127 == 2\nE        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'a', 'b', 'c', 'd'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:489: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

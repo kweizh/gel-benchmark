@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 14 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_node_toolchain_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_project_files_exist PASSED
+../bootstrap/test_initial_state.py::test_tsconfig_is_strict PASSED
+../bootstrap/test_initial_state.py::test_npm_dependencies_are_preinstalled PASSED
+../bootstrap/test_initial_state.py::test_schema_file_only_defines_author PASSED
+../bootstrap/test_initial_state.py::test_initial_migration_is_present PASSED
+../bootstrap/test_initial_state.py::test_seeded_query_builder_is_stale PASSED
+../bootstrap/test_initial_state.py::test_catalog_data_file PASSED
+../bootstrap/test_initial_state.py::test_cli_stub_is_not_implemented PASSED
+../bootstrap/test_initial_state.py::test_authors_are_seeded_and_catalog_is_empty PASSED
+../bootstrap/test_initial_state.py::test_migration_status_is_in_sync PASSED
+
+============================= 14 passed in 46.18s ==============================

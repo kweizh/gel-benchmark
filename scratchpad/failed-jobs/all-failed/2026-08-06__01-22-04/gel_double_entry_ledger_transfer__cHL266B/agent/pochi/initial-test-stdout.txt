@@ -1,0 +1,30 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 18 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_pytest_available PASSED
+../bootstrap/test_initial_state.py::test_start_script_present_and_executable PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_exists_with_bare_account_model PASSED
+../bootstrap/test_initial_state.py::test_exactly_one_migration_is_baked PASSED
+../bootstrap/test_initial_state.py::test_ledger_api_stub_exists PASSED
+../bootstrap/test_initial_state.py::test_ledger_api_declares_the_public_interface PASSED
+../bootstrap/test_initial_state.py::test_ledger_api_exceptions_share_a_base_class PASSED
+../bootstrap/test_initial_state.py::test_ledger_api_is_not_implemented_yet 
+-------------------------------- live log call ---------------------------------
+DEBUG    asyncio:selector_events.py:64 Using selector: EpollSelector
+DEBUG    asyncio:selector_events.py:64 Using selector: EpollSelector
+PASSED
+../bootstrap/test_initial_state.py::test_server_answers_queries PASSED
+../bootstrap/test_initial_state.py::test_migration_history_is_in_sync PASSED
+../bootstrap/test_initial_state.py::test_account_type_exists_in_database PASSED
+../bootstrap/test_initial_state.py::test_transfer_and_ledger_entry_types_do_not_exist_yet PASSED
+../bootstrap/test_initial_state.py::test_seeded_accounts_are_present PASSED
+../bootstrap/test_initial_state.py::test_no_ledger_data_exists_yet PASSED
+
+============================= 18 passed in 11.00s ==============================

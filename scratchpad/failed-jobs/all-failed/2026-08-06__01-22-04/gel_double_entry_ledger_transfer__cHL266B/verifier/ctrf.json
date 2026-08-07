@@ -1,0 +1,260 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:32:45.640802+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 25,
+            "passed": 23,
+            "failed": 2,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785951161607,
+            "stop": 1785951165640
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_a_new_migration_was_created_without_touching_the_baseline",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785951161679,
+                "stop": 1785951161680,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_history_is_in_sync",
+                "status": "passed",
+                "duration": 1496,
+                "start": 1785951161680,
+                "stop": 1785951163176,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_account_type_shape",
+                "status": "passed",
+                "duration": 381,
+                "start": 1785951163176,
+                "stop": 1785951163557,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_transfer_type_shape",
+                "status": "passed",
+                "duration": 179,
+                "start": 1785951163558,
+                "stop": 1785951163737,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_ledger_entry_type_shape",
+                "status": "passed",
+                "duration": 160,
+                "start": 1785951163737,
+                "stop": 1785951163897,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seeded_accounts_are_preserved",
+                "status": "passed",
+                "duration": 169,
+                "start": 1785951163898,
+                "stop": 1785951164067,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_non_positive_transfer_amounts",
+                "status": "passed",
+                "duration": 201,
+                "start": 1785951164067,
+                "stop": 1785951164268,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_self_transfer",
+                "status": "passed",
+                "duration": 87,
+                "start": 1785951164269,
+                "stop": 1785951164356,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_duplicate_idempotency_key",
+                "status": "passed",
+                "duration": 86,
+                "start": 1785951164357,
+                "stop": 1785951164443,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_duplicate_account_code",
+                "status": "passed",
+                "duration": 72,
+                "start": 1785951164443,
+                "stop": 1785951164515,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_zero_ledger_entry",
+                "status": "passed",
+                "duration": 70,
+                "start": 1785951164515,
+                "stop": 1785951164585,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejects_two_entries_for_the_same_account_and_transfer",
+                "status": "passed",
+                "duration": 164,
+                "start": 1785951164586,
+                "stop": 1785951164750,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_balance_and_entries_are_derived_not_stored",
+                "status": "passed",
+                "duration": 227,
+                "start": 1785951164751,
+                "stop": 1785951164978,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_create_account_happy_path_and_duplicate",
+                "status": "passed",
+                "duration": 36,
+                "start": 1785951164978,
+                "stop": 1785951165014,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_create_account_rejects_invalid_opening_balance",
+                "status": "passed",
+                "duration": 27,
+                "start": 1785951165014,
+                "stop": 1785951165041,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_single_transfer_creates_balanced_entries",
+                "status": "passed",
+                "duration": 68,
+                "start": 1785951165042,
+                "stop": 1785951165110,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_replaying_the_same_idempotency_key_does_not_move_money",
+                "status": "passed",
+                "duration": 36,
+                "start": 1785951165110,
+                "stop": 1785951165146,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_transfers_are_rejected_without_side_effects",
+                "status": "passed",
+                "duration": 56,
+                "start": 1785951165146,
+                "stop": 1785951165202,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unknown_account_lookups_are_rejected",
+                "status": "passed",
+                "duration": 22,
+                "start": 1785951165202,
+                "stop": 1785951165224,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_transfer_may_drain_an_account_exactly",
+                "status": "passed",
+                "duration": 29,
+                "start": 1785951165224,
+                "stop": 1785951165253,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_statement_ordering_shape_and_limit",
+                "status": "passed",
+                "duration": 56,
+                "start": 1785951165253,
+                "stop": 1785951165309,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_concurrent_transfer_storm_keeps_the_ledger_balanced",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 61,
+                "start": 1785951165309,
+                "stop": 1785951165370,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>\n\n    def test_concurrent_transfer_storm_keeps_the_ledger_balanced(api):\n        senders = [f\"{TOKEN}-CS{i}\" for i in range(8)]\n        recipients = [f\"{TOKEN}-CR{i}\" for i in range(8)]\n    \n        async def body(client):\n            for code in senders:\n                await api.create_account(client, code=code, opening_balance=D(\"50.00\"))\n            for code in recipients:\n                await api.create_account(client, code=code, opening_balance=D(\"0.00\"))\n    \n            plan = []\n            for i, sender in enumerate(senders):\n                for j in (i, (i + 1) % len(recipients)):\n                    plan.append((sender, recipients[j], f\"{TOKEN}-storm-{i}{j}\"))\n    \n            started = time.monotonic()\n            results = await asyncio.gather(\n                *(\n                    api.create_transfer(\n                        client,\n                        sender=sender,\n                        recipient=recipient,\n                        amount=D(\"1.00\"),\n                        idempotency_key=key,\n                    )\n                    for sender, recipient, key in plan\n                )\n            )\n            elapsed = time.monotonic() - started\n    \n            stored = await client.query_single(\n                \"select count((select Transfer filter .idempotency_key like <str>$p ++ '%'))\",\n                p=f\"{TOKEN}-storm-\",\n            )\n            entry_counts = await client.query(\n                \"\"\"\n                select (\n                    select Transfer filter .idempotency_key like <str>$p ++ '%'\n                ) { n := count(.entries) }\n                \"\"\",\n                p=f\"{TOKEN}-storm-\",\n            )\n            entry_sum = await client.query_single(\n                \"\"\"\n                select <str>sum((\n                    select LedgerEntry\n                    filter .transfer.idempotency_key like <str>$p ++ '%'\n                ).amount)\n                \"\"\",\n                p=f\"{TOKEN}-storm-\",\n            )\n            balances = {}\n            for code in senders + recipients:\n                balances[code] = await api.get_balance(client, account=code)\n            negatives = await client.query_single(\n                \"select count((select Account filter .balance < 0))\"\n            )\n            return results, elapsed, stored, [row.n for row in entry_counts], entry_sum, balances, negatives\n    \n>       results, elapsed, stored, entry_counts, entry_sum, balances, negatives = run_async(\n            body, timeout=300, concurrency=8\n        )\n\n/tests/test_final_state.py:995: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:119: in run_async\n    return asyncio.run(main())\n           ^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/asyncio/runners.py:194: in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    async def main():\n        if concurrency is None:\n            client = gel.create_async_client()\n        else:\n>           client = gel.create_async_client(concurrency=concurrency)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE           TypeError: create_async_client() got an unexpected keyword argument 'concurrency'\n\n/tests/test_final_state.py:113: TypeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_concurrent_calls_sharing_one_key_create_one_transfer",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 40,
+                "start": 1785951165370,
+                "stop": 1785951165410,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>\n\n    def test_concurrent_calls_sharing_one_key_create_one_transfer(api):\n        sender = f\"{TOKEN}-DS\"\n        recipient = f\"{TOKEN}-DR\"\n        key = f\"{TOKEN}-dup\"\n    \n        async def body(client):\n            await api.create_account(client, code=sender, opening_balance=D(\"20.00\"))\n            await api.create_account(client, code=recipient, opening_balance=D(\"0.00\"))\n            results = await asyncio.gather(\n                *(\n                    api.create_transfer(\n                        client,\n                        sender=sender,\n                        recipient=recipient,\n                        amount=D(\"2.00\"),\n                        idempotency_key=key,\n                    )\n                    for _ in range(6)\n                )\n            )\n            stored = await client.query_single(\n                \"select count((select Transfer filter .idempotency_key = <str>$k))\", k=key\n            )\n            row = await _transfer_row(client, key)\n            balances = (\n                await api.get_balance(client, account=sender),\n                await api.get_balance(client, account=recipient),\n            )\n            return results, stored, row, balances\n    \n>       results, stored, row, balances = run_async(body, timeout=300, concurrency=6)\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:1057: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:119: in run_async\n    return asyncio.run(main())\n           ^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/asyncio/runners.py:194: in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    async def main():\n        if concurrency is None:\n            client = gel.create_async_client()\n        else:\n>           client = gel.create_async_client(concurrency=concurrency)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE           TypeError: create_async_client() got an unexpected keyword argument 'concurrency'\n\n/tests/test_final_state.py:113: TypeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_randomised_sequence_matches_an_independent_model",
+                "status": "passed",
+                "duration": 128,
+                "start": 1785951165410,
+                "stop": 1785951165538,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_global_invariants_hold",
+                "status": "passed",
+                "duration": 102,
+                "start": 1785951165538,
+                "stop": 1785951165640,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

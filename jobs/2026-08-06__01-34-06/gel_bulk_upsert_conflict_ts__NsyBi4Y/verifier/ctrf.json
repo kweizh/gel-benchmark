@@ -1,0 +1,221 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T18:10:07.987514+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 21,
+            "passed": 20,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785953397641,
+            "stop": 1785953407987
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_project_artifacts_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785953397691,
+                "stop": 1785953397692,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_state_is_in_sync",
+                "status": "passed",
+                "duration": 1263,
+                "start": 1785953397692,
+                "stop": 1785953398955,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_category_and_tag_schema",
+                "status": "passed",
+                "duration": 365,
+                "start": 1785953398955,
+                "stop": 1785953399320,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_product_schema_properties_and_links",
+                "status": "passed",
+                "duration": 88,
+                "start": 1785953399320,
+                "stop": 1785953399408,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_exclusive_constraints_declared",
+                "status": "passed",
+                "duration": 388,
+                "start": 1785953399408,
+                "stop": 1785953399796,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_exclusive_constraints_enforced",
+                "status": "passed",
+                "duration": 347,
+                "start": 1785953399796,
+                "stop": 1785953400143,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_first_run_inserts_all_records",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 278,
+                "start": 1785953400144,
+                "stop": 1785953400422,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_db = True\n\n    def test_first_run_inserts_all_records(clean_db):\n        result, _ = run_ok(\"base.json\", BASE_BATCH)\n        assert result[\"total\"] == 8, f\"Expected total 8, got {result.get('total')!r}\"\n        assert result[\"inserted\"] == 8, f\"Expected inserted 8, got {result.get('inserted')!r}\"\n        assert result[\"updated\"] == 0, f\"Expected updated 0, got {result.get('updated')!r}\"\n        assert result[\"unchanged\"] == 0, (\n            f\"Expected unchanged 0, got {result.get('unchanged')!r}\"\n        )\n    \n        results = result[\"results\"]\n        assert len(results) == 8, f\"Expected 8 result entries, got {len(results)}\"\n        assert [r[\"sku\"] for r in results] == [\n            \"P-001\",\n            \"P-002\",\n            \"P-003\",\n            \"P-004\",\n            \"P-005\",\n            \"P-006\",\n            \"P-007\",\n            \"P-008\",\n        ], f\"results must be sorted ascending by sku, got {[r['sku'] for r in results]}\"\n        assert all(r[\"outcome\"] == \"inserted\" for r in results), (\n            f\"Every outcome must be 'inserted', got {[r['outcome'] for r in results]}\"\n        )\n    \n        by_sku = {r[\"sku\"]: r for r in results}\n>       assert by_sku[\"P-003\"][\"tags\"] == [\"clearance\", \"metal\"], (\n            \"P-003 tags must be de-duplicated and sorted as ['clearance', 'metal'], got \"\n            f\"{by_sku['P-003']['tags']!r}\"\n        )\nE       AssertionError: P-003 tags must be de-duplicated and sorted as ['clearance', 'metal'], got ['clearance', 'metal', 'metal']\nE       assert ['clearance',...tal', 'metal'] == ['clearance', 'metal']\nE         \nE         Left contains one more item: 'metal'\nE         Use -v to get more diff\n\n/tests/test_final_state.py:505: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_first_run_database_state",
+                "status": "passed",
+                "duration": 793,
+                "start": 1785953400423,
+                "stop": 1785953401216,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_replaying_batch_is_idempotent",
+                "status": "passed",
+                "duration": 871,
+                "start": 1785953401216,
+                "stop": 1785953402087,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_partial_update_outcomes",
+                "status": "passed",
+                "duration": 350,
+                "start": 1785953402087,
+                "stop": 1785953402437,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_partial_update_database_state",
+                "status": "passed",
+                "duration": 901,
+                "start": 1785953402438,
+                "stop": 1785953403339,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_empty_batch_is_a_noop",
+                "status": "passed",
+                "duration": 617,
+                "start": 1785953403339,
+                "stop": 1785953403956,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_missing_input_argument",
+                "status": "passed",
+                "duration": 129,
+                "start": 1785953403957,
+                "stop": 1785953404086,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_missing_input_file",
+                "status": "passed",
+                "duration": 125,
+                "start": 1785953404086,
+                "stop": 1785953404211,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_json_input_file",
+                "status": "passed",
+                "duration": 126,
+                "start": 1785953404212,
+                "stop": 1785953404338,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_top_level_value_is_not_an_array",
+                "status": "passed",
+                "duration": 132,
+                "start": 1785953404339,
+                "stop": 1785953404471,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_record_negative_price",
+                "status": "passed",
+                "duration": 730,
+                "start": 1785953404471,
+                "stop": 1785953405201,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_record_missing_category",
+                "status": "passed",
+                "duration": 297,
+                "start": 1785953405202,
+                "stop": 1785953405499,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_sku_is_rejected",
+                "status": "passed",
+                "duration": 327,
+                "start": 1785953405499,
+                "stop": 1785953405826,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejection_is_atomic",
+                "status": "passed",
+                "duration": 870,
+                "start": 1785953405827,
+                "stop": 1785953406697,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_large_batch_performance_and_idempotency",
+                "status": "passed",
+                "duration": 1289,
+                "start": 1785953406697,
+                "stop": 1785953407986,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

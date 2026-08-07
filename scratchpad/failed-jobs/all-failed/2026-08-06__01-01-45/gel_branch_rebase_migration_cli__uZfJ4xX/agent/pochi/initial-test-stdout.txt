@@ -1,0 +1,319 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 15 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_server_binary_available PASSED
+../bootstrap/test_initial_state.py::test_support_tools_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_layout PASSED
+../bootstrap/test_initial_state.py::test_only_initial_migration_on_disk PASSED
+../bootstrap/test_initial_state.py::test_schema_file_still_uses_full_name PASSED
+../bootstrap/test_initial_state.py::test_report_script_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_git_repository_is_on_diverged_feature_branch PASSED
+../bootstrap/test_initial_state.py::test_instance_has_three_branches ERROR
+../bootstrap/test_initial_state.py::test_current_branch_is_the_feature_branch ERROR
+../bootstrap/test_initial_state.py::test_migration_histories_are_diverged ERROR
+../bootstrap/test_initial_state.py::test_main_branch_holds_unconverted_production_data ERROR
+../bootstrap/test_initial_state.py::test_main_branch_has_no_split_name_properties ERROR
+../bootstrap/test_initial_state.py::test_feature_branch_holds_only_sandbox_contacts ERROR
+../bootstrap/test_initial_state.py::test_feature_branch_has_no_domain_property_yet ERROR
+
+==================================== ERRORS ====================================
+______________ ERROR at setup of test_instance_has_three_branches ______________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server for the project is up and reachable."""
+        start = shutil.which("gel-start.sh")
+        assert start is not None, "gel-start.sh not found in PATH."
+>       proc = run([start], timeout=300)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:16: in run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 23606276.65008689, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+_________ ERROR at setup of test_current_branch_is_the_feature_branch __________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server for the project is up and reachable."""
+        start = shutil.which("gel-start.sh")
+        assert start is not None, "gel-start.sh not found in PATH."
+>       proc = run([start], timeout=300)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:16: in run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 23606276.65008689, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+___________ ERROR at setup of test_migration_histories_are_diverged ____________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server for the project is up and reachable."""
+        start = shutil.which("gel-start.sh")
+        assert start is not None, "gel-start.sh not found in PATH."
+>       proc = run([start], timeout=300)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:16: in run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 23606276.65008689, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+_____ ERROR at setup of test_main_branch_holds_unconverted_production_data _____
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server for the project is up and reachable."""
+        start = shutil.which("gel-start.sh")
+        assert start is not None, "gel-start.sh not found in PATH."
+>       proc = run([start], timeout=300)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:16: in run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 23606276.65008689, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+_______ ERROR at setup of test_main_branch_has_no_split_name_properties ________
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server for the project is up and reachable."""
+        start = shutil.which("gel-start.sh")
+        assert start is not None, "gel-start.sh not found in PATH."
+>       proc = run([start], timeout=300)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:16: in run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 23606276.65008689, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+______ ERROR at setup of test_feature_branch_holds_only_sandbox_contacts _______
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server for the project is up and reachable."""
+        start = shutil.which("gel-start.sh")
+        assert start is not None, "gel-start.sh not found in PATH."
+>       proc = run([start], timeout=300)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:16: in run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 23606276.65008689, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+_______ ERROR at setup of test_feature_branch_has_no_domain_property_yet _______
+
+    @pytest.fixture(scope="session")
+    def gel_server():
+        """Make sure the local Gel server for the project is up and reachable."""
+        start = shutil.which("gel-start.sh")
+        assert start is not None, "gel-start.sh not found in PATH."
+>       proc = run([start], timeout=300)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:16: in run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/usr/local/bin/gel-start.sh']>
+endtime = 23606276.65008689, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start.sh']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_instance_has_three_branches - ...
+ERROR ../bootstrap/test_initial_state.py::test_current_branch_is_the_feature_branch
+ERROR ../bootstrap/test_initial_state.py::test_migration_histories_are_diverged
+ERROR ../bootstrap/test_initial_state.py::test_main_branch_holds_unconverted_production_data
+ERROR ../bootstrap/test_initial_state.py::test_main_branch_has_no_split_name_properties
+ERROR ../bootstrap/test_initial_state.py::test_feature_branch_holds_only_sandbox_contacts
+ERROR ../bootstrap/test_initial_state.py::test_feature_branch_has_no_domain_property_yet
+=================== 8 passed, 7 errors in 300.50s (0:05:00) ====================

@@ -1,0 +1,34 @@
+module default {
+    type Account {
+        required code: str {
+            constraint exclusive;
+        }
+        required opening_balance: decimal;
+        property balance := .opening_balance + sum(.<account[is LedgerEntry].amount);
+    }
+
+    type Transfer {
+        required idempotency_key: str {
+            constraint exclusive;
+        }
+        required amount: decimal {
+            constraint expression on (__subject__ > 0);
+        }
+        required link sender: Account;
+        required link recipient: Account;
+        required created_at: datetime {
+            default := datetime_of_statement();
+        }
+        multi link entries := .<transfer[is LedgerEntry];
+        constraint expression on (.sender != .recipient);
+    }
+
+    type LedgerEntry {
+        required amount: decimal {
+            constraint expression on (__subject__ != 0);
+        }
+        required link account: Account;
+        required link transfer: Transfer;
+        constraint exclusive on ((.account, .transfer));
+    }
+}

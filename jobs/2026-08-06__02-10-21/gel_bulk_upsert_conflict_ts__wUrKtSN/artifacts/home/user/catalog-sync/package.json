@@ -1,0 +1,16 @@
+{
+  "name": "catalog-sync",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Supplier catalog synchronisation against the local Gel instance.",
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "gel": "2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.1",
+    "typescript": "5.7.3"
+  }
+}

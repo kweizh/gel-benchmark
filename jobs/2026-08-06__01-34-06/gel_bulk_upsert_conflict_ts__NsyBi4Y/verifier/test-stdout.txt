@@ -1,0 +1,81 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 21 items
+
+../tests/test_final_state.py ......F..............                       [100%]
+
+=================================== FAILURES ===================================
+______________________ test_first_run_inserts_all_records ______________________
+
+clean_db = True
+
+    def test_first_run_inserts_all_records(clean_db):
+        result, _ = run_ok("base.json", BASE_BATCH)
+        assert result["total"] == 8, f"Expected total 8, got {result.get('total')!r}"
+        assert result["inserted"] == 8, f"Expected inserted 8, got {result.get('inserted')!r}"
+        assert result["updated"] == 0, f"Expected updated 0, got {result.get('updated')!r}"
+        assert result["unchanged"] == 0, (
+            f"Expected unchanged 0, got {result.get('unchanged')!r}"
+        )
+    
+        results = result["results"]
+        assert len(results) == 8, f"Expected 8 result entries, got {len(results)}"
+        assert [r["sku"] for r in results] == [
+            "P-001",
+            "P-002",
+            "P-003",
+            "P-004",
+            "P-005",
+            "P-006",
+            "P-007",
+            "P-008",
+        ], f"results must be sorted ascending by sku, got {[r['sku'] for r in results]}"
+        assert all(r["outcome"] == "inserted" for r in results), (
+            f"Every outcome must be 'inserted', got {[r['outcome'] for r in results]}"
+        )
+    
+        by_sku = {r["sku"]: r for r in results}
+>       assert by_sku["P-003"]["tags"] == ["clearance", "metal"], (
+            "P-003 tags must be de-duplicated and sorted as ['clearance', 'metal'], got "
+            f"{by_sku['P-003']['tags']!r}"
+        )
+E       AssertionError: P-003 tags must be de-duplicated and sorted as ['clearance', 'metal'], got ['clearance', 'metal', 'metal']
+E       assert ['clearance',...tal', 'metal'] == ['clearance', 'metal']
+E         
+E         Left contains one more item: 'metal'
+E         Use -v to get more diff
+
+/tests/test_final_state.py:505: AssertionError
+==================================== PASSES ====================================
+_______________________ test_migration_state_is_in_sync ________________________
+---------------------------- Captured stdout setup -----------------------------
+gel-start.sh stdout:
+Gel instance 'local_gel' is already running on port 5656.
+
+gel-start.sh stderr:
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_project_artifacts_exist
+PASSED ../tests/test_final_state.py::test_migration_state_is_in_sync
+PASSED ../tests/test_final_state.py::test_category_and_tag_schema
+PASSED ../tests/test_final_state.py::test_product_schema_properties_and_links
+PASSED ../tests/test_final_state.py::test_exclusive_constraints_declared
+PASSED ../tests/test_final_state.py::test_exclusive_constraints_enforced
+PASSED ../tests/test_final_state.py::test_first_run_database_state
+PASSED ../tests/test_final_state.py::test_replaying_batch_is_idempotent
+PASSED ../tests/test_final_state.py::test_partial_update_outcomes
+PASSED ../tests/test_final_state.py::test_partial_update_database_state
+PASSED ../tests/test_final_state.py::test_empty_batch_is_a_noop
+PASSED ../tests/test_final_state.py::test_missing_input_argument
+PASSED ../tests/test_final_state.py::test_missing_input_file
+PASSED ../tests/test_final_state.py::test_invalid_json_input_file
+PASSED ../tests/test_final_state.py::test_top_level_value_is_not_an_array
+PASSED ../tests/test_final_state.py::test_invalid_record_negative_price
+PASSED ../tests/test_final_state.py::test_invalid_record_missing_category
+PASSED ../tests/test_final_state.py::test_duplicate_sku_is_rejected
+PASSED ../tests/test_final_state.py::test_database_rejection_is_atomic
+PASSED ../tests/test_final_state.py::test_large_batch_performance_and_idempotency
+FAILED ../tests/test_final_state.py::test_first_run_inserts_all_records - Ass...
+======================== 1 failed, 20 passed in 10.35s =========================

@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_access_policy_scoped_client_ts",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_access_policy_scoped_client__b2Gze8v",
+    "trials_dir": "jobs/2026-08-06__01-22-04",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "anthropic/claude-5-sonnet",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "36d2c4a7-e59b-4e21-9c58-9fd9f58c60ef"
+}

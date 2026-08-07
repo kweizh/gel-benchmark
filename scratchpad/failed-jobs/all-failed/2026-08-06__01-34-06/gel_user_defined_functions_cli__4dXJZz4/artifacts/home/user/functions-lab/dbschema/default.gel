@@ -1,0 +1,8 @@
+module default {
+  type Carrier {
+    required name: str {
+      constraint exclusive;
+    }
+    required hub_code: str;
+  }
+}

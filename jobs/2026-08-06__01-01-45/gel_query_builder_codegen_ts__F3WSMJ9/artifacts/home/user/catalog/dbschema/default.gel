@@ -1,0 +1,28 @@
+module default {
+  type Author {
+    required name: str {
+      constraint exclusive;
+    }
+    required country: str;
+
+    multi link resources := .<author[is Resource];
+    property resource_count := count(.resources);
+  }
+
+  abstract type Resource {
+    required title: str {
+      constraint exclusive;
+    }
+    required minutes: int64;
+    required level: str;
+    required author: Author;
+  }
+
+  type Article extending Resource {
+    required word_count: int64;
+  }
+
+  type Video extending Resource {
+    required has_captions: bool;
+  }
+}

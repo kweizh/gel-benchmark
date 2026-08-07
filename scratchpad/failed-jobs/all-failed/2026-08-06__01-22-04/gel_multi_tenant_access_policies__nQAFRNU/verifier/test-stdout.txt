@@ -1,0 +1,949 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 28 items
+
+../tests/test_final_state.py FFFFFFFFFFFFFFFFFFFFFFFFFFFF                [100%]
+
+=================================== FAILURES ===================================
+_________________________ test_gateway_module_surface __________________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_gateway_module_surface(gateway):
+        for name in (
+            "list_workspaces",
+            "get_document",
+            "create_document",
+            "rename_document",
+            "delete_document",
+            "archive_workspace",
+            "platform_document_counts",
+        ):
+            func = getattr(gateway, name, None)
+            assert func is not None, f"app.tenant_gateway.{name} is not defined."
+            assert asyncio.iscoroutinefunction(
+                func
+            ), f"app.tenant_gateway.{name} must be an async (coroutine) function."
+    
+        base = getattr(gateway, "TenantGatewayError", None)
+>       assert base is not None and issubclass(
+            base, Exception
+        ), "TenantGatewayError must be defined and derive from Exception."
+E       AssertionError: TenantGatewayError must be defined and derive from Exception.
+E       assert (None is not None)
+
+/tests/test_final_state.py:206: AssertionError
+_______________ test_migration_history_is_versioned_and_in_sync ________________
+
+gel_server = True, raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_migration_history_is_versioned_and_in_sync(gel_server, raw):
+        scripts = sorted(glob.glob(os.path.join(MIGRATIONS_DIR, "*.edgeql")))
+>       assert len(scripts) >= 2, (
+            "Expected at least 2 migration scripts in "
+            f"{MIGRATIONS_DIR} (the baked one plus the new one), found {len(scripts)}: "
+            f"{[os.path.basename(path) for path in scripts]}"
+        )
+E       AssertionError: Expected at least 2 migration scripts in /home/user/mtsaas/dbschema/migrations (the baked one plus the new one), found 1: ['00001-m1yrkzj.edgeql']
+E       assert 1 >= 2
+E        +  where 1 = len(['/home/user/mtsaas/dbschema/migrations/00001-m1yrkzj.edgeql'])
+
+/tests/test_final_state.py:224: AssertionError
+_____________________ test_globals_are_declared_in_schema ______________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_globals_are_declared_in_schema(raw):
+        rows = raw.query(
+            "select schema::Global { name, required } filter .name like 'default::%'"
+        )
+        found = {row.name: row.required for row in rows}
+>       assert "default::current_tenant_slug" in found, (
+            "The global 'current_tenant_slug' is not declared in module default; "
+            f"found globals: {sorted(found)}."
+        )
+E       AssertionError: The global 'current_tenant_slug' is not declared in module default; found globals: [].
+E       assert 'default::current_tenant_slug' in {}
+
+/tests/test_final_state.py:263: AssertionError
+_____________________________ test_global_defaults _____________________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_global_defaults(raw):
+>       role = raw.query_single("select global current_actor_role")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:280: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: global 'default::current_actor_role' does not exist
+
+gel/protocol/protocol.pyx:545: InvalidReferenceError
+____________________ test_access_policies_cover_all_actions ____________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_access_policies_cover_all_actions(raw):
+        rows = raw.query(
+            """
+            select schema::ObjectType {
+                name,
+                policies := (select .access_policies { name, access_kinds })
+            }
+            filter .name in array_unpack(<array<str>>$names)
+            """,
+            names=list(TENANT_TYPES),
+        )
+        by_type = {row.name: row.policies for row in rows}
+        assert set(by_type) == set(TENANT_TYPES), (
+            f"Expected the object types {TENANT_TYPES} to still exist, found "
+            f"{sorted(by_type)}."
+        )
+        for type_name, policies in by_type.items():
+>           assert len(policies) > 0, (
+                f"{type_name} has no access policy; object-level security must be "
+                "declared for all four types."
+            )
+E           AssertionError: default::Tenant has no access policy; object-level security must be declared for all four types.
+E           assert 0 > 0
+E            +  where 0 = len([])
+
+/tests/test_final_state.py:312: AssertionError
+_________________________ test_computed_links_declared _________________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_computed_links_declared(raw):
+        rows = raw.query(
+            """
+            select schema::ObjectType {
+                name,
+                links := (
+                    select .pointers[is schema::Link] {
+                        name,
+                        cardinality,
+                        target_name := .target.name
+                    }
+                )
+            }
+            filter .name in {'default::Workspace', 'default::Document'}
+            """
+        )
+        by_type = {row.name: {link.name: link for link in row.links} for row in rows}
+    
+        expectations = (
+            ("default::Workspace", "documents", "default::Document"),
+            ("default::Document", "comments", "default::Comment"),
+        )
+        for type_name, link_name, target in expectations:
+            links = by_type.get(type_name, {})
+>           assert link_name in links, (
+                f"{type_name} does not expose a link named {link_name!r}; found "
+                f"{sorted(links)}."
+            )
+E           AssertionError: default::Workspace does not expose a link named 'documents'; found ['__type__', 'tenant'].
+E           assert 'documents' in {'__type__': Object{name := '__type__', cardinality := <gel.EnumValue 'One'>, target_name := 'schema::ObjectType'}, 'tenant': Object{name := 'tenant', cardinality := <gel.EnumValue 'One'>, target_name := 'default::Tenant'}}
+
+/tests/test_final_state.py:356: AssertionError
+______________________ test_unscoped_client_sees_nothing _______________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_unscoped_client_sees_nothing(raw):
+>       assert counts(raw) == (0, 0, 0, 0), (
+            "A client with no globals set must not be able to read any Tenant, "
+            f"Workspace, Document or Comment, got counts {counts(raw)}."
+        )
+E       AssertionError: A client with no globals set must not be able to read any Tenant, Workspace, Document or Comment, got counts (3, 6, 6, 5).
+E       assert (3, 6, 6, 5) == (0, 0, 0, 0)
+E         
+E         At index 0 diff: 3 != 0
+E         Use -v to get more diff
+
+/tests/test_final_state.py:375: AssertionError
+____________________ test_support_scope_sees_whole_platform ____________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_support_scope_sees_whole_platform(raw):
+        support = scope(raw, None, "support")
+>       slugs = set(support.query("select Tenant.slug"))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:383: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+gel/protocol/protocol.pyx:452: in _execute
+    ???
+gel/protocol/protocol.pyx:319: in gel.protocol.protocol.SansIOProtocol.encode_parse_params
+    ???
+gel/protocol/protocol.pyx:558: in gel.protocol.protocol.SansIOProtocol.encode_state
+    ???
+gel/protocol/./codecs/./object.pyx:56: in gel.protocol.protocol.ObjectCodec.encode
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.QueryArgumentError: acceptable set() arguments, got {'default::current_actor_role'}, extra {'default::current_actor_role'}
+
+gel/protocol/./codecs/./object.pyx:50: QueryArgumentError
+_________________ test_member_scope_reads_are_tenant_isolated __________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_member_scope_reads_are_tenant_isolated(raw):
+        acme = scope(raw, "acme", "member")
+>       assert set(acme.query("select Tenant.slug")) == {"acme"}, (
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "An 'acme' member scope must only read the acme tenant, got "
+            f"{sorted(set(acme.query('select Tenant.slug')))}."
+        )
+
+/tests/test_final_state.py:405: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+gel/protocol/protocol.pyx:452: in _execute
+    ???
+gel/protocol/protocol.pyx:319: in gel.protocol.protocol.SansIOProtocol.encode_parse_params
+    ???
+gel/protocol/protocol.pyx:558: in gel.protocol.protocol.SansIOProtocol.encode_state
+    ???
+gel/protocol/./codecs/./object.pyx:56: in gel.protocol.protocol.ObjectCodec.encode
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.QueryArgumentError: acceptable set() arguments, got {'default::current_tenant_slug', 'default::current_actor_role'}, extra {'default::current_tenant_slug', 'default::current_actor_role'}
+
+gel/protocol/./codecs/./object.pyx:50: QueryArgumentError
+________________________ test_unknown_role_sees_nothing ________________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_unknown_role_sees_nothing(raw):
+        intruder = scope(raw, "acme", "intruder")
+>       assert counts(intruder) == (0, 0, 0, 0), (
+               ^^^^^^^^^^^^^^^^
+            "A scope whose role is neither member, auditor nor support must not read "
+            f"anything, got counts {counts(intruder)}."
+        )
+
+/tests/test_final_state.py:456: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:136: in counts
+    row = client.query_single(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:235: in query_single
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+gel/protocol/protocol.pyx:452: in _execute
+    ???
+gel/protocol/protocol.pyx:319: in gel.protocol.protocol.SansIOProtocol.encode_parse_params
+    ???
+gel/protocol/protocol.pyx:558: in gel.protocol.protocol.SansIOProtocol.encode_state
+    ???
+gel/protocol/./codecs/./object.pyx:56: in gel.protocol.protocol.ObjectCodec.encode
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.QueryArgumentError: acceptable set() arguments, got {'default::current_tenant_slug', 'default::current_actor_role'}, extra {'default::current_tenant_slug', 'default::current_actor_role'}
+
+gel/protocol/./codecs/./object.pyx:50: QueryArgumentError
+____________________ test_list_workspaces_per_tenant_scope _____________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_list_workspaces_per_tenant_scope(gateway):
+>       entries = run(gateway.list_workspaces("acme", "member"))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:466: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:70: in run
+    return LOOP.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tenant_slug = 'acme', role = 'member'
+
+    async def list_workspaces(tenant_slug, role):
+>       raise NotImplementedError("list_workspaces is not implemented yet")
+E       NotImplementedError: list_workspaces is not implemented yet
+
+/home/user/mtsaas/app/tenant_gateway.py:8: NotImplementedError
+________________________ test_auditor_reads_like_member ________________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_auditor_reads_like_member(gateway):
+>       member = run(gateway.list_workspaces("acme", "member"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:523: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:70: in run
+    return LOOP.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tenant_slug = 'acme', role = 'member'
+
+    async def list_workspaces(tenant_slug, role):
+>       raise NotImplementedError("list_workspaces is not implemented yet")
+E       NotImplementedError: list_workspaces is not implemented yet
+
+/home/user/mtsaas/app/tenant_gateway.py:8: NotImplementedError
+___________________ test_support_scope_lists_across_tenants ____________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_support_scope_lists_across_tenants(gateway):
+>       entries = run(gateway.list_workspaces("acme", "support"))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:532: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:70: in run
+    return LOOP.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tenant_slug = 'acme', role = 'support'
+
+    async def list_workspaces(tenant_slug, role):
+>       raise NotImplementedError("list_workspaces is not implemented yet")
+E       NotImplementedError: list_workspaces is not implemented yet
+
+/home/user/mtsaas/app/tenant_gateway.py:8: NotImplementedError
+_____________ test_get_document_scope_and_cross_tenant_visibility ______________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_get_document_scope_and_cross_tenant_visibility(gateway, raw):
+        acme = scope(raw, "acme", "member")
+>       charter_id = doc_id(acme, "Alpha Charter")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:546: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:150: in doc_id
+    rows = client.query(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:589: in execute
+    ???
+gel/protocol/protocol.pyx:393: in _parse
+    ???
+gel/protocol/protocol.pyx:319: in gel.protocol.protocol.SansIOProtocol.encode_parse_params
+    ???
+gel/protocol/protocol.pyx:558: in gel.protocol.protocol.SansIOProtocol.encode_state
+    ???
+gel/protocol/./codecs/./object.pyx:56: in gel.protocol.protocol.ObjectCodec.encode
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.QueryArgumentError: acceptable set() arguments, got {'default::current_tenant_slug', 'default::current_actor_role'}, extra {'default::current_tenant_slug', 'default::current_actor_role'}
+
+gel/protocol/./codecs/./object.pyx:50: QueryArgumentError
+____________________ test_get_document_argument_validation _____________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_get_document_argument_validation(gateway):
+>       charter_id = need("charter_id")
+                     ^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:591: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'charter_id'
+
+    def need(key):
+>       assert key in STATE, (
+            f"Internal fixture value {key!r} is missing because an earlier test in "
+            "this file did not complete successfully."
+        )
+E       AssertionError: Internal fixture value 'charter_id' is missing because an earlier test in this file did not complete successfully.
+E       assert 'charter_id' in {}
+
+/tests/test_final_state.py:86: AssertionError
+_____________ test_platform_document_counts_baseline_and_role_gate _____________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_platform_document_counts_baseline_and_role_gate(gateway, raw):
+        for role in ("member", "auditor"):
+>           with pytest.raises(gateway.TenantAccessDenied):
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'app.tenant_gateway' has no attribute 'TenantAccessDenied'
+
+/tests/test_final_state.py:605: AttributeError
+______________________ test_create_document_with_comments ______________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_create_document_with_comments(gateway, raw):
+        member = scope(raw, "acme", "member")
+>       member.query(
+            """
+            insert Workspace {
+                name := <str>$name,
+                tenant := assert_single((select Tenant filter .slug = 'acme'))
+            }
+            """,
+            name=WS,
+        )
+
+/tests/test_final_state.py:646: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:589: in execute
+    ???
+gel/protocol/protocol.pyx:393: in _parse
+    ???
+gel/protocol/protocol.pyx:319: in gel.protocol.protocol.SansIOProtocol.encode_parse_params
+    ???
+gel/protocol/protocol.pyx:558: in gel.protocol.protocol.SansIOProtocol.encode_state
+    ???
+gel/protocol/./codecs/./object.pyx:56: in gel.protocol.protocol.ObjectCodec.encode
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.QueryArgumentError: acceptable set() arguments, got {'default::current_tenant_slug', 'default::current_actor_role'}, extra {'default::current_tenant_slug', 'default::current_actor_role'}
+
+gel/protocol/./codecs/./object.pyx:50: QueryArgumentError
+__________________ test_comment_length_is_a_schema_constraint __________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_comment_length_is_a_schema_constraint(raw):
+        from gel import errors as gel_errors
+    
+        member = scope(raw, "acme", "member")
+        with pytest.raises(gel_errors.ConstraintViolationError):
+            member.query(
+                """
+                insert Comment {
+                    body := <str>$body,
+                    author_email := <str>$email,
+                    document := assert_single((select Document filter .id = <uuid>$doc))
+                }
+                """,
+                body=LONG_BODY,
+                email=AUTHOR,
+>               doc=uuid.UUID(need("doc1_id")),
+                              ^^^^^^^^^^^^^^^
+            )
+
+/tests/test_final_state.py:702: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'doc1_id'
+
+    def need(key):
+>       assert key in STATE, (
+            f"Internal fixture value {key!r} is missing because an earlier test in "
+            "this file did not complete successfully."
+        )
+E       AssertionError: Internal fixture value 'doc1_id' is missing because an earlier test in this file did not complete successfully.
+E       assert 'doc1_id' in {}
+
+/tests/test_final_state.py:86: AssertionError
+___________ test_create_document_rolls_back_on_constraint_violation ____________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_create_document_rolls_back_on_constraint_violation(gateway, raw):
+        title = rand_title("rollback")
+        bodies = rand_comments(3) + [LONG_BODY]
+    
+>       with pytest.raises(gateway.TenantValidationError):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'app.tenant_gateway' has no attribute 'TenantValidationError'
+
+/tests/test_final_state.py:710: AttributeError
+________________ test_create_document_validates_before_writing _________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_create_document_validates_before_writing(gateway, raw):
+        support = scope(raw, None, "support")
+    
+        blank_title = "   "
+>       with pytest.raises(gateway.TenantValidationError):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'app.tenant_gateway' has no attribute 'TenantValidationError'
+
+/tests/test_final_state.py:731: AttributeError
+__________________ test_platform_counts_follow_new_documents ___________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_platform_counts_follow_new_documents(gateway):
+        before = {
+            row["tenant_slug"]: row["document_count"]
+>           for row in run(gateway.platform_document_counts("support"))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        }
+
+/tests/test_final_state.py:784: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:70: in run
+    return LOOP.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+role = 'support'
+
+    async def platform_document_counts(role):
+>       raise NotImplementedError("platform_document_counts is not implemented yet")
+E       NotImplementedError: platform_document_counts is not implemented yet
+
+/home/user/mtsaas/app/tenant_gateway.py:34: NotImplementedError
+____________________ test_auditor_and_support_cannot_write _____________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_auditor_and_support_cannot_write(gateway):
+>       doc1_id = need("doc1_id")
+                  ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:815: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'doc1_id'
+
+    def need(key):
+>       assert key in STATE, (
+            f"Internal fixture value {key!r} is missing because an earlier test in "
+            "this file did not complete successfully."
+        )
+E       AssertionError: Internal fixture value 'doc1_id' is missing because an earlier test in this file did not complete successfully.
+E       assert 'doc1_id' in {}
+
+/tests/test_final_state.py:86: AssertionError
+_____________________ test_cross_tenant_writes_are_refused _____________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_cross_tenant_writes_are_refused(gateway, raw):
+>       gamma_id = need("gamma_id")
+                   ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:843: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gamma_id'
+
+    def need(key):
+>       assert key in STATE, (
+            f"Internal fixture value {key!r} is missing because an earlier test in "
+            "this file did not complete successfully."
+        )
+E       AssertionError: Internal fixture value 'gamma_id' is missing because an earlier test in this file did not complete successfully.
+E       assert 'gamma_id' in {}
+
+/tests/test_final_state.py:86: AssertionError
+________________________ test_rename_document_in_scope _________________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_rename_document_in_scope(gateway):
+        bodies = rand_comments(1)
+>       target_id = run(
+            gateway.create_document(
+                "acme", "member", WS, rand_title("torename"), rand_body(), bodies, AUTHOR
+            )
+        )
+
+/tests/test_final_state.py:882: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:70: in run
+    return LOOP.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tenant_slug = 'acme', role = 'member', workspace_name = 'wsxafe61e4734'
+title = 'doc torename 9787fdae7fbd', body = 'body b19d79bf388249dd'
+comment_bodies = ['comment029437f11af1e'], author_email = 'writer@acme.test'
+
+    async def create_document(
+        tenant_slug, role, workspace_name, title, body, comment_bodies, author_email
+    ):
+>       raise NotImplementedError("create_document is not implemented yet")
+E       NotImplementedError: create_document is not implemented yet
+
+/home/user/mtsaas/app/tenant_gateway.py:18: NotImplementedError
+____________________ test_delete_document_removes_comments _____________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_delete_document_removes_comments(gateway, raw):
+        title = rand_title("todelete")
+        bodies = rand_comments(3)
+>       target_id = run(
+            gateway.create_document(
+                "acme", "member", WS, title, rand_body(), bodies, AUTHOR
+            )
+        )
+
+/tests/test_final_state.py:915: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:70: in run
+    return LOOP.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tenant_slug = 'acme', role = 'member', workspace_name = 'wsxafe61e4734'
+title = 'doc todelete 6c261ce17f21', body = 'body 868b8b4009254f1e'
+comment_bodies = ['comment02ea35fa643ff', 'comment144a8d11eff0d', 'comment239901838c63b']
+author_email = 'writer@acme.test'
+
+    async def create_document(
+        tenant_slug, role, workspace_name, title, body, comment_bodies, author_email
+    ):
+>       raise NotImplementedError("create_document is not implemented yet")
+E       NotImplementedError: create_document is not implemented yet
+
+/home/user/mtsaas/app/tenant_gateway.py:18: NotImplementedError
+______________________ test_archived_workspace_is_frozen _______________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_archived_workspace_is_frozen(gateway, raw):
+        acme = scope(raw, "acme", "member")
+>       frozen_id = doc_id(acme, "Frozen Plan")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:941: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:150: in doc_id
+    rows = client.query(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:589: in execute
+    ???
+gel/protocol/protocol.pyx:393: in _parse
+    ???
+gel/protocol/protocol.pyx:319: in gel.protocol.protocol.SansIOProtocol.encode_parse_params
+    ???
+gel/protocol/protocol.pyx:558: in gel.protocol.protocol.SansIOProtocol.encode_state
+    ???
+gel/protocol/./codecs/./object.pyx:56: in gel.protocol.protocol.ObjectCodec.encode
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.QueryArgumentError: acceptable set() arguments, got {'default::current_tenant_slug', 'default::current_actor_role'}, extra {'default::current_tenant_slug', 'default::current_actor_role'}
+
+gel/protocol/./codecs/./object.pyx:50: QueryArgumentError
+__________________ test_archiving_workspace_freezes_documents __________________
+
+gateway = <module 'app.tenant_gateway' from '/home/user/mtsaas/app/tenant_gateway.py'>
+
+    def test_archiving_workspace_freezes_documents(gateway):
+>       doc1_id = need("doc1_id")
+                  ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:965: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'doc1_id'
+
+    def need(key):
+>       assert key in STATE, (
+            f"Internal fixture value {key!r} is missing because an earlier test in "
+            "this file did not complete successfully."
+        )
+E       AssertionError: Internal fixture value 'doc1_id' is missing because an earlier test in this file did not complete successfully.
+E       assert 'doc1_id' in {}
+
+/tests/test_final_state.py:86: AssertionError
+__________________________ test_baked_rows_preserved ___________________________
+
+raw = <gel.blocking_client.Client object at 0x7410f113d110>
+
+    def test_baked_rows_preserved(raw):
+        support = scope(raw, None, "support")
+>       tenants = support.query("select Tenant { slug, name }")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:997: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:221: in query
+    return self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:404: in _query
+    return self._iter_coroutine(super()._query(query_context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:397: in _iter_coroutine
+    coro.send(None)
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/blocking_client.py:194: in raw_query
+    return await super().raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:592: in execute
+    ???
+gel/protocol/protocol.pyx:452: in _execute
+    ???
+gel/protocol/protocol.pyx:319: in gel.protocol.protocol.SansIOProtocol.encode_parse_params
+    ???
+gel/protocol/protocol.pyx:558: in gel.protocol.protocol.SansIOProtocol.encode_state
+    ???
+gel/protocol/./codecs/./object.pyx:56: in gel.protocol.protocol.ObjectCodec.encode
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.QueryArgumentError: acceptable set() arguments, got {'default::current_actor_role'}, extra {'default::current_actor_role'}
+
+gel/protocol/./codecs/./object.pyx:50: QueryArgumentError
+=========================== short test summary info ============================
+FAILED ../tests/test_final_state.py::test_gateway_module_surface - AssertionE...
+FAILED ../tests/test_final_state.py::test_migration_history_is_versioned_and_in_sync
+FAILED ../tests/test_final_state.py::test_globals_are_declared_in_schema - As...
+FAILED ../tests/test_final_state.py::test_global_defaults - gel.errors.Invali...
+FAILED ../tests/test_final_state.py::test_access_policies_cover_all_actions
+FAILED ../tests/test_final_state.py::test_computed_links_declared - Assertion...
+FAILED ../tests/test_final_state.py::test_unscoped_client_sees_nothing - Asse...
+FAILED ../tests/test_final_state.py::test_support_scope_sees_whole_platform
+FAILED ../tests/test_final_state.py::test_member_scope_reads_are_tenant_isolated
+FAILED ../tests/test_final_state.py::test_unknown_role_sees_nothing - gel.err...
+FAILED ../tests/test_final_state.py::test_list_workspaces_per_tenant_scope - ...
+FAILED ../tests/test_final_state.py::test_auditor_reads_like_member - NotImpl...
+FAILED ../tests/test_final_state.py::test_support_scope_lists_across_tenants
+FAILED ../tests/test_final_state.py::test_get_document_scope_and_cross_tenant_visibility
+FAILED ../tests/test_final_state.py::test_get_document_argument_validation - ...
+FAILED ../tests/test_final_state.py::test_platform_document_counts_baseline_and_role_gate
+FAILED ../tests/test_final_state.py::test_create_document_with_comments - gel...
+FAILED ../tests/test_final_state.py::test_comment_length_is_a_schema_constraint
+FAILED ../tests/test_final_state.py::test_create_document_rolls_back_on_constraint_violation
+FAILED ../tests/test_final_state.py::test_create_document_validates_before_writing
+FAILED ../tests/test_final_state.py::test_platform_counts_follow_new_documents
+FAILED ../tests/test_final_state.py::test_auditor_and_support_cannot_write - ...
+FAILED ../tests/test_final_state.py::test_cross_tenant_writes_are_refused - A...
+FAILED ../tests/test_final_state.py::test_rename_document_in_scope - NotImple...
+FAILED ../tests/test_final_state.py::test_delete_document_removes_comments - ...
+FAILED ../tests/test_final_state.py::test_archived_workspace_is_frozen - gel....
+FAILED ../tests/test_final_state.py::test_archiving_workspace_freezes_documents
+FAILED ../tests/test_final_state.py::test_baked_rows_preserved - gel.errors.Q...
+============================== 28 failed in 1.35s ==============================

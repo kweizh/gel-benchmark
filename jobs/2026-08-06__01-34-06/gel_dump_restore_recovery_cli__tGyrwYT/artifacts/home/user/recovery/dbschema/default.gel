@@ -1,0 +1,33 @@
+module default {
+  type Warehouse {
+    required code: str {
+      constraint exclusive;
+      constraint expression on (re_test(r'^[A-Z0-9-]{3,12}$', __subject__)) {
+        errmessage := 'Warehouse code must match ^[A-Z0-9-]{3,12}$';
+      };
+    }
+    required name: str;
+  }
+
+  type Shipment {
+    required seq: int64 {
+      constraint exclusive;
+    }
+    required tracking: str {
+      constraint exclusive;
+      constraint expression on (re_test(r'^[A-Z0-9-]{6,20}$', __subject__)) {
+        errmessage := 'Shipment tracking must match ^[A-Z0-9-]{6,20}$';
+      };
+    }
+    required weight_kg: float64 {
+      constraint min_value(0.0001);
+    }
+    required status: str {
+      constraint expression on (__subject__ = 'pending' or __subject__ = 'in_transit' or __subject__ = 'delivered' or __subject__ = 'returned') {
+        errmessage := 'Shipment status must be one of: pending, in_transit, delivered, returned';
+      };
+    }
+    required origin_code: str;
+    required origin: Warehouse;
+  }
+}

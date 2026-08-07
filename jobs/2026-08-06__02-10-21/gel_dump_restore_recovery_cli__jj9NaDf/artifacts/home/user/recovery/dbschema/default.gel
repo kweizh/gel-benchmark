@@ -1,0 +1,19 @@
+module default {
+  type Warehouse {
+    required code: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Shipment {
+    required seq: int64 {
+      constraint exclusive;
+    }
+    tracking: str;
+    weight_kg: float64;
+    status: str;
+    origin_code: str;
+    origin: Warehouse;
+  }
+}

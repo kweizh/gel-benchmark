@@ -1,0 +1,206 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:14:14.563400+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 18,
+            "passed": 13,
+            "failed": 5,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785950049973,
+            "stop": 1785950054563
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_history_in_sync",
+                "status": "passed",
+                "duration": 1372,
+                "start": 1785950050015,
+                "stop": 1785950051387,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_migration_files_recorded",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785950051387,
+                "stop": 1785950051388,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_function_catalog_overloads_and_volatility",
+                "status": "passed",
+                "duration": 109,
+                "start": 1785950051389,
+                "stop": 1785950051498,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_parameter_catalog_kinds_and_typemods",
+                "status": "passed",
+                "duration": 172,
+                "start": 1785950051498,
+                "stop": 1785950051670,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_billable_grams_behaviour",
+                "status": "passed",
+                "duration": 417,
+                "start": 1785950051670,
+                "stop": 1785950052087,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_quote_cents_behaviour",
+                "status": "passed",
+                "duration": 569,
+                "start": 1785950052087,
+                "stop": 1785950052656,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_variadic_and_array_aggregate_boundaries",
+                "status": "passed",
+                "duration": 277,
+                "start": 1785950052657,
+                "stop": 1785950052934,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_optional_parameter_and_tariff_version",
+                "status": "passed",
+                "duration": 271,
+                "start": 1785950052934,
+                "stop": 1785950053205,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_scalar_types_and_abstract_constraint",
+                "status": "passed",
+                "duration": 475,
+                "start": 1785950053205,
+                "stop": 1785950053680,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_constraint_violations_report_exact_messages",
+                "status": "passed",
+                "duration": 311,
+                "start": 1785950053680,
+                "stop": 1785950053991,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seed_parcels_have_expected_computed_values",
+                "status": "passed",
+                "duration": 213,
+                "start": 1785950053992,
+                "stop": 1785950054205,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_shipment_computed_aggregates",
+                "status": "passed",
+                "duration": 203,
+                "start": 1785950054205,
+                "stop": 1785950054408,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_existing_carrier_data_untouched",
+                "status": "passed",
+                "duration": 65,
+                "start": 1785950054408,
+                "stop": 1785950054473,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_command_shipment_mode",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 39,
+                "start": 1785950054474,
+                "stop": 1785950054513,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = True\n\n    def test_report_command_shipment_mode(client):\n        proc = _quote(\"--shipment\", \"SHP-9001\")\n>       assert proc.returncode == 0, (\n            f\"'quote.sh --shipment SHP-9001' must exit 0, got {proc.returncode}:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: 'quote.sh --shipment SHP-9001' must exit 0, got 127:\nE         stdout=\nE         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--shipment', 'SHP-9001'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:619: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_command_empty_shipment",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 16,
+                "start": 1785950054513,
+                "stop": 1785950054529,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = True\n\n    def test_report_command_empty_shipment(client):\n        proc = _quote(\"--shipment\", \"SHP-9002\")\n>       assert proc.returncode == 0, (\n            f\"'quote.sh --shipment SHP-9002' must exit 0, got {proc.returncode}:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: 'quote.sh --shipment SHP-9002' must exit 0, got 127:\nE         stdout=\nE         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--shipment', 'SHP-9002'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:652: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_command_unknown_shipment_and_bad_usage",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 15,
+                "start": 1785950054529,
+                "stop": 1785950054544,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = True\n\n    def test_report_command_unknown_shipment_and_bad_usage(client):\n        proc = _quote(\"--shipment\", \"SHP-0000\")\n>       assert proc.returncode == 3, (\n            f\"An unknown shipment must exit 3, got {proc.returncode}:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: An unknown shipment must exit 3, got 127:\nE         stdout=\nE         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory\nE         \nE       assert 127 == 3\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--shipment', 'SHP-0000'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:665: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_command_introspect_mode",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 11,
+                "start": 1785950054544,
+                "stop": 1785950054555,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = True\n\n    def test_report_command_introspect_mode(client):\n        proc = _quote(\"--introspect\")\n>       assert proc.returncode == 0, (\n            f\"'quote.sh --introspect' must exit 0, got {proc.returncode}:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: 'quote.sh --introspect' must exit 0, got 127:\nE         stdout=\nE         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--introspect'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:686: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_introspect_output_matches_live_catalog",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 8,
+                "start": 1785950054555,
+                "stop": 1785950054563,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "client = True\n\n    def test_introspect_output_matches_live_catalog(client):\n        proc = _quote(\"--introspect\")\n>       assert proc.returncode == 0, (\n            f\"'quote.sh --introspect' must exit 0, got {proc.returncode}:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: 'quote.sh --introspect' must exit 0, got 127:\nE         stdout=\nE         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--introspect'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:759: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

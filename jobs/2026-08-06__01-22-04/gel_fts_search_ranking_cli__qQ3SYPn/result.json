@@ -1,0 +1,118 @@
+{
+    "id": "e9d93e8b-d8d3-49b3-b808-1902493a84af",
+    "task_name": "gel_fts_search_ranking_cli",
+    "trial_name": "gel_fts_search_ranking_cli__qQ3SYPn",
+    "trial_uri": "file:///home/kw/code/zealt/pochi-harbor/jobs/2026-08-06__01-22-04/gel_fts_search_ranking_cli__qQ3SYPn",
+    "task_id": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_fts_search_ranking_cli"
+    },
+    "source": "pending-tasks",
+    "task_checksum": "9b964ae99c62e1a664be045e85c2255f74a9e53a64dc7c4b7dc4610f6c0bef7d",
+    "config": {
+        "task": {
+            "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_fts_search_ranking_cli",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "pending-tasks"
+        },
+        "trial_name": "gel_fts_search_ranking_cli__qQ3SYPn",
+        "trials_dir": "jobs/2026-08-06__01-22-04",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "agents.pochi:Pochi",
+            "import_path": null,
+            "model_name": "anthropic/claude-5-sonnet",
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "env": {
+                "POCHI_API_KEY": "${POCHI_API_KEY}"
+            },
+            "mcp_servers": []
+        },
+        "environment": {
+            "type": "daytona",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [
+            "/home/user"
+        ],
+        "extra_instruction_paths": [],
+        "job_id": "36d2c4a7-e59b-4e21-9c58-9fd9f58c60ef"
+    },
+    "agent_info": {
+        "name": "pochi",
+        "version": "0.6.20",
+        "model_info": {
+            "name": "claude-5-sonnet",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 0,
+        "n_cache_tokens": 0,
+        "n_output_tokens": 5478556,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 1.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-08-05T17:22:07.249546Z",
+    "finished_at": "2026-08-05T17:31:51.539593Z",
+    "environment_setup": {
+        "started_at": "2026-08-05T17:22:07.377709Z",
+        "finished_at": "2026-08-05T17:22:13.464537Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-08-05T17:22:13.464580Z",
+        "finished_at": "2026-08-05T17:22:20.179709Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-08-05T17:22:20.179762Z",
+        "finished_at": "2026-08-05T17:31:23.242808Z"
+    },
+    "verifier": {
+        "started_at": "2026-08-05T17:31:36.501477Z",
+        "finished_at": "2026-08-05T17:31:50.556244Z"
+    },
+    "step_results": null
+}

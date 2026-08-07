@@ -1,0 +1,94 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 21 items
+
+../tests/test_final_state.py ...................F.                       [100%]
+
+=================================== FAILURES ===================================
+______________________ test_database_rejection_is_atomic _______________________
+
+clean_db = True
+
+    def test_database_rejection_is_atomic(clean_db):
+        run_ok("base.json", BASE_BATCH)
+        before = counts()
+    
+        batch = [
+            {
+                "sku": "P-001",
+                "name": "Hammer",
+                "price_cents": 1999,
+                "stock": 11,
+                "category": "tools",
+                "tags": ["metal", "sale"],
+            },
+            {
+                "sku": "P-401",
+                "name": "Anvil",
+                "price_cents": 8999,
+                "stock": 3,
+                "category": "tools",
+                "tags": ["metal"],
+            },
+            {
+                "sku": "P-402",
+                "name": "Overstocked",
+                "price_cents": 100,
+                "stock": 100001,
+                "category": "tools",
+                "tags": ["metal"],
+            },
+        ]
+        path = write_json_batch("db-reject.json", batch)
+        proc, _ = run_sync(["--input", path])
+>       _assert_error(proc, 5, "db_error")
+
+/tests/test_final_state.py:903: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+proc = CompletedProcess(args=['node', '/home/user/catalog-sync/dist/sync.js', '--input', '/tmp/verify-batches/db-reject.json'...ror_code":"invalid_record","message":"Record at index 2 has an invalid or missing \'stock\'.","index":2}\n', stderr='')
+expected_code = 5, expected_error = 'db_error'
+
+    def _assert_error(proc, expected_code, expected_error):
+>       assert proc.returncode == expected_code, (
+            f"Expected exit code {expected_code}, got {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: Expected exit code 5, got 3; stdout='{"ok":false,"error_code":"invalid_record","message":"Record at index 2 has an invalid or missing \'stock\'.","index":2}\n' stderr=''
+E       assert 3 == 5
+E        +  where 3 = CompletedProcess(args=['node', '/home/user/catalog-sync/dist/sync.js', '--input', '/tmp/verify-batches/db-reject.json'...ror_code":"invalid_record","message":"Record at index 2 has an invalid or missing \'stock\'.","index":2}\n', stderr='').returncode
+
+/tests/test_final_state.py:700: AssertionError
+==================================== PASSES ====================================
+_______________________ test_migration_state_is_in_sync ________________________
+---------------------------- Captured stdout setup -----------------------------
+gel-start.sh stdout:
+Gel instance 'local_gel' is already running on port 5656.
+
+gel-start.sh stderr:
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_project_artifacts_exist
+PASSED ../tests/test_final_state.py::test_migration_state_is_in_sync
+PASSED ../tests/test_final_state.py::test_category_and_tag_schema
+PASSED ../tests/test_final_state.py::test_product_schema_properties_and_links
+PASSED ../tests/test_final_state.py::test_exclusive_constraints_declared
+PASSED ../tests/test_final_state.py::test_exclusive_constraints_enforced
+PASSED ../tests/test_final_state.py::test_first_run_inserts_all_records
+PASSED ../tests/test_final_state.py::test_first_run_database_state
+PASSED ../tests/test_final_state.py::test_replaying_batch_is_idempotent
+PASSED ../tests/test_final_state.py::test_partial_update_outcomes
+PASSED ../tests/test_final_state.py::test_partial_update_database_state
+PASSED ../tests/test_final_state.py::test_empty_batch_is_a_noop
+PASSED ../tests/test_final_state.py::test_missing_input_argument
+PASSED ../tests/test_final_state.py::test_missing_input_file
+PASSED ../tests/test_final_state.py::test_invalid_json_input_file
+PASSED ../tests/test_final_state.py::test_top_level_value_is_not_an_array
+PASSED ../tests/test_final_state.py::test_invalid_record_negative_price
+PASSED ../tests/test_final_state.py::test_invalid_record_missing_category
+PASSED ../tests/test_final_state.py::test_duplicate_sku_is_rejected
+PASSED ../tests/test_final_state.py::test_large_batch_performance_and_idempotency
+FAILED ../tests/test_final_state.py::test_database_rejection_is_atomic - Asse...
+======================== 1 failed, 20 passed in 10.89s =========================

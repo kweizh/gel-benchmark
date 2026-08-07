@@ -1,0 +1,12 @@
+module default {
+  type Contact {
+    required email: str {
+      constraint exclusive;
+    };
+    required full_name: str;
+    required stage: str {
+      default := 'lead';
+    };
+    note: str;
+  }
+}

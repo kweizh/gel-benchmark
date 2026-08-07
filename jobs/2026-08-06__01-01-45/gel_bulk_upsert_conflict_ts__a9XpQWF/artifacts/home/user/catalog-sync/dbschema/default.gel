@@ -1,0 +1,29 @@
+module default {
+  type Category {
+    required property name: str {
+      constraint exclusive;
+    }
+  }
+
+  type Tag {
+    required property label: str {
+      constraint exclusive;
+    }
+  }
+
+  type Product {
+    required property sku: str {
+      constraint exclusive;
+    }
+    required property name: str;
+    required property price_cents: int64 {
+      constraint min_value(0);
+    }
+    required property stock: int64 {
+      constraint min_value(0);
+      constraint max_value(100000);
+    }
+    required link category: Category;
+    multi link tags: Tag;
+  }
+}

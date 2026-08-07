@@ -1,0 +1,493 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 22 items
+
+../tests/test_final_state.py FF.FFFEEEEEEEEEEFEFFFF                      [100%]
+
+==================================== ERRORS ====================================
+_________ ERROR at setup of test_history_revision_uniqueness_enforced __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_________ ERROR at setup of test_slug_uniqueness_enforced_by_database __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+______________ ERROR at setup of test_create_document_happy_path _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+________________ ERROR at setup of test_compare_and_set_update _________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+________________ ERROR at setup of test_stale_revision_rejected ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+________ ERROR at setup of test_unknown_slug_raises_document_not_found _________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+____________ ERROR at setup of test_empty_update_raises_value_error ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_________ ERROR at setup of test_slug_conflict_leaves_state_untouched __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_________ ERROR at setup of test_revision_is_enforced_by_the_database __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+_______ ERROR at setup of test_title_modified_at_tracks_specified_title ________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+______________ ERROR at setup of test_concurrent_appends_converge ______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def docstore(gel_server):
+        """Import the executor's storage library."""
+>       assert os.path.isfile(DOCSTORE_FILE), f"{DOCSTORE_FILE} does not exist."
+E       AssertionError: /home/user/wikiapp/docstore.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E        +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:78: AssertionError
+=================================== FAILURES ===================================
+___________________________ test_project_files_exist ___________________________
+
+    def test_project_files_exist():
+        for path in (SCHEMA_FILE, DOCSTORE_FILE, CLI_FILE):
+>           assert os.path.isfile(path), f"Required file {path} does not exist."
+E           AssertionError: Required file /home/user/wikiapp/docstore.py does not exist.
+E           assert False
+E            +  where False = <function isfile at 0x7ddcbdc10220>('/home/user/wikiapp/docstore.py')
+E            +    where <function isfile at 0x7ddcbdc10220> = <module 'posixpath' (frozen)>.isfile
+E            +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:201: AssertionError
+__________________________ test_migration_files_exist __________________________
+
+    def test_migration_files_exist():
+>       assert os.path.isdir(MIGRATIONS_DIR), (
+            f"Migration directory {MIGRATIONS_DIR} does not exist; the schema must be "
+            "delivered through the project's migration system."
+        )
+E       AssertionError: Migration directory /home/user/wikiapp/dbschema/migrations does not exist; the schema must be delivered through the project's migration system.
+E       assert False
+E        +  where False = <function isdir at 0x7ddcbdc102c0>('/home/user/wikiapp/dbschema/migrations')
+E        +    where <function isdir at 0x7ddcbdc102c0> = <module 'posixpath' (frozen)>.isdir
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:205: AssertionError
+__________________________ test_document_schema_shape __________________________
+
+gel_server = True
+
+    def test_document_schema_shape(gel_server):
+>       pointers = introspect("default::Document")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+type_name = 'default::Document'
+
+    def introspect(type_name):
+        async def query(client):
+            rows = json.loads(await client.query_json(INTROSPECT_QUERY, name=type_name))
+            return rows[0] if rows else None
+    
+        result = run_async(query)
+>       assert result is not None, (
+            f"Object type {type_name} does not exist in the database schema."
+        )
+E       AssertionError: Object type default::Document does not exist in the database schema.
+E       assert None is not None
+
+/tests/test_final_state.py:190: AssertionError
+_____________________ test_document_revision_schema_shape ______________________
+
+gel_server = True
+
+    def test_document_revision_schema_shape(gel_server):
+>       pointers = introspect("default::DocumentRevision")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:265: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+type_name = 'default::DocumentRevision'
+
+    def introspect(type_name):
+        async def query(client):
+            rows = json.loads(await client.query_json(INTROSPECT_QUERY, name=type_name))
+            return rows[0] if rows else None
+    
+        result = run_async(query)
+>       assert result is not None, (
+            f"Object type {type_name} does not exist in the database schema."
+        )
+E       AssertionError: Object type default::DocumentRevision does not exist in the database schema.
+E       assert None is not None
+
+/tests/test_final_state.py:190: AssertionError
+_______________________ test_document_rewrites_declared ________________________
+
+gel_server = True
+
+    def test_document_rewrites_declared(gel_server):
+>       pointers = introspect("default::Document")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:296: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+type_name = 'default::Document'
+
+    def introspect(type_name):
+        async def query(client):
+            rows = json.loads(await client.query_json(INTROSPECT_QUERY, name=type_name))
+            return rows[0] if rows else None
+    
+        result = run_async(query)
+>       assert result is not None, (
+            f"Object type {type_name} does not exist in the database schema."
+        )
+E       AssertionError: Object type default::Document does not exist in the database schema.
+E       assert None is not None
+
+/tests/test_final_state.py:190: AssertionError
+___________________ test_raw_insert_with_minimal_properties ____________________
+
+gel_server = True
+
+    def test_raw_insert_with_minimal_properties(gel_server):
+        slug = unique_slug("rawinsert")
+    
+        async def scenario(client):
+            return await client.query_required_single(
+                """
+                select (
+                    insert Document {
+                        slug := <str>$slug,
+                        title := "Raw",
+                        body := "raw body",
+                        last_editor := "raw",
+                    }
+                ) { revision, created_at, modified_at, title_modified_at }
+                """,
+                slug=slug,
+            )
+    
+>       inserted = run_async(scenario)
+                   ^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:744: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:109: in run_async
+    return asyncio.run(runner())
+           ^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:105: in runner
+    return await coro_func(client)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/tests/test_final_state.py:730: in scenario
+    return await client.query_required_single(
+/usr/local/lib/python3.12/dist-packages/gel/abstract.py:388: in query_required_single
+    return await self._query(QueryContext(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:753: in _query
+    return await con.raw_query(query_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:248: in raw_query
+    return await self._retry_operation(
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:214: in _retry_operation
+    raise e
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:208: in _retry_operation
+    return await func()
+           ^^^^^^^^^^^^
+/usr/local/lib/python3.12/dist-packages/gel/base_client.py:243: in _inner
+    res = await self._protocol.query(ctx)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gel/protocol/protocol.pyx:595: in query
+    ???
+gel/protocol/protocol.pyx:589: in execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   gel.errors.InvalidReferenceError: object type or alias 'default::Document' does not exist
+E      ┌─ query:3:24
+E      │ 
+E    3 │                   insert Document {
+E      │                          ^^^^^^^^ error
+
+gel/protocol/protocol.pyx:435: InvalidReferenceError
+_____________________ test_cli_create_update_show_history ______________________
+
+gel_server = True
+
+    def test_cli_create_update_show_history(gel_server):
+        slug = unique_slug("cli")
+    
+        created_proc = run_cli(
+            "create",
+            "--slug",
+            slug,
+            "--title",
+            "CLI page",
+            "--body",
+            "line one",
+            "--author",
+            "cli",
+        )
+>       assert created_proc.returncode == 0, (
+            f"`wikicli.py create` failed: stdout={created_proc.stdout!r} "
+            f"stderr={created_proc.stderr!r}"
+        )
+E       AssertionError: `wikicli.py create` failed: stdout='' stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'wikicli.py', 'create', '--slug', 'cli-a2c9490b26', '--title', 'CLI page', '--body',...2, stdout='', stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:837: AssertionError
+______________________ test_cli_stale_revision_exit_code _______________________
+
+gel_server = True
+
+    def test_cli_stale_revision_exit_code(gel_server):
+        slug = unique_slug("clistale")
+    
+        create_proc = run_cli(
+            "create",
+            "--slug",
+            slug,
+            "--title",
+            "CLI page",
+            "--body",
+            "line one",
+            "--author",
+            "cli",
+        )
+>       assert create_proc.returncode == 0, (
+            f"`wikicli.py create` failed: stdout={create_proc.stdout!r} "
+            f"stderr={create_proc.stderr!r}"
+        )
+E       AssertionError: `wikicli.py create` failed: stdout='' stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'wikicli.py', 'create', '--slug', 'clistale-992dd4cc2c', '--title', 'CLI page', '--b...2, stdout='', stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:930: AssertionError
+__________________ test_cli_not_found_and_conflict_exit_codes __________________
+
+gel_server = True
+
+    def test_cli_not_found_and_conflict_exit_codes(gel_server):
+        slug = unique_slug("clierr")
+    
+        create_proc = run_cli(
+            "create",
+            "--slug",
+            slug,
+            "--title",
+            "CLI page",
+            "--body",
+            "line one",
+            "--author",
+            "cli",
+        )
+>       assert create_proc.returncode == 0, (
+            f"`wikicli.py create` failed: stdout={create_proc.stdout!r} "
+            f"stderr={create_proc.stderr!r}"
+        )
+E       AssertionError: `wikicli.py create` failed: stdout='' stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'wikicli.py', 'create', '--slug', 'clierr-ce5cef9da6', '--title', 'CLI page', '--bod...2, stdout='', stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:997: AssertionError
+______________________ test_cli_race_accepts_every_append ______________________
+
+gel_server = True
+
+    def test_cli_race_accepts_every_append(gel_server):
+        slug = unique_slug("clirace")
+        count = 8
+    
+        create_proc = run_cli(
+            "create",
+            "--slug",
+            slug,
+            "--title",
+            "Race page",
+            "--body",
+            "seed",
+            "--author",
+            "bot",
+        )
+>       assert create_proc.returncode == 0, (
+            f"`wikicli.py create` failed: stdout={create_proc.stdout!r} "
+            f"stderr={create_proc.stderr!r}"
+        )
+E       AssertionError: `wikicli.py create` failed: stdout='' stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'wikicli.py', 'create', '--slug', 'clirace-a639dd422d', '--title', 'Race page', '--b...2, stdout='', stderr="python3: can't open file '/home/user/wikiapp/wikicli.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:1050: AssertionError
+==================================== PASSES ====================================
+________________________ test_migration_status_in_sync _________________________
+---------------------------- Captured stdout setup -----------------------------
+=== start-gel.sh stdout ===
+gel server already running
+
+=== start-gel.sh stderr ===
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_status_in_sync
+ERROR ../tests/test_final_state.py::test_history_revision_uniqueness_enforced
+ERROR ../tests/test_final_state.py::test_slug_uniqueness_enforced_by_database
+ERROR ../tests/test_final_state.py::test_create_document_happy_path - Asserti...
+ERROR ../tests/test_final_state.py::test_compare_and_set_update - AssertionEr...
+ERROR ../tests/test_final_state.py::test_stale_revision_rejected - AssertionE...
+ERROR ../tests/test_final_state.py::test_unknown_slug_raises_document_not_found
+ERROR ../tests/test_final_state.py::test_empty_update_raises_value_error - As...
+ERROR ../tests/test_final_state.py::test_slug_conflict_leaves_state_untouched
+ERROR ../tests/test_final_state.py::test_revision_is_enforced_by_the_database
+ERROR ../tests/test_final_state.py::test_title_modified_at_tracks_specified_title
+ERROR ../tests/test_final_state.py::test_concurrent_appends_converge - Assert...
+FAILED ../tests/test_final_state.py::test_project_files_exist - AssertionErro...
+FAILED ../tests/test_final_state.py::test_migration_files_exist - AssertionEr...
+FAILED ../tests/test_final_state.py::test_document_schema_shape - AssertionEr...
+FAILED ../tests/test_final_state.py::test_document_revision_schema_shape - As...
+FAILED ../tests/test_final_state.py::test_document_rewrites_declared - Assert...
+FAILED ../tests/test_final_state.py::test_raw_insert_with_minimal_properties
+FAILED ../tests/test_final_state.py::test_cli_create_update_show_history - As...
+FAILED ../tests/test_final_state.py::test_cli_stale_revision_exit_code - Asse...
+FAILED ../tests/test_final_state.py::test_cli_not_found_and_conflict_exit_codes
+FAILED ../tests/test_final_state.py::test_cli_race_accepts_every_append - Ass...
+=================== 10 failed, 1 passed, 11 errors in 2.08s ====================

@@ -1,0 +1,81 @@
+- Initializing MCP connections...
+You
+# Database-Enforced Audit Trail for a Product Catalog (Gel, CLI only) ## Background `/home/user/pricing-audit` is an already-initialized Gel project. A local Gel server (version `6.11`) is installed in this container with its data directory already bootstrapped, and the `gel` CLI is on `PATH` with all connection settings preconfigured through the environment, so plain `gel query ...` / `gel migrate` calls work from any directory once the server is up. The server process itself may not be running yet: bring it up with `gel-start.sh`, which is idempotent and safe to call repeatedly. Never launch `gel-server` by hand. The current schema (`dbschema/default.gel`) declares a single object type `default::Product` with `sku` (exclusive), `name`, `price_cents` and `stock`. One migration (`dbschema/migrations/00001-*.edgeql`) has been created and applied, and the database already holds 8 seeded products. The pricing team keeps discovering price edits that nobody can explain, because bookkeeping currently lives in whichever application happens to touch the database. They want an audit subsystem that **cannot be bypassed**: the audit records and the bookkeeping fields must be produced by the database itself, so that even a raw `gel query 'update Product ...'` is recorded. You must build the whole thing with Gel SDL, the migration workflow and EdgeQL through the `gel` CLI — do **not** write any Python, TypeScript, Go or other client-library code. ## Requirements ### 1. Bookkeeping fields on `Product` Extend `default::Product` (keep the existing properties and constraints intact) with two required properties that the database maintains on its own: - `revision: int64` — a new product starts at `1`. Every `update` statement that matches the product increases its `revision` by exactly `1`, **even when the statement does not actually change any value**. - `price_history: array<int64>` — a product inserted after your change starts with `[<its price_cents>]`. Every `update` that changes `price_cents` appends the new price to the array; an `update` that leaves `price_cents` at its current value must leave the array untouched. The 8 products that already exist must be backfilled with `revision = 1` and `price_history = []` (do not synthesize history for them). ### 2. `default::AuditEvent` — one append-only row per audited row change Properties: - `action: str`, required, restricted to exactly the values `insert`, `update`, `delete`. - `sku: str`, required. - `old_price_cents: int64`, optional. - `new_price_cents: int64`, optional. - `recorded_at: datetime`, required, defaulting to the time of the statement that created it. - `summary: str`, required, and **always derived by the database from the other properties of the same object when the row is inserted** (a caller-supplied value must never survive). Exact formats: - `action = 'insert'` → `INSERT <sku> price=<new_price_cents>` - `action = 'update'` → `UPDATE <sku> price=<old_price_cents>-><new_price_cents>` - `action = 'delete'` → `DELETE <sku> price=<old_price_cents>` The type is append-only: inserting is allowed (including directly, by hand), but any attempt to `update` or `delete` an `AuditEvent` must fail with an error whose message contains exactly `AuditEvent is append-only`, and must leave the stored rows unchanged. ### 3. `default::AuditBatch` — one row per mutating statement Properties: `kind: str` (required, restricted to exactly `insert`, `update`, `delete`), `row_count: int64` (required), `recorded_at: datetime` (required, defaulting to the time of the statement that created it). Exactly one `AuditBatch` row must be recorded per `insert`/`update`/`delete` statement executed against `Product`, with `kind` naming the statement type and `row_count` holding the number of `Product` objects that statement modified. This includes statements that modified **zero** products (e.g. an `update Product filter ...` whose filter matched nothing): those must still produce exactly one `AuditBatch` row, with `row_count = 0`. ### 4. Required declaration names The audit behaviour must be declared in the schema with exactly these names: On `default::Product`: | name | reacts to | granularity | | --- | --- | --- | | `log_product_insert` | insert | one `AuditEvent` per inserted product | | `log_price_update` | update | one `AuditEvent` per updated product, **only** when `price_cents` actually changed — expressed as the trigger declaration's own condition, so the trigger body does not even run otherwise | | `log_product_delete` | delete | one `AuditEvent` per deleted product | | `batch_insert_stats` | insert | one `AuditBatch` per statement | | `batch_update_stats` | update | one `AuditBatch` per statement | | `batch_delete_stats` | delete | one `AuditBatch` per statement | On `default::AuditEvent`: `forbid_mutation`, reacting to both `update` and `delete`, per row. An `update` of a product that leaves `price_cents` unchanged must therefore produce **no** `AuditEvent` at all (while still bumping `revision` and still producing an `AuditBatch` row). ### 5. Migration workflow All of the above must be declared in `dbschema/default.gel` and rolled out through the normal migration workflow, non-interactively. The pre-existing `00001-*.edgeql` migration file must not be edited, renamed or removed, `gel migration status` must report that the database is up to date, and applying your migration must not create any `AuditEvent` or `AuditBatch` rows. All 8 seeded products must still exist afterwards. ### 6. Two CLI wrappers Create the following executable scripts (implemented with the `gel` CLI; no client libraries). `scripts/apply_price_change.sh <sku> <new_price_cents>` — changes one product's price: - On success: exit `0` and print exactly one line to stdout, and nothing else: `<sku> <old_price_cents> -> <new_price_cents> revision=<revision after the change>` (for example `AX-100 1999 -> 2099 revision=2`). It always performs the update, even when `<new_price_cents>` equals the current price, and it must run exactly one mutating statement per invocation. - Validation, applied strictly in this order, printing nothing to stdout and leaving the database untouched: 1. wrong number of arguments → stderr `ERROR: usage: apply_price_change.sh <sku> <new_price_cents>`, exit `4`. 2. `<new_price_cents>` is not a positive decimal integer (no sign, no leading zero, no decimal point) → stderr `ERROR: invalid price: <the argument as given>`, exit `3`. 3. no product with that `sku` → stderr `ERROR: unknown sku: <sku>`, exit `2`. `scripts/audit_report.sh` — takes no arguments, always exits `0`, and prints a single JSON array to stdout (whitespace and line breaks inside the JSON do not matter). It contains one object per distinct `sku` that appears in `AuditEvent` — a sku with no audit rows must not appear at all, and an empty audit trail must yield `[]`. Objects are ordered by `sku` ascending and have exactly these six keys: - `sku` (string) - `inserts`, `updates`, `deletes` (integers): number of `AuditEvent` rows for that sku with the corresponding `action` - `events` (integer): total number of `AuditEvent` rows for that sku - `net_price_change_cents` (integer): sum of `new_price_cents - old_price_cents` over that sku's `update` rows, `0` when there are none ## Implementation Hints - Project path: `/home/user/pricing-audit` (the `gel.toml` and `dbschema/` live there). - Commands: `/home/user/pricing-audit/scripts/apply_price_change.sh <sku> <new_price_cents>` and `/home/user/pricing-audit/scripts/audit_report.sh`. Both are invoked by absolute path with the working directory set to the project path, and both must be executable files. - Whenever a `gel` command cannot connect, run `gel-start.sh` and retry; the server keeps running for the rest of the session. - Every `sku` value beginning with `ZZ-` is reserved for verification: do not create, update or delete products with such a sku, and do not rely on them existing. - The seeded product with sku `SKU-FROZEN` is a verification fixture: after your migration is applied you must not mutate it, so that it keeps `revision = 1` and `price_history = []`. - `sku` values contain only ASCII letters, digits and `-`, so no quoting-sensitive input needs to be handled.   
+
+Pochi
+💭 Thinking for 205 characters   
+📂 Listing files in /home/user/pricing-audit recursively ✔ 
+📖 Reading /home/user/pricing-audit/dbschema/default.gel ✔ 
+📖 Reading /home/user/pricing-audit/dbschema/migrations/00001-m17o7es.edgeql ✔ 
+💭 Thinking for 213 characters   
+💫 Executing gel-start.sh ✔ 
+💫 Executing gel query "select Product {sku, name, price_cents, stock}" ✔ 
+💭 Thinking for 649 characters   
+🔎 Searching the web for "gel" triggers "after update" ✔ 
+💭 Thinking for 224 characters   
+🔎 Searching the web for "gel" "mutation rewrite" OR "edgedb" "mutation rewrite" ✔ 
+💭 Thinking for 351 characters   
+🔎 Searching the web for "rewrite update using" OR "rewrite insert using" OR "mutation rewrites" "using" ✔ 
+💭 Thinking for 287 characters   
+🔎 Searching the web for "gel" "mutation rewrite" "__subject__" OR "self" OR "old" OR "new" ✔ 
+💭 Thinking for 1536 characters   
+🔎 Searching the web for "required price_history: array<int64>" OR "array<int64>" gel OR edgedb ✔ 
+💭 Thinking for 959 characters   
+🔎 Searching the web for "default := []" OR "default := <array" gel OR edgedb ✔ 
+💭 Thinking for 1830 characters   
+🔎 Searching the web for "gel" trigger fail OR error OR assert OR "forbid_mutation" OR "append-only" ✔ 
+🔎 Searching the web for "gel" OR "edgedb" "assert" function OR "assert_single" OR "assert" trigger ✔ 
+💭 Thinking for 1528 characters   
+🔎 Searching the web for "for all" trigger gel OR edgedb ✔ 
+💭 Thinking for 291 characters   
+🔎 Searching the web for "for all" trigger "zero" OR "empty" gel OR edgedb OR "row_count" ✔ 
+🔎 Searching the web for "for all" trigger "empty" OR "zero" OR "none" OR "modified" site:docs.geldata.com OR site:docs.edgedb.com ✔ 
+💭 Thinking for 220 characters   
+💫 Executing gel query "select count(Product filter .sku = 'NONEXISTENT')" ✔ 
+💭 Thinking for 2929 characters   
+💫 Executing gel query "select datetime_of_statement();" ✔ 
+✏️  Writing /home/user/pricing-audit/dbschema/default.gel ✔ 
+💭 Thinking for 322 characters   
+💫 Executing gel migration status ✖ "Command exited with code 2"
+💫 Executing gel migration create --non-interactive ✔ 
+📂 Listing files in /home/user/pricing-audit/dbschema/migrations recursively ✔ 
+📖 Reading /home/user/pricing-audit/dbschema/migrations/00002-m16agew.edgeql ✔ 
+💭 Thinking for 390 characters   
+💫 Executing gel migrate ✔ 
+💫 Executing gel migration status ✔ 
+💫 Executing gel query "select Product {sku, revision, price_history}" ✔ 
+💫 Executing gel query "select AuditEvent; select AuditBatch;" ✔ 
+💭 Thinking for 250 characters   
+💫 Executing gel query "update Product filter .sku = 'AX-100' set { stock := 13 };" ✔ 
+💫 Executing gel query "select Product {sku, revision, price_history, stock} filter .sku = 'AX-100'; select AuditEvent {sku, action, old_price_cents, new_price_cents, summary}; select AuditBatch {kind, row_count};" ✔ 
+💫 Executing gel query "select Product {sku, revision, price_history, stock} filter .sku = 'AX-100';" ✔ 
+💫 Executing gel query "select AuditEvent {sku, action, old_price_cents, new_price_cents, summary};" ✔ 
+💫 Executing gel query "select AuditBatch {kind, row_count};" ✔ 
+💭 Thinking for 255 characters   
+💫 Executing gel query "update Product filter .sku = 'AX-100' set { price_cents := 2099 };" ✔ 
+💫 Executing gel query "select Product {sku, revision, price_history, price_cents} filter .sku = 'AX-100';" ✖ "Command exited with code 1"
+💫 Executing gel-start.sh ✖ "Command execution timed out after 60 seconds."
+💫 Executing ps aux | grep gel ✔ 
+💭 Thinking for 284 characters   
+💫 Executing gel query "select Product {sku, price_cents};" ✖ "Command exited with code 1"
+💫 Executing gel-start.sh ✖ "Command execution timed out after 60 seconds."
+💫 Executing ps aux | grep -E "gel|postgres" ✔ 
+💫 Executing kill -9 225 ✔ 
+💫 Executing ps aux | grep -E "gel|postgres" ✔ 
+💫 Executing gel-start.sh ✔ 
+💫 Executing gel query "select Product {sku, price_cents, revision, price_history};" ✔ 
+💭 Thinking for 226 characters   
+💫 Executing gel query "select AuditEvent {sku, action, old_price_cents, new_price_cents, summary}; select AuditBatch {kind, row_count};" ✔ 
+💫 Executing gel query "select AuditEvent {sku, action, old_price_cents, new_price_cents, summary};" ✔ 
+💭 Thinking for 232 characters   
+💫 Executing gel query "update AuditEvent filter .sku = 'AX-100' set { action := 'insert' };" ✖ "Command exited with code 1"
+💫 Executing gel query "delete AuditEvent filter .sku = 'AX-100';" ✖ "Command exited with code 1"
+💭 Thinking for 207 characters   
+💫 Executing gel query "insert Product { sku := 'BX-999', name := 'New Product', price_cents := 1000, stock := 5 };" ✔ 
+💫 Executing gel query "select Product {sku, price_cents, revision, price_history} filter .sku = 'BX-999';" ✔ 
+💫 Executing gel query "select AuditEvent {sku, action, old_price_cents, new_price_cents, summary} filter .sku = 'BX-999';" ✔ 
+💫 Executing gel query "delete Product filter .sku = 'BX-999';" ✔ 
+💫 Executing gel query "select AuditEvent {sku, action, old_price_cents, new_price_cents, summary} filter .sku = 'BX-999' and .action = 'delete';" ✔ 
+💫 Executing gel query "select AuditBatch {kind, row_count};" ✔ 
+💫 Executing gel query "update Product filter .sku = 'NONEXISTENT' set { stock := 10 };" ✔ 
+💫 Executing gel query "select AuditBatch {kind, row_count};" ✔ 

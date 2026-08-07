@@ -1,0 +1,11 @@
+[
+  { "kind": "article", "title": "Analytical Engines", "author": "Ada Lovelace", "minutes": 13, "level": "beginner", "word_count": 2400 },
+  { "kind": "article", "title": "Bug Hunting", "author": "Grace Hopper", "minutes": 20, "level": "intermediate", "word_count": 5200 },
+  { "kind": "article", "title": "Compilers Explained", "author": "Grace Hopper", "minutes": 35, "level": "advanced", "word_count": 9100 },
+  { "kind": "article", "title": "Kernel Modules", "author": "Linus Torvalds", "minutes": 45, "level": "advanced", "word_count": 7300 },
+  { "kind": "video", "title": "Punch Cards 101", "author": "Ada Lovelace", "minutes": 18, "level": "beginner", "has_captions": true },
+  { "kind": "video", "title": "Cobol In Practice", "author": "Grace Hopper", "minutes": 50, "level": "intermediate", "has_captions": false },
+  { "kind": "video", "title": "Git Internals", "author": "Linus Torvalds", "minutes": 65, "level": "advanced", "has_captions": true },
+  { "kind": "video", "title": "Debugging Deep Dive", "author": "Ada Lovelace", "minutes": 30, "level": "intermediate", "has_captions": true },
+  { "kind": "video", "title": "Type Systems Tour", "author": "Rita O'Malley", "minutes": 40, "level": "beginner", "has_captions": false }
+]

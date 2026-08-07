@@ -1,0 +1,341 @@
+- Initializing MCP connections...
+You
+# Idempotent Bulk Catalog Sync (Gel + TypeScript) ## Background An e-commerce team receives product catalogs from upstream suppliers as batches of JSON records. The catalog itself lives in a local **Gel 6** instance (the graph-relational database formerly known as EdgeDB). Today the import is a hand-written loop that creates duplicate categories, silently doubles products when a batch is replayed, and leaves half-imported data behind when one record is rejected. Your job is to replace it: model the catalog in Gel's schema language, get that schema into the database through Gel's migration engine, and build a re-runnable synchronisation CLI in TypeScript on top of the official `gel` npm client. The CLI must be able to ingest the same batch any number of times without changing the database after the first successful run, and it must tell the operator, per record, what actually happened. ## Requirements - Define the catalog data model in the project's Gel schema and apply it to the running instance through a migration, so that the instance's migration state is in sync with the files on disk. - Implement a batch synchronisation CLI that reads a JSON batch file and, for every record, either creates a product or brings the existing product in line with the record. - Resolve the objects a product points to (its category, its tags) on demand: they are created when they are not there yet, reused otherwise, and never duplicated — no matter how many records in the batch (or how many previous runs) reference the same name. - Classify every record's outcome and report it, together with per-batch totals, as machine-readable output. - Apply the whole batch atomically: either every record in the batch lands, or none does. - Reject malformed batches with a documented, machine-readable error contract, without touching the database. ## Implementation Hints - Project path: `/home/user/catalog-sync`. Work inside it; the Gel project directory (`gel.toml`, `dbschema/`) is already there and already linked to the local instance `local_gel`, so client connection details are discovered from the project directory — do not introduce connection environment variables, DSNs, or credentials of your own. - The local Gel instance is not running when you start. Start it with `/usr/local/bin/gel-start.sh` (idempotent, must be run as `root`; it returns once the instance answers queries, which can take up to ~30 s). - Treat the environment as offline. Every dependency you need is already installed under `/home/user/catalog-sync/node_modules` (including the pinned `gel` client and TypeScript); do not run `npm install`/`npm ci`, do not upgrade anything, and do not add dependencies. - Command: `node dist/sync.js --input <path/to/batch.json>`, executed with the working directory `/home/user/catalog-sync`. `/home/user/catalog-sync/dist/sync.js` must already exist and run as-is — verification never builds the project for you. - Schema: module `default` must contain object types named exactly `Category`, `Tag` and `Product` with these pointers (all names exact, in module `default`): - `Category`: required property `name` of type `str`, unique across all `Category` objects. - `Tag`: required property `label` of type `str`, unique across all `Tag` objects. - `Product`: required property `sku` of type `str`, unique across all `Product` objects; required property `name` of type `str`; required property `price_cents` of type `int64` that rejects negative values; required property `stock` of type `int64` that accepts `0`..`100000` inclusive and rejects any value outside that range; a required single link `category` to `Category`; and a `multi` link `tags` to `Tag`. - Batch file format — a JSON array of record objects: ```json [ { "sku": "non-empty string", "name": "non-empty string", "price_cents": 0, "stock": 0, "category": "non-empty string", "tags": ["non-empty string"] } ] ``` `price_cents` and `stock` are integers `>= 0`. `tags` is optional; when it is absent the record has no tags. An empty array is a valid batch. - Sync semantics: a product is identified by its `sku`; `category` and each entry of `tags` identify a `Category` by `name` and a `Tag` by `label`. After a successful run a product's `tags` links must be exactly the de-duplicated set named by its record — tags no longer named are unlinked, while `Tag` and `Category` objects themselves are never deleted. A record's outcome is `inserted` when no product with that `sku` existed before this run, `updated` when it existed but at least one of `name`, `price_cents`, `stock`, its category name or its tag set differed from the record, and `unchanged` when everything already matched. Consequently, re-running a batch that was already applied must report every record as `unchanged` and must neither create nor modify any object. - The batch must reach the server as set-based work parameterised by the batch data (one JSON parameter for the whole batch), not as one query per record, and it must run inside a client-managed transaction with the client's automatic retry behaviour. - Success output: exit code `0` and exactly one JSON document on stdout (nothing else on stdout; put any human-readable logging on stderr): ```json { "ok": true, "total": 3, "inserted": 2, "updated": 1, "unchanged": 0, "results": [ {"sku": "A-1", "outcome": "inserted", "category": "tools", "tags": ["metal", "sale"]} ] } ``` `total` is the number of records in the batch, `inserted`/`updated`/`unchanged` are the outcome counts, and `results` holds one entry per record sorted by `sku` in ascending lexicographic order, where `outcome` is one of `inserted`/`updated`/`unchanged`, `category` is the record's category name and `tags` is the de-duplicated tag list sorted in ascending lexicographic order. - Failure output: exactly one JSON document on stdout shaped `{"ok": false, "error_code": "<code>", "message": "<non-empty string>"}` plus the matching exit code: - exit `2`, `error_code` `input_unreadable`: no `--input` argument was given, the file does not exist, or its content is not valid JSON. - exit `3`, `error_code` `invalid_record`: the top-level JSON value is not an array, or some record violates the batch format above. Add the key `index` holding the 0-based position of the first offending record, or `null` when the top-level value itself is not an array. - exit `4`, `error_code` `duplicate_sku`: the same `sku` appears in more than one record. Add the key `sku` holding the first `sku` that repeats. Record-format validation takes precedence over duplicate detection. - exit `5`, `error_code` `db_error`: the database rejected the batch (for example a value the schema forbids). In every failure case, including `db_error`, the database contents must be exactly what they were before the invocation. - A batch of 200 records must be processed within 60 seconds.   
+
+Pochi
+💭 Thinking for 83 characters   
+I'll start by exploring the project structure to understand what's already set up.   
+📂 Listing files in /home/user/catalog-sync recursively ✔ 
+💭 Thinking for 121 characters   
+Let me examine the key project files.   
+📖 Reading /home/user/catalog-sync/package.json ✔ 
+📖 Reading /home/user/catalog-sync/tsconfig.json ✔ 
+📖 Reading /home/user/catalog-sync/gel.toml ✔ 
+📖 Reading /home/user/catalog-sync/gel.local.toml ✔ 
+📖 Reading /home/user/catalog-sync/dbschema/default.gel ✔ 
+📖 Reading /home/user/catalog-sync/examples/batch-example.json ✔ 
+💭 Thinking for 176 characters   
+Now let me examine the gel client API to understand how to use it properly.   
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/index.node.d.ts ✔ 
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/ifaces.d.ts ✔ 
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/transaction.d.ts ✔ 
+💭 Thinking for 93 characters   
+Let me look at the Client class and its transaction method.   
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/baseClient.d.ts ✔ 
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/retry.d.ts ✔ 
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/options.d.ts ✔ 
+💭 Thinking for 126 characters   
+Let me look at the errors module and the nodeClient to understand connection and error handling.   
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/errors ✖ "EISDIR: illegal operation on a directory, read"
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/nodeClient.d.ts ✔ 
+📂 Listing files in /home/user/catalog-sync/node_modules/gel/dist/errors ✔ 
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/errors/index.d.ts ✔ 
+📖 Reading /home/user/catalog-sync/node_modules/gel/dist/errors/base.d.ts ✔ 
+💭 Thinking for 286 characters   
+Let me check the gel CLI and start the instance.   
+💫 Executing which gel; gel --version 2>&1 | head -5; ls -la /usr/local/bin/gel* 2>&1 ✔ 
+📖 Reading /usr/local/bin/gel-start.sh ✔ 
+💭 Thinking for 57 characters   
+Let me start the Gel instance now.   
+💫 Executing /usr/local/bin/gel-start.sh ✔ 
+💭 Thinking for 164 characters   
+The instance is running. Let me check the current migration state and project status.   
+💫 Executing cd /home/user/catalog-sync && gel migration status -I local_gel 2>&1; echo "---LIST---"; ls -la dbschema/ 2>&1; echo "---MIGRATIONS---"; ls -la dbschema/migrations/ 2>&1 ✖ "Command exited with code 2"
+💭 Thinking for 219 characters   
+💫 Executing cd /home/user/catalog-sync && gel project info -I local_gel 2>&1; echo "---"; gel migration log -I local_gel 2>&1 | head -30; echo "---FIND MIGRATIONS---"; find /home/user/catalog-sync -name "*.edgeql" -o -name "migrations" -type d 2>/dev/null; echo "---HISTORY---"; gel migration log 2>&1 | head -30 ✔ 
+💫 Executing cd /home/user/catalog-sync && gel migration log --from-db -I local_gel 2>&1 | head -40; echo "---FROM-FS---"; gel migration log --from-fs 2>&1 | head -40 ✔ 
+💭 Thinking for 388 characters   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "select schema::ObjectType { name } filter .name like 'default::%'" 2>&1; echo "---DESCRIBE---"; gel query -I local_gel "describe schema" 2>&1 | head -20 ✔ 
+💭 Thinking for 17273 characters   
+Now I understand the setup. The database has an empty `default` module and no migrations. Let me write the schema first.   
+✏️  Writing /home/user/catalog-sync/dbschema/default.gel ✔ 
+Now let me create the migration. Let me check the CLI options first.   
+💫 Executing cd /home/user/catalog-sync && gel migration create --help 2>&1 | head -50 ✔ 
+💫 Executing cd /home/user/catalog-sync && gel migration create --non-interactive -I local_gel 2>&1 ✔ 
+💭 Thinking for 56 characters   
+💫 Executing cd /home/user/catalog-sync && ls -la dbschema/migrations/ 2>&1; echo "---STATUS---"; gel migration status -I local_gel 2>&1 ✖ "Command exited with code 3"
+💭 Thinking for 66 characters   
+The migration was created. Let me view it and apply it.   
+📖 Reading /home/user/catalog-sync/dbschema/migrations/00001-m1xgpea.edgeql ✔ 
+💫 Executing cd /home/user/catalog-sync && gel migration apply -I local_gel 2>&1; echo "---STATUS---"; gel migration status -I local_gel 2>&1 ✔ 
+💭 Thinking for 94 characters   
+The migration is applied and in sync. Let me verify the schema in the database.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "describe module default" 2>&1 ✔ 
+💭 Thinking for 328 characters   
+The schema is correctly applied. Now let me experiment with EdgeQL JSON handling to design the sync query. Let me test JSON access patterns.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "with batch := <json>\$batch, r := json_array_unpack(batch), select { sku := <str>json_get(r, 'sku'), name := <str>json_get(r, 'name'), price := <int64>json_get(r, 'price_cents'), tags := json_get(r, 'tags') }" --param batch='[{"sku":"A-1","name":"Widget","price_cents":100,"stock":3,"category":"tools","tags":["metal","sale"]}]' 2>&1 ✖ "Command exited with code 2"
+💭 Thinking for 104 characters   
+💫 Executing cd /home/user/catalog-sync && gel query --help 2>&1 | head -60 ✔ 
+💭 Thinking for 629 characters   
+The CLI doesn't support params easily. Let me write a small test script to understand JSON handling with the gel client.   
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✔ 
+💫 Executing cd /home/user/catalog-sync && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✔ 
+💭 Thinking for 2611 characters   
+I see the scoping issue - I need `for` loops for per-element processing. Let me test the correct patterns.   
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✔ 
+💫 Executing cd /home/user/catalog-sync && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 3235 characters   
+Good learnings. The `select` keyword needs different handling in the upsert. Let me test upsert syntax variants.   
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✔ 
+💫 Executing cd /home/user/catalog-sync && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 55048 characters   
+Variant A works (idempotent upsert). Let me clean up test data and write a comprehensive test of all the patterns I need.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Category" 2>&1 ✔ 
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✔ 
+💫 Executing cd /home/user/catalog-sync && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 3456 characters   
+The `order by` in `array_agg` has a context issue. Let me fix it - I'll sort in TS instead since set comparisons don't need order.   
+🔧 Applying diff to /home/user/catalog-sync/src/test-json.ts ✔ 
+🔧 Applying diff to /home/user/catalog-sync/src/test-json.ts ✔ 
+💫 Executing cd /home/user/catalog-sync && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 1522 characters   
+Q1 works. The debug queries have `order by` issues on primitives. Let me fix those.   
+💫 Executing cd /home/user/catalog-sync && sed -i 's/select Category.name order by .name/select Category.name order by Category.name/g; s/select Tag.label order by .label/select Tag.label order by Tag.label/g' src/test-json.ts && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 7415 characters   
+The `for` loop in `with` bindings needs parentheses, and `for` loops don't support `filter` directly. Let me fix q4 and q5.   
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✖ "File has been modified since it was last read (expected mtime 1785954193510, got 1785954220953). Please read the file again before writing."
+💭 Thinking for 73 characters   
+📖 Reading /home/user/catalog-sync/src/test-json.ts ✔ 
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✔ 
+💫 Executing cd /home/user/catalog-sync && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 5458 characters   
+The empty set `{}` needs an explicit type. Let me fix `?? {}` to `?? <str>{}` in q4 and q5.   
+💫 Executing cd /home/user/catalog-sync && sed -i 's/array_unpack(r.tag_names) ?? {}/array_unpack(r.tag_names) ?? <str>{}/g; s/array_unpack(rec.tag_names) ?? {}/array_unpack(rec.tag_names) ?? <str>{}/g' src/test-json.ts && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✔ 
+💭 Thinking for 927 characters   
+All patterns work. Now let me test idempotency (re-run) and the update scenario.   
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✖ "File has been modified since it was last read (expected mtime 1785954316534, got 1785954348845). Please read the file again before writing."
+📖 Reading /home/user/catalog-sync/src/test-json.ts ✔ 
+💭 Thinking for 59 characters   
+✏️  Writing /home/user/catalog-sync/src/test-json.ts ✔ 
+💭 Thinking for 168 characters   
+Let me clean the test data from the database first, then run the idempotency test.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" 2>&1 && npx tsc -p . 2>&1 && node dist/test-json.js 2>&1 ✔ 
+💭 Thinking for 85023 characters   
+All EdgeQL patterns are validated and idempotency works correctly. Now let me write the actual sync CLI. First, let me create the main source file.   
+✏️  Writing /home/user/catalog-sync/src/sync.ts ✔ 
+💭 Thinking for 423 characters   
+Now let me remove the test file and build the project.   
+💫 Executing cd /home/user/catalog-sync && rm -f src/test-json.ts dist/test-json.js && npx tsc -p . 2>&1; echo "EXIT: $?"; ls -la dist/ 2>&1 ✔ 
+💭 Thinking for 173 characters   
+It compiled. Let me clean the database and test with the example batch.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" 2>&1 && echo "=== RUN 1 ===" && node dist/sync.js --input examples/batch-example.json; echo "EXIT: $?" ✔ 
+💭 Thinking for 81 characters   
+Run 1 works. Let me verify idempotency by re-running, and check the database state.   
+💫 Executing cd /home/user/catalog-sync && echo "=== RUN 2 (re-run) ===" && node dist/sync.js --input examples/batch-example.json; echo "EXIT: $?" && echo "=== DB STATE ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 ✔ 
+💭 Thinking for 604 characters   
+Idempotency confirmed - re-run reports all unchanged with no object growth. Now let me test all the error cases. Let me create test files and run them.   
+💫 Executing cd /home/user/catalog-sync && mkdir -p /tmp/batches && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c","tags":["t"]},{"sku":"A","name":"Y","price_cents":20,"stock":4,"category":"c"}]' > /tmp/batches/dup.json && \
+echo '[{"sku":"A","name":"X","price_cents":-5,"stock":3,"category":"c"}]' > /tmp/batches/negprice.json && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":150000,"category":"c"}]' > /tmp/batches/badstock.json && \
+echo '{"not":"an array"}' > /tmp/batches/notarray.json && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c"},{"sku":"B","name":"","price_cents":10,"stock":3,"category":"c"}]' > /tmp/batches/badrec.json && \
+echo 'not valid json' > /tmp/batches/badjson.json && \
+echo '[]' > /tmp/batches/empty.json && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c","tags":["a","a","b"]}]' > /tmp/batches/dedup.json && \
+ls /tmp/batches/ ✔ 
+💫 Executing cd /home/user/catalog-sync && \
+echo "--- no --input ---"; node dist/sync.js; echo "EXIT: $?" && \
+echo "--- missing file ---"; node dist/sync.js --input /tmp/batches/nope.json; echo "EXIT: $?" && \
+echo "--- bad json ---"; node dist/sync.js --input /tmp/batches/badjson.json; echo "EXIT: $?" && \
+echo "--- not array ---"; node dist/sync.js --input /tmp/batches/notarray.json; echo "EXIT: $?" && \
+echo "--- neg price ---"; node dist/sync.js --input /tmp/batches/negprice.json; echo "EXIT: $?" && \
+echo "--- bad rec (index 1) ---"; node dist/sync.js --input /tmp/batches/badrec.json; echo "EXIT: $?" && \
+echo "--- dup sku ---"; node dist/sync.js --input /tmp/batches/dup.json; echo "EXIT: $?" && \
+echo "--- empty batch ---"; node dist/sync.js --input /tmp/batches/empty.json; echo "EXIT: $?" && \
+echo "--- dedup tags ---"; node dist/sync.js --input /tmp/batches/dedup.json; echo "EXIT: $?" ✔ 
+💭 Thinking for 567 characters   
+All error cases work. Now let me test the db_error case (stock > 100000, which the schema rejects) and verify the database is untouched.   
+💫 Executing cd /home/user/catalog-sync && echo "=== DB BEFORE ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 && echo "=== bad stock (150000) ===" && node dist/sync.js --input /tmp/batches/badstock.json; echo "EXIT: $?" && echo "=== DB AFTER (should be unchanged) ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 ✔ 
+💭 Thinking for 852 characters   
+The db_error case works and the database is untouched. Let me verify stdout contains ONLY the JSON document (no other output) by separating stdout and stderr.   
+💫 Executing cd /home/user/catalog-sync && echo "=== STDOUT ONLY (badstock) ===" && node dist/sync.js --input /tmp/batches/badstock.json 2>/dev/null; echo "--- end stdout ---" && echo "=== STDERR ONLY (badstock) ===" && node dist/sync.js --input /tmp/batches/badstock.json 2>&1 1>/dev/null; echo "--- end stderr ---" ✔ 
+💭 Thinking for 1250 characters   
+stdout is clean (only JSON), stderr has logging. Now let me test the update scenario thoroughly - changing name, category, and tags (add/remove), verifying unlinked tags and orphaned categories are NOT deleted.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && \
+echo '[{"sku":"P1","name":"Original","price_cents":100,"stock":5,"category":"cat-a","tags":["t1","t2"]},{"sku":"P2","name":"Other","price_cents":200,"stock":10,"category":"cat-b","tags":["t2"]}]' > /tmp/batches/init.json && \
+echo "=== INIT ===" && node dist/sync.js --input /tmp/batches/init.json 2>/dev/null && \
+echo '[{"sku":"P1","name":"Renamed","price_cents":100,"stock":5,"category":"cat-c","tags":["t2","t3"]}]' > /tmp/batches/upd.json && \
+echo "=== UPDATE P1 (name, category cat-a->cat-c, tags t1->t3) ===" && node dist/sync.js --input /tmp/batches/upd.json 2>/dev/null && \
+echo "=== VERIFY STATE ===" && gel query -I local_gel "select Product { sku, name, category_name := .category.name, tag_labels := array_agg(.tags.label) ?? <array<str>>[] } order by Product.sku" 2>&1 && \
+echo "=== ORPHAN CHECK: cat-a should still exist, t1 should still exist ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), cat_names := array_agg(Category.name), tag_labels := array_agg(Tag.label) }" 2>&1 ✔ 
+💭 Thinking for 911 characters   
+The update scenario works perfectly - unlinked tags (t1) and orphaned category (cat-a) are preserved. Let me test the validation precedence (format over duplicate) and a few more edge cases.   
+💫 Executing cd /home/user/catalog-sync && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c"},{"sku":"A","name":"","price_cents":10,"stock":3,"category":"c"}]' > /tmp/batches/both.json && \
+echo "--- both invalid(rec1) + dup(A): expect invalid_record index 1 ---" && node dist/sync.js --input /tmp/batches/both.json 2>/dev/null; echo "EXIT: $?" && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c"},{"sku":"B","name":"Y","price_cents":10,"stock":-1,"category":"c"},{"sku":"A","name":"Z","price_cents":10,"stock":3,"category":"c"}]' > /tmp/batches/prec.json && \
+echo "--- invalid(rec1 idx1) before dup(A idx2): expect invalid_record index 1 ---" && node dist/sync.js --input /tmp/batches/prec.json 2>/dev/null; echo "EXIT: $?" && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c"},{"sku":"A","name":"Y","price_cents":10,"stock":3,"category":"c"}]' > /tmp/batches/dupok.json && \
+echo "--- all valid format, dup A: expect duplicate_sku A ---" && node dist/sync.js --input /tmp/batches/dupok.json 2>/dev/null; echo "EXIT: $?" ✔ 
+💭 Thinking for 773 characters   
+All precedence cases pass. Now let me test the performance requirement with a 200-record batch. Let me generate one and time it.   
+💫 Executing cd /home/user/catalog-sync && node -e '
+const fs = require("fs");
+const cats = ["tools","books","food","tech","clothes"];
+const tags = ["a","b","c","d","e","f","g","sale","new","metal"];
+const recs = [];
+for (let i = 0; i < 200; i++) {
+  recs.push({
+    sku: "SKU-" + String(i).padStart(4, "0"),
+    name: "Product " + i,
+    price_cents: (i % 1000) * 100,
+    stock: i % 100001,
+    category: cats[i % cats.length],
+    tags: [tags[i % tags.length], tags[(i+3) % tags.length], tags[(i+7) % tags.length]],
+  });
+}
+fs.writeFileSync("/tmp/batches/big.json", JSON.stringify(recs));
+console.log("wrote", recs.length, "records");
+' && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && echo "=== RUN 200 (first) ===" && time node dist/sync.js --input /tmp/batches/big.json 2>/dev/null | node -e 'const d=JSON.parse(require("fs").readFileSync(0,"utf8")); console.log("ok:",d.ok,"total:",d.total,"inserted:",d.inserted,"updated:",d.updated,"unchanged:",d.unchanged, "results:",d.results.length)' ✔ 
+💭 Thinking for 154 characters   
+200 records in 0.35s - well within the limit. Let me verify the re-run is all unchanged and idempotent.   
+💫 Executing cd /home/user/catalog-sync && echo "=== RUN 200 (re-run, expect all unchanged) ===" && time node dist/sync.js --input /tmp/batches/big.json 2>/dev/null | node -e 'const d=JSON.parse(require("fs").readFileSync(0,"utf8")); console.log("ok:",d.ok,"total:",d.total,"inserted:",d.inserted,"updated:",d.updated,"unchanged:",d.unchanged)' && echo "=== DB COUNTS ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 ✔ 
+💭 Thinking for 961 characters   
+Re-run is idempotent at scale. Now let me test atomicity - a 200-record batch with one DB-invalid record must roll back the entire batch leaving the DB unchanged.   
+💫 Executing cd /home/user/catalog-sync && node -e '
+const fs = require("fs");
+const cats = ["tools","books","food","tech","clothes"];
+const tags = ["a","b","c","d","e","f","g","sale","new","metal"];
+const recs = [];
+for (let i = 0; i < 200; i++) {
+  recs.push({
+    sku: "SKU-" + String(i).padStart(4, "0"),
+    name: "Product " + i,
+    price_cents: (i % 1000) * 100,
+    stock: i % 100001,
+    category: cats[i % cats.length],
+    tags: [tags[i % tags.length], tags[(i+3) % tags.length], tags[(i+7) % tags.length]],
+  });
+}
+// modify record 50: change name (would be an update) AND make record 100 invalid (stock 150000)
+recs[50].name = "CHANGED Product 50";
+recs[100].stock = 150000;
+fs.writeFileSync("/tmp/batches/bigbad.json", JSON.stringify(recs));
+console.log("wrote bigbad with bad record at index 100");
+' && echo "=== DB BEFORE ===" && gel query -I local_gel "select { prods := count(Product), changed_name := exists (select Product filter .sku = \"SKU-0050\" and .name = \"CHANGED Product 50\") }" 2>&1 && echo "=== RUN bigbad (expect db_error, rollback) ===" && node dist/sync.js --input /tmp/batches/bigbad.json 2>/dev/null; echo "EXIT: $?" && echo "=== DB AFTER (should be unchanged: name NOT changed, still 200) ===" && gel query -I local_gel "select { prods := count(Product), changed_name := exists (select Product filter .sku = \"SKU-0050\" and .name = \"CHANGED Product 50\") }" 2>&1 ✔ 
+💭 Thinking for 874 characters   
+Atomicity confirmed - the entire batch rolled back, no partial changes. Let me test more edge cases for validation.   
+💫 Executing cd /home/user/catalog-sync && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c","tags":null}]' > /tmp/batches/tagsnull.json && \
+echo "--- tags null: expect invalid_record ---" && node dist/sync.js --input /tmp/batches/tagsnull.json 2>/dev/null; echo "EXIT: $?" && \
+echo '[{"sku":"A","name":"X","price_cents":10,"stock":3,"category":"c","tags":["ok",""]}]' > /tmp/batches/tagempty.json && \
+echo "--- tag empty string: expect invalid_record ---" && node dist/sync.js --input /tmp/batches/tagempty.json 2>/dev/null; echo "EXIT: $?" && \
+echo '[{"sku":"A","name":"X","price_cents":3.5,"stock":3,"category":"c"}]' > /tmp/batches/floatprice.json && \
+echo "--- float price: expect invalid_record ---" && node dist/sync.js --input /tmp/batches/floatprice.json 2>/dev/null; echo "EXIT: $?" && \
+echo '[{"sku":"A","name":"X","price_cents":0,"stock":0,"category":"c"}]' > /tmp/batches/zero.json && \
+echo "--- zero price/stock: expect inserted ---" && node dist/sync.js --input /tmp/batches/zero.json 2>/dev/null; echo "EXIT: $?" && \
+echo '[{"sku":"A","name":"X","price_cents":0,"stock":0,"category":"c","extra":"ignored","num":42}]' > /tmp/batches/extra.json && \
+echo "--- extra fields: expect inserted (allowed) ---" && node dist/sync.js --input /tmp/batches/extra.json 2>/dev/null; echo "EXIT: $?" && \
+echo '["just a string"]' > /tmp/batches/strinarr.json && \
+echo "--- string in array: expect invalid_record index 0 ---" && node dist/sync.js --input /tmp/batches/strinarr.json 2>/dev/null; echo "EXIT: $?" ✔ 
+💭 Thinking for 1885 characters   
+All edge cases pass. Let me test the stock boundary values (100000 valid, 100001 db_error) and clean state between tests.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && \
+echo '[{"sku":"BND","name":"Boundary","price_cents":1,"stock":100000,"category":"c"}]' > /tmp/batches/stockmax.json && \
+echo "--- stock=100000 (boundary valid): expect inserted ---" && node dist/sync.js --input /tmp/batches/stockmax.json 2>/dev/null | node -e 'const d=JSON.parse(require("fs").readFileSync(0,"utf8")); console.log("ok:",d.ok,"outcome:",d.results[0].outcome)' && \
+echo "--- re-run stock=100000: expect unchanged ---" && node dist/sync.js --input /tmp/batches/stockmax.json 2>/dev/null | node -e 'const d=JSON.parse(require("fs").readFileSync(0,"utf8")); console.log("ok:",d.ok,"outcome:",d.results[0].outcome)' && \
+echo '[{"sku":"BND2","name":"Over","price_cents":1,"stock":100001,"category":"c"}]' > /tmp/batches/stockover.json && \
+echo "--- stock=100001 (over): expect db_error ---" && node dist/sync.js --input /tmp/batches/stockover.json 2>/dev/null; echo "EXIT: $?" && \
+echo "=== DB (should still be 1 product BND) ===" && gel query -I local_gel "select count(Product)" 2>&1 ✔ 
+💭 Thinking for 1768 characters   
+Boundary cases work. Let me test the `--input=path` syntax and the no-value edge case.   
+💫 Executing cd /home/user/catalog-sync && \
+echo "--- --input=path syntax ---" && node dist/sync.js --input=/tmp/batches/empty.json 2>/dev/null; echo "EXIT: $?" && \
+echo "--- --input with no value (last arg) ---" && node dist/sync.js --input 2>/dev/null; echo "EXIT: $?" && \
+echo "--- negative stock (-1): expect invalid_record ---" && echo '[{"sku":"N","name":"X","price_cents":10,"stock":-1,"category":"c"}]' > /tmp/batches/negstock.json && node dist/sync.js --input /tmp/batches/negstock.json 2>/dev/null; echo "EXIT: $?" && \
+echo "--- --input=path for a real batch ---" && node dist/sync.js --input=/tmp/batches/stockmax.json 2>/dev/null | node -e 'const d=JSON.parse(require("fs").readFileSync(0,"utf8")); console.log("ok:",d.ok,"outcome:",d.results[0].outcome)' ✔ 
+💭 Thinking for 3022 characters   
+All edge cases pass. Let me verify the migration state is in sync and the schema is exactly as required.   
+💫 Executing cd /home/user/catalog-sync && echo "=== MIGRATION STATUS ===" && gel migration status -I local_gel 2>&1 && echo "=== MIGRATION FILES ===" && ls -la dbschema/migrations/ 2>&1 && echo "=== SCHEMA FILE ===" && cat dbschema/default.gel && echo "=== DB SCHEMA ===" && gel query -I local_gel "describe module default" 2>&1 ✔ 
+💭 Thinking for 4713 characters   
+Everything is in sync. Now let me clean up all my test data from the database so the verifier starts with a clean slate, and rebuild to ensure dist/sync.js is current.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && echo "=== DB CLEAN ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 && echo "=== REBUILD ===" && npx tsc -p . 2>&1; echo "BUILD EXIT: $?" && ls -la dist/sync.js ✔ 
+💭 Thinking for 315 characters   
+Database is clean and build succeeded. Let me do a final end-to-end verification with the example batch from a clean state.   
+💫 Executing cd /home/user/catalog-sync && echo "=== RUN 1 (clean) ===" && node dist/sync.js --input examples/batch-example.json 2>/dev/null; echo "EXIT: $?" && echo "=== RUN 2 (re-run) ===" && node dist/sync.js --input examples/batch-example.json 2>/dev/null; echo "EXIT: $?" && echo "=== FINAL DB STATE ===" && gel query -I local_gel "select Product { sku, name, price_cents, stock, category_name := .category.name, tag_labels := array_agg(.tags.label) ?? <array<str>>[] } order by Product.sku" 2>&1 ✔ 
+💭 Thinking for 1573 characters   
+Everything works. Let me clean the test data one final time so the verifier starts with a pristine database (schema applied, no data).   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && echo "=== FINAL STATE ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 && echo "=== SCHEMA STILL PRESENT ===" && gel query -I local_gel "select schema::ObjectType.name filter .name like 'default::%'" 2>&1 && echo "=== MIGRATION STATUS ===" && gel migration status -I local_gel 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 155 characters   
+Let me verify the schema is still present with a correct query.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "select schema::ObjectType.name filter schema::ObjectType.name like 'default::%'" 2>&1 && echo "=== MIGRATION STATUS ===" && gel migration status -I local_gel 2>&1 && echo "=== FILES ===" && ls -la dist/sync.js dbschema/default.gel dbschema/migrations/ ✔ 
+💭 Thinking for 8265 characters   
+💭 Thinking for 68 characters   
+Let me re-read the final sync.ts to review the exit handling and overall structure.   
+📖 Reading /home/user/catalog-sync/src/sync.ts ✔ 
+💭 Thinking for 5998 characters   
+💭 Thinking for 209 characters   
+Let me verify the exit handling is robust   
+💭 Thinking for 136 characters   
+Let me verify the exit handling is robust by capturing stdout via a pipe and checking output completeness and exit codes.   
+💫 Executing cd /home/user/catalog-sync && \
+echo '[{"sku":"Z1","name":"Zed","price_cents":10,"stock":3,"category":"c","tags":["t"]},{"sku":"A1","name":"Ay","price_cents":20,"stock":4,"category":"c"}]' > /tmp/batches/sort.json && \
+echo "--- sort check (results should be A1 then Z1) ---" && out=$(node dist/sync.js --input /tmp/batches/sort.json 2>/dev/null); code=$?; echo "$out" | node -e 'const d=JSON.parse(require("fs").readFileSync(0,"utf8")); console.log("exit via pipe ok, skus:", d.results.map(r=>r.sku).join(","))'; echo "exit: $code" && \
+echo "--- verify stdout is valid single JSON doc (success) ---" && node dist/sync.js --input /tmp/batches/sort.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('parsed ok, keys:', sorted(d.keys()))" && \
+echo "--- verify stdout is valid single JSON doc (error) ---" && node dist/sync.js --input /tmp/batches/badjson.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('parsed ok, keys:', sorted(d.keys()))" ✔ 
+💭 Thinking for 557 characters   
+Output is complete and valid via pipe. Let me clean up test data and verify the process never hangs (using a timeout).   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && \
+echo "--- hang check (success, 10s timeout) ---" && timeout 10 node dist/sync.js --input examples/batch-example.json 2>/dev/null >/dev/null; echo "exit: $?" && \
+echo "--- hang check (error, 10s timeout) ---" && timeout 10 node dist/sync.js --input /tmp/batches/badjson.json 2>/dev/null >/dev/null; echo "exit: $?" && \
+echo "--- hang check (no input, 10s timeout) ---" && timeout 10 node dist/sync.js 2>/dev/null >/dev/null; echo "exit: $?" && \
+gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && echo "cleaned" ✔ 
+💭 Thinking for 8583 characters   
+All cases terminate promptly. Let me re-read the queries section once more to verify correctness.   
+📖 Reading /home/user/catalog-sync/src/sync.ts ✔ 
+💭 Thinking for 4043 characters   
+💭 Thinking for 324 characters   
+Let me run a targeted test to confirm the `changed` filter scopes correctly per-record (critical for correctness with multiple mixed updates).   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && \
+echo '[{"sku":"S1","name":"One","price_cents":100,"stock":1,"category":"ca","tags":["x"]},{"sku":"S2","name":"Two","price_cents":200,"stock":2,"category":"cb","tags":["y"]},{"sku":"S3","name":"Three","price_cents":300,"stock":3,"category":"cc","tags":["z"]}]' > /tmp/batches/mix_init.json && \
+node dist/sync.js --input /tmp/batches/mix_init.json 2>/dev/null | node -e 'const d=JSON.parse(require("fs").readFileSync(0,"utf8")); console.log("init:", d.inserted, "inserted")' && \
+echo '[{"sku":"S1","name":"OneCHANGED","price_cents":100,"stock":1,"category":"ca","tags":["x"]},{"sku":"S2","name":"Two","price_cents":200,"stock":2,"category":"cb","tags":["y"]},{"sku":"S3","name":"Three","price_cents":300,"stock":3,"category":"cc","tags":["z","w"]}]' > /tmp/batches/mix_upd.json && \
+echo "--- mixed update: S1 name change, S2 unchanged, S3 tag add ---" && node dist/sync.js --input /tmp/batches/mix_upd.json 2>/dev/null && \
+echo "--- verify ---" && gel query -I local_gel "select Product { sku, name, tag_labels := array_agg(.tags.label) ?? <array<str>>[] } order by Product.sku" 2>&1 ✔ 
+💭 Thinking for 1483 characters   
+The mixed update works correctly - per-record scoping is accurate. Let me clean up test data, verify the source directory is clean, and do a final build.   
+💫 Executing cd /home/user/catalog-sync && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && echo "=== src/ contents ===" && ls -la src/ && echo "=== rebuild ===" && npx tsc -p . 2>&1; echo "BUILD: $?" && echo "=== dist/ contents ===" && ls -la dist/ && echo "=== final DB state (clean) ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 ✔ 
+💭 Thinking for 1111 characters   
+Everything is clean and built. Let me do a final end-to-end verification mirroring what the verifier would do, then clean up.   
+💫 Executing cd /home/user/catalog-sync && \
+echo "=== FINAL E2E: Run 1 (clean DB) ===" && node dist/sync.js --input examples/batch-example.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(json.dumps(d))" && \
+echo "=== Run 2 (idempotency) ===" && node dist/sync.js --input examples/batch-example.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['ok'] and d['inserted']==0 and d['updated']==0 and d['unchanged']==2; print('idempotent OK')" && \
+echo "=== DB unchanged after re-run ===" && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 && \
+echo "=== Clean up ===" && gel query -I local_gel "delete Product; delete Tag; delete Category;" >/dev/null 2>&1 && gel query -I local_gel "select { cats := count(Category), tags := count(Tag), prods := count(Product) }" 2>&1 ✔ 
+💭 Thinking for 2301 characters   
+All requirements are verified and working. Let me provide a final summary of the complete implementation.   
+🎉 Task Completed
+## Idempotent Bulk Catalog Sync — Complete
+
+### Schema & Migration (`dbschema/`)
+- **`dbschema/default.gel`** — module `default` with `Category`, `Tag`, `Product`:
+  - `Category`: required `name: str` with `exclusive` (unique).
+  - `Tag`: required `label: str` with `exclusive` (unique).
+  - `Product`: required `sku: str` (exclusive), required `name: str`, required `price_cents: int64` (`>= 0`), required `stock: int64` (`0..100000` inclusive), required single `link category -> Category`, `multi link tags -> Tag`.
+- Migration created via `gel migration create` and applied via `gel migration apply`. `gel migration status` reports **"Database is up to date"** — disk files and instance are in sync. DB left with schema applied and **no data**.
+
+### CLI (`src/sync.ts` → `dist/sync.js`)
+Run with `node dist/sync.js --input <batch.json>` (cwd `/home/user/catalog-sync`); connection is auto-discovered from the project directory.
+
+**Pipeline:**
+1. **Validate** (before touching the DB): `input_unreadable` (exit 2: missing arg / unreadable file / invalid JSON), `invalid_record` (exit 3: non-array top-level → `index: null`, or first bad record → `index: N`), `duplicate_sku` (exit 4: first repeating `sku`). Format validation takes precedence over duplicate detection.
+2. **Sync** inside `client.transaction(...)` (client-managed, auto-retry). The whole batch is sent as **one `<json>$batch` parameter** and processed set-based via `for ... union` over `json_array_unpack(batch)` — never one query per record:
+   - Read existing products for the batch's SKUs (pre-run snapshot → outcome classification).
+   - Upsert all distinct categories (`insert ... unless conflict on .name else select ...`) — created once, reused, never duplicated.
+   - Upsert all distinct tags (same pattern on `.label`).
+   - Insert products whose SKU doesn't exist; update products that exist **and differ** (name/price/stock/category/tag-set compared as sets via `except`). Unchanged records produce **no write**, so a re-run is a true no-op.
+3. **Classify** each record `inserted` / `updated` / `unchanged` from the pre-run snapshot.
+
+**Output:** exactly one JSON document on stdout (logging on stderr only). Success: `{ok, total, inserted, updated, unchanged, results:[{sku, outcome, category, tags}]}` with results sorted by `sku` and tags de-duplicated + sorted. Failure: `{ok:false, error_code, message, ...}` with the matching exit code. `db_error` (exit 5) wraps any DB rejection; the transaction rolls back so the DB is exactly as before.
+
+### Verified behavior
+- Idempotency: re-running an applied batch reports every record `unchanged` and creates/modifies no object (counts stable).
+- Atomicity: a 200-record batch with one schema-invalid record (e.g. `stock=150000`) → `db_error`, entire batch rolled back, DB untouched.
+- Tag unlinking: tags no longer named are unlinked from the product; `Tag`/`Category` objects are never deleted (orphans preserved).
+- Boundaries: `stock=100000` valid, `stock=100001` → `db_error`, negative values → `invalid_record`, `price_cents`/`stock` floats → `invalid_record`, empty batch → `{total:0, results:[]}`.
+- Performance: 200 records processed in ~0.35 s (limit 60 s).
+- stdout is a single valid JSON doc in every case; process never hangs.
+
+The database is left clean (schema applied, zero rows) ready for verification.   
+  

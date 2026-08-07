@@ -1,0 +1,311 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T18:38:10.888350+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 26,
+            "passed": 10,
+            "failed": 16,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785955054078,
+            "stop": 1785955090888
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_recovered_branch_exists",
+                "status": "passed",
+                "duration": 12885,
+                "start": 1785955054123,
+                "stop": 1785955067008,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_row_counts",
+                "status": "passed",
+                "duration": 1245,
+                "start": 1785955067008,
+                "stop": 1785955068253,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_warehouses",
+                "status": "passed",
+                "duration": 102,
+                "start": 1785955068253,
+                "stop": 1785955068355,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_surviving_seqs",
+                "status": "passed",
+                "duration": 114,
+                "start": 1785955068355,
+                "stop": 1785955068469,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_rows_are_normalized",
+                "status": "passed",
+                "duration": 80,
+                "start": 1785955068469,
+                "stop": 1785955068549,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_aggregates",
+                "status": "passed",
+                "duration": 63,
+                "start": 1785955068549,
+                "stop": 1785955068612,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 428,
+                "start": 1785955068612,
+                "stop": 1785955069040,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, label = 'shipment without origin'\nstatement = \"insert Shipment { seq := 901, tracking := 'ZZ-90001', weight_kg := 1.0, status := 'pending' }\"\n\n    @pytest.mark.parametrize(\n        \"label,statement\",\n        [\n            (\n                \"shipment without origin\",\n                \"insert Shipment { seq := 901, tracking := 'ZZ-90001', \"\n                \"weight_kg := 1.0, status := 'pending' }\",\n            ),\n            (\n                \"lower-case tracking\",\n                \"insert Shipment { seq := 902, tracking := 'zz-90002', weight_kg := 1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"duplicate tracking\",\n                \"insert Shipment { seq := 903, tracking := 'GL-100001', weight_kg := 1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"negative weight\",\n                \"insert Shipment { seq := 904, tracking := 'ZZ-90004', weight_kg := -1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"zero weight\",\n                \"insert Shipment { seq := 905, tracking := 'ZZ-90005', weight_kg := 0.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"unknown status\",\n                \"insert Shipment { seq := 906, tracking := 'ZZ-90006', weight_kg := 1.0, \"\n                \"status := 'shipped', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"lower-case warehouse code\",\n                \"insert Warehouse { code := 'wh-foxtrot', name := 'Foxtrot Depot' }\",\n            ),\n        ],\n    )\n    def test_hardened_schema_rejects_invalid_objects(gel_server, label, statement):\n        proc = run([\"gel\", \"query\", \"--branch\", TARGET_BRANCH, statement])\n        if proc.returncode == 0:\n            # Undo the object that should never have been accepted so the remaining\n            # checks still see a pristine branch.\n            run(\n                [\n                    \"gel\",\n                    \"query\",\n                    \"--branch\",\n                    TARGET_BRANCH,\n                    \"delete Shipment filter .seq >= 900 and .seq < 1000;\"\n                    \" delete Warehouse filter .code = 'wh-foxtrot';\",\n                ]\n            )\n>       assert proc.returncode != 0, (\n            f\"The hardened schema on {TARGET_BRANCH!r} accepted an invalid object ({label}).\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: The hardened schema on 'recovered' accepted an invalid object (shipment without origin).\nE         stdout={\"id\": \"c217d87c-90fc-11f1-83a5-5be6a41a3c86\"}\nE         \nE         stderr=\nE       assert 0 != 0\nE        +  where 0 = CompletedProcess(args=['gel', 'query', '--branch', 'recovered', \"insert Shipment { seq := 901, tracking := 'ZZ-90001',...kg := 1.0, status := 'pending' }\"], returncode=0, stdout='{\"id\": \"c217d87c-90fc-11f1-83a5-5be6a41a3c86\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:320: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 813,
+                "start": 1785955069040,
+                "stop": 1785955069853,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, label = 'lower-case tracking'\nstatement = \"insert Shipment { seq := 902, tracking := 'zz-90002', weight_kg := 1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }\"\n\n    @pytest.mark.parametrize(\n        \"label,statement\",\n        [\n            (\n                \"shipment without origin\",\n                \"insert Shipment { seq := 901, tracking := 'ZZ-90001', \"\n                \"weight_kg := 1.0, status := 'pending' }\",\n            ),\n            (\n                \"lower-case tracking\",\n                \"insert Shipment { seq := 902, tracking := 'zz-90002', weight_kg := 1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"duplicate tracking\",\n                \"insert Shipment { seq := 903, tracking := 'GL-100001', weight_kg := 1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"negative weight\",\n                \"insert Shipment { seq := 904, tracking := 'ZZ-90004', weight_kg := -1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"zero weight\",\n                \"insert Shipment { seq := 905, tracking := 'ZZ-90005', weight_kg := 0.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"unknown status\",\n                \"insert Shipment { seq := 906, tracking := 'ZZ-90006', weight_kg := 1.0, \"\n                \"status := 'shipped', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"lower-case warehouse code\",\n                \"insert Warehouse { code := 'wh-foxtrot', name := 'Foxtrot Depot' }\",\n            ),\n        ],\n    )\n    def test_hardened_schema_rejects_invalid_objects(gel_server, label, statement):\n        proc = run([\"gel\", \"query\", \"--branch\", TARGET_BRANCH, statement])\n        if proc.returncode == 0:\n            # Undo the object that should never have been accepted so the remaining\n            # checks still see a pristine branch.\n            run(\n                [\n                    \"gel\",\n                    \"query\",\n                    \"--branch\",\n                    TARGET_BRANCH,\n                    \"delete Shipment filter .seq >= 900 and .seq < 1000;\"\n                    \" delete Warehouse filter .code = 'wh-foxtrot';\",\n                ]\n            )\n>       assert proc.returncode != 0, (\n            f\"The hardened schema on {TARGET_BRANCH!r} accepted an invalid object ({label}).\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: The hardened schema on 'recovered' accepted an invalid object (lower-case tracking).\nE         stdout={\"id\": \"c28e739c-90fc-11f1-a34f-078ef418ee0e\"}\nE         \nE         stderr=\nE       assert 0 != 0\nE        +  where 0 = CompletedProcess(args=['gel', 'query', '--branch', 'recovered', \"insert Shipment { seq := 902, tracking := 'zz-90002',...se filter .code = 'WH-ALPHA')) }\"], returncode=0, stdout='{\"id\": \"c28e739c-90fc-11f1-a34f-078ef418ee0e\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:320: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 894,
+                "start": 1785955069854,
+                "stop": 1785955070748,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True, label = 'duplicate tracking'\nstatement = \"insert Shipment { seq := 903, tracking := 'GL-100001', weight_kg := 1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }\"\n\n    @pytest.mark.parametrize(\n        \"label,statement\",\n        [\n            (\n                \"shipment without origin\",\n                \"insert Shipment { seq := 901, tracking := 'ZZ-90001', \"\n                \"weight_kg := 1.0, status := 'pending' }\",\n            ),\n            (\n                \"lower-case tracking\",\n                \"insert Shipment { seq := 902, tracking := 'zz-90002', weight_kg := 1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"duplicate tracking\",\n                \"insert Shipment { seq := 903, tracking := 'GL-100001', weight_kg := 1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"negative weight\",\n                \"insert Shipment { seq := 904, tracking := 'ZZ-90004', weight_kg := -1.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"zero weight\",\n                \"insert Shipment { seq := 905, tracking := 'ZZ-90005', weight_kg := 0.0, \"\n                \"status := 'pending', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"unknown status\",\n                \"insert Shipment { seq := 906, tracking := 'ZZ-90006', weight_kg := 1.0, \"\n                \"status := 'shipped', origin := assert_single(\"\n                \"(select Warehouse filter .code = 'WH-ALPHA')) }\",\n            ),\n            (\n                \"lower-case warehouse code\",\n                \"insert Warehouse { code := 'wh-foxtrot', name := 'Foxtrot Depot' }\",\n            ),\n        ],\n    )\n    def test_hardened_schema_rejects_invalid_objects(gel_server, label, statement):\n        proc = run([\"gel\", \"query\", \"--branch\", TARGET_BRANCH, statement])\n        if proc.returncode == 0:\n            # Undo the object that should never have been accepted so the remaining\n            # checks still see a pristine branch.\n            run(\n                [\n                    \"gel\",\n                    \"query\",\n                    \"--branch\",\n                    TARGET_BRANCH,\n                    \"delete Shipment filter .seq >= 900 and .seq < 1000;\"\n                    \" delete Warehouse filter .code = 'wh-foxtrot';\",\n                ]\n            )\n>       assert proc.returncode != 0, (\n            f\"The hardened schema on {TARGET_BRANCH!r} accepted an invalid object ({label}).\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: The hardened schema on 'recovered' accepted an invalid object (duplicate tracking).\nE         stdout={\"id\": \"c2cb9600-90fc-11f1-83a5-476d1bca6e25\"}\nE         \nE         stderr=\nE       assert 0 != 0\nE        +  where 0 = CompletedProcess(args=['gel', 'query', '--branch', 'recovered', \"insert Shipment { seq := 903, tracking := 'GL-100001'...se filter .code = 'WH-ALPHA')) }\"], returncode=0, stdout='{\"id\": \"c2cb9600-90fc-11f1-83a5-476d1bca6e25\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:320: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 5798,
+                "start": 1785955070748,
+                "stop": 1785955076546,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 899,
+                "start": 1785955076547,
+                "stop": 1785955077446,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 1000,
+                "start": 1785955077446,
+                "stop": 1785955078446,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 1699,
+                "start": 1785955078746,
+                "stop": 1785955080445,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_accepts_valid_objects",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 3803,
+                "start": 1785955080446,
+                "stop": 1785955084249,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_hardened_schema_accepts_valid_objects(gel_server):\n        insert = (\n            \"insert Shipment { seq := 999, tracking := 'ZZ-99999', weight_kg := 1.5, \"\n            \"status := 'pending', origin_code := 'WH-ALPHA', origin := assert_single(\"\n            \"(select Warehouse filter .code = 'WH-ALPHA')) }\"\n        )\n        try:\n            proc = run([\"gel\", \"query\", \"--branch\", TARGET_BRANCH, insert])\n>           assert proc.returncode == 0, (\n                \"A fully valid shipment must still be insertable on \"\n                f\"{TARGET_BRANCH!r}.\\nstdout={proc.stdout}\\nstderr={proc.stderr}\"\n            )\nE           AssertionError: A fully valid shipment must still be insertable on 'recovered'.\nE             stdout=\nE             stderr=gel error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\nE             \nE           assert 1 == 0\nE            +  where 1 = CompletedProcess(args=['gel', 'query', '--branch', 'recovered', \"insert Shipment { seq := 999, tracking := 'ZZ-99999',...error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\\n').returncode\n\n/tests/test_final_state.py:339: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migration_history_extended",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 1298,
+                "start": 1785955084249,
+                "stop": 1785955085547,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migration_history_extended(gel_server):\n>       count = query_json(\"select count(schema::Migration)\")[0]\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:366: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select count(schema::Migration)', branch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select count(schema::Migration)' on branch 'recovered' failed:\nE         stdout=\nE         stderr=gel error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select count(schema::Migration)'], retu...error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\\n').returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 2201,
+                "start": 1785955085548,
+                "stop": 1785955087749,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migration_status_in_sync(gel_server):\n        proc = run([\"gel\", \"migration\", \"status\", \"--branch\", TARGET_BRANCH])\n>       assert proc.returncode == 0, (\n            f\"`gel migration status --branch {TARGET_BRANCH}` failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: `gel migration status --branch recovered` failed:\nE         stdout=\nE         stderr=gel error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'migration', 'status', '--branch', 'recovered'], returncode=1, stdout='', stderr='gel error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\\n').returncode\n\n/tests/test_final_state.py:386: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_added",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 200,
+                "start": 1785955087749,
+                "stop": 1785955087949,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migration_files_added(gel_server):\n        migrations = sorted(\n            glob.glob(os.path.join(PROJECT_DIR, \"dbschema\", \"migrations\", \"*.edgeql\"))\n        )\n>       assert len(migrations) >= 2, (\n            \"dbschema/migrations must contain the original migration plus at least one new \"\n            f\"one, found: {migrations}\"\n        )\nE       AssertionError: dbschema/migrations must contain the original migration plus at least one new one, found: ['/home/user/recovery/dbschema/migrations/00001-m1t6z4s.edgeql']\nE       assert 1 >= 2\nE        +  where 1 = len(['/home/user/recovery/dbschema/migrations/00001-m1t6z4s.edgeql'])\n\n/tests/test_final_state.py:400: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_main_branch_untouched",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 1597,
+                "start": 1785955087949,
+                "stop": 1785955089546,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_main_branch_untouched(gel_server):\n>       warehouses = query_json(\"select count(Warehouse)\", branch=\"main\")[0]\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:407: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select count(Warehouse)', branch = 'main'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select count(Warehouse)' on branch 'main' failed:\nE         stdout=\nE         stderr=gel error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'main', 'select count(Warehouse)'], returncode=1, std...error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\\n').returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_fresh_dump_file_present",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 102,
+                "start": 1785955089547,
+                "stop": 1785955089649,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_fresh_dump_file_present(gel_server):\n>       assert os.path.isfile(FRESH_DUMP), f\"The fresh backup {FRESH_DUMP} does not exist.\"\nE       AssertionError: The fresh backup /home/user/recovery/backups/recovered.dump does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7b8d0c014220>('/home/user/recovery/backups/recovered.dump')\nE        +    where <function isfile at 0x7b8d0c014220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:423: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_fresh_dump_restores_into_scratch_branch",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 1098,
+                "start": 1785955089649,
+                "stop": 1785955090747,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_fresh_dump_restores_into_scratch_branch(gel_server):\n>       expected = {row[\"seq\"]: row[\"tracking\"] for row in shipments()}\n                                                           ^^^^^^^^^^^\n\n/tests/test_final_state.py:431: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:134: in shipments\n    return query_json(SHIPMENT_SHAPE, branch=branch)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'\nbranch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:\nE         stdout=\nE         stderr=gel error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...error: BackendUnavailableError: Postgres is not available: terminating connection due to unexpected postmaster exit\\n').returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_script_exists",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 7,
+                "start": 1785955090747,
+                "stop": 1785955090754,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_script_exists(gel_server):\n>       assert os.path.isfile(REPORT_SCRIPT), (\n            f\"The verification command {REPORT_SCRIPT} does not exist.\"\n        )\nE       AssertionError: The verification command /home/user/recovery/scripts/verify_recovery.sh does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x7b8d0c014220>('/home/user/recovery/scripts/verify_recovery.sh')\nE        +    where <function isfile at 0x7b8d0c014220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:464: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_happy_path",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785955090754,
+                "stop": 1785955090764,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_happy_path(gel_server):\n        proc = run_report()\n>       assert proc.returncode == 0, (\n            f\"`bash {REPORT_SCRIPT}` should exit 0, got {proc.returncode}.\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: `bash /home/user/recovery/scripts/verify_recovery.sh` should exit 0, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:471: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_leaves_no_scratch_branch_and_is_idempotent",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785955090764,
+                "stop": 1785955090773,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_leaves_no_scratch_branch_and_is_idempotent(gel_server):\n        first = run_report()\n>       assert first.returncode == 0, (\n            f\"The first run of {REPORT_SCRIPT} should exit 0, got {first.returncode}.\\n\"\n            f\"stdout={first.stdout}\\nstderr={first.stderr}\"\n        )\nE       AssertionError: The first run of /home/user/recovery/scripts/verify_recovery.sh should exit 0, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:550: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_unknown_branch",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 72,
+                "start": 1785955090773,
+                "stop": 1785955090845,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_unknown_branch(gel_server):\n        proc = run_report([\"--branch\", \"no_such_branch_zz\"])\n>       assert proc.returncode == 3, (\n            f\"An unknown target branch must exit 3, got {proc.returncode}.\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: An unknown target branch must exit 3, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 3\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh', '--branch', 'no_such_branch_zz'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:577: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_missing_dump",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 33,
+                "start": 1785955090846,
+                "stop": 1785955090879,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "src = '/home/user/recovery/backups/recovered.dump'\ndst = '/home/user/recovery/backups/recovered.dump.stash'\ncopy_function = <function copy2 at 0x7b8d0bcd7e20>\n\n    def move(src, dst, copy_function=copy2):\n        \"\"\"Recursively move a file or directory to another location. This is\n        similar to the Unix \"mv\" command. Return the file or directory's\n        destination.\n    \n        If dst is an existing directory or a symlink to a directory, then src is\n        moved inside that directory. The destination path in that directory must\n        not already exist.\n    \n        If dst already exists but is not a directory, it may be overwritten\n        depending on os.rename() semantics.\n    \n        If the destination is on our current filesystem, then rename() is used.\n        Otherwise, src is copied to the destination and then removed. Symlinks are\n        recreated under the new name if os.rename() fails because of cross\n        filesystem renames.\n    \n        The optional `copy_function` argument is a callable that will be used\n        to copy the source or it will be delegated to `copytree`.\n        By default, copy2() is used, but any function that supports the same\n        signature (like copy()) can be used.\n    \n        A lot more could be done here...  A look at a mv.c shows a lot of\n        the issues this implementation glosses over.\n    \n        \"\"\"\n        sys.audit(\"shutil.move\", src, dst)\n        real_dst = dst\n        if os.path.isdir(dst):\n            if _samefile(src, dst) and not os.path.islink(src):\n                # We might be on a case insensitive filesystem,\n                # perform the rename anyway.\n                os.rename(src, dst)\n                return\n    \n            # Using _basename instead of os.path.basename is important, as we must\n            # ignore any trailing slash to avoid the basename returning ''\n            real_dst = os.path.join(dst, _basename(src))\n    \n            if os.path.exists(real_dst):\n                raise Error(\"Destination path '%s' already exists\" % real_dst)\n        try:\n>           os.rename(src, real_dst)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/home/user/recovery/backups/recovered.dump' -> '/home/user/recovery/backups/recovered.dump.stash'\n\n/usr/lib/python3.12/shutil.py:886: FileNotFoundError\n\nDuring handling of the above exception, another exception occurred:\n\ngel_server = True\n\n    def test_report_missing_dump(gel_server):\n        stash = FRESH_DUMP + \".stash\"\n>       shutil.move(FRESH_DUMP, stash)\n\n/tests/test_final_state.py:595: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/lib/python3.12/shutil.py:906: in move\n    copy_function(src, real_dst)\n/usr/lib/python3.12/shutil.py:475: in copy2\n    copyfile(src, dst, follow_symlinks=follow_symlinks)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nsrc = '/home/user/recovery/backups/recovered.dump'\ndst = '/home/user/recovery/backups/recovered.dump.stash', follow_symlinks = True\n\n    def copyfile(src, dst, *, follow_symlinks=True):\n        \"\"\"Copy data from src to dst in the most efficient way possible.\n    \n        If follow_symlinks is not set and src is a symbolic link, a new\n        symlink will be created instead of copying the file it points to.\n    \n        \"\"\"\n        sys.audit(\"shutil.copyfile\", src, dst)\n    \n        if _samefile(src, dst):\n            raise SameFileError(\"{!r} and {!r} are the same file\".format(src, dst))\n    \n        file_size = 0\n        for i, fn in enumerate([src, dst]):\n            try:\n                st = _stat(fn)\n            except OSError:\n                # File most likely does not exist\n                pass\n            else:\n                # XXX What about other special files? (sockets, devices...)\n                if stat.S_ISFIFO(st.st_mode):\n                    fn = fn.path if isinstance(fn, os.DirEntry) else fn\n                    raise SpecialFileError(\"`%s` is a named pipe\" % fn)\n                if _WINDOWS and i == 0:\n                    file_size = st.st_size\n    \n        if not follow_symlinks and _islink(src):\n            os.symlink(os.readlink(src), dst)\n        else:\n>           with open(src, 'rb') as fsrc:\n                 ^^^^^^^^^^^^^^^\nE           FileNotFoundError: [Errno 2] No such file or directory: '/home/user/recovery/backups/recovered.dump'\n\n/usr/lib/python3.12/shutil.py:260: FileNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_report_roundtrip_mismatch_against_main",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 9,
+                "start": 1785955090879,
+                "stop": 1785955090888,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_roundtrip_mismatch_against_main(gel_server):\n        proc = run_report([\"--branch\", \"main\"])\n>       assert proc.returncode == 4, (\n            \"Comparing the recovered dump against branch main must report a mismatch and \"\n            f\"exit 4, got {proc.returncode}.\\nstdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Comparing the recovered dump against branch main must report a mismatch and exit 4, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 4\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh', '--branch', 'main'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:621: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

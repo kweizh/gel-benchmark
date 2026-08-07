@@ -1,0 +1,213 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 21 items
+
+../tests/test_final_state.py ......F.FF......FF...                       [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_load_is_idempotent ____________________________
+
+loaded = True
+
+    def test_load_is_idempotent(loaded):
+        first = run_cli(["load"])
+        payload_first = parse_stdout_json(first, "'npx tsx src/cli.ts load'")
+        second = run_cli(["load"])
+        payload_second = parse_stdout_json(second, "'npx tsx src/cli.ts load' (second run)")
+    
+        expected = {"articles": 4, "videos": 5, "total": 9}
+        for payload, label in ((payload_first, "first"), (payload_second, "second")):
+            assert isinstance(payload, dict), f"The {label} load run must print a JSON object."
+>           assert set(payload.keys()) == set(expected.keys()), (
+                f"The {label} load run must print exactly the keys {sorted(expected)}, "
+                f"got {sorted(payload.keys())}"
+            )
+E           AssertionError: The first load run must print exactly the keys ['articles', 'total', 'videos'], got []
+E           assert set() == {'articles', ...al', 'videos'}
+E             
+E             Extra items in the right set:
+E             'videos'
+E             'articles'
+E             'total'
+E             Use -v to get more diff
+
+/tests/test_final_state.py:341: AssertionError
+_____________________________ test_report_authors ______________________________
+
+loaded = True
+
+    def test_report_authors(loaded):
+        proc = run_cli(["report", "authors"])
+>       rows = parse_stdout_json(proc, "'npx tsx src/cli.ts report authors'")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:370: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+proc = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr="catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\n")
+label = "'npx tsx src/cli.ts report authors'"
+
+    def parse_stdout_json(proc, label):
+>       assert proc.returncode == 0, (
+            f"{label} exited with {proc.returncode}.\nstdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts report authors' exited with 1.
+E         stdout: 
+E         stderr: catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr="catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\n").returncode
+
+/tests/test_final_state.py:135: AssertionError
+______________________________ test_report_levels ______________________________
+
+loaded = True
+
+    def test_report_levels(loaded):
+        proc = run_cli(["report", "levels"])
+>       rows = parse_stdout_json(proc, "'npx tsx src/cli.ts report levels'")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:376: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+proc = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'levels'], returncode=1, stdout='', stderr="catalog: No f...perator 'if_else' with args: Element: default::Resource (One), Element: std::int64 (One), Element: std::int64 (One)\n")
+label = "'npx tsx src/cli.ts report levels'"
+
+    def parse_stdout_json(proc, label):
+>       assert proc.returncode == 0, (
+            f"{label} exited with {proc.returncode}.\nstdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts report levels' exited with 1.
+E         stdout: 
+E         stderr: catalog: No function overload found for operator 'if_else' with args: Element: default::Resource (One), Element: std::int64 (One), Element: std::int64 (One)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'levels'], returncode=1, stdout='', stderr="catalog: No f...perator 'if_else' with args: Element: default::Resource (One), Element: std::int64 (One), Element: std::int64 (One)\n").returncode
+
+/tests/test_final_state.py:135: AssertionError
+______________________ test_reports_reflect_live_database ______________________
+
+loaded = True
+
+    def test_reports_reflect_live_database(loaded):
+        inserted = run(["gel", "query", EXTRA_ARTICLE_INSERT])
+        assert inserted.returncode == 0, (
+            f"Could not insert the extra article fixture: {inserted.stdout}\n{inserted.stderr}"
+        )
+        try:
+>           authors = parse_stdout_json(
+                run_cli(["report", "authors"]), "'report authors' (with extra article)"
+            )
+
+/tests/test_final_state.py:483: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+proc = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr="catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\n")
+label = "'report authors' (with extra article)"
+
+    def parse_stdout_json(proc, label):
+>       assert proc.returncode == 0, (
+            f"{label} exited with {proc.returncode}.\nstdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: 'report authors' (with extra article) exited with 1.
+E         stdout: 
+E         stderr: catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr="catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\n").returncode
+
+/tests/test_final_state.py:135: AssertionError
+_________________________ test_strict_typecheck_passes _________________________
+
+    def test_strict_typecheck_passes():
+        proc = run(["npx", "tsc", "--noEmit", "-p", "tsconfig.json"])
+>       assert proc.returncode == 0, (
+            f"'npx tsc --noEmit -p tsconfig.json' must exit 0, got {proc.returncode}:\n"
+            f"{proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsc --noEmit -p tsconfig.json' must exit 0, got 2:
+E         src/cli.ts(70,28): error TS2339: Property 'n' does not exist on type '{ n: number; }[]'.
+E         src/cli.ts(71,24): error TS2339: Property 'n' does not exist on type '{ n: number; }[]'.
+E         src/cli.ts(72,23): error TS2339: Property 'n' does not exist on type '{ n: number; }[]'.
+E         src/cli.ts(94,11): error TS2345: Argument of type '$expr_Operator<ScalarType<"std::number", number, number, number>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$decimalλICastableTo, Cardinality>>'.
+E           Type '$expr_Operator<ScalarType<"std::number", number, number, number>, Cardinality.One>' is not assignable to type 'TypeSet<$decimalλICastableTo, Cardinality>'.
+E             Types of property '__element__' are incompatible.
+E               Type 'ScalarType<"std::number", number, number, number>' is not assignable to type '$decimalλICastableTo'.
+E                 Type 'ScalarType<"std::number", number, number, number>' is not assignable to type '$decimal'.
+E                   Type '"std::number"' is not assignable to type '"std::decimal"'.
+E         src/cli.ts(152,11): error TS2769: No overload matches this call.
+E           Overload 1 of 3, '(s: orScalarLiteral<TypeSet<$bigint, Cardinality>>): sumλFuncExpr<P1>', gave the following error.
+E             Argument of type '$expr_Operator<$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$bigint, Cardinality>>'.
+E               Type '$expr_Operator<$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to type 'TypeSet<$bigint, Cardinality>'.
+E                 Types of property '__element__' are incompatible.
+E                   Type '$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>' is not assignable to type '$bigint'.
+E                     Type '$date_duration' is not assignable to type 'ScalarType<"std::bigint", bigint, bigint, bigint>'.
+E                       Type '"std::cal::date_duration"' is not assignable to type '"std::bigint"'.
+E           Overload 2 of 3, '(s: orScalarLiteral<TypeSet<$number, Cardinality>>): sumλFuncExpr2<P1>', gave the following error.
+E             Argument of type '$expr_Operator<$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$number, Cardinality>>'.
+E               Type '$expr_Operator<$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to type 'TypeSet<$number, Cardinality>'.
+E                 Types of property '__element__' are incompatible.
+E                   Type '$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>' is not assignable to type '$number'.
+E                     Type '$date_duration' is not assignable to type 'ScalarType<"std::number", number, number, number>'.
+E                       Type '"std::cal::date_duration"' is not assignable to type '"std::number"'.
+E           Overload 3 of 3, '(s: orScalarLiteral<TypeSet<$decimalλICastableTo, Cardinality>>): sumλFuncExpr3<P1>', gave the following error.
+E             Argument of type '$expr_Operator<$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$decimalλICastableTo, Cardinality>>'.
+E               Type '$expr_Operator<$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to type 'TypeSet<$decimalλICastableTo, Cardinality>'.
+E                 Types of property '__element__' are incompatible.
+E                   Type '$local_datetimeλICastableTo | $relative_durationλICastableTo | $decimalλICastableTo | ... 10 more ... | ArrayType<...>' is not assignable to type '$decimalλICastableTo'.
+E                     Type '$date_duration' is not assignable to type '$decimalλICastableTo'.
+E                       Type 'ScalarType<"std::cal::date_duration", DateDuration, DateDuration, DateDuration>' is not assignable to type '$decimal'.
+E                         Type '"std::cal::date_duration"' is not assignable to type '"std::decimal"'.
+E         src/cli.ts(152,13): error TS2769: No overload matches this call.
+E           Overload 1 of 25, '(lhs: TypeSet<$relative_durationλICastableTo, Cardinality> | TypeSet<ArrayType<$relative_durationλICastableTo, "array<std::cal::date_duration>" | "array<std::cal::relative_duration>">, Cardinality> | ... 4 more ... | TypeSet<...>, op1: "if", cond: orScalarLiteral<...>, op2: "else", rhs: TypeSet<...> | ... 5 more ... | TypeSet<...>): $expr_Operator<...>', gave the following error.
+E             Argument of type '$expr_Select<{ __element__: ObjectType<"default::Resource", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; "<resources": LinkDesc<...>; }, normaliseShape<...>, [...], "default::Article" | "default::Video">; __cardinality__:...' is not assignable to parameter of type 'TypeSet<$relative_durationλICastableTo, Cardinality> | TypeSet<ArrayType<$relative_durationλICastableTo, "array<std::cal::date_duration>" | "array<std::cal::relative_duration>">, Cardinality> | ... 4 more ... | TypeSet<...>'.
+E               Type '$expr_Select<{ __element__: ObjectType<"default::Resource", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; "<resources": LinkDesc<...>; }, normaliseShape<...>, [...], "default::Article" | "default::Video">; __cardinality__:...' is not assignable to type 'TypeSet<AnyTupleType, Cardinality>'.
+E                 Types of property '__element__' are incompatible.
+E                   Type 'ObjectType<"default::Resource", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, Cardinality.One, ... 4 more ..., false>; ... 5 more ...; "<resources": LinkDesc<...>; }, normaliseShape<...>, [...], "default::Article" | "default::Video">' is not assignable to type 'AnyTupleType'.
+E                     Type 'ObjectType<"default::Resource", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, Cardinality.One, ... 4 more ..., false>; ... 5 more ...; "<resources": LinkDesc<...>; }, normaliseShape<...>, [...], "default::Article" | "default::Video">' is not assignable to type 'NamedTupleType<NamedTupleShape>'.
+E                       Types of property '__kind__' are incompatible.
+E                         Type 'TypeKind.object' is not assignable to type 'TypeKind.namedtuple'.
+E           Overload 2 of 25, '(lhs: $expr_Select<{ __element__: ObjectType<"default::Resource", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; "<resources": LinkDesc<...>; }, normaliseShape<...>, [...], "default::Article" | "default::Video">; __cardinality__: Cardinality.One; }>, op1: "if", cond: orScalarLiteral<...>, op2: "else", rhs: $expr_Cast<...>): $expr_Operator<...>', gave the following error.
+E             Argument of type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$bool, Cardinality>>'.
+E               Type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to type 'TypeSet<$bool, Cardinality>'.
+E                 The types of '__element__.__tstype__' are incompatible between these types.
+E                   Type 'number' is not assignable to type 'boolean'.
+E           Overload 3 of 25, '(lhs: $expr_Select<{ __element__: ObjectType<"default::Resource", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; "<resources": LinkDesc<...>; }, normaliseShape<...>, [...], "default::Article" | "default::Video">; __cardinality__: Cardinality.One; }>, op1: "if", cond: orScalarLiteral<...>, op2: "else", rhs: TypeSet<...>): $expr_Operator<...>', gave the following error.
+E             Argument of type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$bool, Cardinality>>'.
+E               Type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to type 'TypeSet<$bool, Cardinality>'.
+E                 The types of '__element__.__tstype__' are incompatible between these types.
+E                   Type 'number' is not assignable to type 'boolean'.
+E         src/cli.ts(165,26): error TS2339: Property 'has_captions' does not exist on type '{ __element__: $Resource; __cardinality__: Cardinality.One; __parent__: PathParent<ObjectTypeSet, string> | null; __kind__: ExpressionKind.PathNode; "*": { ...; }; [typenameSymbol]: null; } & { ...; } & {} & ExpressionMethods<...> & { ...; }'.
+E         
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsc', '--noEmit', '-p', 'tsconfig.json'], returncode=2, stdout='src/cli.ts(70,28): erro...athNode; "*": { ...; }; [typenameSymbol]: null; } & { ...; } & {} & ExpressionMethods<...> & { ...; }\'.\n', stderr='').returncode
+
+/tests/test_final_state.py:529: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_query_builder_artifacts_exist
+PASSED ../tests/test_final_state.py::test_query_builder_reflects_final_schema
+PASSED ../tests/test_final_state.py::test_new_migration_recorded
+PASSED ../tests/test_final_state.py::test_migration_status_in_sync
+PASSED ../tests/test_final_state.py::test_resource_hierarchy_in_schema
+PASSED ../tests/test_final_state.py::test_author_computeds_in_schema
+PASSED ../tests/test_final_state.py::test_title_exclusive_across_subtypes
+PASSED ../tests/test_final_state.py::test_report_author_with_resources
+PASSED ../tests/test_final_state.py::test_report_author_name_with_apostrophe
+PASSED ../tests/test_final_state.py::test_report_author_without_resources
+PASSED ../tests/test_final_state.py::test_report_author_not_found
+PASSED ../tests/test_final_state.py::test_report_author_hostile_name
+PASSED ../tests/test_final_state.py::test_usage_errors
+PASSED ../tests/test_final_state.py::test_tsconfig_still_strict
+PASSED ../tests/test_final_state.py::test_source_has_no_escape_hatches_or_raw_edgeql
+PASSED ../tests/test_final_state.py::test_source_uses_generated_query_builder
+FAILED ../tests/test_final_state.py::test_load_is_idempotent - AssertionError...
+FAILED ../tests/test_final_state.py::test_report_authors - AssertionError: 'n...
+FAILED ../tests/test_final_state.py::test_report_levels - AssertionError: 'np...
+FAILED ../tests/test_final_state.py::test_reports_reflect_live_database - Ass...
+FAILED ../tests/test_final_state.py::test_strict_typecheck_passes - Assertion...
+======================== 5 failed, 16 passed in 20.07s =========================

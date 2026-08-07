@@ -1,0 +1,37 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 26 items
+
+../tests/test_final_state.py ..........................                  [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_recovered_branch_exists
+PASSED ../tests/test_final_state.py::test_recovered_row_counts
+PASSED ../tests/test_final_state.py::test_recovered_warehouses
+PASSED ../tests/test_final_state.py::test_recovered_surviving_seqs
+PASSED ../tests/test_final_state.py::test_recovered_rows_are_normalized
+PASSED ../tests/test_final_state.py::test_recovered_aggregates
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[shipment without origin-insert Shipment { seq := 901, tracking := 'ZZ-90001', weight_kg := 1.0, status := 'pending' }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[lower-case tracking-insert Shipment { seq := 902, tracking := 'zz-90002', weight_kg := 1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[duplicate tracking-insert Shipment { seq := 903, tracking := 'GL-100001', weight_kg := 1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[negative weight-insert Shipment { seq := 904, tracking := 'ZZ-90004', weight_kg := -1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[zero weight-insert Shipment { seq := 905, tracking := 'ZZ-90005', weight_kg := 0.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[unknown status-insert Shipment { seq := 906, tracking := 'ZZ-90006', weight_kg := 1.0, status := 'shipped', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[lower-case warehouse code-insert Warehouse { code := 'wh-foxtrot', name := 'Foxtrot Depot' }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_accepts_valid_objects
+PASSED ../tests/test_final_state.py::test_migration_history_extended
+PASSED ../tests/test_final_state.py::test_migration_status_in_sync
+PASSED ../tests/test_final_state.py::test_migration_files_added
+PASSED ../tests/test_final_state.py::test_main_branch_untouched
+PASSED ../tests/test_final_state.py::test_fresh_dump_file_present
+PASSED ../tests/test_final_state.py::test_fresh_dump_restores_into_scratch_branch
+PASSED ../tests/test_final_state.py::test_report_script_exists
+PASSED ../tests/test_final_state.py::test_report_happy_path
+PASSED ../tests/test_final_state.py::test_report_leaves_no_scratch_branch_and_is_idempotent
+PASSED ../tests/test_final_state.py::test_report_unknown_branch
+PASSED ../tests/test_final_state.py::test_report_missing_dump
+PASSED ../tests/test_final_state.py::test_report_roundtrip_mismatch_against_main
+============================= 26 passed in 54.28s ==============================

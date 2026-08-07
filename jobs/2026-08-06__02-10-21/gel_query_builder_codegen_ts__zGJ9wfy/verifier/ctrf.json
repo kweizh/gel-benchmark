@@ -1,0 +1,232 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T18:22:03.160079+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 21,
+            "passed": 9,
+            "failed": 12,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785954118924,
+            "stop": 1785954123159
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_query_builder_artifacts_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785954118959,
+                "stop": 1785954118960,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_query_builder_reflects_final_schema",
+                "status": "passed",
+                "duration": 3,
+                "start": 1785954118960,
+                "stop": 1785954118963,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_migration_recorded",
+                "status": "passed",
+                "duration": 63,
+                "start": 1785954118964,
+                "stop": 1785954119027,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync",
+                "status": "passed",
+                "duration": 1146,
+                "start": 1785954119027,
+                "stop": 1785954120173,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_resource_hierarchy_in_schema",
+                "status": "passed",
+                "duration": 276,
+                "start": 1785954120174,
+                "stop": 1785954120450,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_author_computeds_in_schema",
+                "status": "passed",
+                "duration": 172,
+                "start": 1785954120450,
+                "stop": 1785954120622,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_load_is_idempotent",
+                "status": "failed",
+                "duration": 641,
+                "start": 1785954120622,
+                "stop": 1785954121263,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_title_exclusive_across_subtypes",
+                "status": "failed",
+                "duration": 11,
+                "start": 1785954121263,
+                "stop": 1785954121274,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_authors",
+                "status": "failed",
+                "duration": 7,
+                "start": 1785954121274,
+                "stop": 1785954121281,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_levels",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785954121282,
+                "stop": 1785954121287,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_with_resources",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785954121287,
+                "stop": 1785954121293,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_name_with_apostrophe",
+                "status": "failed",
+                "duration": 16,
+                "start": 1785954121293,
+                "stop": 1785954121309,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_without_resources",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785954121310,
+                "stop": 1785954121318,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_not_found",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785954121319,
+                "stop": 1785954121324,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_hostile_name",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785954121324,
+                "stop": 1785954121330,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_usage_errors",
+                "status": "failed",
+                "duration": 6,
+                "start": 1785954121330,
+                "stop": 1785954121336,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_reports_reflect_live_database",
+                "status": "failed",
+                "duration": 5,
+                "start": 1785954121336,
+                "stop": 1785954121341,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def loaded(server):\n        proc = run_cli([\"load\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsx src/cli.ts load' failed: {proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts load' failed: \nE         catalog: no subcommand implemented\nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\\n').returncode\n\n/tests/test_final_state.py:182: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_strict_typecheck_passes",
+                "status": "passed",
+                "duration": 1811,
+                "start": 1785954121341,
+                "stop": 1785954123152,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_tsconfig_still_strict",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785954123152,
+                "stop": 1785954123152,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_source_has_no_escape_hatches_or_raw_edgeql",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785954123152,
+                "stop": 1785954123153,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_source_uses_generated_query_builder",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 6,
+                "start": 1785954123153,
+                "stop": 1785954123159,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_source_uses_generated_query_builder():\n        sources = sorted(glob.glob(os.path.join(SRC_DIR, \"**\", \"*.ts\"), recursive=True))\n        blob = \"\"\n        for path in sources:\n            with open(path, encoding=\"utf-8\") as handle:\n                blob += handle.read()\n>       assert \"dbschema/edgeql-js\" in blob, (\n            f\"No file under {SRC_DIR} imports the generated query builder from dbschema/edgeql-js.\"\n        )\nE       AssertionError: No file under /home/user/catalog/src imports the generated query builder from dbschema/edgeql-js.\nE       assert 'dbschema/edgeql-js' in '// Catalog analytics CLI - not implemented yet.\\nprocess.stderr.write(\"catalog: no subcommand implemented\\\\n\");\\nprocess.exit(2);\\n'\n\n/tests/test_final_state.py:567: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

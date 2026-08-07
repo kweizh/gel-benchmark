@@ -1,0 +1,114 @@
+Traceback (most recent call last):
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/single_step.py", line 77, in _run_agent
+    await self._run_agent_phase(
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py", line 450, in _run_agent_phase
+    await asyncio.wait_for(
+  File "/opt/miniconda3/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 168, in wrapper
+    return await fn(self, instruction, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/code/zealt/pochi-harbor/agents/pochi.py", line 230, in run
+    await self.exec_as_agent(
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 592, in exec_as_agent
+    return await self._exec(
+           ^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py", line 559, in _exec
+    raise self._classify_exec_error(command, result)
+harbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 137): cat > /tmp/pochi_cmd.sh << 'CMD_EOF'
+set -o pipefail
+pochi --model google/gemini-3.5-flash --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl --experimental-stream-trajectory-strip-duplicates > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Gel disaster recovery: restore a backup, repair the data, harden the schema, re-dump
+
+## Background
+
+A small logistics service stores `Warehouse` and `Shipment` objects in a local **Gel 7** instance. Last night a maintenance script went wrong on the working branch `main`: shipments were deleted, `origin` links were cleared and a warehouse row was removed. The only good copy of the pre-incident data is the backup file that operations left behind at `/home/user/recovery/backups/pre_incident.dump`.
+
+That pre-incident data was never clean either: tracking codes were entered with stray whitespace and inconsistent case, some statuses use legacy spellings, some weights are negative or zero, some shipments lost their `origin` link, and a few tracking codes are duplicated. The team wants the recovered copy to be normalized **and** protected by a stricter schema so this class of garbage can never be inserted again.
+
+You own the recovery. Everything runs locally; there is no network service to call.
+
+## Requirements
+
+1. **Recover into a new branch.** Bring the pre-incident backup back online on the same instance, in a branch named exactly `recovered`.
+2. **Leave `main` alone.** Branch `main` must keep exactly the data, schema and migration history it has right now. It must not be repaired, migrated, wiped, renamed or dropped.
+3. **Normalize the recovered data** by applying the repair rules below, in order (each rule sees the result of the previous ones). `seq` is the immutable identity of a shipment: never change it, never invent new objects, and never delete anything the rules do not tell you to delete.
+4. **Harden the schema** of `recovered` through the project's migration workflow, so the server itself enforces the invariants listed below. The project's `dbschema/` must describe the hardened schema, the pre-existing migration history must be preserved and extended (not rewritten), and `recovered` must end up fully migrated and in sync with `dbschema/`.
+5. **Produce a fresh backup** of the repaired, hardened `recovered` branch at exactly `/home/user/recovery/backups/recovered.dump`. Keep `/home/user/recovery/backups/pre_incident.dump` in place and unmodified.
+6. **Ship the verification CLI** described in *Implementation notes*.
+
+### Repair rules (applied in this order)
+
+- **R1 — warehouse codes.** Every `Warehouse.code` becomes its own value trimmed of leading/trailing whitespace and upper-cased.
+- **R2 — tracking codes.** Every `Shipment.tracking` becomes its own value with **every** whitespace character removed (leading, trailing and interior) and then upper-cased.
+- **R3 — statuses.** Normalize every `Shipment.status`: trim it, lower-case it, then turn every space and every hyphen into an underscore. Then translate the legacy spellings `awaiting` → `pending`, `transit` → `in_transit`, `complete` → `delivered`, `done` → `delivered`, `return` → `returned`, `returned_to_sender` → `returned`. A shipment with no status at all becomes `pending`. The canonical statuses are exactly `pending`, `in_transit`, `delivered` and `returned`.
+- **R4 — weights.** A shipment whose `weight_kg` is negative keeps its absolute value. A shipment whose `weight_kg` is exactly `0` or absent is unrecoverable and must be deleted.
+- **R5 — origins.** A shipment that already has an `origin` link keeps it, whatever its `origin_code` says. A shipment without an `origin` link is linked to the warehouse whose (already normalized) `code` equals its `origin_code` trimmed and upper-cased; if it has no `origin_code`, or no warehouse matches, that shipment is unrecoverable and must be deleted. Afterwards every surviving shipment's `origin_code` property must be exactly equal to the `code` of the warehouse it is linked to.
+- **R6 — duplicates.** Among the shipments that still survive and share the same `tracking`, keep only the one with the smallest `seq` and delete the others.
+- **R7 — stale warehouses.** Delete every `Warehouse` that no surviving shipment is linked to.
+
+### Invariants the hardened schema must enforce on `recovered`
+
+After your work, the server must reject any insert or update that would violate any of these:
+
+- `Warehouse.code`: present, unique across warehouses, and matching `^[A-Z0-9-]{3,12}$`.
+- `Shipment.tracking`: present, unique across shipments, and matching `^[A-Z0-9-]{6,20}$`.
+- `Shipment.weight_kg`: present and strictly greater than `0`.
+- `Shipment.status`: present and one of the four canonical statuses.
+- `Shipment.origin`: present.
+
+Valid objects must of course still be insertable.
+
+## Implementation notes
+
+- Project path: `/home/user/recovery` — it is a Gel project already linked to the local instance named `recovery`; `dbschema/default.gel` and `dbschema/migrations/` describe the current (loose) schema.
+- The local Gel 7 server may not be running yet. `gel-start` (already on `PATH`) starts it if needed, waits until it accepts connections, and is safe to call repeatedly.
+- Command: `bash /home/user/recovery/scripts/verify_recovery.sh [--branch <name>]`. It must work from any working directory, must be re-runnable any number of times with identical results, and must default to the branch `recovered` when `--branch` is not given.
+- The command validates the backup at `/home/user/recovery/backups/recovered.dump` by restoring it into a throw-away branch named exactly `verify_roundtrip` (dropping and recreating that branch if it is already there) and comparing that restored copy with the target branch. The throw-away branch must never be left behind: once the command has finished, `verify_roundtrip` must not exist.
+- The command writes **only** a single JSON object to stdout (diagnostics, if any, go to stderr) with exactly these top-level keys in this exact order:
+  - `branch` — the target branch name.
+  - `dump_path` — `/home/user/recovery/backups/recovered.dump`.
+  - `dump_size_bytes` — that file's size in bytes, as a number.
+  - `dump_sha256` — that file's SHA-256, 64 lower-case hex characters.
+  - `migration_count` — how many migrations the target branch's history contains, as a number.
+  - `counts` — an object with exactly the keys `Warehouse` then `Shipment`, holding the number of objects of each type in the target branch.
+  - `status_counts` — an object with exactly the keys `delivered`, `in_transit`, `pending`, `returned`, in that order, holding how many shipments of the target branch carry each status (`0` when none).
+  - `warehouse_counts` — an object whose keys are the codes of all warehouses of the target branch sorted ascending, each holding how many shipments are linked to that warehouse (`0` when none).
+  - `total_weight_kg` — the sum of `weight_kg` over the target branch's shipments, rounded to 3 decimal places, as a number.
+  - `tracking_checksum` — the SHA-256 (64 lower-case hex characters) of the UTF-8 text obtained by sorting the target branch's `tracking` values in ascending code-point order and joining them with a single newline character, with no trailing newline; for an empty branch, the SHA-256 of the empty string.
+  - `roundtrip_branch` — `verify_roundtrip`.
+  - `roundtrip_ok` — a boolean, `true` only when the restored throw-away copy and the target branch agree on `counts`, `status_counts`, `warehouse_counts`, `total_weight_kg` and `tracking_checksum`.
+- Exit codes of that command: `0` when the report was produced and `roundtrip_ok` is `true`; `2` when `/home/user/recovery/backups/recovered.dump` does not exist, in which case stdout must be exactly the JSON object `{"error": "dump_not_found"}`; `3` when the target branch does not exist on the instance, in which case stdout must be exactly the JSON object `{"error": "branch_not_found"}`; `4` when the report was produced but `roundtrip_ok` is `false`. The missing-dump condition takes precedence over the missing-branch condition.
+
+
+EOF
+CMD_EOF
+setsid --wait bash /tmp/pochi_cmd.sh &
+SETSID_PID=$!
+echo $SETSID_PID > /tmp/setsid_bash_pochi_cmd.pid
+wait $SETSID_PID 2>/dev/null
+stdout: - Initializing MCP connections...
+You
+# Gel disaster recovery: restore a backup, repair the data, harden the schema, re-dump ## Background A small logistics service stores `Warehouse` and `Shipment` objects in a local **Gel 7** instance. Last night a ... [10745 chars truncated] ... l -b recovered query "select sum(Shipment.weight_kg)" ✔ 
+💭 Thinking for 492 characters   
+💫 Executing gel branch drop --help ✔ 
+💫 Executing gel branch drop --non-interactive --force verify_roundtrip ✖ "Command exited with code 1"
+💭 Thinking for 2379 characters   
+✏️  Writing /home/user/recovery/scripts/verify_recovery.py ✔ 
+✏️  Writing /home/user/recovery/scripts/verify_recovery.sh ✔ 
+💫 Executing chmod +x /home/user/recovery/scripts/verify_recovery.sh ✔ 
+💫 Executing bash /home/user/recovery/scripts/verify_recovery.sh ✖ "Command exited with code 1"
+📖 Reading /home/user/recovery/scripts/verify_recovery.py ✔ 
+🔧 Applying diff to /home/user/recovery/scripts/verify_recovery.py ✔ 
+💫 Executing bash /home/user/recovery/scripts/verify_recovery.sh ✔ 
+
+stderr: [37m2026-08-05 17:05:22.010[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	pochi v0.6.20
+[37m2026-08-05 17:05:22.066[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37 ... [14549 chars truncated] ... ndtrip`.
+  - `roundtrip_ok` — a boolean, `true` only when the restored throw-away copy and the target branch agree on `counts`, `status_counts`, `warehouse_counts`, `total_weight_kg` and `tracking_checksum`.
+- Exit codes of that command: `0` when the report was produced and `roundtrip_ok` is `true`; `2` when `/home/user/recovery/backups/recovered.dump` does not exist, in which case stdout must be exactly the JSON object `{"error": "dump_not_found"}`; `3` when the target branch does not exist on the instance, in which case stdout must be exactly the JSON object `{"error": "branch_not_found"}`; `4` when the report was produced but `roundtrip_ok` is `false`. The missing-dump condition takes precedence over the missing-branch condition.
+
+
+EOF
+
+

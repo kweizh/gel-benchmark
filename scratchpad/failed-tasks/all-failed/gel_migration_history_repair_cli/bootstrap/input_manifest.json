@@ -1,0 +1,6 @@
+{
+  "library_name": "Gel",
+  "task_name": "gel_migration_history_repair_cli",
+  "research_plan_path": "plan.md",
+  "output_dir": "scratchpad/pending-tasks"
+}

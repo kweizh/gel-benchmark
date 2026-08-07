@@ -1,0 +1,248 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 13 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_server_binary_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_dbschema_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_initial_migration_file_present PASSED
+../bootstrap/test_initial_state.py::test_seed_data_file_present_and_shaped PASSED
+../bootstrap/test_initial_state.py::test_quote_script_not_created_yet PASSED
+../bootstrap/test_initial_state.py::test_gel_instance_version_and_branch ERROR
+../bootstrap/test_initial_state.py::test_existing_carrier_rows_present ERROR
+../bootstrap/test_initial_state.py::test_migration_history_starts_in_sync ERROR
+../bootstrap/test_initial_state.py::test_logistics_module_not_present_yet ERROR
+../bootstrap/test_initial_state.py::test_domain_types_not_present_yet ERROR
+
+==================================== ERRORS ====================================
+____________ ERROR at setup of test_gel_instance_version_and_branch ____________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """Ensure the local Gel instance is up before any database-dependent check."""
+        probe = _run(["gel", "query", "-F", "json", "select 1"])
+        if probe.returncode != 0:
+            assert os.path.isfile(START_HELPER), (
+                f"Gel is not reachable and the start helper {START_HELPER} is missing."
+            )
+>           started = _run(["bash", START_HELPER], timeout=300)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:19: in _run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['bash', '/usr/local/bin/gel-start']>
+endtime = 22841342.81597597, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['bash', '/usr/local/bin/gel-start']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+_____________ ERROR at setup of test_existing_carrier_rows_present _____________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """Ensure the local Gel instance is up before any database-dependent check."""
+        probe = _run(["gel", "query", "-F", "json", "select 1"])
+        if probe.returncode != 0:
+            assert os.path.isfile(START_HELPER), (
+                f"Gel is not reachable and the start helper {START_HELPER} is missing."
+            )
+>           started = _run(["bash", START_HELPER], timeout=300)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:19: in _run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['bash', '/usr/local/bin/gel-start']>
+endtime = 22841342.81597597, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['bash', '/usr/local/bin/gel-start']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+___________ ERROR at setup of test_migration_history_starts_in_sync ____________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """Ensure the local Gel instance is up before any database-dependent check."""
+        probe = _run(["gel", "query", "-F", "json", "select 1"])
+        if probe.returncode != 0:
+            assert os.path.isfile(START_HELPER), (
+                f"Gel is not reachable and the start helper {START_HELPER} is missing."
+            )
+>           started = _run(["bash", START_HELPER], timeout=300)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:19: in _run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['bash', '/usr/local/bin/gel-start']>
+endtime = 22841342.81597597, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['bash', '/usr/local/bin/gel-start']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+___________ ERROR at setup of test_logistics_module_not_present_yet ____________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """Ensure the local Gel instance is up before any database-dependent check."""
+        probe = _run(["gel", "query", "-F", "json", "select 1"])
+        if probe.returncode != 0:
+            assert os.path.isfile(START_HELPER), (
+                f"Gel is not reachable and the start helper {START_HELPER} is missing."
+            )
+>           started = _run(["bash", START_HELPER], timeout=300)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:19: in _run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['bash', '/usr/local/bin/gel-start']>
+endtime = 22841342.81597597, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['bash', '/usr/local/bin/gel-start']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+_____________ ERROR at setup of test_domain_types_not_present_yet ______________
+
+    @pytest.fixture(scope="session")
+    def client():
+        """Ensure the local Gel instance is up before any database-dependent check."""
+        probe = _run(["gel", "query", "-F", "json", "select 1"])
+        if probe.returncode != 0:
+            assert os.path.isfile(START_HELPER), (
+                f"Gel is not reachable and the start helper {START_HELPER} is missing."
+            )
+>           started = _run(["bash", START_HELPER], timeout=300)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/bootstrap/test_initial_state.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bootstrap/test_initial_state.py:19: in _run
+    return subprocess.run(
+/usr/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['bash', '/usr/local/bin/gel-start']>
+endtime = 22841342.81597597, orig_timeout = 300, stdout_seq = []
+stderr_seq = [], skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['bash', '/usr/local/bin/gel-start']' timed out after 300 seconds
+
+/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired
+=========================== short test summary info ============================
+ERROR ../bootstrap/test_initial_state.py::test_gel_instance_version_and_branch
+ERROR ../bootstrap/test_initial_state.py::test_existing_carrier_rows_present
+ERROR ../bootstrap/test_initial_state.py::test_migration_history_starts_in_sync
+ERROR ../bootstrap/test_initial_state.py::test_logistics_module_not_present_yet
+ERROR ../bootstrap/test_initial_state.py::test_domain_types_not_present_yet
+=================== 8 passed, 5 errors in 331.79s (0:05:31) ====================

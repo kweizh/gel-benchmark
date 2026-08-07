@@ -1,0 +1,116 @@
+module default {
+  type Product {
+    required sku: str {
+      constraint exclusive;
+    }
+    required name: str;
+    required price_cents: int64 {
+      constraint min_value(1);
+    }
+    required stock: int64 {
+      default := 0;
+    }
+
+    required revision: int64 {
+      default := 1;
+      rewrite update using (__old__.revision + 1);
+    }
+    required price_history: array<int64> {
+      default := <array<int64>>[];
+      rewrite insert using ([__subject__.price_cents]);
+      rewrite update using (
+        if __old__.price_cents != __subject__.price_cents then
+          __old__.price_history ++ [__subject__.price_cents]
+        else
+          __old__.price_history
+      );
+    }
+
+    trigger log_product_insert after insert for each do (
+      insert AuditEvent {
+        action := 'insert',
+        sku := __new__.sku,
+        new_price_cents := __new__.price_cents
+      }
+    );
+
+    trigger log_price_update after update for each
+    when (__old__.price_cents != __new__.price_cents)
+    do (
+      insert AuditEvent {
+        action := 'update',
+        sku := __new__.sku,
+        old_price_cents := __old__.price_cents,
+        new_price_cents := __new__.price_cents
+      }
+    );
+
+    trigger log_product_delete after delete for each do (
+      insert AuditEvent {
+        action := 'delete',
+        sku := __old__.sku,
+        old_price_cents := __old__.price_cents
+      }
+    );
+
+    trigger batch_insert_stats after insert for all do (
+      insert AuditBatch {
+        kind := 'insert',
+        row_count := count(__new__)
+      }
+    );
+
+    trigger batch_update_stats after update for all do (
+      insert AuditBatch {
+        kind := 'update',
+        row_count := count(__new__)
+      }
+    );
+
+    trigger batch_delete_stats after delete for all do (
+      insert AuditBatch {
+        kind := 'delete',
+        row_count := count(__old__)
+      }
+    );
+  }
+
+  type AuditEvent {
+    required action: str {
+      constraint one_of('insert', 'update', 'delete');
+    }
+    required sku: str;
+    old_price_cents: int64;
+    new_price_cents: int64;
+    required recorded_at: datetime {
+      default := datetime_of_statement();
+    }
+    required summary: str {
+      rewrite insert using (
+        if __subject__.action = 'insert' then
+          'INSERT ' ++ __subject__.sku ++ ' price=' ++ <str>__subject__.new_price_cents
+        else if __subject__.action = 'update' then
+          'UPDATE ' ++ __subject__.sku ++ ' price=' ++ <str>__subject__.old_price_cents ++ '->' ++ <str>__subject__.new_price_cents
+        else
+          'DELETE ' ++ __subject__.sku ++ ' price=' ++ <str>__subject__.old_price_cents
+      );
+    }
+
+    trigger forbid_mutation after update, delete for each do (
+      assert(
+        false,
+        message := 'AuditEvent is append-only'
+      )
+    );
+  }
+
+  type AuditBatch {
+    required kind: str {
+      constraint one_of('insert', 'update', 'delete');
+    }
+    required row_count: int64;
+    required recorded_at: datetime {
+      default := datetime_of_statement();
+    }
+  }
+}

@@ -1,0 +1,221 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:21:45.750977+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 21,
+            "passed": 20,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785950494866,
+            "stop": 1785950505750
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_project_artifacts_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785950494913,
+                "stop": 1785950494914,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_state_is_in_sync",
+                "status": "passed",
+                "duration": 1331,
+                "start": 1785950494914,
+                "stop": 1785950496245,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_category_and_tag_schema",
+                "status": "passed",
+                "duration": 374,
+                "start": 1785950496245,
+                "stop": 1785950496619,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_product_schema_properties_and_links",
+                "status": "passed",
+                "duration": 98,
+                "start": 1785950496620,
+                "stop": 1785950496718,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_exclusive_constraints_declared",
+                "status": "passed",
+                "duration": 416,
+                "start": 1785950496719,
+                "stop": 1785950497135,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_exclusive_constraints_enforced",
+                "status": "passed",
+                "duration": 402,
+                "start": 1785950497136,
+                "stop": 1785950497538,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_first_run_inserts_all_records",
+                "status": "passed",
+                "duration": 241,
+                "start": 1785950497539,
+                "stop": 1785950497780,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_first_run_database_state",
+                "status": "passed",
+                "duration": 793,
+                "start": 1785950497781,
+                "stop": 1785950498574,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_replaying_batch_is_idempotent",
+                "status": "passed",
+                "duration": 873,
+                "start": 1785950498575,
+                "stop": 1785950499448,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_partial_update_outcomes",
+                "status": "passed",
+                "duration": 346,
+                "start": 1785950499449,
+                "stop": 1785950499795,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_partial_update_database_state",
+                "status": "passed",
+                "duration": 1137,
+                "start": 1785950499795,
+                "stop": 1785950500932,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_empty_batch_is_a_noop",
+                "status": "passed",
+                "duration": 737,
+                "start": 1785950500932,
+                "stop": 1785950501669,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_missing_input_argument",
+                "status": "passed",
+                "duration": 159,
+                "start": 1785950501669,
+                "stop": 1785950501828,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_missing_input_file",
+                "status": "passed",
+                "duration": 158,
+                "start": 1785950501828,
+                "stop": 1785950501986,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_json_input_file",
+                "status": "passed",
+                "duration": 172,
+                "start": 1785950501986,
+                "stop": 1785950502158,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_top_level_value_is_not_an_array",
+                "status": "passed",
+                "duration": 153,
+                "start": 1785950502158,
+                "stop": 1785950502311,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_record_negative_price",
+                "status": "passed",
+                "duration": 893,
+                "start": 1785950502312,
+                "stop": 1785950503205,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_record_missing_category",
+                "status": "passed",
+                "duration": 386,
+                "start": 1785950503205,
+                "stop": 1785950503591,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_sku_is_rejected",
+                "status": "passed",
+                "duration": 390,
+                "start": 1785950503591,
+                "stop": 1785950503981,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_database_rejection_is_atomic",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 550,
+                "start": 1785950503982,
+                "stop": 1785950504532,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_db = True\n\n    def test_database_rejection_is_atomic(clean_db):\n        run_ok(\"base.json\", BASE_BATCH)\n        before = counts()\n    \n        batch = [\n            {\n                \"sku\": \"P-001\",\n                \"name\": \"Hammer\",\n                \"price_cents\": 1999,\n                \"stock\": 11,\n                \"category\": \"tools\",\n                \"tags\": [\"metal\", \"sale\"],\n            },\n            {\n                \"sku\": \"P-401\",\n                \"name\": \"Anvil\",\n                \"price_cents\": 8999,\n                \"stock\": 3,\n                \"category\": \"tools\",\n                \"tags\": [\"metal\"],\n            },\n            {\n                \"sku\": \"P-402\",\n                \"name\": \"Overstocked\",\n                \"price_cents\": 100,\n                \"stock\": 100001,\n                \"category\": \"tools\",\n                \"tags\": [\"metal\"],\n            },\n        ]\n        path = write_json_batch(\"db-reject.json\", batch)\n        proc, _ = run_sync([\"--input\", path])\n>       _assert_error(proc, 5, \"db_error\")\n\n/tests/test_final_state.py:903: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nproc = CompletedProcess(args=['node', '/home/user/catalog-sync/dist/sync.js', '--input', '/tmp/verify-batches/db-reject.json'...ror_code\":\"invalid_record\",\"message\":\"Record at index 2 has an invalid or missing \\'stock\\'.\",\"index\":2}\\n', stderr='')\nexpected_code = 5, expected_error = 'db_error'\n\n    def _assert_error(proc, expected_code, expected_error):\n>       assert proc.returncode == expected_code, (\n            f\"Expected exit code {expected_code}, got {proc.returncode}; \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr!r}\"\n        )\nE       AssertionError: Expected exit code 5, got 3; stdout='{\"ok\":false,\"error_code\":\"invalid_record\",\"message\":\"Record at index 2 has an invalid or missing \\'stock\\'.\",\"index\":2}\\n' stderr=''\nE       assert 3 == 5\nE        +  where 3 = CompletedProcess(args=['node', '/home/user/catalog-sync/dist/sync.js', '--input', '/tmp/verify-batches/db-reject.json'...ror_code\":\"invalid_record\",\"message\":\"Record at index 2 has an invalid or missing \\'stock\\'.\",\"index\":2}\\n', stderr='').returncode\n\n/tests/test_final_state.py:700: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_large_batch_performance_and_idempotency",
+                "status": "passed",
+                "duration": 1217,
+                "start": 1785950504533,
+                "stop": 1785950505750,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

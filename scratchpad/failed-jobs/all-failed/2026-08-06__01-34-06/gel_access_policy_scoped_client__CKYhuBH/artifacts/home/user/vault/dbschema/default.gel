@@ -1,0 +1,44 @@
+module default {
+  scalar type Role extending enum<Owner, Editor, Viewer>;
+
+  type Actor {
+    required email: str {
+      constraint exclusive;
+    }
+    required display_name: str;
+  }
+
+  type Workspace {
+    required name: str {
+      constraint exclusive;
+    }
+  }
+
+  type Membership {
+    required actor: Actor;
+    required workspace: Workspace;
+    required role: Role;
+    constraint exclusive on ((.actor, .workspace));
+  }
+
+  type Document {
+    required title: str {
+      constraint exclusive;
+    }
+    required body: str;
+    required workspace: Workspace;
+    required owner: Actor;
+    required archived: bool {
+      default := false;
+    }
+  }
+
+  type ActivityLog {
+    required action: str;
+    required actor_email: str;
+    required doc_title: str;
+    required at: datetime {
+      default := datetime_of_statement();
+    }
+  }
+}

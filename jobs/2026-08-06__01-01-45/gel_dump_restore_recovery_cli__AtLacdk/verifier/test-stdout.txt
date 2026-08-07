@@ -1,0 +1,323 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 26 items
+
+../tests/test_final_state.py ...FFF.......FFF.F.F.FF..F                  [100%]
+
+=================================== FAILURES ===================================
+________________________ test_recovered_surviving_seqs _________________________
+
+gel_server = True
+
+    def test_recovered_surviving_seqs(gel_server):
+>       seqs = sorted(row["seq"] for row in shipments())
+                                            ^^^^^^^^^^^
+
+/tests/test_final_state.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:134: in shipments
+    return query_json(SHIPMENT_SHAPE, branch=branch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'
+branch = 'recovered'
+
+    def query_json(query, branch=TARGET_BRANCH):
+        proc = run(["gel", "query", "-F", "json", "--branch", branch, query])
+>       assert proc.returncode == 0, (
+            f"Query {query!r} on branch {branch!r} failed:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:
+E         stdout=
+E         stderr=gel error: ClientConnectionError: peer closed connection without sending TLS close_notify: https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...n without sending TLS close_notify: https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof\n').returncode
+
+/tests/test_final_state.py:117: AssertionError
+______________________ test_recovered_rows_are_normalized ______________________
+
+gel_server = True
+
+    def test_recovered_rows_are_normalized(gel_server):
+>       rows = {row["seq"]: row for row in shipments()}
+                                           ^^^^^^^^^^^
+
+/tests/test_final_state.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:134: in shipments
+    return query_json(SHIPMENT_SHAPE, branch=branch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'
+branch = 'recovered'
+
+    def query_json(query, branch=TARGET_BRANCH):
+        proc = run(["gel", "query", "-F", "json", "--branch", branch, query])
+>       assert proc.returncode == 0, (
+            f"Query {query!r} on branch {branch!r} failed:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:
+E         stdout=
+E         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n").returncode
+
+/tests/test_final_state.py:117: AssertionError
+__________________________ test_recovered_aggregates ___________________________
+
+gel_server = True
+
+    def test_recovered_aggregates(gel_server):
+>       rows = shipments()
+               ^^^^^^^^^^^
+
+/tests/test_final_state.py:231: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:134: in shipments
+    return query_json(SHIPMENT_SHAPE, branch=branch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'
+branch = 'recovered'
+
+    def query_json(query, branch=TARGET_BRANCH):
+        proc = run(["gel", "query", "-F", "json", "--branch", branch, query])
+>       assert proc.returncode == 0, (
+            f"Query {query!r} on branch {branch!r} failed:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:
+E         stdout=
+E         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n").returncode
+
+/tests/test_final_state.py:117: AssertionError
+__________________ test_hardened_schema_accepts_valid_objects __________________
+
+gel_server = True
+
+    def test_hardened_schema_accepts_valid_objects(gel_server):
+        insert = (
+            "insert Shipment { seq := 999, tracking := 'ZZ-99999', weight_kg := 1.5, "
+            "status := 'pending', origin_code := 'WH-ALPHA', origin := assert_single("
+            "(select Warehouse filter .code = 'WH-ALPHA')) }"
+        )
+        try:
+            proc = run(["gel", "query", "--branch", TARGET_BRANCH, insert])
+>           assert proc.returncode == 0, (
+                "A fully valid shipment must still be insertable on "
+                f"{TARGET_BRANCH!r}.\nstdout={proc.stdout}\nstderr={proc.stderr}"
+            )
+E           AssertionError: A fully valid shipment must still be insertable on 'recovered'.
+E             stdout=
+E             stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...
+E             gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', '--branch', 'recovered', "insert Shipment { seq := 999, tracking := 'ZZ-99999',...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n").returncode
+
+/tests/test_final_state.py:339: AssertionError
+_______________________ test_migration_history_extended ________________________
+
+gel_server = True
+
+    def test_migration_history_extended(gel_server):
+>       count = query_json("select count(schema::Migration)")[0]
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:366: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(schema::Migration)', branch = 'recovered'
+
+    def query_json(query, branch=TARGET_BRANCH):
+        proc = run(["gel", "query", "-F", "json", "--branch", branch, query])
+>       assert proc.returncode == 0, (
+            f"Query {query!r} on branch {branch!r} failed:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: Query 'select count(schema::Migration)' on branch 'recovered' failed:
+E         stdout=
+E         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select count(schema::Migration)'], retu...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n").returncode
+
+/tests/test_final_state.py:117: AssertionError
+________________________ test_migration_status_in_sync _________________________
+
+gel_server = True
+
+    def test_migration_status_in_sync(gel_server):
+        proc = run(["gel", "migration", "status", "--branch", TARGET_BRANCH])
+>       assert proc.returncode == 0, (
+            f"`gel migration status --branch {TARGET_BRANCH}` failed:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: `gel migration status --branch recovered` failed:
+E         stdout=
+E         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'migration', 'status', '--branch', 'recovered'], returncode=1, stdout='', stderr="Connec...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n").returncode
+
+/tests/test_final_state.py:386: AssertionError
+__________________________ test_main_branch_untouched __________________________
+
+gel_server = True
+
+    def test_main_branch_untouched(gel_server):
+>       warehouses = query_json("select count(Warehouse)", branch="main")[0]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:407: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(Warehouse)', branch = 'main'
+
+    def query_json(query, branch=TARGET_BRANCH):
+        proc = run(["gel", "query", "-F", "json", "--branch", branch, query])
+>       assert proc.returncode == 0, (
+            f"Query {query!r} on branch {branch!r} failed:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: Query 'select count(Warehouse)' on branch 'main' failed:
+E         stdout=
+E         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'main', 'select count(Warehouse)'], returncode=1, std...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n").returncode
+
+/tests/test_final_state.py:117: AssertionError
+_________________ test_fresh_dump_restores_into_scratch_branch _________________
+
+gel_server = True
+
+    def test_fresh_dump_restores_into_scratch_branch(gel_server):
+>       expected = {row["seq"]: row["tracking"] for row in shipments()}
+                                                           ^^^^^^^^^^^
+
+/tests/test_final_state.py:431: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:134: in shipments
+    return query_json(SHIPMENT_SHAPE, branch=branch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'
+branch = 'recovered'
+
+    def query_json(query, branch=TARGET_BRANCH):
+        proc = run(["gel", "query", "-F", "json", "--branch", branch, query])
+>       assert proc.returncode == 0, (
+            f"Query {query!r} on branch {branch!r} failed:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:
+E         stdout=
+E         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n").returncode
+
+/tests/test_final_state.py:117: AssertionError
+____________________________ test_report_happy_path ____________________________
+
+gel_server = True
+
+    def test_report_happy_path(gel_server):
+        proc = run_report()
+>       assert proc.returncode == 0, (
+            f"`bash {REPORT_SCRIPT}` should exit 0, got {proc.returncode}.\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: `bash /home/user/recovery/scripts/verify_recovery.sh` should exit 0, got 3.
+E         stdout={"error": "branch_not_found"}
+E         
+E         stderr=
+E       assert 3 == 0
+E        +  where 3 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh'], returncode=3, stdout='{"error": "branch_not_found"}\n', stderr='').returncode
+
+/tests/test_final_state.py:471: AssertionError
+____________ test_report_leaves_no_scratch_branch_and_is_idempotent ____________
+
+gel_server = True
+
+    def test_report_leaves_no_scratch_branch_and_is_idempotent(gel_server):
+        first = run_report()
+>       assert first.returncode == 0, (
+            f"The first run of {REPORT_SCRIPT} should exit 0, got {first.returncode}.\n"
+            f"stdout={first.stdout}\nstderr={first.stderr}"
+        )
+E       AssertionError: The first run of /home/user/recovery/scripts/verify_recovery.sh should exit 0, got 3.
+E         stdout={"error": "branch_not_found"}
+E         
+E         stderr=
+E       assert 3 == 0
+E        +  where 3 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh'], returncode=3, stdout='{"error": "branch_not_found"}\n', stderr='').returncode
+
+/tests/test_final_state.py:550: AssertionError
+_________________ test_report_roundtrip_mismatch_against_main __________________
+
+gel_server = True
+
+    def test_report_roundtrip_mismatch_against_main(gel_server):
+        proc = run_report(["--branch", "main"])
+>       assert proc.returncode == 4, (
+            "Comparing the recovered dump against branch main must report a mismatch and "
+            f"exit 4, got {proc.returncode}.\nstdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: Comparing the recovered dump against branch main must report a mismatch and exit 4, got 3.
+E         stdout={"error": "branch_not_found"}
+E         
+E         stderr=
+E       assert 3 == 4
+E        +  where 3 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh', '--branch', 'main'], returncode=3, stdout='{"error": "branch_not_found"}\n', stderr='').returncode
+
+/tests/test_final_state.py:621: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_recovered_branch_exists
+PASSED ../tests/test_final_state.py::test_recovered_row_counts
+PASSED ../tests/test_final_state.py::test_recovered_warehouses
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[shipment without origin-insert Shipment { seq := 901, tracking := 'ZZ-90001', weight_kg := 1.0, status := 'pending' }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[lower-case tracking-insert Shipment { seq := 902, tracking := 'zz-90002', weight_kg := 1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[duplicate tracking-insert Shipment { seq := 903, tracking := 'GL-100001', weight_kg := 1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[negative weight-insert Shipment { seq := 904, tracking := 'ZZ-90004', weight_kg := -1.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[zero weight-insert Shipment { seq := 905, tracking := 'ZZ-90005', weight_kg := 0.0, status := 'pending', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[unknown status-insert Shipment { seq := 906, tracking := 'ZZ-90006', weight_kg := 1.0, status := 'shipped', origin := assert_single((select Warehouse filter .code = 'WH-ALPHA')) }]
+PASSED ../tests/test_final_state.py::test_hardened_schema_rejects_invalid_objects[lower-case warehouse code-insert Warehouse { code := 'wh-foxtrot', name := 'Foxtrot Depot' }]
+PASSED ../tests/test_final_state.py::test_migration_files_added
+PASSED ../tests/test_final_state.py::test_fresh_dump_file_present
+PASSED ../tests/test_final_state.py::test_report_script_exists
+PASSED ../tests/test_final_state.py::test_report_unknown_branch
+PASSED ../tests/test_final_state.py::test_report_missing_dump
+FAILED ../tests/test_final_state.py::test_recovered_surviving_seqs - Assertio...
+FAILED ../tests/test_final_state.py::test_recovered_rows_are_normalized - Ass...
+FAILED ../tests/test_final_state.py::test_recovered_aggregates - AssertionErr...
+FAILED ../tests/test_final_state.py::test_hardened_schema_accepts_valid_objects
+FAILED ../tests/test_final_state.py::test_migration_history_extended - Assert...
+FAILED ../tests/test_final_state.py::test_migration_status_in_sync - Assertio...
+FAILED ../tests/test_final_state.py::test_main_branch_untouched - AssertionEr...
+FAILED ../tests/test_final_state.py::test_fresh_dump_restores_into_scratch_branch
+FAILED ../tests/test_final_state.py::test_report_happy_path - AssertionError:...
+FAILED ../tests/test_final_state.py::test_report_leaves_no_scratch_branch_and_is_idempotent
+FAILED ../tests/test_final_state.py::test_report_roundtrip_mismatch_against_main
+================== 11 failed, 15 passed in 494.35s (0:08:14) ===================

@@ -1,0 +1,35 @@
+module default {
+    type Account {
+        required code: str;
+        constraint exclusive on (.code);
+        required opening_balance: decimal;
+        balance := .opening_balance + sum(.<account[is LedgerEntry].amount);
+    }
+
+    type Transfer {
+        required idempotency_key: str;
+        constraint exclusive on (.idempotency_key);
+        required amount: decimal;
+        constraint expression on (.amount > 0) {
+            errmessage := "Transfer amount must be positive";
+        };
+        required sender: Account;
+        required recipient: Account;
+        constraint expression on (.sender != .recipient) {
+            errmessage := "Sender and recipient must be different accounts";
+        };
+        required created_at: datetime {
+            default := datetime_current();
+        };
+    }
+
+    type LedgerEntry {
+        required amount: decimal;
+        constraint expression on (.amount != 0) {
+            errmessage := "LedgerEntry amount must not be zero";
+        };
+        required account: Account;
+        required transfer: Transfer;
+        constraint exclusive on ((.account, .transfer));
+    }
+}

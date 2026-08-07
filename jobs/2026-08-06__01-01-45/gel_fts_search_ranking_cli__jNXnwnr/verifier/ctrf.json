@@ -1,0 +1,281 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:12:40.954664+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 28,
+            "passed": 28,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785949956629,
+            "stop": 1785949960954
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_project_files_present",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785949956678,
+                "stop": 1785949956679,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_corpus_file_unmodified",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785949956679,
+                "stop": 1785949956679,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_reports_up_to_date",
+                "status": "passed",
+                "duration": 1188,
+                "start": 1785949956679,
+                "stop": 1785949957867,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_article_type_has_required_properties",
+                "status": "passed",
+                "duration": 206,
+                "start": 1785949957867,
+                "stop": 1785949958073,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_slug_uniqueness_is_enforced",
+                "status": "passed",
+                "duration": 184,
+                "start": 1785949958073,
+                "stop": 1785949958257,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_weighted_fts_index_is_declared",
+                "status": "passed",
+                "duration": 154,
+                "start": 1785949958257,
+                "stop": 1785949958411,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_corpus_is_loaded",
+                "status": "passed",
+                "duration": 246,
+                "start": 1785949958412,
+                "stop": 1785949958658,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_loader_is_idempotent",
+                "status": "passed",
+                "duration": 310,
+                "start": 1785949958658,
+                "stop": 1785949958968,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_default_paging_and_tie_break",
+                "status": "passed",
+                "duration": 84,
+                "start": 1785949958969,
+                "stop": 1785949959053,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_title_beats_summary_beats_body",
+                "status": "passed",
+                "duration": 88,
+                "start": 1785949959054,
+                "stop": 1785949959142,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_title_match_outranks_body_match",
+                "status": "passed",
+                "duration": 74,
+                "start": 1785949959142,
+                "stop": 1785949959216,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_scores_are_positive_rounded_and_non_increasing",
+                "status": "passed",
+                "duration": 75,
+                "start": 1785949959217,
+                "stop": 1785949959292,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_scores_are_positive_rounded_and_non_increasing",
+                "status": "passed",
+                "duration": 85,
+                "start": 1785949959292,
+                "stop": 1785949959377,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_scores_are_positive_rounded_and_non_increasing",
+                "status": "passed",
+                "duration": 72,
+                "start": 1785949959377,
+                "stop": 1785949959449,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unpublished_articles_are_never_returned",
+                "status": "passed",
+                "duration": 139,
+                "start": 1785949959450,
+                "stop": 1785949959589,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_query_without_any_match",
+                "status": "passed",
+                "duration": 82,
+                "start": 1785949959589,
+                "stop": 1785949959671,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_pagination_pages_rebuild_the_full_ordering",
+                "status": "passed",
+                "duration": 409,
+                "start": 1785949959671,
+                "stop": 1785949960080,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_offset_past_the_end_returns_empty_page",
+                "status": "passed",
+                "duration": 73,
+                "start": 1785949960080,
+                "stop": 1785949960153,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_search_reflects_live_database_state",
+                "status": "passed",
+                "duration": 537,
+                "start": 1785949960153,
+                "stop": 1785949960690,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_search_is_case_and_form_insensitive",
+                "status": "passed",
+                "duration": 85,
+                "start": 1785949960691,
+                "stop": 1785949960776,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_search_is_case_and_form_insensitive",
+                "status": "passed",
+                "duration": 81,
+                "start": 1785949960776,
+                "stop": 1785949960857,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_query_with_apostrophe_is_echoed_and_matched",
+                "status": "passed",
+                "duration": 79,
+                "start": 1785949960857,
+                "stop": 1785949960936,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "passed",
+                "duration": 3,
+                "start": 1785949960936,
+                "stop": 1785949960939,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "passed",
+                "duration": 3,
+                "start": 1785949960940,
+                "stop": 1785949960943,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "passed",
+                "duration": 3,
+                "start": 1785949960943,
+                "stop": 1785949960946,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "passed",
+                "duration": 2,
+                "start": 1785949960946,
+                "stop": 1785949960948,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "passed",
+                "duration": 3,
+                "start": 1785949960948,
+                "stop": 1785949960951,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_argument_errors",
+                "status": "passed",
+                "duration": 2,
+                "start": 1785949960952,
+                "stop": 1785949960954,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

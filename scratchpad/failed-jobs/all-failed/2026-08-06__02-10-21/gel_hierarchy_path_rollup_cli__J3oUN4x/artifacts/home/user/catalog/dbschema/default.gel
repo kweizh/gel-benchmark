@@ -1,0 +1,17 @@
+module default {
+  type Category {
+    required slug: str;
+    required name: str;
+    parent: Category;
+  }
+
+  type Product {
+    required sku: str {
+      constraint exclusive;
+    }
+    required name: str;
+    required price: decimal;
+    required stock: int64;
+    required category: Category;
+  }
+}

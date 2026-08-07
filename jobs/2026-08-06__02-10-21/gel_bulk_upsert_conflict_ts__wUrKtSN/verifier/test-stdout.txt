@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 21 items
+
+../tests/test_final_state.py .....................                       [100%]
+
+==================================== PASSES ====================================
+_______________________ test_migration_state_is_in_sync ________________________
+---------------------------- Captured stdout setup -----------------------------
+gel-start.sh stdout:
+Gel instance 'local_gel' is already running on port 5656.
+
+gel-start.sh stderr:
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_project_artifacts_exist
+PASSED ../tests/test_final_state.py::test_migration_state_is_in_sync
+PASSED ../tests/test_final_state.py::test_category_and_tag_schema
+PASSED ../tests/test_final_state.py::test_product_schema_properties_and_links
+PASSED ../tests/test_final_state.py::test_exclusive_constraints_declared
+PASSED ../tests/test_final_state.py::test_exclusive_constraints_enforced
+PASSED ../tests/test_final_state.py::test_first_run_inserts_all_records
+PASSED ../tests/test_final_state.py::test_first_run_database_state
+PASSED ../tests/test_final_state.py::test_replaying_batch_is_idempotent
+PASSED ../tests/test_final_state.py::test_partial_update_outcomes
+PASSED ../tests/test_final_state.py::test_partial_update_database_state
+PASSED ../tests/test_final_state.py::test_empty_batch_is_a_noop
+PASSED ../tests/test_final_state.py::test_missing_input_argument
+PASSED ../tests/test_final_state.py::test_missing_input_file
+PASSED ../tests/test_final_state.py::test_invalid_json_input_file
+PASSED ../tests/test_final_state.py::test_top_level_value_is_not_an_array
+PASSED ../tests/test_final_state.py::test_invalid_record_negative_price
+PASSED ../tests/test_final_state.py::test_invalid_record_missing_category
+PASSED ../tests/test_final_state.py::test_duplicate_sku_is_rejected
+PASSED ../tests/test_final_state.py::test_database_rejection_is_atomic
+PASSED ../tests/test_final_state.py::test_large_batch_performance_and_idempotency
+============================= 21 passed in 10.00s ==============================

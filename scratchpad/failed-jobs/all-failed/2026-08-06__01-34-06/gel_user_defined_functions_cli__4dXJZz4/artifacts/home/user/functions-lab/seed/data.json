@@ -1,0 +1,12 @@
+{
+  "parcels": [
+    {"sku": "SKU-1001", "weight_grams": 1200, "tier": "Express", "insured": false, "handling_hint": "fragile", "carrier": "Northwind"},
+    {"sku": "SKU-1002", "weight_grams": 400, "tier": "Ground", "insured": true, "handling_hint": null, "carrier": "Northwind"},
+    {"sku": "SKU-1003", "weight_grams": 2000, "tier": "Overnight", "insured": false, "handling_hint": null, "carrier": "Halcyon"},
+    {"sku": "SKU-1004", "weight_grams": 50, "tier": "Ground", "insured": false, "handling_hint": "sample", "carrier": "Halcyon"}
+  ],
+  "shipments": [
+    {"code": "SHP-9001", "parcels": ["SKU-1001", "SKU-1002", "SKU-1003"]},
+    {"code": "SHP-9002", "parcels": []}
+  ]
+}

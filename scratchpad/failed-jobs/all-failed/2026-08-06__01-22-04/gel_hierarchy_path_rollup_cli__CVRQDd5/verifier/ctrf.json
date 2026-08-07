@@ -1,0 +1,239 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:32:44.385118+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 21,
+            "passed": 14,
+            "failed": 7,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785951159144,
+            "stop": 1785951164385
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migrations_applied_and_in_sync",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 135,
+                "start": 1785951159181,
+                "stop": 1785951159316,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migrations_applied_and_in_sync(gel_server):\n        migrations = sorted(glob.glob(os.path.join(MIGRATIONS_DIR, \"*.edgeql\")))\n        assert len(migrations) >= 2, (\n            f\"Expected at least two migration files in {MIGRATIONS_DIR} (the baked one plus the \"\n            f\"schema change), found: {migrations}\"\n        )\n        proc = run_gel([\"migration\", \"status\"])\n        combined = (proc.stdout + proc.stderr).lower()\n>       assert proc.returncode == 0 and \"up to date\" in combined, (\n            f\"`gel migration status` does not report the database up to date.\\n\"\n            f\"stdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: `gel migration status` does not report the database up to date.\nE         stdout: \nE         stderr: gel error: Database is at migration \"m1a4elizxl6i6ntklzap46ddn4mz7dy6eqdilznltav56pgz432xpa\" while sources contain 1 migrations ahead, starting from \"m1taxmzm3tt3qd45sld2alyvxu74rjfeybcrcjmisuspkjcd6xytqa\"(/home/user/catalog/dbschema/migrations/00003-m1taxmz.edgeql)\nE         \nE       assert (3 == 0)\nE        +  where 3 = CompletedProcess(args=['gel', 'migration', 'status'], returncode=3, stdout='', stderr='gel error: Database is at migra...1taxmzm3tt3qd45sld2alyvxu74rjfeybcrcjmisuspkjcd6xytqa\"(/home/user/catalog/dbschema/migrations/00003-m1taxmz.edgeql)\\n').returncode\n\n/tests/test_final_state.py:318: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_depth_and_path_are_stored_properties_with_insert_rewrites",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 269,
+                "start": 1785951159316,
+                "stop": 1785951159585,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_depth_and_path_are_stored_properties_with_insert_rewrites(gel_server):\n        category = object_of(\"default::Category\")\n        for name, scalar in ((\"depth\", \"std::int64\"), (\"path\", \"std::str\")):\n            prop = pointer(category[\"prop_details\"], name)\n            assert prop is not None, f\"default::Category has no property {name!r}.\"\n            assert prop[\"target_name\"] == scalar, (\n                f\"Category.{name} must be {scalar}, found {prop['target_name']!r}.\"\n            )\n>           assert prop[\"required\"] is True, f\"Category.{name} must be declared required.\"\nE           AssertionError: Category.depth must be declared required.\nE           assert False is True\n\n/tests/test_final_state.py:335: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_children_and_ancestors_are_computed_multi_links",
+                "status": "passed",
+                "duration": 76,
+                "start": 1785951159585,
+                "stop": 1785951159661,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_exclusive_path_constraint_declared",
+                "status": "passed",
+                "duration": 76,
+                "start": 1785951159661,
+                "stop": 1785951159737,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_type_shape",
+                "status": "passed",
+                "duration": 67,
+                "start": 1785951159737,
+                "stop": 1785951159804,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_triggers_declared",
+                "status": "passed",
+                "duration": 77,
+                "start": 1785951159805,
+                "stop": 1785951159882,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seeded_data_intact",
+                "status": "passed",
+                "duration": 133,
+                "start": 1785951159883,
+                "stop": 1785951160016,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_stored_path_and_depth_match_the_tree",
+                "status": "passed",
+                "duration": 59,
+                "start": 1785951160016,
+                "stop": 1785951160075,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_ancestors_and_children_links_match_the_tree",
+                "status": "passed",
+                "duration": 259,
+                "start": 1785951160076,
+                "stop": 1785951160335,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_query_files_exist",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 22,
+                "start": 1785951160335,
+                "stop": 1785951160357,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_query_files_exist():\n        for relpath in (TREE_QUERY, ROLLUP_QUERY, ROOT_TOTALS_QUERY):\n            path = os.path.join(PROJECT_DIR, relpath)\n>           assert os.path.isfile(path), f\"Missing required query file {path}.\"\nE           AssertionError: Missing required query file /home/user/catalog/queries/tree.edgeql.\nE           assert False\nE            +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/tree.edgeql')\nE            +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile\nE            +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:483: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_tree_query_contract",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 99,
+                "start": 1785951160357,
+                "stop": 1785951160456,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_tree_query_contract(gel_server):\n>       check_tree_output()\n\n/tests/test_final_state.py:683: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:495: in check_tree_output\n    result = gel_query_file(TREE_QUERY)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrelpath = 'queries/tree.edgeql'\n\n    def gel_query_file(relpath):\n        path = os.path.join(PROJECT_DIR, relpath)\n>       assert os.path.isfile(path), f\"Required query file {path} is missing.\"\nE       AssertionError: Required query file /home/user/catalog/queries/tree.edgeql is missing.\nE       assert False\nE        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/tree.edgeql')\nE        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:125: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_subtree_rollup_query_contract",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 172,
+                "start": 1785951160456,
+                "stop": 1785951160628,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_subtree_rollup_query_contract(gel_server):\n>       check_rollup_output()\n\n/tests/test_final_state.py:687: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:549: in check_rollup_output\n    result = gel_query_file(ROLLUP_QUERY)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrelpath = 'queries/subtree_rollup.edgeql'\n\n    def gel_query_file(relpath):\n        path = os.path.join(PROJECT_DIR, relpath)\n>       assert os.path.isfile(path), f\"Required query file {path} is missing.\"\nE       AssertionError: Required query file /home/user/catalog/queries/subtree_rollup.edgeql is missing.\nE       assert False\nE        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/subtree_rollup.edgeql')\nE        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:125: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_root_totals_query_contract",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 162,
+                "start": 1785951160628,
+                "stop": 1785951160790,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_root_totals_query_contract(gel_server):\n>       check_root_totals_output()\n\n/tests/test_final_state.py:691: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:637: in check_root_totals_output\n    result = gel_query_file(ROOT_TOTALS_QUERY)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrelpath = 'queries/root_totals.edgeql'\n\n    def gel_query_file(relpath):\n        path = os.path.join(PROJECT_DIR, relpath)\n>       assert os.path.isfile(path), f\"Required query file {path} is missing.\"\nE       AssertionError: Required query file /home/user/catalog/queries/root_totals.edgeql is missing.\nE       assert False\nE        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/root_totals.edgeql')\nE        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:125: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_new_categories_get_ancestry_automatically",
+                "status": "passed",
+                "duration": 542,
+                "start": 1785951160791,
+                "stop": 1785951161333,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_sibling_slug_is_rejected",
+                "status": "passed",
+                "duration": 274,
+                "start": 1785951161334,
+                "stop": 1785951161608,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_root_slug_is_rejected",
+                "status": "passed",
+                "duration": 266,
+                "start": 1785951161609,
+                "stop": 1785951161875,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_moves_the_whole_subtree",
+                "status": "passed",
+                "duration": 638,
+                "start": 1785951161875,
+                "stop": 1785951162513,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reports_follow_the_relocation",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 72,
+                "start": 1785951162514,
+                "stop": 1785951162586,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_reports_follow_the_relocation(gel_server):\n>       check_tree_output()\n\n/tests/test_final_state.py:883: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:495: in check_tree_output\n    result = gel_query_file(TREE_QUERY)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrelpath = 'queries/tree.edgeql'\n\n    def gel_query_file(relpath):\n        path = os.path.join(PROJECT_DIR, relpath)\n>       assert os.path.isfile(path), f\"Required query file {path} is missing.\"\nE       AssertionError: Required query file /home/user/catalog/queries/tree.edgeql is missing.\nE       assert False\nE        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/tree.edgeql')\nE        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:125: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_to_root_level",
+                "status": "passed",
+                "duration": 546,
+                "start": 1785951162586,
+                "stop": 1785951163132,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cycle_creating_relocations_are_rejected",
+                "status": "passed",
+                "duration": 725,
+                "start": 1785951163132,
+                "stop": 1785951163857,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_destination_slug_collision_is_rejected",
+                "status": "passed",
+                "duration": 526,
+                "start": 1785951163858,
+                "stop": 1785951164384,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

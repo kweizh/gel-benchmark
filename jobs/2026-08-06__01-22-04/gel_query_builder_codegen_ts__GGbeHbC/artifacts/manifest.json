@@ -1,0 +1,16 @@
+[
+  {
+    "source": "/logs/artifacts",
+    "destination": "artifacts/logs/artifacts",
+    "type": "directory",
+    "status": "ok",
+    "service": null
+  },
+  {
+    "source": "/home/user",
+    "destination": "artifacts/home/user",
+    "type": "directory",
+    "status": "ok",
+    "service": null
+  }
+]

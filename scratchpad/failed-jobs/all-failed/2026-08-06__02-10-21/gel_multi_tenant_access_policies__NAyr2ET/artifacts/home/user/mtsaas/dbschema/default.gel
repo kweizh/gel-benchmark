@@ -1,0 +1,33 @@
+module default {
+    type Tenant {
+        required slug: str {
+            constraint exclusive;
+        }
+        required name: str;
+    }
+
+    type Workspace {
+        required name: str;
+        required tenant: Tenant;
+        required archived: bool {
+            default := false;
+        }
+        constraint exclusive on ((.tenant, .name));
+    }
+
+    type Document {
+        required title: str;
+        required body: str;
+        required workspace: Workspace;
+        required created_at: datetime {
+            default := datetime_of_statement();
+        }
+        index on (.title);
+    }
+
+    type Comment {
+        required body: str;
+        required author_email: str;
+        required document: Document;
+    }
+}

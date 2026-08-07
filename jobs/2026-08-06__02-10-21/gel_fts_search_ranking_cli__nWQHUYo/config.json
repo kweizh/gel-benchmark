@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_fts_search_ranking_cli",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_fts_search_ranking_cli__nWQHUYo",
+    "trials_dir": "jobs/2026-08-06__02-10-21",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "zai/glm-5.2",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "bd92900b-11c7-44a0-b121-d9b897dc1926"
+}

@@ -1,0 +1,55 @@
+Traceback (most recent call last):
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/environments/daytona/environment.py", line 1466, in _create_sandbox
+    self._sandbox = await asyncio.shield(create_task)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/daytona/_utils/errors.py", line 219, in async_wrapper
+    process_n_raise_exception(e)
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/daytona/_utils/errors.py", line 151, in process_n_raise_exception
+    raise e.__class__(
+daytona.common.errors.DaytonaError: Failed to create sandbox: Failure during waiting for sandbox to start: Sandbox 232465fa-000a-4113-ae55-b867b909a7c6 entered error state: SandboxState.BUILD_FAILED, error reason: process "/bin/sh -c ( id -u gel >/dev/null 2>&1 || useradd --system --home-dir /var/lib/gel --shell /bin/bash gel ) &&     mkdir -p /var/lib/gel/data /var/lib/gel/run &&     chown -R gel /var/lib/gel &&     /usr/local/bin/gel-start.sh &&     cd /home/user/gel-audit &&     gel migration create --non-interactive --allow-unsafe --schema-dir /home/user/gel-audit/dbschema &&     gel migrate &&     ls /home/user/gel-audit/dbschema/migrations/*.edgeql &&     gel query -F json \"select sys::get_current_branch()\" &&     gel query -F json \"select sys::Branch { name, last_migration } filter .name = sys::get_current_branch()\" &&     gel query -F json \"select schema::Migration { name, parents: { name } }\" &&     gel query -F json \"select schema::Global { name, required, cardinality, expr, tname := .target.name } filter not .builtin and not .internal\" &&     gel query -F json \"select schema::Alias { name } filter not .builtin and not .internal\" &&     gel query -F json \"select schema::Function { name, volatility, rtname := .return_type.name, params: { name, idx := @index, tname := .type.name } } filter not .builtin and not .internal\" &&     gel query -F json \"select schema::ObjectType { name, abstract, bases: { name }, annotations: { name, @value }, pointers: { name, ptype := .__type__.name, cardinality, required, readonly, expr, tname := .target.name, cnames := (select .constraints.name), [is schema::Link].pointers: { name, required, tname := .target.name, cnames := (select .constraints.name) } }, constraints: { name, subjectexpr }, indexes: { expr }, access_policies: { name, action, access_kinds, expr }, triggers: { name, timing, scope, kinds } } filter not .builtin and not .internal and not .from_alias and not .compound_type\" &&     gel query -F json \"select count((select schema::ObjectType filter not .builtin and not .internal and not .from_alias and not .compound_type))\" | python3 -c \"import json,sys; data=json.load(sys.stdin); total=data[0] if isinstance(data, list) else data; print('audited object types:', total); sys.exit(0 if int(total) >= 10 else 1)\" &&     gel query -F json \"select count((select schema::ObjectType filter .from_alias))\" &&     python3 -c \"import gel; print('gel python client', gel.__name__)\" &&     /usr/local/bin/gel-stop.sh" did not complete successfully: exit code: 1
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py", line 351, in run
+    await self._prepare()
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py", line 385, in _prepare
+    await self._setup_agent_environment()
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py", line 1148, in _setup_agent_environment
+    await self._start_agent_environment()
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py", line 1154, in _start_agent_environment
+    await asyncio.wait_for(
+  File "/opt/miniconda3/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/environments/daytona/environment.py", line 1907, in start
+    return await self._strategy.start(force_build)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/environments/daytona/environment.py", line 327, in start
+    await env._create_sandbox(params=params, daytona=daytona)
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 193, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 112, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 157, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/_utils.py", line 111, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/__init__.py", line 393, in <lambda>
+    self._add_action_func(lambda rs: rs.outcome.result())
+                                     ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 116, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/environments/daytona/environment.py", line 1478, in _create_sandbox
+    raise SandboxBuildFailedError(
+harbor.environments.base.SandboxBuildFailedError: Sandbox build failed for environment 'gel_schema_introspection_audit_py': Failed to create sandbox: Failure during waiting for sandbox to start: Sandbox 232465fa-000a-4113-ae55-b867b909a7c6 entered error state: SandboxState.BUILD_FAILED, error reason: process "/bin/sh -c ( id -u gel >/dev/null 2>&1 || useradd --system --home-dir /var/lib/gel --shell /bin/bash gel ) &&     mkdir -p /var/lib/gel/data /var/lib/gel/run &&     chown -R gel /var/lib/gel &&     /usr/local/bin/gel-start.sh &&     cd /home/user/gel-audit &&     gel migration create --non-interactive --allow-unsafe --schema-dir /home/user/gel-audit/dbschema &&     gel migrate &&     ls /home/user/gel-audit/dbschema/migrations/*.edgeql &&     gel query -F json \"select sys::get_current_branch()\" &&     gel query -F json \"select sys::Branch { name, last_migration } filter .name = sys::get_current_branch()\" &&     gel query -F json \"select schema::Migration { name, parents: { name } }\" &&     gel query -F json \"select schema::Global { name, required, cardinality, expr, tname := .target.name } filter not .builtin and not .internal\" &&     gel query -F json \"select schema::Alias { name } filter not .builtin and not .internal\" &&     gel query -F json \"select schema::Function { name, volatility, rtname := .return_type.name, params: { name, idx := @index, tname := .type.name } } filter not .builtin and not .internal\" &&     gel query -F json \"select schema::ObjectType { name, abstract, bases: { name }, annotations: { name, @value }, pointers: { name, ptype := .__type__.name, cardinality, required, readonly, expr, tname := .target.name, cnames := (select .constraints.name), [is schema::Link].pointers: { name, required, tname := .target.name, cnames := (select .constraints.name) } }, constraints: { name, subjectexpr }, indexes: { expr }, access_policies: { name, action, access_kinds, expr }, triggers: { name, timing, scope, kinds } } filter not .builtin and not .internal and not .from_alias and not .compound_type\" &&     gel query -F json \"select count((select schema::ObjectType filter not .builtin and not .internal and not .from_alias and not .compound_type))\" | python3 -c \"import json,sys; data=json.load(sys.stdin); total=data[0] if isinstance(data, list) else data; print('audited object types:', total); sys.exit(0 if int(total) >= 10 else 1)\" &&     gel query -F json \"select count((select schema::ObjectType filter .from_alias))\" &&     python3 -c \"import gel; print('gel python client', gel.__name__)\" &&     /usr/local/bin/gel-stop.sh" did not complete successfully: exit code: 1

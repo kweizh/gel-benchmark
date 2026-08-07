@@ -1,0 +1,191 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 21 items
+
+../tests/test_final_state.py FF.......FFFF....F...                       [100%]
+
+=================================== FAILURES ===================================
+_____________________ test_migrations_applied_and_in_sync ______________________
+
+gel_server = True
+
+    def test_migrations_applied_and_in_sync(gel_server):
+        migrations = sorted(glob.glob(os.path.join(MIGRATIONS_DIR, "*.edgeql")))
+        assert len(migrations) >= 2, (
+            f"Expected at least two migration files in {MIGRATIONS_DIR} (the baked one plus the "
+            f"schema change), found: {migrations}"
+        )
+        proc = run_gel(["migration", "status"])
+        combined = (proc.stdout + proc.stderr).lower()
+>       assert proc.returncode == 0 and "up to date" in combined, (
+            f"`gel migration status` does not report the database up to date.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: `gel migration status` does not report the database up to date.
+E         stdout: 
+E         stderr: gel error: Database is at migration "m1a4elizxl6i6ntklzap46ddn4mz7dy6eqdilznltav56pgz432xpa" while sources contain 1 migrations ahead, starting from "m1taxmzm3tt3qd45sld2alyvxu74rjfeybcrcjmisuspkjcd6xytqa"(/home/user/catalog/dbschema/migrations/00003-m1taxmz.edgeql)
+E         
+E       assert (3 == 0)
+E        +  where 3 = CompletedProcess(args=['gel', 'migration', 'status'], returncode=3, stdout='', stderr='gel error: Database is at migra...1taxmzm3tt3qd45sld2alyvxu74rjfeybcrcjmisuspkjcd6xytqa"(/home/user/catalog/dbschema/migrations/00003-m1taxmz.edgeql)\n').returncode
+
+/tests/test_final_state.py:318: AssertionError
+________ test_depth_and_path_are_stored_properties_with_insert_rewrites ________
+
+gel_server = True
+
+    def test_depth_and_path_are_stored_properties_with_insert_rewrites(gel_server):
+        category = object_of("default::Category")
+        for name, scalar in (("depth", "std::int64"), ("path", "std::str")):
+            prop = pointer(category["prop_details"], name)
+            assert prop is not None, f"default::Category has no property {name!r}."
+            assert prop["target_name"] == scalar, (
+                f"Category.{name} must be {scalar}, found {prop['target_name']!r}."
+            )
+>           assert prop["required"] is True, f"Category.{name} must be declared required."
+E           AssertionError: Category.depth must be declared required.
+E           assert False is True
+
+/tests/test_final_state.py:335: AssertionError
+____________________________ test_query_files_exist ____________________________
+
+    def test_query_files_exist():
+        for relpath in (TREE_QUERY, ROLLUP_QUERY, ROOT_TOTALS_QUERY):
+            path = os.path.join(PROJECT_DIR, relpath)
+>           assert os.path.isfile(path), f"Missing required query file {path}."
+E           AssertionError: Missing required query file /home/user/catalog/queries/tree.edgeql.
+E           assert False
+E            +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/tree.edgeql')
+E            +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile
+E            +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:483: AssertionError
+___________________________ test_tree_query_contract ___________________________
+
+gel_server = True
+
+    def test_tree_query_contract(gel_server):
+>       check_tree_output()
+
+/tests/test_final_state.py:683: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:495: in check_tree_output
+    result = gel_query_file(TREE_QUERY)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+relpath = 'queries/tree.edgeql'
+
+    def gel_query_file(relpath):
+        path = os.path.join(PROJECT_DIR, relpath)
+>       assert os.path.isfile(path), f"Required query file {path} is missing."
+E       AssertionError: Required query file /home/user/catalog/queries/tree.edgeql is missing.
+E       assert False
+E        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/tree.edgeql')
+E        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:125: AssertionError
+______________________ test_subtree_rollup_query_contract ______________________
+
+gel_server = True
+
+    def test_subtree_rollup_query_contract(gel_server):
+>       check_rollup_output()
+
+/tests/test_final_state.py:687: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:549: in check_rollup_output
+    result = gel_query_file(ROLLUP_QUERY)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+relpath = 'queries/subtree_rollup.edgeql'
+
+    def gel_query_file(relpath):
+        path = os.path.join(PROJECT_DIR, relpath)
+>       assert os.path.isfile(path), f"Required query file {path} is missing."
+E       AssertionError: Required query file /home/user/catalog/queries/subtree_rollup.edgeql is missing.
+E       assert False
+E        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/subtree_rollup.edgeql')
+E        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:125: AssertionError
+_______________________ test_root_totals_query_contract ________________________
+
+gel_server = True
+
+    def test_root_totals_query_contract(gel_server):
+>       check_root_totals_output()
+
+/tests/test_final_state.py:691: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:637: in check_root_totals_output
+    result = gel_query_file(ROOT_TOTALS_QUERY)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+relpath = 'queries/root_totals.edgeql'
+
+    def gel_query_file(relpath):
+        path = os.path.join(PROJECT_DIR, relpath)
+>       assert os.path.isfile(path), f"Required query file {path} is missing."
+E       AssertionError: Required query file /home/user/catalog/queries/root_totals.edgeql is missing.
+E       assert False
+E        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/root_totals.edgeql')
+E        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:125: AssertionError
+______________________ test_reports_follow_the_relocation ______________________
+
+gel_server = True
+
+    def test_reports_follow_the_relocation(gel_server):
+>       check_tree_output()
+
+/tests/test_final_state.py:883: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:495: in check_tree_output
+    result = gel_query_file(TREE_QUERY)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+relpath = 'queries/tree.edgeql'
+
+    def gel_query_file(relpath):
+        path = os.path.join(PROJECT_DIR, relpath)
+>       assert os.path.isfile(path), f"Required query file {path} is missing."
+E       AssertionError: Required query file /home/user/catalog/queries/tree.edgeql is missing.
+E       assert False
+E        +  where False = <function isfile at 0x7279777dbba0>('/home/user/catalog/queries/tree.edgeql')
+E        +    where <function isfile at 0x7279777dbba0> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:125: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_children_and_ancestors_are_computed_multi_links
+PASSED ../tests/test_final_state.py::test_exclusive_path_constraint_declared
+PASSED ../tests/test_final_state.py::test_relocation_type_shape
+PASSED ../tests/test_final_state.py::test_relocation_triggers_declared
+PASSED ../tests/test_final_state.py::test_seeded_data_intact
+PASSED ../tests/test_final_state.py::test_stored_path_and_depth_match_the_tree
+PASSED ../tests/test_final_state.py::test_ancestors_and_children_links_match_the_tree
+PASSED ../tests/test_final_state.py::test_new_categories_get_ancestry_automatically
+PASSED ../tests/test_final_state.py::test_duplicate_sibling_slug_is_rejected
+PASSED ../tests/test_final_state.py::test_duplicate_root_slug_is_rejected
+PASSED ../tests/test_final_state.py::test_relocation_moves_the_whole_subtree
+PASSED ../tests/test_final_state.py::test_relocation_to_root_level
+PASSED ../tests/test_final_state.py::test_cycle_creating_relocations_are_rejected
+PASSED ../tests/test_final_state.py::test_destination_slug_collision_is_rejected
+FAILED ../tests/test_final_state.py::test_migrations_applied_and_in_sync - As...
+FAILED ../tests/test_final_state.py::test_depth_and_path_are_stored_properties_with_insert_rewrites
+FAILED ../tests/test_final_state.py::test_query_files_exist - AssertionError:...
+FAILED ../tests/test_final_state.py::test_tree_query_contract - AssertionErro...
+FAILED ../tests/test_final_state.py::test_subtree_rollup_query_contract - Ass...
+FAILED ../tests/test_final_state.py::test_root_totals_query_contract - Assert...
+FAILED ../tests/test_final_state.py::test_reports_follow_the_relocation - Ass...
+========================= 7 failed, 14 passed in 5.24s =========================

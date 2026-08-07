@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 13 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_exists_with_product_type PASSED
+../bootstrap/test_initial_state.py::test_initial_schema_has_no_audit_subsystem PASSED
+../bootstrap/test_initial_state.py::test_scripts_directory_exists_and_is_empty_of_task_scripts PASSED
+../bootstrap/test_initial_state.py::test_exactly_one_initial_migration_matching_reference PASSED
+../bootstrap/test_initial_state.py::test_migration_status_is_up_to_date PASSED
+../bootstrap/test_initial_state.py::test_product_type_exists_in_database PASSED
+../bootstrap/test_initial_state.py::test_eight_seeded_products_exist PASSED
+../bootstrap/test_initial_state.py::test_audit_types_do_not_exist_yet PASSED
+../bootstrap/test_initial_state.py::test_no_triggers_or_rewrites_exist_yet PASSED
+
+============================= 13 passed in 47.07s ==============================

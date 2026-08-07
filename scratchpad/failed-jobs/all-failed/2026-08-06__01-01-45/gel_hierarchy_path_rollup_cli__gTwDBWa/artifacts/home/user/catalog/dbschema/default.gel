@@ -1,0 +1,83 @@
+module default {
+  type Category {
+    required slug: str;
+    required name: str;
+    parent: Category;
+
+    required depth: int64 {
+      rewrite insert using (
+        (.parent.depth + 1) ?? 0
+      );
+    }
+    required path: str {
+      rewrite insert using (
+        (.parent.path ++ '/' ++ .slug) ?? ('/' ++ .slug)
+      );
+      constraint exclusive;
+    }
+
+    multi link children := .<parent[is Category];
+
+    multi link ancestors := (
+      distinct (
+        .parent union
+        .parent.parent union
+        .parent.parent.parent union
+        .parent.parent.parent.parent union
+        .parent.parent.parent.parent.parent union
+        .parent.parent.parent.parent.parent.parent union
+        .parent.parent.parent.parent.parent.parent.parent union
+        .parent.parent.parent.parent.parent.parent.parent.parent union
+        .parent.parent.parent.parent.parent.parent.parent.parent.parent union
+        .parent.parent.parent.parent.parent.parent.parent.parent.parent.parent
+      )
+    );
+  }
+
+  type Product {
+    required sku: str {
+      constraint exclusive;
+    }
+    required name: str;
+    required price: decimal;
+    required stock: int64;
+    required category: Category;
+  }
+
+  type Relocation {
+    required category: Category;
+    new_parent: Category;
+    required from_path: str {
+      rewrite insert using (
+        .category.path
+      );
+    }
+    required to_path: str {
+      rewrite insert using (
+        (.new_parent.path ++ '/' ++ .category.slug) ?? ('/' ++ .category.slug)
+      );
+    }
+
+    trigger reject_cycles after insert for each do (
+      select assert(
+        not (
+          exists __new__.new_parent and (
+            (select __new__.new_parent.path limit 1) = __new__.from_path or
+            (select __new__.new_parent.path limit 1) like (__new__.from_path ++ '/%')
+          )
+        ),
+        message := "CATEGORY_CYCLE"
+      )
+    );
+
+    trigger apply_relocation after insert for each do (
+      update Category
+      filter .id = __new__.category.id or .path like (__new__.from_path ++ '/%')
+      set {
+        parent := __new__.new_parent if .id = __new__.category.id else .parent,
+        path := __new__.to_path if .id = __new__.category.id else (__new__.to_path ++ .path[len(__new__.from_path):]),
+        depth := len(str_split(__new__.to_path if .id = __new__.category.id else (__new__.to_path ++ .path[len(__new__.from_path):]), '/')) - 2
+      }
+    );
+  }
+}

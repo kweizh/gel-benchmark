@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 13 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../bootstrap/test_initial_state.py::test_connection_environment_configured PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_module_file_exists_and_is_empty PASSED
+../bootstrap/test_initial_state.py::test_no_migrations_applied_yet PASSED
+../bootstrap/test_initial_state.py::test_scripts_directory_exists_and_is_empty PASSED
+../bootstrap/test_initial_state.py::test_corpus_file_is_valid PASSED
+../bootstrap/test_initial_state.py::test_corpus_checksum_fixture_recorded PASSED
+../bootstrap/test_initial_state.py::test_gel_client_library_not_installed PASSED
+../bootstrap/test_initial_state.py::test_database_has_no_article_type PASSED
+../bootstrap/test_initial_state.py::test_database_has_no_migration_history PASSED
+
+============================= 13 passed in 13.84s ==============================

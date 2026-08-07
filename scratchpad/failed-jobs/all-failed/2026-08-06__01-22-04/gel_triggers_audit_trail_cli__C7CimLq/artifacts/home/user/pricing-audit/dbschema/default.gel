@@ -1,0 +1,14 @@
+module default {
+  type Product {
+    required sku: str {
+      constraint exclusive;
+    }
+    required name: str;
+    required price_cents: int64 {
+      constraint min_value(1);
+    }
+    required stock: int64 {
+      default := 0;
+    }
+  }
+}

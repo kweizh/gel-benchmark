@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 18 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_server_binary_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_script_is_executable PASSED
+../bootstrap/test_initial_state.py::test_node_and_npm_available PASSED
+../bootstrap/test_initial_state.py::test_node_major_version_is_pinned PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_dbschema_default_gel_exists PASSED
+../bootstrap/test_initial_state.py::test_package_json_pins_gel_client PASSED
+../bootstrap/test_initial_state.py::test_node_modules_preinstalled_offline PASSED
+../bootstrap/test_initial_state.py::test_tsconfig_exists PASSED
+../bootstrap/test_initial_state.py::test_example_batch_file_exists PASSED
+../bootstrap/test_initial_state.py::test_catalog_schema_not_yet_declared PASSED
+../bootstrap/test_initial_state.py::test_no_migrations_applied_yet PASSED
+../bootstrap/test_initial_state.py::test_sync_cli_not_implemented_yet PASSED
+../bootstrap/test_initial_state.py::test_instance_starts_and_answers_queries PASSED
+../bootstrap/test_initial_state.py::test_project_is_linked_to_local_instance PASSED
+../bootstrap/test_initial_state.py::test_database_has_no_catalog_types_yet PASSED
+
+============================= 18 passed in 36.52s ==============================

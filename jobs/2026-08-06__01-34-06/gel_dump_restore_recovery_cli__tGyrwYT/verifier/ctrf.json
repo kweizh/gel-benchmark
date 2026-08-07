@@ -1,0 +1,311 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T18:08:10.816568+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 26,
+            "passed": 10,
+            "failed": 16,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785952746223,
+            "stop": 1785953290816
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_recovered_branch_exists",
+                "status": "passed",
+                "duration": 5013,
+                "start": 1785952746267,
+                "stop": 1785952751280,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_row_counts",
+                "status": "passed",
+                "duration": 1700,
+                "start": 1785952751281,
+                "stop": 1785952752981,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_warehouses",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 34655,
+                "start": 1785952752981,
+                "stop": 1785952787636,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_recovered_warehouses(gel_server):\n>       rows = query_json(\"select Warehouse { code, name } order by .code\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:183: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Warehouse { code, name } order by .code', branch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select Warehouse { code, name } order by .code' on branch 'recovered' failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Warehouse { code, name } order b...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_surviving_seqs",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 32863,
+                "start": 1785952787637,
+                "stop": 1785952820500,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_recovered_surviving_seqs(gel_server):\n>       seqs = sorted(row[\"seq\"] for row in shipments())\n                                            ^^^^^^^^^^^\n\n/tests/test_final_state.py:191: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:134: in shipments\n    return query_json(SHIPMENT_SHAPE, branch=branch)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'\nbranch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_rows_are_normalized",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 30628,
+                "start": 1785952820501,
+                "stop": 1785952851129,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_recovered_rows_are_normalized(gel_server):\n>       rows = {row[\"seq\"]: row for row in shipments()}\n                                           ^^^^^^^^^^^\n\n/tests/test_final_state.py:204: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:134: in shipments\n    return query_json(SHIPMENT_SHAPE, branch=branch)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'\nbranch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_recovered_aggregates",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 30576,
+                "start": 1785952851130,
+                "stop": 1785952881706,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_recovered_aggregates(gel_server):\n>       rows = shipments()\n               ^^^^^^^^^^^\n\n/tests/test_final_state.py:231: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:134: in shipments\n    return query_json(SHIPMENT_SHAPE, branch=branch)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'\nbranch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 33547,
+                "start": 1785952881706,
+                "stop": 1785952915253,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 31843,
+                "start": 1785952915253,
+                "stop": 1785952947096,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 31807,
+                "start": 1785952947096,
+                "stop": 1785952978903,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 30672,
+                "start": 1785952978904,
+                "stop": 1785953009576,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 32450,
+                "start": 1785953009577,
+                "stop": 1785953042027,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 30394,
+                "start": 1785953042027,
+                "stop": 1785953072421,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_rejects_invalid_objects",
+                "status": "passed",
+                "duration": 30918,
+                "start": 1785953072421,
+                "stop": 1785953103339,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_hardened_schema_accepts_valid_objects",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 63115,
+                "start": 1785953103339,
+                "stop": 1785953166454,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_hardened_schema_accepts_valid_objects(gel_server):\n        insert = (\n            \"insert Shipment { seq := 999, tracking := 'ZZ-99999', weight_kg := 1.5, \"\n            \"status := 'pending', origin_code := 'WH-ALPHA', origin := assert_single(\"\n            \"(select Warehouse filter .code = 'WH-ALPHA')) }\"\n        )\n        try:\n            proc = run([\"gel\", \"query\", \"--branch\", TARGET_BRANCH, insert])\n>           assert proc.returncode == 0, (\n                \"A fully valid shipment must still be insertable on \"\n                f\"{TARGET_BRANCH!r}.\\nstdout={proc.stdout}\\nstderr={proc.stderr}\"\n            )\nE           AssertionError: A fully valid shipment must still be insertable on 'recovered'.\nE             stdout=\nE             stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE             gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE             \nE           assert 1 == 0\nE            +  where 1 = CompletedProcess(args=['gel', 'query', '--branch', 'recovered', \"insert Shipment { seq := 999, tracking := 'ZZ-99999',...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:339: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migration_history_extended",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 31347,
+                "start": 1785953166455,
+                "stop": 1785953197802,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migration_history_extended(gel_server):\n>       count = query_json(\"select count(schema::Migration)\")[0]\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:366: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select count(schema::Migration)', branch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select count(schema::Migration)' on branch 'recovered' failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select count(schema::Migration)'], retu...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 31452,
+                "start": 1785953197803,
+                "stop": 1785953229255,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migration_status_in_sync(gel_server):\n        proc = run([\"gel\", \"migration\", \"status\", \"--branch\", TARGET_BRANCH])\n>       assert proc.returncode == 0, (\n            f\"`gel migration status --branch {TARGET_BRANCH}` failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: `gel migration status --branch recovered` failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'migration', 'status', '--branch', 'recovered'], returncode=1, stdout='', stderr=\"Connec...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:386: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_added",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785953229256,
+                "stop": 1785953229257,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_main_branch_untouched",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 30137,
+                "start": 1785953229257,
+                "stop": 1785953259394,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_main_branch_untouched(gel_server):\n>       warehouses = query_json(\"select count(Warehouse)\", branch=\"main\")[0]\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:407: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select count(Warehouse)', branch = 'main'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select count(Warehouse)' on branch 'main' failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'main', 'select count(Warehouse)'], returncode=1, std...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_fresh_dump_file_present",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 12,
+                "start": 1785953259395,
+                "stop": 1785953259407,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_fresh_dump_file_present(gel_server):\n>       assert os.path.isfile(FRESH_DUMP), f\"The fresh backup {FRESH_DUMP} does not exist.\"\nE       AssertionError: The fresh backup /home/user/recovery/backups/recovered.dump does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x76f4a9958220>('/home/user/recovery/backups/recovered.dump')\nE        +    where <function isfile at 0x76f4a9958220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:423: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_fresh_dump_restores_into_scratch_branch",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 31292,
+                "start": 1785953259407,
+                "stop": 1785953290699,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_fresh_dump_restores_into_scratch_branch(gel_server):\n>       expected = {row[\"seq\"]: row[\"tracking\"] for row in shipments()}\n                                                           ^^^^^^^^^^^\n\n/tests/test_final_state.py:431: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:134: in shipments\n    return query_json(SHIPMENT_SHAPE, branch=branch)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq'\nbranch = 'recovered'\n\n    def query_json(query, branch=TARGET_BRANCH):\n        proc = run([\"gel\", \"query\", \"-F\", \"json\", \"--branch\", branch, query])\n>       assert proc.returncode == 0, (\n            f\"Query {query!r} on branch {branch!r} failed:\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Query 'select Shipment { seq, tracking, weight_kg, status, origin_code, origin: { code } } order by .seq' on branch 'recovered' failed:\nE         stdout=\nE         stderr=Connecting to Gel instance 'recovery' at 127.0.0.1:5656...\nE         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', '--branch', 'recovered', 'select Shipment { seq, tracking, weight...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\\n\").returncode\n\n/tests/test_final_state.py:117: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_script_exists",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 17,
+                "start": 1785953290699,
+                "stop": 1785953290716,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_script_exists(gel_server):\n>       assert os.path.isfile(REPORT_SCRIPT), (\n            f\"The verification command {REPORT_SCRIPT} does not exist.\"\n        )\nE       AssertionError: The verification command /home/user/recovery/scripts/verify_recovery.sh does not exist.\nE       assert False\nE        +  where False = <function isfile at 0x76f4a9958220>('/home/user/recovery/scripts/verify_recovery.sh')\nE        +    where <function isfile at 0x76f4a9958220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:464: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_happy_path",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 19,
+                "start": 1785953290716,
+                "stop": 1785953290735,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_happy_path(gel_server):\n        proc = run_report()\n>       assert proc.returncode == 0, (\n            f\"`bash {REPORT_SCRIPT}` should exit 0, got {proc.returncode}.\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: `bash /home/user/recovery/scripts/verify_recovery.sh` should exit 0, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:471: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_leaves_no_scratch_branch_and_is_idempotent",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 11,
+                "start": 1785953290735,
+                "stop": 1785953290746,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_leaves_no_scratch_branch_and_is_idempotent(gel_server):\n        first = run_report()\n>       assert first.returncode == 0, (\n            f\"The first run of {REPORT_SCRIPT} should exit 0, got {first.returncode}.\\n\"\n            f\"stdout={first.stdout}\\nstderr={first.stderr}\"\n        )\nE       AssertionError: The first run of /home/user/recovery/scripts/verify_recovery.sh should exit 0, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 0\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:550: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_unknown_branch",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 14,
+                "start": 1785953290746,
+                "stop": 1785953290760,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_unknown_branch(gel_server):\n        proc = run_report([\"--branch\", \"no_such_branch_zz\"])\n>       assert proc.returncode == 3, (\n            f\"An unknown target branch must exit 3, got {proc.returncode}.\\n\"\n            f\"stdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: An unknown target branch must exit 3, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 3\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh', '--branch', 'no_such_branch_zz'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:577: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_missing_dump",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 45,
+                "start": 1785953290761,
+                "stop": 1785953290806,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "src = '/home/user/recovery/backups/recovered.dump'\ndst = '/home/user/recovery/backups/recovered.dump.stash'\ncopy_function = <function copy2 at 0x76f4a961be20>\n\n    def move(src, dst, copy_function=copy2):\n        \"\"\"Recursively move a file or directory to another location. This is\n        similar to the Unix \"mv\" command. Return the file or directory's\n        destination.\n    \n        If dst is an existing directory or a symlink to a directory, then src is\n        moved inside that directory. The destination path in that directory must\n        not already exist.\n    \n        If dst already exists but is not a directory, it may be overwritten\n        depending on os.rename() semantics.\n    \n        If the destination is on our current filesystem, then rename() is used.\n        Otherwise, src is copied to the destination and then removed. Symlinks are\n        recreated under the new name if os.rename() fails because of cross\n        filesystem renames.\n    \n        The optional `copy_function` argument is a callable that will be used\n        to copy the source or it will be delegated to `copytree`.\n        By default, copy2() is used, but any function that supports the same\n        signature (like copy()) can be used.\n    \n        A lot more could be done here...  A look at a mv.c shows a lot of\n        the issues this implementation glosses over.\n    \n        \"\"\"\n        sys.audit(\"shutil.move\", src, dst)\n        real_dst = dst\n        if os.path.isdir(dst):\n            if _samefile(src, dst) and not os.path.islink(src):\n                # We might be on a case insensitive filesystem,\n                # perform the rename anyway.\n                os.rename(src, dst)\n                return\n    \n            # Using _basename instead of os.path.basename is important, as we must\n            # ignore any trailing slash to avoid the basename returning ''\n            real_dst = os.path.join(dst, _basename(src))\n    \n            if os.path.exists(real_dst):\n                raise Error(\"Destination path '%s' already exists\" % real_dst)\n        try:\n>           os.rename(src, real_dst)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/home/user/recovery/backups/recovered.dump' -> '/home/user/recovery/backups/recovered.dump.stash'\n\n/usr/lib/python3.12/shutil.py:886: FileNotFoundError\n\nDuring handling of the above exception, another exception occurred:\n\ngel_server = True\n\n    def test_report_missing_dump(gel_server):\n        stash = FRESH_DUMP + \".stash\"\n>       shutil.move(FRESH_DUMP, stash)\n\n/tests/test_final_state.py:595: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/lib/python3.12/shutil.py:906: in move\n    copy_function(src, real_dst)\n/usr/lib/python3.12/shutil.py:475: in copy2\n    copyfile(src, dst, follow_symlinks=follow_symlinks)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nsrc = '/home/user/recovery/backups/recovered.dump'\ndst = '/home/user/recovery/backups/recovered.dump.stash', follow_symlinks = True\n\n    def copyfile(src, dst, *, follow_symlinks=True):\n        \"\"\"Copy data from src to dst in the most efficient way possible.\n    \n        If follow_symlinks is not set and src is a symbolic link, a new\n        symlink will be created instead of copying the file it points to.\n    \n        \"\"\"\n        sys.audit(\"shutil.copyfile\", src, dst)\n    \n        if _samefile(src, dst):\n            raise SameFileError(\"{!r} and {!r} are the same file\".format(src, dst))\n    \n        file_size = 0\n        for i, fn in enumerate([src, dst]):\n            try:\n                st = _stat(fn)\n            except OSError:\n                # File most likely does not exist\n                pass\n            else:\n                # XXX What about other special files? (sockets, devices...)\n                if stat.S_ISFIFO(st.st_mode):\n                    fn = fn.path if isinstance(fn, os.DirEntry) else fn\n                    raise SpecialFileError(\"`%s` is a named pipe\" % fn)\n                if _WINDOWS and i == 0:\n                    file_size = st.st_size\n    \n        if not follow_symlinks and _islink(src):\n            os.symlink(os.readlink(src), dst)\n        else:\n>           with open(src, 'rb') as fsrc:\n                 ^^^^^^^^^^^^^^^\nE           FileNotFoundError: [Errno 2] No such file or directory: '/home/user/recovery/backups/recovered.dump'\n\n/usr/lib/python3.12/shutil.py:260: FileNotFoundError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_report_roundtrip_mismatch_against_main",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 10,
+                "start": 1785953290806,
+                "stop": 1785953290816,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_report_roundtrip_mismatch_against_main(gel_server):\n        proc = run_report([\"--branch\", \"main\"])\n>       assert proc.returncode == 4, (\n            \"Comparing the recovered dump against branch main must report a mismatch and \"\n            f\"exit 4, got {proc.returncode}.\\nstdout={proc.stdout}\\nstderr={proc.stderr}\"\n        )\nE       AssertionError: Comparing the recovered dump against branch main must report a mismatch and exit 4, got 127.\nE         stdout=\nE         stderr=bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\nE         \nE       assert 127 == 4\nE        +  where 127 = CompletedProcess(args=['bash', '/home/user/recovery/scripts/verify_recovery.sh', '--branch', 'main'], returncode=127, stdout='', stderr='bash: /home/user/recovery/scripts/verify_recovery.sh: No such file or directory\\n').returncode\n\n/tests/test_final_state.py:621: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

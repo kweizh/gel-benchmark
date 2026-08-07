@@ -1,0 +1,443 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 18 items
+
+../tests/test_final_state.py .FFFFFFFFFFF.FFFFF                          [100%]
+
+=================================== FAILURES ===================================
+______________________ test_new_migration_files_recorded _______________________
+
+    def test_new_migration_files_recorded():
+        migrations = sorted(glob.glob(os.path.join(MIGRATIONS_DIR, "*.edgeql")))
+>       assert len(migrations) >= 2, (
+            f"Expected at least two migration files in {MIGRATIONS_DIR}, found {migrations}."
+        )
+E       AssertionError: Expected at least two migration files in /home/user/functions-lab/dbschema/migrations, found ['/home/user/functions-lab/dbschema/migrations/00001-m1yokts.edgeql'].
+E       assert 1 >= 2
+E        +  where 1 = len(['/home/user/functions-lab/dbschema/migrations/00001-m1yokts.edgeql'])
+
+/tests/test_final_state.py:322: AssertionError
+________________ test_function_catalog_overloads_and_volatility ________________
+
+client = True
+
+    def test_function_catalog_overloads_and_volatility(client):
+        rows = _gel_json(
+            "select schema::Function { name, volatility, params: { name } } "
+            "filter .name like 'logistics::%'"
+        )
+        by_key = {(r["name"], len(r["params"])): r for r in rows}
+        billable = [r for r in rows if r["name"] == "logistics::billable_grams"]
+>       assert len(billable) == 2, (
+            f"Expected exactly two functions named logistics::billable_grams, found {billable}."
+        )
+E       AssertionError: Expected exactly two functions named logistics::billable_grams, found [].
+E       assert 0 == 2
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:334: AssertionError
+__________________ test_parameter_catalog_kinds_and_typemods ___________________
+
+client = True
+
+    def test_parameter_catalog_kinds_and_typemods(client):
+        rows = _gel_json(
+            "select schema::Function { name, return_typemod, params: { name, kind, num, "
+            "typemod, default, type: { name } } } filter .name like 'logistics::%'"
+        )
+        by_key = {(r["name"], len(r["params"])): r for r in rows}
+    
+        quote = by_key.get(("logistics::quote_cents", 3))
+>       assert quote is not None, "logistics::quote_cents with three parameters is missing."
+E       AssertionError: logistics::quote_cents with three parameters is missing.
+E       assert None is not None
+
+/tests/test_final_state.py:369: AssertionError
+________________________ test_billable_grams_behaviour _________________________
+
+client = True
+
+    def test_billable_grams_behaviour(client):
+        cases = [
+            ("select logistics::billable_grams(1200, logistics::shipping_tier.Express)", 1500),
+            ("select logistics::billable_grams(2000, logistics::shipping_tier.Overnight)", 3000),
+            ("select logistics::billable_grams(400, logistics::shipping_tier.Ground)", 500),
+            ("select logistics::billable_grams(120)", 500),
+            ("select logistics::billable_grams(900)", 900),
+        ]
+        for query, expected in cases:
+>           result = _gel_json(query)
+                     ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:423: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select logistics::billable_grams(1200, logistics::shipping_tier.Express)'
+
+    def _gel_json(query):
+        proc = _gel(query)
+>       assert proc.returncode == 0, (
+            f"'gel query' failed for {query!r}:\nstdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'gel query' failed for 'select logistics::billable_grams(1200, logistics::shipping_tier.Express)':
+E         stdout=
+E         stderr=error: InvalidReferenceError: function 'logistics::billable_grams' does not exist
+E           ┌─ <query>:1:8
+E           │
+E         1 │ select logistics::billable_grams(1200, logistics::shipping_tier.Express)
+E           │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select logistics::billable_grams(1200, logistics::shipping_tier....stics::shipping_tier.Express)\n  │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:221: AssertionError
+__________________________ test_quote_cents_behaviour __________________________
+
+client = True
+
+    def test_quote_cents_behaviour(client):
+        cases = [
+            ("select logistics::quote_cents(1200, logistics::shipping_tier.Express)", 135),
+            (
+                "select logistics::quote_cents(400, logistics::shipping_tier.Ground, insured := true)",
+                270,
+            ),
+            ("select logistics::quote_cents(2000, logistics::shipping_tier.Overnight)", 450),
+            ("select logistics::quote_cents(50, logistics::shipping_tier.Ground)", 20),
+        ]
+        for query, expected in cases:
+>           result = _gel_json(query)
+                     ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:438: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select logistics::quote_cents(1200, logistics::shipping_tier.Express)'
+
+    def _gel_json(query):
+        proc = _gel(query)
+>       assert proc.returncode == 0, (
+            f"'gel query' failed for {query!r}:\nstdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'gel query' failed for 'select logistics::quote_cents(1200, logistics::shipping_tier.Express)':
+E         stdout=
+E         stderr=error: InvalidReferenceError: function 'logistics::quote_cents' does not exist
+E           ┌─ <query>:1:8
+E           │
+E         1 │ select logistics::quote_cents(1200, logistics::shipping_tier.Express)
+E           │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select logistics::quote_cents(1200, logistics::shipping_tier.Exp...ogistics::shipping_tier.Express)\n  │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:221: AssertionError
+_________________ test_variadic_and_array_aggregate_boundaries _________________
+
+client = True
+
+    def test_variadic_and_array_aggregate_boundaries(client):
+>       assert _gel_json("select logistics::batch_total_cents(135, 270, 450)") == [855], (
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "logistics::batch_total_cents(135, 270, 450) must return 855."
+        )
+
+/tests/test_final_state.py:443: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select logistics::batch_total_cents(135, 270, 450)'
+
+    def _gel_json(query):
+        proc = _gel(query)
+>       assert proc.returncode == 0, (
+            f"'gel query' failed for {query!r}:\nstdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'gel query' failed for 'select logistics::batch_total_cents(135, 270, 450)':
+E         stdout=
+E         stderr=error: InvalidReferenceError: function 'logistics::batch_total_cents' does not exist
+E           ┌─ <query>:1:8
+E           │
+E         1 │ select logistics::batch_total_cents(135, 270, 450)
+E           │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select logistics::batch_total_cents(135, 270, 450)'], returncode... select logistics::batch_total_cents(135, 270, 450)\n  │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:221: AssertionError
+__________________ test_optional_parameter_and_tariff_version __________________
+
+client = True
+
+    def test_optional_parameter_and_tariff_version(client):
+>       assert _gel_json(
+            "select logistics::delivery_note(logistics::shipping_tier.Express, <str>{})"
+        ) == ["express/default"], (
+            "logistics::delivery_note with an empty hint must return 'express/default'."
+        )
+
+/tests/test_final_state.py:458: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select logistics::delivery_note(logistics::shipping_tier.Express, <str>{})'
+
+    def _gel_json(query):
+        proc = _gel(query)
+>       assert proc.returncode == 0, (
+            f"'gel query' failed for {query!r}:\nstdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'gel query' failed for 'select logistics::delivery_note(logistics::shipping_tier.Express, <str>{})':
+E         stdout=
+E         stderr=error: InvalidReferenceError: function 'logistics::delivery_note' does not exist
+E           ┌─ <query>:1:8
+E           │
+E         1 │ select logistics::delivery_note(logistics::shipping_tier.Express, <str>{})
+E           │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select logistics::delivery_note(logistics::shipping_tier.Express...ping_tier.Express, <str>{})\n  │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:221: AssertionError
+__________________ test_scalar_types_and_abstract_constraint ___________________
+
+client = True
+
+    def test_scalar_types_and_abstract_constraint(client):
+        scalars = {row["name"]: row for row in _live_scalars()}
+        for expected in EXPECTED_SCALARS:
+            actual = scalars.get(expected["name"])
+>           assert actual is not None, (
+                f"Scalar type {expected['name']} was not found; available: {sorted(scalars)}."
+            )
+E           AssertionError: Scalar type logistics::packable_grams was not found; available: [].
+E           assert None is not None
+
+/tests/test_final_state.py:477: AssertionError
+_______________ test_constraint_violations_report_exact_messages _______________
+
+client = True
+
+    def test_constraint_violations_report_exact_messages(client):
+        cases = [
+            (
+                f"insert Parcel {{ sku := <logistics::sku_code>'SKU-8001', "
+                f"weight_grams := <logistics::packable_grams>1230, "
+                f"tier := logistics::shipping_tier.Ground, carrier := {CARRIER_SUBQUERY} }}",
+                "weight must be a multiple of 50 grams",
+            ),
+            (
+                f"insert Parcel {{ sku := <logistics::sku_code>'SKU-8002', "
+                f"weight_grams := <logistics::packable_grams>0, "
+                f"tier := logistics::shipping_tier.Ground, carrier := {CARRIER_SUBQUERY} }}",
+                "weight must be at least 50 grams",
+            ),
+            (
+                f"insert Parcel {{ sku := <logistics::sku_code>'BAD-1', "
+                f"weight_grams := <logistics::packable_grams>500, "
+                f"tier := logistics::shipping_tier.Ground, carrier := {CARRIER_SUBQUERY} }}",
+                "sku must match SKU-0000",
+            ),
+        ]
+        for query, message in cases:
+            proc = _gel(query)
+            assert proc.returncode != 0, (
+                f"Expected the insert to be rejected, but it succeeded:\n{query}\n{proc.stdout}"
+            )
+            combined = proc.stdout + proc.stderr
+>           assert message in combined, (
+                f"Expected the rejection message {message!r} for:\n{query}\ngot:\n{combined}"
+            )
+E           AssertionError: Expected the rejection message 'weight must be a multiple of 50 grams' for:
+E             insert Parcel { sku := <logistics::sku_code>'SKU-8001', weight_grams := <logistics::packable_grams>1230, tier := logistics::shipping_tier.Ground, carrier := assert_single((select Carrier filter .name = 'Northwind')) }
+E             got:
+E             error: InvalidReferenceError: object type or alias 'default::Parcel' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ insert Parcel { sku := <logistics::sku_code>'SKU-8001', weight_grams := <logistics::packable_grams>1230, tier := logistics::shipping_tier.Ground, carrier := assert_single((select Carrier filter .name = 'Northwind')) }
+E               │        ^^^^^^ error
+E             
+E             
+E           assert 'weight must be a multiple of 50 grams' in "error: InvalidReferenceError: object type or alias 'default::Parcel' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ inser...ping_tier.Ground, carrier := assert_single((select Carrier filter .name = 'Northwind')) }\n  │        ^^^^^^ error\n\n"
+
+/tests/test_final_state.py:551: AssertionError
+_______________ test_seed_parcels_have_expected_computed_values ________________
+
+client = True
+
+    def test_seed_parcels_have_expected_computed_values(client):
+>       rows = _gel_json(
+            "select Parcel { sku, weight_grams, chargeable_grams, price_cents, note, "
+            "carrier: { name } } order by .sku"
+        )
+
+/tests/test_final_state.py:562: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Parcel { sku, weight_grams, chargeable_grams, price_cents, note, carrier: { name } } order by .sku'
+
+    def _gel_json(query):
+        proc = _gel(query)
+>       assert proc.returncode == 0, (
+            f"'gel query' failed for {query!r}:\nstdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'gel query' failed for 'select Parcel { sku, weight_grams, chargeable_grams, price_cents, note, carrier: { name } } order by .sku':
+E         stdout=
+E         stderr=error: InvalidReferenceError: object type or alias 'default::Parcel' does not exist
+E           ┌─ <query>:1:8
+E           │
+E         1 │ select Parcel { sku, weight_grams, chargeable_grams, price_cents, note, carrier: { name } } order by .sku
+E           │        ^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Parcel { sku, weight_grams, chargeable_grams, price_cents...ku, weight_grams, chargeable_grams, price_cents, note, carrier: { name } } order by .sku\n  │        ^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:221: AssertionError
+______________________ test_shipment_computed_aggregates _______________________
+
+client = True
+
+    def test_shipment_computed_aggregates(client):
+>       rows = _gel_json(
+            "select Shipment { code, total_quote_cents, heaviest_parcel_grams, "
+            "parcel_count := count(.parcels) } order by .code"
+        )
+
+/tests/test_final_state.py:589: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select Shipment { code, total_quote_cents, heaviest_parcel_grams, parcel_count := count(.parcels) } order by .code'
+
+    def _gel_json(query):
+        proc = _gel(query)
+>       assert proc.returncode == 0, (
+            f"'gel query' failed for {query!r}:\nstdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'gel query' failed for 'select Shipment { code, total_quote_cents, heaviest_parcel_grams, parcel_count := count(.parcels) } order by .code':
+E         stdout=
+E         stderr=error: InvalidReferenceError: object type or alias 'default::Shipment' does not exist
+E           ┌─ <query>:1:8
+E           │
+E         1 │ select Shipment { code, total_quote_cents, heaviest_parcel_grams, parcel_count := count(.parcels) } order by .code
+E           │        ^^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Shipment { code, total_quote_cents, heaviest_parcel_grams...l_quote_cents, heaviest_parcel_grams, parcel_count := count(.parcels) } order by .code\n  │        ^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:221: AssertionError
+______________________ test_report_command_shipment_mode _______________________
+
+client = True
+
+    def test_report_command_shipment_mode(client):
+        proc = _quote("--shipment", "SHP-9001")
+>       assert proc.returncode == 0, (
+            f"'quote.sh --shipment SHP-9001' must exit 0, got {proc.returncode}:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'quote.sh --shipment SHP-9001' must exit 0, got 127:
+E         stdout=
+E         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory
+E         
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--shipment', 'SHP-9001'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:619: AssertionError
+______________________ test_report_command_empty_shipment ______________________
+
+client = True
+
+    def test_report_command_empty_shipment(client):
+        proc = _quote("--shipment", "SHP-9002")
+>       assert proc.returncode == 0, (
+            f"'quote.sh --shipment SHP-9002' must exit 0, got {proc.returncode}:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'quote.sh --shipment SHP-9002' must exit 0, got 127:
+E         stdout=
+E         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory
+E         
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--shipment', 'SHP-9002'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:652: AssertionError
+______________ test_report_command_unknown_shipment_and_bad_usage ______________
+
+client = True
+
+    def test_report_command_unknown_shipment_and_bad_usage(client):
+        proc = _quote("--shipment", "SHP-0000")
+>       assert proc.returncode == 3, (
+            f"An unknown shipment must exit 3, got {proc.returncode}:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: An unknown shipment must exit 3, got 127:
+E         stdout=
+E         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory
+E         
+E       assert 127 == 3
+E        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--shipment', 'SHP-0000'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:665: AssertionError
+_____________________ test_report_command_introspect_mode ______________________
+
+client = True
+
+    def test_report_command_introspect_mode(client):
+        proc = _quote("--introspect")
+>       assert proc.returncode == 0, (
+            f"'quote.sh --introspect' must exit 0, got {proc.returncode}:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'quote.sh --introspect' must exit 0, got 127:
+E         stdout=
+E         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory
+E         
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--introspect'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:686: AssertionError
+_________________ test_introspect_output_matches_live_catalog __________________
+
+client = True
+
+    def test_introspect_output_matches_live_catalog(client):
+        proc = _quote("--introspect")
+>       assert proc.returncode == 0, (
+            f"'quote.sh --introspect' must exit 0, got {proc.returncode}:\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+E       AssertionError: 'quote.sh --introspect' must exit 0, got 127:
+E         stdout=
+E         stderr=bash: /home/user/functions-lab/quote.sh: No such file or directory
+E         
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', '/home/user/functions-lab/quote.sh', '--introspect'], returncode=127, stdout='', stderr='bash: /home/user/functions-lab/quote.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:759: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_history_in_sync
+PASSED ../tests/test_final_state.py::test_existing_carrier_data_untouched
+FAILED ../tests/test_final_state.py::test_new_migration_files_recorded - Asse...
+FAILED ../tests/test_final_state.py::test_function_catalog_overloads_and_volatility
+FAILED ../tests/test_final_state.py::test_parameter_catalog_kinds_and_typemods
+FAILED ../tests/test_final_state.py::test_billable_grams_behaviour - Assertio...
+FAILED ../tests/test_final_state.py::test_quote_cents_behaviour - AssertionEr...
+FAILED ../tests/test_final_state.py::test_variadic_and_array_aggregate_boundaries
+FAILED ../tests/test_final_state.py::test_optional_parameter_and_tariff_version
+FAILED ../tests/test_final_state.py::test_scalar_types_and_abstract_constraint
+FAILED ../tests/test_final_state.py::test_constraint_violations_report_exact_messages
+FAILED ../tests/test_final_state.py::test_seed_parcels_have_expected_computed_values
+FAILED ../tests/test_final_state.py::test_shipment_computed_aggregates - Asse...
+FAILED ../tests/test_final_state.py::test_report_command_shipment_mode - Asse...
+FAILED ../tests/test_final_state.py::test_report_command_empty_shipment - Ass...
+FAILED ../tests/test_final_state.py::test_report_command_unknown_shipment_and_bad_usage
+FAILED ../tests/test_final_state.py::test_report_command_introspect_mode - As...
+FAILED ../tests/test_final_state.py::test_introspect_output_matches_live_catalog
+========================= 16 failed, 2 passed in 2.47s =========================

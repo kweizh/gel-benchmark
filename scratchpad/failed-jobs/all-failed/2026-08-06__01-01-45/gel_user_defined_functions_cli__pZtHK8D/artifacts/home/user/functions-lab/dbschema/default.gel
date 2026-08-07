@@ -1,0 +1,35 @@
+module default {
+  type Carrier {
+    required name: str {
+      constraint exclusive;
+    }
+    required hub_code: str;
+  }
+
+  type Parcel {
+    required sku: logistics::sku_code {
+      constraint std::exclusive;
+    }
+    required weight_grams: logistics::packable_grams;
+    required tier: logistics::shipping_tier;
+    required insured: std::bool {
+      default := false;
+    }
+    optional handling_hint: std::str;
+    required link carrier: Carrier;
+
+    property chargeable_grams := logistics::billable_grams(.weight_grams, .tier);
+    property price_cents := logistics::quote_cents(.weight_grams, .tier, insured := .insured);
+    property note := logistics::delivery_note(.tier, .handling_hint);
+  }
+
+  type Shipment {
+    required code: std::str {
+      constraint std::exclusive;
+    }
+    multi link parcels: Parcel;
+
+    property total_quote_cents := std::sum(.parcels.price_cents);
+    property heaviest_parcel_grams := logistics::heaviest_grams(array_agg(.parcels.weight_grams));
+  }
+}

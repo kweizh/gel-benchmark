@@ -1,0 +1,665 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 28 items
+
+../tests/test_final_state.py F...F.FFFFFFFFFFFFFFFFFFFFFF                [100%]
+
+=================================== FAILURES ===================================
+__________________________ test_project_files_present __________________________
+
+    def test_project_files_present():
+        for relative in ("gel.toml", "dbschema/default.gel", "scripts/load.sh", "scripts/search.sh"):
+            path = os.path.join(PROJECT_DIR, relative)
+>           assert os.path.isfile(path), f"Expected {path} to exist."
+E           AssertionError: Expected /home/user/kb-search/scripts/load.sh to exist.
+E           assert False
+E            +  where False = <function isfile at 0x7436fca30220>('/home/user/kb-search/scripts/load.sh')
+E            +    where <function isfile at 0x7436fca30220> = <module 'posixpath' (frozen)>.isfile
+E            +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:109: AssertionError
+_______________________ test_slug_uniqueness_is_enforced _______________________
+
+gel_server = True
+
+    def test_slug_uniqueness_is_enforced(gel_server):
+        proc = run(
+            [
+                "gel",
+                "query",
+                "insert Article { slug := 'alpine-trail-safety', title := 'Duplicate Probe', "
+                "summary := 'Duplicate probe.', body := 'Duplicate probe.', "
+                "section := 'zz-probe', published := false }",
+            ]
+        )
+        combined = proc.stdout + proc.stderr
+        try:
+>           assert proc.returncode != 0, (
+                "Inserting a second Article with an existing slug must fail, but it succeeded: "
+                f"{combined!r}"
+            )
+E           AssertionError: Inserting a second Article with an existing slug must fail, but it succeeded: '{"id": "8fcee024-90fa-11f1-96a8-0f7b05709aa8"}\n'
+E           assert 0 != 0
+E            +  where 0 = CompletedProcess(args=['gel', 'query', "insert Article { slug := 'alpine-trail-safety', title := 'Duplicate Probe', su...'zz-probe', published := false }"], returncode=0, stdout='{"id": "8fcee024-90fa-11f1-96a8-0f7b05709aa8"}\n', stderr='').returncode
+
+/tests/test_final_state.py:175: AssertionError
+____________________________ test_corpus_is_loaded _____________________________
+
+gel_server = True
+
+    def test_corpus_is_loaded(gel_server):
+        counts = _article_counts()
+>       assert counts["total"] == 31, (
+            f"Expected 31 Article objects loaded from the corpus, got {counts['total']}."
+        )
+E       AssertionError: Expected 31 Article objects loaded from the corpus, got 2.
+E       assert 2 == 31
+
+/tests/test_final_state.py:242: AssertionError
+__________________________ test_loader_is_idempotent ___________________________
+
+gel_server = True
+
+    def test_loader_is_idempotent(gel_server):
+>       before = _stored_article("harbor-fog-signals")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+slug = 'harbor-fog-signals'
+
+    def _stored_article(slug):
+        rows = gel_query(
+            "select Article { title, summary, body, section, published } "
+            f"filter .slug = '{slug}'"
+        )
+>       assert len(rows) == 1, f"Expected exactly one Article with slug {slug!r}, got {rows!r}"
+E       AssertionError: Expected exactly one Article with slug 'harbor-fog-signals', got []
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:236: AssertionError
+______________________ test_default_paging_and_tie_break _______________________
+
+gel_server = True
+
+    def test_default_paging_and_tie_break(gel_server):
+>       payload = search("trail")
+                  ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('trail',)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh trail exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_____________________ test_title_beats_summary_beats_body ______________________
+
+gel_server = True
+
+    def test_title_beats_summary_beats_body(gel_server):
+>       payload = search("aurora", 10)
+                  ^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:312: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('aurora', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh aurora 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'aurora', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_____________________ test_title_match_outranks_body_match _____________________
+
+gel_server = True
+
+    def test_title_match_outranks_body_match(gel_server):
+>       payload = search("harbor", 10)
+                  ^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:329: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('harbor', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh harbor 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'harbor', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+__________ test_scores_are_positive_rounded_and_non_increasing[trail] __________
+
+gel_server = True, term = 'trail'
+
+    @pytest.mark.parametrize("term", ["trail", "aurora", "harbor"])
+    def test_scores_are_positive_rounded_and_non_increasing(gel_server, term):
+>       payload = search(term, 10)
+                  ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('trail', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh trail 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_________ test_scores_are_positive_rounded_and_non_increasing[aurora] __________
+
+gel_server = True, term = 'aurora'
+
+    @pytest.mark.parametrize("term", ["trail", "aurora", "harbor"])
+    def test_scores_are_positive_rounded_and_non_increasing(gel_server, term):
+>       payload = search(term, 10)
+                  ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('aurora', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh aurora 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'aurora', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_________ test_scores_are_positive_rounded_and_non_increasing[harbor] __________
+
+gel_server = True, term = 'harbor'
+
+    @pytest.mark.parametrize("term", ["trail", "aurora", "harbor"])
+    def test_scores_are_positive_rounded_and_non_increasing(gel_server, term):
+>       payload = search(term, 10)
+                  ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('harbor', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh harbor 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'harbor', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_________________ test_unpublished_articles_are_never_returned _________________
+
+gel_server = True
+
+    def test_unpublished_articles_are_never_returned(gel_server):
+>       hidden = search("zephyr", 10)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:359: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('zephyr', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh zephyr 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'zephyr', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_________________________ test_query_without_any_match _________________________
+
+gel_server = True
+
+    def test_query_without_any_match(gel_server):
+>       payload = search("quantum")
+                  ^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:376: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('quantum',)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh quantum exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'quantum'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_______________ test_pagination_pages_rebuild_the_full_ordering ________________
+
+gel_server = True
+
+    def test_pagination_pages_rebuild_the_full_ordering(gel_server):
+>       full = search("trail", 10)
+               ^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:382: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('trail', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh trail 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_________________ test_offset_past_the_end_returns_empty_page __________________
+
+gel_server = True
+
+    def test_offset_past_the_end_returns_empty_page(gel_server):
+>       payload = search("trail", 3, 20)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:407: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('trail', 3, 20)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh trail 3 20 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '3', '20'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+___________________ test_search_reflects_live_database_state ___________________
+
+gel_server = True
+
+    def test_search_reflects_live_database_state(gel_server):
+        insert_title = (
+            "insert Article { slug := 'zz-probe-title', title := 'Wombat Field Notes', "
+            "summary := 'Neutral summary text.', body := 'Neutral body text.', "
+            "section := 'zz-probe', published := true }"
+        )
+        insert_body = (
+            "insert Article { slug := 'zz-probe-body', title := 'Neutral Title', "
+            "summary := 'Neutral summary text.', body := 'A short note about a wombat.', "
+            "section := 'zz-probe', published := true }"
+        )
+        try:
+            gel_query(insert_title)
+            gel_query(insert_body)
+>           payload = search("wombat", 10)
+                      ^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:433: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('wombat', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh wombat 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'wombat', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_______________ test_search_is_case_and_form_insensitive[TRAIL] ________________
+
+gel_server = True, term = 'TRAIL'
+
+    @pytest.mark.parametrize("term", ["TRAIL", "trails"])
+    def test_search_is_case_and_form_insensitive(gel_server, term):
+>       payload = search(term, 10)
+                  ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:456: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('TRAIL', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh TRAIL 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'TRAIL', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_______________ test_search_is_case_and_form_insensitive[trails] _______________
+
+gel_server = True, term = 'trails'
+
+    @pytest.mark.parametrize("term", ["TRAIL", "trails"])
+    def test_search_is_case_and_form_insensitive(gel_server, term):
+>       payload = search(term, 10)
+                  ^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:456: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('trails', 10)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh trails 10 exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trails', '10'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+_______________ test_query_with_apostrophe_is_echoed_and_matched _______________
+
+gel_server = True
+
+    def test_query_with_apostrophe_is_echoed_and_matched(gel_server):
+>       payload = search("dog's")
+                  ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:464: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ("dog's",)
+
+    def search(*args):
+        """Invoke the search CLI, assert the success contract and return the payload."""
+        argv = ["bash", "scripts/search.sh"] + [str(a) for a in args]
+        proc = run(argv)
+>       assert proc.returncode == 0, (
+            f"{' '.join(argv)} exited with {proc.returncode}; "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: bash scripts/search.sh dog's exited with 127; stdout='' stderr='bash: scripts/search.sh: No such file or directory\n'
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', "dog's"], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:59: AssertionError
+________________________ test_argument_errors[no-args] _________________________
+
+gel_server = True, argv = []
+
+    @pytest.mark.parametrize(
+        "argv",
+        [
+            [],
+            [""],
+            ["trail", "abc"],
+            ["trail", "0"],
+            ["trail", "5", "-1"],
+            ["a", "b", "c", "d"],
+        ],
+        ids=["no-args", "empty-query", "non-integer-limit", "zero-limit", "negative-offset", "too-many"],
+    )
+    def test_argument_errors(gel_server, argv):
+        proc = run(["bash", "scripts/search.sh"] + argv)
+        printable = " ".join(repr(a) for a in argv)
+>       assert proc.returncode == 2, (
+            f"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} "
+            f"(stdout={proc.stdout!r} stderr={proc.stderr!r})"
+        )
+E       AssertionError: scripts/search.sh  must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\n')
+E       assert 127 == 2
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:489: AssertionError
+______________________ test_argument_errors[empty-query] _______________________
+
+gel_server = True, argv = ['']
+
+    @pytest.mark.parametrize(
+        "argv",
+        [
+            [],
+            [""],
+            ["trail", "abc"],
+            ["trail", "0"],
+            ["trail", "5", "-1"],
+            ["a", "b", "c", "d"],
+        ],
+        ids=["no-args", "empty-query", "non-integer-limit", "zero-limit", "negative-offset", "too-many"],
+    )
+    def test_argument_errors(gel_server, argv):
+        proc = run(["bash", "scripts/search.sh"] + argv)
+        printable = " ".join(repr(a) for a in argv)
+>       assert proc.returncode == 2, (
+            f"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} "
+            f"(stdout={proc.stdout!r} stderr={proc.stderr!r})"
+        )
+E       AssertionError: scripts/search.sh '' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\n')
+E       assert 127 == 2
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', ''], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:489: AssertionError
+___________________ test_argument_errors[non-integer-limit] ____________________
+
+gel_server = True, argv = ['trail', 'abc']
+
+    @pytest.mark.parametrize(
+        "argv",
+        [
+            [],
+            [""],
+            ["trail", "abc"],
+            ["trail", "0"],
+            ["trail", "5", "-1"],
+            ["a", "b", "c", "d"],
+        ],
+        ids=["no-args", "empty-query", "non-integer-limit", "zero-limit", "negative-offset", "too-many"],
+    )
+    def test_argument_errors(gel_server, argv):
+        proc = run(["bash", "scripts/search.sh"] + argv)
+        printable = " ".join(repr(a) for a in argv)
+>       assert proc.returncode == 2, (
+            f"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} "
+            f"(stdout={proc.stdout!r} stderr={proc.stderr!r})"
+        )
+E       AssertionError: scripts/search.sh 'trail' 'abc' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\n')
+E       assert 127 == 2
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', 'abc'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:489: AssertionError
+_______________________ test_argument_errors[zero-limit] _______________________
+
+gel_server = True, argv = ['trail', '0']
+
+    @pytest.mark.parametrize(
+        "argv",
+        [
+            [],
+            [""],
+            ["trail", "abc"],
+            ["trail", "0"],
+            ["trail", "5", "-1"],
+            ["a", "b", "c", "d"],
+        ],
+        ids=["no-args", "empty-query", "non-integer-limit", "zero-limit", "negative-offset", "too-many"],
+    )
+    def test_argument_errors(gel_server, argv):
+        proc = run(["bash", "scripts/search.sh"] + argv)
+        printable = " ".join(repr(a) for a in argv)
+>       assert proc.returncode == 2, (
+            f"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} "
+            f"(stdout={proc.stdout!r} stderr={proc.stderr!r})"
+        )
+E       AssertionError: scripts/search.sh 'trail' '0' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\n')
+E       assert 127 == 2
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '0'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:489: AssertionError
+____________________ test_argument_errors[negative-offset] _____________________
+
+gel_server = True, argv = ['trail', '5', '-1']
+
+    @pytest.mark.parametrize(
+        "argv",
+        [
+            [],
+            [""],
+            ["trail", "abc"],
+            ["trail", "0"],
+            ["trail", "5", "-1"],
+            ["a", "b", "c", "d"],
+        ],
+        ids=["no-args", "empty-query", "non-integer-limit", "zero-limit", "negative-offset", "too-many"],
+    )
+    def test_argument_errors(gel_server, argv):
+        proc = run(["bash", "scripts/search.sh"] + argv)
+        printable = " ".join(repr(a) for a in argv)
+>       assert proc.returncode == 2, (
+            f"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} "
+            f"(stdout={proc.stdout!r} stderr={proc.stderr!r})"
+        )
+E       AssertionError: scripts/search.sh 'trail' '5' '-1' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\n')
+E       assert 127 == 2
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'trail', '5', '-1'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:489: AssertionError
+________________________ test_argument_errors[too-many] ________________________
+
+gel_server = True, argv = ['a', 'b', 'c', 'd']
+
+    @pytest.mark.parametrize(
+        "argv",
+        [
+            [],
+            [""],
+            ["trail", "abc"],
+            ["trail", "0"],
+            ["trail", "5", "-1"],
+            ["a", "b", "c", "d"],
+        ],
+        ids=["no-args", "empty-query", "non-integer-limit", "zero-limit", "negative-offset", "too-many"],
+    )
+    def test_argument_errors(gel_server, argv):
+        proc = run(["bash", "scripts/search.sh"] + argv)
+        printable = " ".join(repr(a) for a in argv)
+>       assert proc.returncode == 2, (
+            f"scripts/search.sh {printable} must exit with status 2, got {proc.returncode} "
+            f"(stdout={proc.stdout!r} stderr={proc.stderr!r})"
+        )
+E       AssertionError: scripts/search.sh 'a' 'b' 'c' 'd' must exit with status 2, got 127 (stdout='' stderr='bash: scripts/search.sh: No such file or directory\n')
+E       assert 127 == 2
+E        +  where 127 = CompletedProcess(args=['bash', 'scripts/search.sh', 'a', 'b', 'c', 'd'], returncode=127, stdout='', stderr='bash: scripts/search.sh: No such file or directory\n').returncode
+
+/tests/test_final_state.py:489: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_corpus_file_unmodified
+PASSED ../tests/test_final_state.py::test_migration_status_reports_up_to_date
+PASSED ../tests/test_final_state.py::test_article_type_has_required_properties
+PASSED ../tests/test_final_state.py::test_weighted_fts_index_is_declared
+FAILED ../tests/test_final_state.py::test_project_files_present - AssertionEr...
+FAILED ../tests/test_final_state.py::test_slug_uniqueness_is_enforced - Asser...
+FAILED ../tests/test_final_state.py::test_corpus_is_loaded - AssertionError: ...
+FAILED ../tests/test_final_state.py::test_loader_is_idempotent - AssertionErr...
+FAILED ../tests/test_final_state.py::test_default_paging_and_tie_break - Asse...
+FAILED ../tests/test_final_state.py::test_title_beats_summary_beats_body - As...
+FAILED ../tests/test_final_state.py::test_title_match_outranks_body_match - A...
+FAILED ../tests/test_final_state.py::test_scores_are_positive_rounded_and_non_increasing[trail]
+FAILED ../tests/test_final_state.py::test_scores_are_positive_rounded_and_non_increasing[aurora]
+FAILED ../tests/test_final_state.py::test_scores_are_positive_rounded_and_non_increasing[harbor]
+FAILED ../tests/test_final_state.py::test_unpublished_articles_are_never_returned
+FAILED ../tests/test_final_state.py::test_query_without_any_match - Assertion...
+FAILED ../tests/test_final_state.py::test_pagination_pages_rebuild_the_full_ordering
+FAILED ../tests/test_final_state.py::test_offset_past_the_end_returns_empty_page
+FAILED ../tests/test_final_state.py::test_search_reflects_live_database_state
+FAILED ../tests/test_final_state.py::test_search_is_case_and_form_insensitive[TRAIL]
+FAILED ../tests/test_final_state.py::test_search_is_case_and_form_insensitive[trails]
+FAILED ../tests/test_final_state.py::test_query_with_apostrophe_is_echoed_and_matched
+FAILED ../tests/test_final_state.py::test_argument_errors[no-args] - Assertio...
+FAILED ../tests/test_final_state.py::test_argument_errors[empty-query] - Asse...
+FAILED ../tests/test_final_state.py::test_argument_errors[non-integer-limit]
+FAILED ../tests/test_final_state.py::test_argument_errors[zero-limit] - Asser...
+FAILED ../tests/test_final_state.py::test_argument_errors[negative-offset] - ...
+FAILED ../tests/test_final_state.py::test_argument_errors[too-many] - Asserti...
+========================= 24 failed, 4 passed in 2.48s =========================

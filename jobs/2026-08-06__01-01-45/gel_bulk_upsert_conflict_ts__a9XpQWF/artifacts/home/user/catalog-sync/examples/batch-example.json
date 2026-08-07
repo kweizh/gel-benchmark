@@ -1,0 +1,17 @@
+[
+  {
+    "sku": "EXAMPLE-1",
+    "name": "Example Widget",
+    "price_cents": 1250,
+    "stock": 7,
+    "category": "examples",
+    "tags": ["demo", "sample"]
+  },
+  {
+    "sku": "EXAMPLE-2",
+    "name": "Example Gadget",
+    "price_cents": 3400,
+    "stock": 0,
+    "category": "examples"
+  }
+]

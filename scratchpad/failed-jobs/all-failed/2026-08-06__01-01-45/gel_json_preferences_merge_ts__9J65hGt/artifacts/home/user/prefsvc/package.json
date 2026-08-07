@@ -1,0 +1,17 @@
+{
+  "name": "prefsvc",
+  "version": "1.0.0",
+  "private": true,
+  "description": "User preference merge-patch service backed by Gel",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "gel": "2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "4.23.7",
+    "typescript": "5.9.3"
+  }
+}

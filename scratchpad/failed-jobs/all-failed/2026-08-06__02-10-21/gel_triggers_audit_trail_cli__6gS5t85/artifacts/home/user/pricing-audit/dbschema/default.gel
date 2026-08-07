@@ -1,0 +1,131 @@
+module default {
+  type Product {
+    required sku: str {
+      constraint exclusive;
+    }
+    required name: str;
+    required price_cents: int64 {
+      constraint min_value(1);
+    }
+    required stock: int64 {
+      default := 0;
+    }
+
+    # Bookkeeping fields maintained entirely by the database.
+    required revision: int64 {
+      default := 1;
+      rewrite insert using (1);
+      rewrite update using (__old__.revision + 1);
+    }
+    required price_history: array<int64> {
+      default := <array<int64>>[];
+      rewrite insert using ([__subject__.price_cents]);
+      rewrite update using (
+        __old__.price_history ++ [__subject__.price_cents]
+        if __subject__.price_cents != __old__.price_cents
+        else __old__.price_history
+      );
+    }
+
+    # One AuditEvent per inserted product.
+    trigger log_product_insert after insert for each do (
+      insert AuditEvent {
+        action := 'insert',
+        sku := __new__.sku,
+        new_price_cents := __new__.price_cents,
+      }
+    );
+
+    # One AuditEvent per updated product, but ONLY when the price actually
+    # changed. The condition lives on the trigger declaration itself, so the
+    # body does not even run otherwise.
+    trigger log_price_update after update for each
+    when (__old__.price_cents != __new__.price_cents) do (
+      insert AuditEvent {
+        action := 'update',
+        sku := __new__.sku,
+        old_price_cents := __old__.price_cents,
+        new_price_cents := __new__.price_cents,
+      }
+    );
+
+    # One AuditEvent per deleted product.
+    trigger log_product_delete after delete for each do (
+      insert AuditEvent {
+        action := 'delete',
+        sku := __old__.sku,
+        old_price_cents := __old__.price_cents,
+      }
+    );
+
+    # One AuditBatch per statement (insert).
+    trigger batch_insert_stats after insert for all do (
+      insert AuditBatch {
+        kind := 'insert',
+        row_count := count(__new__),
+      }
+    );
+
+    # One AuditBatch per statement (update).
+    trigger batch_update_stats after update for all do (
+      insert AuditBatch {
+        kind := 'update',
+        row_count := count(__new__),
+      }
+    );
+
+    # One AuditBatch per statement (delete).
+    trigger batch_delete_stats after delete for all do (
+      insert AuditBatch {
+        kind := 'delete',
+        row_count := count(__old__),
+      }
+    );
+  }
+
+  # One append-only row per audited row change.
+  type AuditEvent {
+    required action: str {
+      constraint one_of('insert', 'update', 'delete');
+    }
+    required sku: str;
+    old_price_cents: int64;
+    new_price_cents: int64;
+    required recorded_at: datetime {
+      default := datetime_of_statement();
+    }
+    # Always derived by the database from the other properties; a caller
+    # supplied value never survives because the rewrite overrides it.
+    required summary: str {
+      rewrite insert using (
+        if __subject__.action = 'insert' then
+          'INSERT ' ++ __subject__.sku ++ ' price=' ++ to_str(__subject__.new_price_cents)
+        else if __subject__.action = 'update' then
+          'UPDATE '
+            ++ __subject__.sku
+            ++ ' price='
+            ++ to_str(__subject__.old_price_cents)
+            ++ '->'
+            ++ to_str(__subject__.new_price_cents)
+        else
+          'DELETE ' ++ __subject__.sku ++ ' price=' ++ to_str(__subject__.old_price_cents)
+      );
+    }
+
+    # Append-only: any update or delete must fail and leave rows unchanged.
+    trigger forbid_mutation after update, delete for each do (
+      assert(false, message := 'AuditEvent is append-only')
+    );
+  }
+
+  # One row per mutating statement executed against Product.
+  type AuditBatch {
+    required kind: str {
+      constraint one_of('insert', 'update', 'delete');
+    }
+    required row_count: int64;
+    required recorded_at: datetime {
+      default := datetime_of_statement();
+    }
+  }
+}

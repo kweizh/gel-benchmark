@@ -1,0 +1,539 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:23:32.693420+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 51,
+            "passed": 0,
+            "failed": 51,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785950611940,
+            "stop": 1785950612693
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_status_up_to_date",
+                "status": "failed",
+                "duration": 91,
+                "start": 1785950612009,
+                "stop": 1785950612100,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_original_migration_untouched_and_new_migration_added",
+                "status": "failed",
+                "duration": 14,
+                "start": 1785950612101,
+                "stop": 1785950612115,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_schema_file_declares_the_audit_subsystem",
+                "status": "failed",
+                "duration": 14,
+                "start": 1785950612115,
+                "stop": 1785950612129,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_product_triggers_are_declared_with_required_names",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612129,
+                "stop": 1785950612138,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_product_triggers_have_required_kinds_timing_and_scope",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612138,
+                "stop": 1785950612147,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_price_update_trigger_is_conditional",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612147,
+                "stop": 1785950612156,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_audit_event_has_forbid_mutation_trigger",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612156,
+                "stop": 1785950612165,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_product_bookkeeping_properties_have_rewrites",
+                "status": "failed",
+                "duration": 11,
+                "start": 1785950612165,
+                "stop": 1785950612176,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_audit_event_summary_has_insert_rewrite",
+                "status": "failed",
+                "duration": 16,
+                "start": 1785950612176,
+                "stop": 1785950612192,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_recorded_at_properties_are_required",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612192,
+                "stop": 1785950612202,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_seeded_products_preserved",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612202,
+                "stop": 1785950612211,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_frozen_product_untouched",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612211,
+                "stop": 1785950612221,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_original_product_properties_preserved",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612221,
+                "stop": 1785950612230,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_insert_creates_one_audit_event",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612230,
+                "stop": 1785950612239,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_insert_rewrites_initialize_bookkeeping",
+                "status": "failed",
+                "duration": 8,
+                "start": 1785950612240,
+                "stop": 1785950612248,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_insert_creates_one_batch_row",
+                "status": "failed",
+                "duration": 44,
+                "start": 1785950612249,
+                "stop": 1785950612293,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_stdout_and_exit_code",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612293,
+                "stop": 1785950612303,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_records_update_event",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612303,
+                "stop": 1785950612312,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_updates_bookkeeping_and_batch",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612313,
+                "stop": 1785950612322,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_noop_price_change_still_succeeds_and_bumps_revision",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612322,
+                "stop": 1785950612331,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_noop_price_change_creates_no_audit_event_but_one_batch",
+                "status": "failed",
+                "duration": 15,
+                "start": 1785950612331,
+                "stop": 1785950612346,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_non_price_update_bumps_revision_without_audit_event",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612347,
+                "stop": 1785950612356,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 36,
+                "start": 1785950612356,
+                "stop": 1785950612392,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 11,
+                "start": 1785950612392,
+                "stop": 1785950612403,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612403,
+                "stop": 1785950612412,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612413,
+                "stop": 1785950612422,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612422,
+                "stop": 1785950612431,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612432,
+                "stop": 1785950612441,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612441,
+                "stop": 1785950612450,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_apply_price_change_error_paths",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612450,
+                "stop": 1785950612459,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_error_paths_leave_no_side_effects",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612459,
+                "stop": 1785950612468,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_multi_row_insert_audits_each_row_once",
+                "status": "failed",
+                "duration": 29,
+                "start": 1785950612468,
+                "stop": 1785950612497,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_multi_row_insert_produces_single_batch_row",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612498,
+                "stop": 1785950612508,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_multi_row_update_audits_each_row_and_one_batch",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612508,
+                "stop": 1785950612518,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_zero_row_statement_still_records_one_batch_row",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612518,
+                "stop": 1785950612528,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_delete_is_audited",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612528,
+                "stop": 1785950612538,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_audit_event_update_is_rejected",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612538,
+                "stop": 1785950612548,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_audit_event_delete_is_rejected",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612548,
+                "stop": 1785950612557,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_rejected_mutations_left_audit_rows_intact",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612557,
+                "stop": 1785950612567,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_supplied_summary_is_overwritten_by_the_database",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612567,
+                "stop": 1785950612576,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_action_is_rejected",
+                "status": "failed",
+                "duration": 21,
+                "start": 1785950612576,
+                "stop": 1785950612597,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_shape_and_ordering",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612597,
+                "stop": 1785950612607,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_covers_exactly_the_audited_skus",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612607,
+                "stop": 1785950612616,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_totals_are_internally_consistent",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612616,
+                "stop": 1785950612626,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_aggregates_per_sku",
+                "status": "failed",
+                "duration": 10,
+                "start": 1785950612626,
+                "stop": 1785950612636,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_aggregates_per_sku",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612636,
+                "stop": 1785950612645,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_aggregates_per_sku",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612645,
+                "stop": 1785950612654,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_aggregates_per_sku",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612654,
+                "stop": 1785950612663,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_report_aggregates_per_sku",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612663,
+                "stop": 1785950612672,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_task_scripts_are_executable_files",
+                "status": "failed",
+                "duration": 9,
+                "start": 1785950612673,
+                "stop": 1785950612682,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_no_client_library_code_was_added",
+                "status": "failed",
+                "duration": 11,
+                "start": 1785950612682,
+                "stop": 1785950612693,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "server = True\n\n    @pytest.fixture(scope=\"session\")\n    def scenario(server):\n        \"\"\"Drive the whole audit workflow once and record every observation.\"\"\"\n>       assert os.path.isfile(APPLY_SCRIPT), f\"Missing {APPLY_SCRIPT}.\"\nE       AssertionError: Missing /home/user/pricing-audit/scripts/apply_price_change.sh.\nE       assert False\nE        +  where False = <function isfile at 0x784439ee0220>('/home/user/pricing-audit/scripts/apply_price_change.sh')\nE        +    where <function isfile at 0x784439ee0220> = <module 'posixpath' (frozen)>.isfile\nE        +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:164: AssertionError"
+            }
+        ]
+    }
+}

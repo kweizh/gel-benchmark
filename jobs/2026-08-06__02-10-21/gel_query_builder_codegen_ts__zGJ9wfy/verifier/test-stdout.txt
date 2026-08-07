@@ -1,0 +1,236 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 21 items
+
+../tests/test_final_state.py ......EEEEEEEEEEE...F                       [100%]
+
+==================================== ERRORS ====================================
+__________________ ERROR at setup of test_load_is_idempotent ___________________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+____________ ERROR at setup of test_title_exclusive_across_subtypes ____________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+____________________ ERROR at setup of test_report_authors _____________________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+_____________________ ERROR at setup of test_report_levels _____________________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+_____________ ERROR at setup of test_report_author_with_resources ______________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+__________ ERROR at setup of test_report_author_name_with_apostrophe ___________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+____________ ERROR at setup of test_report_author_without_resources ____________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+________________ ERROR at setup of test_report_author_not_found ________________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+______________ ERROR at setup of test_report_author_hostile_name _______________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+_____________________ ERROR at setup of test_usage_errors ______________________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+_____________ ERROR at setup of test_reports_reflect_live_database _____________
+
+server = True
+
+    @pytest.fixture(scope="session")
+    def loaded(server):
+        proc = run_cli(["load"])
+>       assert proc.returncode == 0, (
+            f"'npx tsx src/cli.ts load' failed: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: 'npx tsx src/cli.ts load' failed: 
+E         catalog: no subcommand implemented
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'load'], returncode=2, stdout='', stderr='catalog: no subcommand implemented\n').returncode
+
+/tests/test_final_state.py:182: AssertionError
+=================================== FAILURES ===================================
+___________________ test_source_uses_generated_query_builder ___________________
+
+    def test_source_uses_generated_query_builder():
+        sources = sorted(glob.glob(os.path.join(SRC_DIR, "**", "*.ts"), recursive=True))
+        blob = ""
+        for path in sources:
+            with open(path, encoding="utf-8") as handle:
+                blob += handle.read()
+>       assert "dbschema/edgeql-js" in blob, (
+            f"No file under {SRC_DIR} imports the generated query builder from dbschema/edgeql-js."
+        )
+E       AssertionError: No file under /home/user/catalog/src imports the generated query builder from dbschema/edgeql-js.
+E       assert 'dbschema/edgeql-js' in '// Catalog analytics CLI - not implemented yet.\nprocess.stderr.write("catalog: no subcommand implemented\\n");\nprocess.exit(2);\n'
+
+/tests/test_final_state.py:567: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_query_builder_artifacts_exist
+PASSED ../tests/test_final_state.py::test_query_builder_reflects_final_schema
+PASSED ../tests/test_final_state.py::test_new_migration_recorded
+PASSED ../tests/test_final_state.py::test_migration_status_in_sync
+PASSED ../tests/test_final_state.py::test_resource_hierarchy_in_schema
+PASSED ../tests/test_final_state.py::test_author_computeds_in_schema
+PASSED ../tests/test_final_state.py::test_strict_typecheck_passes
+PASSED ../tests/test_final_state.py::test_tsconfig_still_strict
+PASSED ../tests/test_final_state.py::test_source_has_no_escape_hatches_or_raw_edgeql
+ERROR ../tests/test_final_state.py::test_load_is_idempotent - AssertionError:...
+ERROR ../tests/test_final_state.py::test_title_exclusive_across_subtypes - As...
+ERROR ../tests/test_final_state.py::test_report_authors - AssertionError: 'np...
+ERROR ../tests/test_final_state.py::test_report_levels - AssertionError: 'npx...
+ERROR ../tests/test_final_state.py::test_report_author_with_resources - Asser...
+ERROR ../tests/test_final_state.py::test_report_author_name_with_apostrophe
+ERROR ../tests/test_final_state.py::test_report_author_without_resources - As...
+ERROR ../tests/test_final_state.py::test_report_author_not_found - AssertionE...
+ERROR ../tests/test_final_state.py::test_report_author_hostile_name - Asserti...
+ERROR ../tests/test_final_state.py::test_usage_errors - AssertionError: 'npx ...
+ERROR ../tests/test_final_state.py::test_reports_reflect_live_database - Asse...
+FAILED ../tests/test_final_state.py::test_source_uses_generated_query_builder
+==================== 1 failed, 9 passed, 11 errors in 4.24s ====================

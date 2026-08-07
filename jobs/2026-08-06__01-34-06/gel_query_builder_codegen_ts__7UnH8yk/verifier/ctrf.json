@@ -1,0 +1,233 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:45:08.656328+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 21,
+            "passed": 16,
+            "failed": 5,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785951888587,
+            "stop": 1785951908656
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_query_builder_artifacts_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785951888619,
+                "stop": 1785951888620,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_query_builder_reflects_final_schema",
+                "status": "passed",
+                "duration": 4,
+                "start": 1785951888620,
+                "stop": 1785951888624,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_migration_recorded",
+                "status": "passed",
+                "duration": 86,
+                "start": 1785951888624,
+                "stop": 1785951888710,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync",
+                "status": "passed",
+                "duration": 1165,
+                "start": 1785951888710,
+                "stop": 1785951889875,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_resource_hierarchy_in_schema",
+                "status": "passed",
+                "duration": 218,
+                "start": 1785951889875,
+                "stop": 1785951890093,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_author_computeds_in_schema",
+                "status": "passed",
+                "duration": 202,
+                "start": 1785951890093,
+                "stop": 1785951890295,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_load_is_idempotent",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 2980,
+                "start": 1785951890295,
+                "stop": 1785951893275,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "loaded = True\n\n    def test_load_is_idempotent(loaded):\n        first = run_cli([\"load\"])\n        payload_first = parse_stdout_json(first, \"'npx tsx src/cli.ts load'\")\n        second = run_cli([\"load\"])\n        payload_second = parse_stdout_json(second, \"'npx tsx src/cli.ts load' (second run)\")\n    \n        expected = {\"articles\": 4, \"videos\": 5, \"total\": 9}\n        for payload, label in ((payload_first, \"first\"), (payload_second, \"second\")):\n            assert isinstance(payload, dict), f\"The {label} load run must print a JSON object.\"\n>           assert set(payload.keys()) == set(expected.keys()), (\n                f\"The {label} load run must print exactly the keys {sorted(expected)}, \"\n                f\"got {sorted(payload.keys())}\"\n            )\nE           AssertionError: The first load run must print exactly the keys ['articles', 'total', 'videos'], got []\nE           assert set() == {'articles', ...al', 'videos'}\nE             \nE             Extra items in the right set:\nE             'videos'\nE             'articles'\nE             'total'\nE             Use -v to get more diff\n\n/tests/test_final_state.py:341: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_title_exclusive_across_subtypes",
+                "status": "passed",
+                "duration": 96,
+                "start": 1785951893275,
+                "stop": 1785951893371,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_authors",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 721,
+                "start": 1785951893371,
+                "stop": 1785951894092,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "loaded = True\n\n    def test_report_authors(loaded):\n        proc = run_cli([\"report\", \"authors\"])\n>       rows = parse_stdout_json(proc, \"'npx tsx src/cli.ts report authors'\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:370: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nproc = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr=\"catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\\n\")\nlabel = \"'npx tsx src/cli.ts report authors'\"\n\n    def parse_stdout_json(proc, label):\n>       assert proc.returncode == 0, (\n            f\"{label} exited with {proc.returncode}.\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts report authors' exited with 1.\nE         stdout: \nE         stderr: catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr=\"catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\\n\").returncode\n\n/tests/test_final_state.py:135: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_levels",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 808,
+                "start": 1785951894093,
+                "stop": 1785951894901,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "loaded = True\n\n    def test_report_levels(loaded):\n        proc = run_cli([\"report\", \"levels\"])\n>       rows = parse_stdout_json(proc, \"'npx tsx src/cli.ts report levels'\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:376: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nproc = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'levels'], returncode=1, stdout='', stderr=\"catalog: No f...perator 'if_else' with args: Element: default::Resource (One), Element: std::int64 (One), Element: std::int64 (One)\\n\")\nlabel = \"'npx tsx src/cli.ts report levels'\"\n\n    def parse_stdout_json(proc, label):\n>       assert proc.returncode == 0, (\n            f\"{label} exited with {proc.returncode}.\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: 'npx tsx src/cli.ts report levels' exited with 1.\nE         stdout: \nE         stderr: catalog: No function overload found for operator 'if_else' with args: Element: default::Resource (One), Element: std::int64 (One), Element: std::int64 (One)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'levels'], returncode=1, stdout='', stderr=\"catalog: No f...perator 'if_else' with args: Element: default::Resource (One), Element: std::int64 (One), Element: std::int64 (One)\\n\").returncode\n\n/tests/test_final_state.py:135: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_with_resources",
+                "status": "passed",
+                "duration": 891,
+                "start": 1785951894901,
+                "stop": 1785951895792,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_name_with_apostrophe",
+                "status": "passed",
+                "duration": 776,
+                "start": 1785951895793,
+                "stop": 1785951896569,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_without_resources",
+                "status": "passed",
+                "duration": 795,
+                "start": 1785951896570,
+                "stop": 1785951897365,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_not_found",
+                "status": "passed",
+                "duration": 803,
+                "start": 1785951897365,
+                "stop": 1785951898168,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_author_hostile_name",
+                "status": "passed",
+                "duration": 719,
+                "start": 1785951898169,
+                "stop": 1785951898888,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_usage_errors",
+                "status": "passed",
+                "duration": 1414,
+                "start": 1785951898888,
+                "stop": 1785951900302,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reports_reflect_live_database",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 788,
+                "start": 1785951900303,
+                "stop": 1785951901091,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "loaded = True\n\n    def test_reports_reflect_live_database(loaded):\n        inserted = run([\"gel\", \"query\", EXTRA_ARTICLE_INSERT])\n        assert inserted.returncode == 0, (\n            f\"Could not insert the extra article fixture: {inserted.stdout}\\n{inserted.stderr}\"\n        )\n        try:\n>           authors = parse_stdout_json(\n                run_cli([\"report\", \"authors\"]), \"'report authors' (with extra article)\"\n            )\n\n/tests/test_final_state.py:483: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nproc = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr=\"catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\\n\")\nlabel = \"'report authors' (with extra article)\"\n\n    def parse_stdout_json(proc, label):\n>       assert proc.returncode == 0, (\n            f\"{label} exited with {proc.returncode}.\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: 'report authors' (with extra article) exited with 1.\nE         stdout: \nE         stderr: catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/cli.ts', 'report', 'authors'], returncode=1, stdout='', stderr=\"catalog: No function overload found for 'e.std.round()' with args: Element: std::number (One), Element: std::number (One)\\n\").returncode\n\n/tests/test_final_state.py:135: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_strict_typecheck_passes",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 7563,
+                "start": 1785951901091,
+                "stop": 1785951908654,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_strict_typecheck_passes():\n        proc = run([\"npx\", \"tsc\", \"--noEmit\", \"-p\", \"tsconfig.json\"])\n>       assert proc.returncode == 0, (\n            f\"'npx tsc --noEmit -p tsconfig.json' must exit 0, got {proc.returncode}:\\n\"\n            f\"{proc.stdout}\\n{proc.stderr}\"\n        )\nE       AssertionError: 'npx tsc --noEmit -p tsconfig.json' must exit 0, got 2:\nE         src/cli.ts(70,28): error TS2339: Property 'n' does not exist on type '{ n: number; }[]'.\nE         src/cli.ts(71,24): error TS2339: Property 'n' does not exist on type '{ n: number; }[]'.\nE         src/cli.ts(72,23): error TS2339: Property 'n' does not exist on type '{ n: number; }[]'.\nE         src/cli.ts(94,11): error TS2345: Argument of type '$expr_Operator<ScalarType<\"std::number\", number, number, number>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$decimal\u03bbICastableTo, Cardinality>>'.\nE           Type '$expr_Operator<ScalarType<\"std::number\", number, number, number>, Cardinality.One>' is not assignable to type 'TypeSet<$decimal\u03bbICastableTo, Cardinality>'.\nE             Types of property '__element__' are incompatible.\nE               Type 'ScalarType<\"std::number\", number, number, number>' is not assignable to type '$decimal\u03bbICastableTo'.\nE                 Type 'ScalarType<\"std::number\", number, number, number>' is not assignable to type '$decimal'.\nE                   Type '\"std::number\"' is not assignable to type '\"std::decimal\"'.\nE         src/cli.ts(152,11): error TS2769: No overload matches this call.\nE           Overload 1 of 3, '(s: orScalarLiteral<TypeSet<$bigint, Cardinality>>): sum\u03bbFuncExpr<P1>', gave the following error.\nE             Argument of type '$expr_Operator<$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$bigint, Cardinality>>'.\nE               Type '$expr_Operator<$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to type 'TypeSet<$bigint, Cardinality>'.\nE                 Types of property '__element__' are incompatible.\nE                   Type '$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>' is not assignable to type '$bigint'.\nE                     Type '$date_duration' is not assignable to type 'ScalarType<\"std::bigint\", bigint, bigint, bigint>'.\nE                       Type '\"std::cal::date_duration\"' is not assignable to type '\"std::bigint\"'.\nE           Overload 2 of 3, '(s: orScalarLiteral<TypeSet<$number, Cardinality>>): sum\u03bbFuncExpr2<P1>', gave the following error.\nE             Argument of type '$expr_Operator<$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$number, Cardinality>>'.\nE               Type '$expr_Operator<$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to type 'TypeSet<$number, Cardinality>'.\nE                 Types of property '__element__' are incompatible.\nE                   Type '$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>' is not assignable to type '$number'.\nE                     Type '$date_duration' is not assignable to type 'ScalarType<\"std::number\", number, number, number>'.\nE                       Type '\"std::cal::date_duration\"' is not assignable to type '\"std::number\"'.\nE           Overload 3 of 3, '(s: orScalarLiteral<TypeSet<$decimal\u03bbICastableTo, Cardinality>>): sum\u03bbFuncExpr3<P1>', gave the following error.\nE             Argument of type '$expr_Operator<$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$decimal\u03bbICastableTo, Cardinality>>'.\nE               Type '$expr_Operator<$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>, Cardinality.One>' is not assignable to type 'TypeSet<$decimal\u03bbICastableTo, Cardinality>'.\nE                 Types of property '__element__' are incompatible.\nE                   Type '$local_datetime\u03bbICastableTo | $relative_duration\u03bbICastableTo | $decimal\u03bbICastableTo | ... 10 more ... | ArrayType<...>' is not assignable to type '$decimal\u03bbICastableTo'.\nE                     Type '$date_duration' is not assignable to type '$decimal\u03bbICastableTo'.\nE                       Type 'ScalarType<\"std::cal::date_duration\", DateDuration, DateDuration, DateDuration>' is not assignable to type '$decimal'.\nE                         Type '\"std::cal::date_duration\"' is not assignable to type '\"std::decimal\"'.\nE         src/cli.ts(152,13): error TS2769: No overload matches this call.\nE           Overload 1 of 25, '(lhs: TypeSet<$relative_duration\u03bbICastableTo, Cardinality> | TypeSet<ArrayType<$relative_duration\u03bbICastableTo, \"array<std::cal::date_duration>\" | \"array<std::cal::relative_duration>\">, Cardinality> | ... 4 more ... | TypeSet<...>, op1: \"if\", cond: orScalarLiteral<...>, op2: \"else\", rhs: TypeSet<...> | ... 5 more ... | TypeSet<...>): $expr_Operator<...>', gave the following error.\nE             Argument of type '$expr_Select<{ __element__: ObjectType<\"default::Resource\", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; \"<resources\": LinkDesc<...>; }, normaliseShape<...>, [...], \"default::Article\" | \"default::Video\">; __cardinality__:...' is not assignable to parameter of type 'TypeSet<$relative_duration\u03bbICastableTo, Cardinality> | TypeSet<ArrayType<$relative_duration\u03bbICastableTo, \"array<std::cal::date_duration>\" | \"array<std::cal::relative_duration>\">, Cardinality> | ... 4 more ... | TypeSet<...>'.\nE               Type '$expr_Select<{ __element__: ObjectType<\"default::Resource\", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; \"<resources\": LinkDesc<...>; }, normaliseShape<...>, [...], \"default::Article\" | \"default::Video\">; __cardinality__:...' is not assignable to type 'TypeSet<AnyTupleType, Cardinality>'.\nE                 Types of property '__element__' are incompatible.\nE                   Type 'ObjectType<\"default::Resource\", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, Cardinality.One, ... 4 more ..., false>; ... 5 more ...; \"<resources\": LinkDesc<...>; }, normaliseShape<...>, [...], \"default::Article\" | \"default::Video\">' is not assignable to type 'AnyTupleType'.\nE                     Type 'ObjectType<\"default::Resource\", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, Cardinality.One, ... 4 more ..., false>; ... 5 more ...; \"<resources\": LinkDesc<...>; }, normaliseShape<...>, [...], \"default::Article\" | \"default::Video\">' is not assignable to type 'NamedTupleType<NamedTupleShape>'.\nE                       Types of property '__kind__' are incompatible.\nE                         Type 'TypeKind.object' is not assignable to type 'TypeKind.namedtuple'.\nE           Overload 2 of 25, '(lhs: $expr_Select<{ __element__: ObjectType<\"default::Resource\", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; \"<resources\": LinkDesc<...>; }, normaliseShape<...>, [...], \"default::Article\" | \"default::Video\">; __cardinality__: Cardinality.One; }>, op1: \"if\", cond: orScalarLiteral<...>, op2: \"else\", rhs: $expr_Cast<...>): $expr_Operator<...>', gave the following error.\nE             Argument of type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$bool, Cardinality>>'.\nE               Type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to type 'TypeSet<$bool, Cardinality>'.\nE                 The types of '__element__.__tstype__' are incompatible between these types.\nE                   Type 'number' is not assignable to type 'boolean'.\nE           Overload 3 of 25, '(lhs: $expr_Select<{ __element__: ObjectType<\"default::Resource\", { id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>; __type__: LinkDesc<$ObjectType, ... 5 more ..., false>; ... 5 more ...; \"<resources\": LinkDesc<...>; }, normaliseShape<...>, [...], \"default::Article\" | \"default::Video\">; __cardinality__: Cardinality.One; }>, op1: \"if\", cond: orScalarLiteral<...>, op2: \"else\", rhs: TypeSet<...>): $expr_Operator<...>', gave the following error.\nE             Argument of type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to parameter of type 'orScalarLiteral<TypeSet<$bool, Cardinality>>'.\nE               Type '$expr_Cast<scalarTypeWithConstructor<$number, string>, Cardinality.One>' is not assignable to type 'TypeSet<$bool, Cardinality>'.\nE                 The types of '__element__.__tstype__' are incompatible between these types.\nE                   Type 'number' is not assignable to type 'boolean'.\nE         src/cli.ts(165,26): error TS2339: Property 'has_captions' does not exist on type '{ __element__: $Resource; __cardinality__: Cardinality.One; __parent__: PathParent<ObjectTypeSet, string> | null; __kind__: ExpressionKind.PathNode; \"*\": { ...; }; [typenameSymbol]: null; } & { ...; } & {} & ExpressionMethods<...> & { ...; }'.\nE         \nE         \nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['npx', 'tsc', '--noEmit', '-p', 'tsconfig.json'], returncode=2, stdout='src/cli.ts(70,28): erro...athNode; \"*\": { ...; }; [typenameSymbol]: null; } & { ...; } & {} & ExpressionMethods<...> & { ...; }\\'.\\n', stderr='').returncode\n\n/tests/test_final_state.py:529: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_tsconfig_still_strict",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785951908654,
+                "stop": 1785951908654,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_source_has_no_escape_hatches_or_raw_edgeql",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785951908654,
+                "stop": 1785951908655,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_source_uses_generated_query_builder",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785951908655,
+                "stop": 1785951908656,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

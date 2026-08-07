@@ -1,0 +1,250 @@
+[
+  {
+    "slug": "alpine-trail-safety",
+    "title": "Alpine Trail Safety",
+    "summary": "Checklist for high routes above the tree line.",
+    "body": "Plan every climb with a map and check the forecast before you start.",
+    "section": "safety",
+    "published": true
+  },
+  {
+    "slug": "bear-canister-use",
+    "title": "Bear Canister Use",
+    "summary": "How to store scented items overnight.",
+    "body": "Set the canister two hundred steps away from camp and close both latches.",
+    "section": "safety",
+    "published": true
+  },
+  {
+    "slug": "beginner-kayak-basics",
+    "title": "Kayak Basics",
+    "summary": "First lesson for flat water paddlers.",
+    "body": "Sit upright, grip the paddle lightly, and steer with your torso.",
+    "section": "water",
+    "published": true
+  },
+  {
+    "slug": "campfire-rules",
+    "title": "Campfire Rules",
+    "summary": "Local fire regulations in plain language.",
+    "body": "Use existing rings and drown the embers before you leave.",
+    "section": "safety",
+    "published": true
+  },
+  {
+    "slug": "coastal-kayak-tips",
+    "title": "Kayak Tips",
+    "summary": "Short notes for salt water outings.",
+    "body": "Watch the tide charts and keep a whistle within reach.",
+    "section": "water",
+    "published": true
+  },
+  {
+    "slug": "desert-trail-water",
+    "title": "Desert Trail Water Planning",
+    "summary": "How much to carry on dry routes.",
+    "body": "Carry four liters and cache extra near the road crossing.",
+    "section": "hiking",
+    "published": true
+  },
+  {
+    "slug": "dog-friendly-outings",
+    "title": "Dog Friendly Outings",
+    "summary": "Where pets are welcome.",
+    "body": "Keep your dog leashed on any shared trail.",
+    "section": "community",
+    "published": true
+  },
+  {
+    "slug": "first-aid-kit",
+    "title": "First Aid Kit Checklist",
+    "summary": "Contents for a two day outing.",
+    "body": "Include blister pads, tape, gloves, and small scissors.",
+    "section": "safety",
+    "published": true
+  },
+  {
+    "slug": "forest-trail-markers",
+    "title": "Forest Trail Markers",
+    "summary": "Reading blazes in dense woods.",
+    "body": "Blazes are painted at eye level on the uphill side of each tree.",
+    "section": "hiking",
+    "published": true
+  },
+  {
+    "slug": "harbor-fog-signals",
+    "title": "Harbor Fog Signals",
+    "summary": "Sound rules when visibility drops.",
+    "body": "Sound one long blast every two minutes and slow down.",
+    "section": "water",
+    "published": true
+  },
+  {
+    "slug": "knot-practice",
+    "title": "Knot Practice",
+    "summary": "Three knots that cover most camp needs.",
+    "body": "The bowline, taut line hitch, and figure eight are enough.",
+    "section": "skills",
+    "published": true
+  },
+  {
+    "slug": "layering-basics",
+    "title": "Layering Basics",
+    "summary": "Choosing fabrics for changing weather.",
+    "body": "Wool next to skin, fleece in the middle, shell on the outside.",
+    "section": "gear",
+    "published": true
+  },
+  {
+    "slug": "map-and-compass",
+    "title": "Map And Compass Drills",
+    "summary": "Practice routines for open ground.",
+    "body": "Take a bearing in a field before you rely on it in the woods.",
+    "section": "skills",
+    "published": true
+  },
+  {
+    "slug": "mountain-bike-setup",
+    "title": "Mountain Bike Setup",
+    "summary": "Quick adjustments before a ride.",
+    "body": "Lower the saddle before a steep trail descent.",
+    "section": "cycling",
+    "published": true
+  },
+  {
+    "slug": "night-navigation",
+    "title": "Night Navigation",
+    "summary": "Moving safely after sunset.",
+    "body": "Learn the harbor lights and keep a spare headlamp in your pack.",
+    "section": "skills",
+    "published": true
+  },
+  {
+    "slug": "northern-aurora-watch",
+    "title": "Aurora Watch Nights",
+    "summary": "Best hours for the northern sky show.",
+    "body": "Face north, let your eyes adjust, and keep the camera on a tripod.",
+    "section": "community",
+    "published": true
+  },
+  {
+    "slug": "packraft-storage",
+    "title": "Packraft Storage",
+    "summary": "Keeping a small boat healthy off season.",
+    "body": "Roll the boat loosely and keep it out of direct sunlight.",
+    "section": "gear",
+    "published": true
+  },
+  {
+    "slug": "photo-golden-hour",
+    "title": "Photo Golden Hour",
+    "summary": "Light planning for landscape shots.",
+    "body": "Shoot within an hour of sunrise for soft light and long shadows.",
+    "section": "skills",
+    "published": true
+  },
+  {
+    "slug": "repair-tape-tricks",
+    "title": "Repair Tape Tricks",
+    "summary": "Field fixes with one roll.",
+    "body": "Wrap tape around a pole section so it is always with you.",
+    "section": "gear",
+    "published": true
+  },
+  {
+    "slug": "ridge-camera-settings",
+    "title": "Ridge Camera Settings",
+    "summary": "Exposure notes for aurora chasers.",
+    "body": "Use a wide lens, open the aperture, and bracket the exposure.",
+    "section": "skills",
+    "published": true
+  },
+  {
+    "slug": "river-paddle-routes",
+    "title": "River Paddle Routes",
+    "summary": "Three slow water loops near town.",
+    "body": "A kayak works well where portage sections are short.",
+    "section": "water",
+    "published": true
+  },
+  {
+    "slug": "secret-kayak-clinic",
+    "title": "Kayak Clinic Announcement",
+    "summary": "Internal draft for an upcoming clinic.",
+    "body": "Dates for the kayak clinic are unconfirmed and not ready to share.",
+    "section": "community",
+    "published": false
+  },
+  {
+    "slug": "snowshoe-rentals",
+    "title": "Snowshoe Rentals",
+    "summary": "Reservation windows and prices.",
+    "body": "Reserve gear a week ahead during the holiday season.",
+    "section": "gear",
+    "published": true
+  },
+  {
+    "slug": "stove-fuel-math",
+    "title": "Stove Fuel Math",
+    "summary": "Estimating gas for a group.",
+    "body": "Budget ten grams of gas per person for each hot meal.",
+    "section": "gear",
+    "published": true
+  },
+  {
+    "slug": "sunrise-summit-plan",
+    "title": "Sunrise Summit Plan",
+    "summary": "Timing an early start.",
+    "body": "Leave two hours before dawn to reach the ridge in daylight and you may catch an aurora glow in autumn.",
+    "section": "hiking",
+    "published": true
+  },
+  {
+    "slug": "tent-pitching",
+    "title": "Tent Pitching Guide",
+    "summary": "Setting up on uneven ground.",
+    "body": "Stake the windward corner first and keep the door downwind.",
+    "section": "gear",
+    "published": true
+  },
+  {
+    "slug": "trail-food-planning",
+    "title": "Trail Food Planning",
+    "summary": "Meal math for long days.",
+    "body": "Pack dense snacks and split them into daily bags.",
+    "section": "food",
+    "published": true
+  },
+  {
+    "slug": "water-filter-care",
+    "title": "Water Filter Care",
+    "summary": "Cleaning routine after each trip.",
+    "body": "Backflush the cartridge and store it dry with the cap off.",
+    "section": "gear",
+    "published": true
+  },
+  {
+    "slug": "wildlife-etiquette",
+    "title": "Wildlife Etiquette",
+    "summary": "Keeping distance from animals.",
+    "body": "Give animals room and never feed them along the route.",
+    "section": "community",
+    "published": true
+  },
+  {
+    "slug": "winter-trail-traction",
+    "title": "Winter Trail Traction",
+    "summary": "Choosing spikes for icy days.",
+    "body": "Microspikes bite well on packed snow and steep switchbacks.",
+    "section": "winter",
+    "published": true
+  },
+  {
+    "slug": "zephyr-jacket-review",
+    "title": "Zephyr Jacket Review",
+    "summary": "Draft review of a windproof shell.",
+    "body": "Held back until the zephyr sample returns from testing.",
+    "section": "gear",
+    "published": false
+  }
+]

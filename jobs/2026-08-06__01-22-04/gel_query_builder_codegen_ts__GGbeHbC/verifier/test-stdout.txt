@@ -1,0 +1,32 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 21 items
+
+../tests/test_final_state.py .....................                       [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_query_builder_artifacts_exist
+PASSED ../tests/test_final_state.py::test_query_builder_reflects_final_schema
+PASSED ../tests/test_final_state.py::test_new_migration_recorded
+PASSED ../tests/test_final_state.py::test_migration_status_in_sync
+PASSED ../tests/test_final_state.py::test_resource_hierarchy_in_schema
+PASSED ../tests/test_final_state.py::test_author_computeds_in_schema
+PASSED ../tests/test_final_state.py::test_load_is_idempotent
+PASSED ../tests/test_final_state.py::test_title_exclusive_across_subtypes
+PASSED ../tests/test_final_state.py::test_report_authors
+PASSED ../tests/test_final_state.py::test_report_levels
+PASSED ../tests/test_final_state.py::test_report_author_with_resources
+PASSED ../tests/test_final_state.py::test_report_author_name_with_apostrophe
+PASSED ../tests/test_final_state.py::test_report_author_without_resources
+PASSED ../tests/test_final_state.py::test_report_author_not_found
+PASSED ../tests/test_final_state.py::test_report_author_hostile_name
+PASSED ../tests/test_final_state.py::test_usage_errors
+PASSED ../tests/test_final_state.py::test_reports_reflect_live_database
+PASSED ../tests/test_final_state.py::test_strict_typecheck_passes
+PASSED ../tests/test_final_state.py::test_tsconfig_still_strict
+PASSED ../tests/test_final_state.py::test_source_has_no_escape_hatches_or_raw_edgeql
+PASSED ../tests/test_final_state.py::test_source_uses_generated_query_builder
+============================= 21 passed in 20.87s ==============================

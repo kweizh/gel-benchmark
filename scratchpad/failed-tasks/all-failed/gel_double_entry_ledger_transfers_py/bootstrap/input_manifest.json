@@ -1,0 +1,6 @@
+{
+  "library_name": "Gel",
+  "task_name": "gel_double_entry_ledger_transfers_py",
+  "research_plan_path": "plan.md",
+  "output_dir": "scratchpad/pending-tasks"
+}

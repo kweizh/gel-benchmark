@@ -1,0 +1,30 @@
+module default {
+  type Article {
+    required slug: str {
+      constraint exclusive;
+    }
+    required title: str;
+    required summary: str;
+    required body: str;
+    required section: str;
+    required published: bool;
+
+    index fts::index on ((
+      fts::with_options(
+        .title,
+        language := fts::Language.eng,
+        weight_category := fts::Weight.A
+      ),
+      fts::with_options(
+        .summary,
+        language := fts::Language.eng,
+        weight_category := fts::Weight.B
+      ),
+      fts::with_options(
+        .body,
+        language := fts::Language.eng,
+        weight_category := fts::Weight.C
+      )
+    ));
+  }
+}

@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 14 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_project_manifest_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_exists PASSED
+../bootstrap/test_initial_state.py::test_initial_schema_is_loose PASSED
+../bootstrap/test_initial_state.py::test_single_initial_migration_file PASSED
+../bootstrap/test_initial_state.py::test_source_dump_present PASSED
+../bootstrap/test_initial_state.py::test_fresh_dump_not_created_yet PASSED
+../bootstrap/test_initial_state.py::test_report_script_not_created_yet PASSED
+../bootstrap/test_initial_state.py::test_main_branch_exists_and_recovered_does_not PASSED
+../bootstrap/test_initial_state.py::test_main_branch_holds_damaged_data PASSED
+../bootstrap/test_initial_state.py::test_main_branch_has_cleared_origin_links PASSED
+../bootstrap/test_initial_state.py::test_main_branch_has_single_migration PASSED
+
+============================= 14 passed in 47.44s ==============================

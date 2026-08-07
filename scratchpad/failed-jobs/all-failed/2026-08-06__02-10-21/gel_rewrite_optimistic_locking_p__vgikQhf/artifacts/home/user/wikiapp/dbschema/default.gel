@@ -1,0 +1,80 @@
+module default {
+
+    # A wiki page.  The version counter and all timestamp bookkeeping are
+    # enforced by the schema itself (mutation rewrites), so that no client --
+    # not even a raw query typed into the shell -- can forge or skip a
+    # version.  Every accepted mutation also leaves an immutable entry in
+    # DocumentRevision through the `record_history` trigger.
+    type Document {
+        required property slug: str {
+            constraint exclusive;
+        }
+        required property title: str;
+        required property body: str;
+
+        # Revision counter.  Always starts at 1 on insert and is always
+        # exactly one greater than the previous value on update, regardless
+        # of any value the client tries to assign.
+        required property revision: int64 {
+            rewrite insert using (1);
+            rewrite update using (__old__.revision + 1);
+        }
+
+        # created_at: stamped at insert, never altered by any later update.
+        required property created_at: datetime {
+            rewrite insert using (datetime_of_statement());
+            rewrite update using (__old__.created_at);
+        }
+
+        # modified_at: stamped at insert and re-stamped by every update.
+        required property modified_at: datetime {
+            rewrite insert using (datetime_of_statement());
+            rewrite update using (datetime_of_statement());
+        }
+
+        # title_modified_at: stamped at insert; on update re-stamped only
+        # when the update explicitly assigns `title` (even to the same
+        # value), otherwise kept from before.
+        required property title_modified_at: datetime {
+            rewrite insert using (datetime_of_statement());
+            rewrite update using (
+                datetime_of_statement() if __specified__.title
+                else __old__.title_modified_at
+            );
+        }
+
+        # last_editor: the author of the most recent accepted change.  Set by
+        # the application on every create/update.
+        required property last_editor: str;
+
+        # Immutable revision history.  Fires after every insert and update.
+        # __new__ already reflects the rewritten (final) values, so the
+        # recorded revision/title/body are the *resulting* ones and the
+        # author is the last_editor of the change.
+        trigger record_history after insert, update for each do (
+            insert DocumentRevision {
+                document := __new__,
+                revision := __new__.revision,
+                title := __new__.title,
+                body := __new__.body,
+                author := __new__.last_editor,
+            }
+        );
+    }
+
+    # An immutable snapshot of a document at a particular revision.
+    type DocumentRevision {
+        required link document: Document;
+        required property revision: int64;
+        required property title: str;
+        required property body: str;
+        required property author: str;
+        property recorded_at: datetime {
+            default := datetime_of_statement();
+        }
+
+        # No two rows may share the same (document, revision).  A duplicate
+        # insert is rejected by the database as a constraint violation.
+        constraint exclusive on ((__subject__.document, __subject__.revision));
+    }
+}

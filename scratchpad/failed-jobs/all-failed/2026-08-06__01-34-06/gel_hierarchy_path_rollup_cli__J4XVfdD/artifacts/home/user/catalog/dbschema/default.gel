@@ -1,0 +1,97 @@
+module default {
+  type Category {
+    required slug: str;
+    required name: str;
+    parent: Category;
+    required depth: int64 {
+      rewrite insert using (
+        .parent.depth + 1 if exists .parent else 0
+      )
+    }
+    required path: str {
+      rewrite insert using (
+        .parent.path ++ '/' ++ .slug if exists .parent else '/' ++ .slug
+      )
+    }
+    constraint exclusive on (.path);
+    multi children := .<parent[IS Category];
+    multi ancestors := (
+      .parent union .parent.ancestors
+    );
+  }
+
+  type Product {
+    required sku: str {
+      constraint exclusive;
+    }
+    required name: str;
+    required price: decimal;
+    required stock: int64;
+    required category: Category;
+  }
+
+  type Relocation {
+    required category: Category;
+    new_parent: Category;
+    required from_path: str {
+      rewrite insert using (
+        __subject__.category.path
+      )
+    }
+    required to_path: str {
+      rewrite insert using (
+        __subject__.new_parent.path ++ '/' ++ __subject__.category.slug
+        if exists __subject__.new_parent else
+        '/' ++ __subject__.category.slug
+      )
+    }
+
+    trigger reject_cycles after insert for each do (
+      with
+        cat := __new__.category,
+        new_par := __new__.new_parent,
+      assert(
+        not (
+          new_par = cat
+          or (exists new_par and new_par.path like (cat.path ++ '/%'))
+        ),
+        message := 'CATEGORY_CYCLE'
+      )
+    );
+
+    trigger apply_relocation after insert for each do (
+      with
+        cat := __new__.category,
+        new_par := __new__.new_parent,
+        from_p := __new__.from_path,
+        to_p := __new__.to_path,
+        from_d := cat.depth,
+        to_d := (
+          new_par.depth + 1 if exists new_par else 0
+        ),
+        # Update the moved category itself
+        moved := (
+          update Category
+          filter .id = cat.id
+          set {
+            parent := new_par,
+            path := to_p,
+            depth := to_d
+          }
+        ),
+        # Update all descendants in one shot
+        descendants := (
+          update Category
+          filter .path like (from_p ++ '/%')
+          set {
+            path := to_p ++ .path[len(from_p):],
+            depth := .depth - from_d + to_d
+          }
+        ),
+      select {
+        moved := moved,
+        descendants := descendants
+      }
+    );
+  }
+}

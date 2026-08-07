@@ -1,0 +1,84 @@
+[37m2026-08-05 18:11:17.084[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	pochi v0.6.20
+[37m2026-08-05 18:11:17.090[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	PochiConfigManager[39m[22m[0m[0m	add workspace config: /root/.pochi/config.jsonc
+[37m2026-08-05 18:11:17.208[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	BuiltInBundle[39m[22m[0m[0m	Materializing 16 built-in files to /tmp/pochi-builtin-ef402bc2bbe8f440
+[37m2026-08-05 18:11:17.433[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:532913[39m[0m[0m[1m[37m	loadAgents[39m[22m[0m[0m	Loaded 6 custom agents (6 valid, 0 invalid)
+[37m2026-08-05 18:11:17.525[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:532914[39m[0m[0m[1m[37m	loadSkills[39m[22m[0m[0m	Loaded 3 skills (3 valid, 0 invalid)
+[37m2026-08-05 18:11:17.561[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:443306[39m[0m[0m[1m[37m	PochiVendor[39m[22m[0m[0m	JWT is expiring or missing, fetching a new one
+[37m2026-08-05 18:11:18.832[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:419194[39m[0m[0m[1m[37m	MCPHub[39m[22m[0m[0m	MCP servers configuration changed via signal:
+[37m2026-08-05 18:11:18.833[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:419306[39m[0m[0m[1m[37m	MCPHub[39m[22m[0m[0m	Build MCPHub Status
+[37m2026-08-05 18:11:19.026[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Starting task runner...
+[37m2026-08-05 18:11:19.172[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:490790[39m[0m[0m[1m[37m	generateTaskTitle[39m[22m[0m[0m	Generating task title, old: null, new: # Optimistic Locking for a Wiki Document Store (Gel 6 + async Python client)
+[37m2026-08-05 18:11:32.040[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531016[39m[0m[0m[1m[37m	listFiles[39m[22m[0m[0m	handling listFile with dirPath /home/user/wikiapp and recursive [33mtrue[39m
+[37m2026-08-05 18:11:32.053[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:439419[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Tool call executeCommand (chatcmpl-tool-a10591b6f008dfe7) cancelled: previous-tool-call-failed
+[37m2026-08-05 18:11:33.886[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:490790[39m[0m[0m[1m[37m	generateTaskTitle[39m[22m[0m[0m	Generating task title, old: # Optimistic Locking for a Wiki Document Store (Gel 6 + async Python client), new: Implement optimistic locking for a wiki document store with Gel 6 and async Python
+[37m2026-08-05 18:12:19.842[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:439419[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Tool call webSearch (chatcmpl-tool-8bd659fef347a3a3) cancelled: previous-tool-call-failed
+[37m2026-08-05 18:22:43.866[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/wikiapp/dbschema/default.gel" resolvedPath="/home/user/wikiapp/dbschema/default.gel" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 18:22:43.867[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 18:22:43.902[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/wikiapp/dbschema/default.gel" mtime=1785949340484 contentLen=19
+[37m2026-08-05 18:44:43.623[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:437756[39m[0m[0m[1m[37m	LiveChatKit[39m[22m[0m[0m	onError
+
+[97m[101m[1m Error [22m[49m[39m[0m[0m The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(), ECONNRESET, https://app.getpochi.com/api/chat/v6/stream, 0[0m[0m
+error stack:
+[0m[0m
+[37m2026-08-05 18:44:43.655[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:532388[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Task is failed, trying to resend last message to resume it. {
+  kind: [32m'InternalError'[39m,
+  message: [32m'The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()'[39m
+}
+[37m2026-08-05 18:44:57.650[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:437756[39m[0m[0m[1m[37m	LiveChatKit[39m[22m[0m[0m	onError
+
+[97m[101m[1m Error [22m[49m[39m[0m[0m The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(), ECONNRESET, https://app.getpochi.com/api/chat/v6/stream, 0[0m[0m
+error stack:
+[0m[0m
+[37m2026-08-05 18:45:03.724[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:532388[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Task is failed, trying to resend last message to resume it. {
+  kind: [32m'InternalError'[39m,
+  message: [32m'The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()'[39m
+}
+[37m2026-08-05 18:47:27.666[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:437756[39m[0m[0m[1m[37m	LiveChatKit[39m[22m[0m[0m	onError
+
+[97m[101m[1m Error [22m[49m[39m[0m[0m The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(), ECONNRESET, https://app.getpochi.com/api/chat/v6/stream, 0[0m[0m
+error stack:
+[0m[0m
+[37m2026-08-05 18:47:27.696[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:532388[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Task is failed, trying to resend last message to resume it. {
+  kind: [32m'InternalError'[39m,
+  message: [32m'The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()'[39m
+}
+[37m2026-08-05 18:48:12.254[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:437756[39m[0m[0m[1m[37m	LiveChatKit[39m[22m[0m[0m	onError
+
+[97m[101m[1m Error [22m[49m[39m[0m[0m The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(), ECONNRESET, https://app.getpochi.com/api/chat/v6/stream, 0[0m[0m
+error stack:
+[0m[0m
+[37m2026-08-05 18:48:18.318[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:532388[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Task is failed, trying to resend last message to resume it. {
+  kind: [32m'InternalError'[39m,
+  message: [32m'The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()'[39m
+}
+[37m2026-08-05 18:48:27.535[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:437756[39m[0m[0m[1m[37m	LiveChatKit[39m[22m[0m[0m	onError
+
+[97m[101m[1m Error [22m[49m[39m[0m[0m The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(), ECONNRESET, https://app.getpochi.com/api/chat/v6/stream, 0[0m[0m
+error stack:
+[0m[0m
+[37m2026-08-05 18:48:39.594[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:532388[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Task is failed, trying to resend last message to resume it. {
+  kind: [32m'InternalError'[39m,
+  message: [32m'The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()'[39m
+}
+[37m2026-08-05 18:51:27.804[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:437756[39m[0m[0m[1m[37m	LiveChatKit[39m[22m[0m[0m	onError
+
+[97m[101m[1m Error [22m[49m[39m[0m[0m The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(), ECONNRESET, https://app.getpochi.com/api/chat/v6/stream, 0[0m[0m
+error stack:
+[0m[0m
+[37m2026-08-05 18:51:27.847[39m[0m[0m	[31m[1mERROR[22m[39m[0m[0m	[37m/$bunfs/pochi:532388[39m[0m[0m[1m[37m	TaskRunner[39m[22m[0m[0m	Task is failed, trying to resend last message to resume it. {
+  kind: [32m'InternalError'[39m,
+  message: [32m'The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()'[39m
+}
+[37m2026-08-05 18:58:36.868[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/wikiapp/docstore.py" resolvedPath="/home/user/wikiapp/docstore.py" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 18:58:36.869[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState={startLine=undefined, endLine=undefined, timestamp=1785955784073}
+[37m2026-08-05 18:58:47.987[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/wikiapp/docstore.py" mtime=1785955784073 contentLen=9307
+[37m2026-08-05 18:59:45.886[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/wikiapp/wikicli.py" resolvedPath="/home/user/wikiapp/wikicli.py" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 18:59:45.886[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState={startLine=undefined, endLine=undefined, timestamp=1785955813900}
+[37m2026-08-05 18:59:46.185[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/wikiapp/wikicli.py" mtime=1785955813900 contentLen=6067
+[37m2026-08-05 19:03:47.083[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/wikiapp/dbschema/default.gel" resolvedPath="/home/user/wikiapp/dbschema/default.gel" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 19:03:47.083[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState={startLine=undefined, endLine=undefined, timestamp=1785954173243}
+[37m2026-08-05 19:03:47.267[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/wikiapp/dbschema/default.gel" mtime=1785954173243 contentLen=3305
+[37m2026-08-05 19:06:02.167[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Task runner finished successfully.
+[37m2026-08-05 19:06:02.167[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Shutting down...
+[37m2026-08-05 19:06:17.305[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Shutdown completed. Process will exit.
+[37m2026-08-05 19:06:17.305[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Process exiting with code 0

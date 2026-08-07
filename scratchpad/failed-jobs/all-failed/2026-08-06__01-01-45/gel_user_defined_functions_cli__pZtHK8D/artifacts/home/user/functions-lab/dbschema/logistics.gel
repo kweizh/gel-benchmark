@@ -1,0 +1,95 @@
+module logistics {
+  scalar type shipping_tier extending std::enum<Ground, Express, Overnight>;
+
+  scalar type sku_code extending std::str {
+    constraint std::regexp(r'^SKU-[0-9]{4}$') {
+      errmessage := 'sku must match SKU-0000';
+    }
+  }
+
+  abstract constraint multiple_of(step: std::int64) {
+    using (__subject__ % step = 0);
+    errmessage := 'weight must be a multiple of {step} grams';
+  }
+
+  scalar type packable_grams extending std::int64 {
+    constraint std::min_value(50) {
+      errmessage := 'weight must be at least 50 grams';
+    }
+    constraint multiple_of(50);
+  }
+
+  function billable_grams(grams: std::int64, tier: logistics::shipping_tier) -> std::int64 {
+    using (
+      with
+        factor := (
+          if tier = logistics::shipping_tier.Ground then 1.00
+          else if tier = logistics::shipping_tier.Express then 1.25
+          else 1.50
+        ),
+        floor := (
+          if tier = logistics::shipping_tier.Ground then 500
+          else if tier = logistics::shipping_tier.Express then 1000
+          else 2000
+        ),
+        calculated := <std::int64>std::math::ceil(grams * factor)
+      select
+        if calculated > floor then calculated else floor
+    );
+    volatility := 'Immutable';
+  }
+
+  function billable_grams(grams: std::int64) -> std::int64 {
+    using (
+      with
+        calculated := <std::int64>std::math::ceil(grams * 1.00)
+      select
+        if calculated > 500 then calculated else 500
+    );
+    volatility := 'Immutable';
+  }
+
+  function quote_cents(grams: std::int64, tier: logistics::shipping_tier, named only insured: std::bool = false) -> std::int64 {
+    using (
+      with
+        chargeable := logistics::billable_grams(grams, tier),
+        rate := (
+          if tier = logistics::shipping_tier.Ground then 4
+          else if tier = logistics::shipping_tier.Express then 9
+          else 15
+        ),
+        base_price := chargeable * rate // 100
+      select
+        if insured then base_price + 250 else base_price
+    );
+    volatility := 'Immutable';
+  }
+
+  function batch_total_cents(variadic quotes: std::int64) -> std::int64 {
+    using (
+      std::sum(array_unpack(quotes))
+    );
+    volatility := 'Immutable';
+  }
+
+  function heaviest_grams(parcels: array<std::int64>) -> optional std::int64 {
+    using (
+      std::max(array_unpack(parcels))
+    );
+    volatility := 'Immutable';
+  }
+
+  function delivery_note(tier: logistics::shipping_tier, hint: optional std::str) -> std::str {
+    using (
+      std::str_lower(<std::str>tier) ++ '/' ++ (hint ?? 'default')
+    );
+    volatility := 'Immutable';
+  }
+
+  function tariff_version() -> std::str {
+    using (
+      '2026.02'
+    );
+    volatility := 'Stable';
+  }
+}

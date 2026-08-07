@@ -1,0 +1,1044 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 22 items
+
+../tests/test_final_state.py .FFFFFFFFFFFFFFFFFFFFF                      [100%]
+
+=================================== FAILURES ===================================
+_____________________ test_migrations_created_and_applied ______________________
+
+server = True
+
+    def test_migrations_created_and_applied(server):
+        files = sorted(glob.glob(os.path.join(MIGRATIONS_DIR, "*.edgeql")))
+>       assert len(files) >= 2, (
+            "At least two migration files are expected in "
+            f"{MIGRATIONS_DIR} (the baked one plus yours), found {files}."
+        )
+E       AssertionError: At least two migration files are expected in /home/user/prefsvc/dbschema/migrations (the baked one plus yours), found ['/home/user/prefsvc/dbschema/migrations/00001-m1bsxpw.edgeql'].
+E       assert 1 >= 2
+E        +  where 1 = len(['/home/user/prefsvc/dbschema/migrations/00001-m1bsxpw.edgeql'])
+
+/tests/test_final_state.py:412: AssertionError
+__________________________ test_prefuser_schema_shape __________________________
+
+server = True
+
+    def test_prefuser_schema_shape(server):
+        rows = gel_query(
+            "select schema::ObjectType { name, ptrs := .pointers.name } "
+            "filter .name = 'default::PrefUser'"
+        )
+        assert len(rows) == 1, f"default::PrefUser must exist, introspection returned {rows!r}"
+        names = set(rows[0]["ptrs"])
+        for expected in ["email", "preferences", "version", "updated_at", "history"]:
+>           assert expected in names, (
+                f"default::PrefUser must expose `{expected}`; it has {sorted(names)}."
+            )
+E           AssertionError: default::PrefUser must expose `version`; it has ['__type__', 'email', 'id', 'preferences'].
+E           assert 'version' in {'__type__', 'email', 'id', 'preferences'}
+
+/tests/test_final_state.py:443: AssertionError
+_________________________ test_prefchange_schema_shape _________________________
+
+server = True
+
+    def test_prefchange_schema_shape(server):
+        rows = gel_query(
+            "select schema::ObjectType { "
+            "name, pointers: { name, [is schema::Link].target: { name } } "
+            "} filter .name = 'default::PrefChange'"
+        )
+>       assert len(rows) == 1, f"default::PrefChange must exist, introspection returned {rows!r}"
+E       AssertionError: default::PrefChange must exist, introspection returned []
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:471: AssertionError
+__________________ test_prefchange_version_is_unique_per_user __________________
+
+server = True
+
+    def test_prefchange_version_is_unique_per_user(server):
+        insert_query = (
+            "insert PrefChange { "
+            "user := (select PrefUser filter .email = 'barbara@example.com'), "
+            "version := 9999, patch := to_json('{}'), previous := to_json('{}'), "
+            "current := to_json('{}') }"
+        )
+        try:
+            first = _run(["gel", "query", "-F", "json-lines", insert_query], timeout=180)
+>           assert first.returncode == 0, (
+                "Inserting a PrefChange with only user/version/patch/previous/current must "
+                f"work.\nstdout: {first.stdout}\nstderr: {first.stderr}"
+            )
+E           AssertionError: Inserting a PrefChange with only user/version/patch/previous/current must work.
+E             stdout: 
+E             stderr: error: InvalidReferenceError: object type or alias 'default::PrefChange' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ insert PrefChange { user := (select PrefUser filter .email = 'barbara@example.com'), version := 9999, patch := to_json('{}'), previous := to_json('{}'), current := to_json('{}') }
+E               │        ^^^^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json-lines', "insert PrefChange { user := (select PrefUser filter .email... 9999, patch := to_json('{}'), previous := to_json('{}'), current := to_json('{}') }\n  │        ^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:517: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+server = True
+
+    def test_prefchange_version_is_unique_per_user(server):
+        insert_query = (
+            "insert PrefChange { "
+            "user := (select PrefUser filter .email = 'barbara@example.com'), "
+            "version := 9999, patch := to_json('{}'), previous := to_json('{}'), "
+            "current := to_json('{}') }"
+        )
+        try:
+            first = _run(["gel", "query", "-F", "json-lines", insert_query], timeout=180)
+            assert first.returncode == 0, (
+                "Inserting a PrefChange with only user/version/patch/previous/current must "
+                f"work.\nstdout: {first.stdout}\nstderr: {first.stderr}"
+            )
+            second = _run(["gel", "query", "-F", "json-lines", insert_query], timeout=180)
+            assert second.returncode != 0, (
+                "Recording the same (user, version) pair twice must be rejected by the "
+                f"exclusive constraint, but the second insert succeeded: {second.stdout}"
+            )
+            combined = (second.stdout + second.stderr).lower()
+            assert "violat" in combined or "exclusive" in combined, (
+                "The second insert failed, but not with a constraint violation: "
+                f"{second.stdout} {second.stderr}"
+            )
+        finally:
+            cleanup = _run(
+                ["gel", "query", "-F", "json-lines", "delete PrefChange filter .version = 9999"],
+                timeout=180,
+            )
+>           assert cleanup.returncode == 0, (
+                f"Failed to clean up the probe PrefChange rows: {cleanup.stderr}"
+            )
+E           AssertionError: Failed to clean up the probe PrefChange rows: error: InvalidReferenceError: object type or alias 'default::PrefChange' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete PrefChange filter .version = 9999
+E               │        ^^^^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json-lines', 'delete PrefChange filter .version = 9999'], returncode=1, ... does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete PrefChange filter .version = 9999\n  │        ^^^^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:536: AssertionError
+___________________ test_seeded_data_survived_the_migration ____________________
+
+server = True
+
+    def test_seeded_data_survived_the_migration(server):
+        counted = gel_query("select count(PrefUser)")
+        assert counted and counted[0] == 9, (
+            f"All nine seeded PrefUser objects must still exist, got {counted!r}"
+        )
+        for email in ["dennis@example.com", "katherine@example.com"]:
+>           doc, version = stored_doc(email)
+                           ^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:547: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:247: in stored_doc
+    rows = gel_query(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "select PrefUser { preferences, version } filter .email = 'dennis@example.com'"
+timeout = 180
+
+    def gel_query(query, timeout=180):
+        proc = _run(["gel", "query", "-F", "json-lines", query], timeout=timeout)
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed: {query}\nstdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed: select PrefUser { preferences, version } filter .email = 'dennis@example.com'
+E         stdout: 
+E         stderr: error: InvalidReferenceError: object type 'default::PrefUser' has no link or property 'version'
+E           ┌─ <query>:1:32
+E           │
+E         1 │ select PrefUser { preferences, version } filter .email = 'dennis@example.com'
+E           │                                ^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json-lines', "select PrefUser { preferences, version } filter .email = '...r { preferences, version } filter .email = 'dennis@example.com'\n  │                                ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:121: AssertionError
+_________________________ test_pure_merge_patch_matrix _________________________
+
+probe = <function probe.<locals>.run_cases at 0x79d695610360>
+
+    def test_pure_merge_patch_matrix(probe):
+        cases = [
+            {"kind": "merge", "target": target, "patch": patch}
+            for target, patch, _ in MERGE_CASES
+        ]
+        results = probe(cases)
+        for (target, patch, expected), result in zip(MERGE_CASES, results):
+>           assert result.get("ok") is True, (
+                f"mergePatch({target!r}, {patch!r}) raised: {result.get('error')!r}"
+            )
+E           AssertionError: mergePatch({'a': {'b': 1, 'c': 2}}, {'a': {'c': 3}}) raised: 'mod.mergePatch is not a function'
+E           assert False is True
+E            +  where False = <built-in method get of dict object at 0x79d69546eb80>('ok')
+E            +    where <built-in method get of dict object at 0x79d69546eb80> = {'error': 'mod.mergePatch is not a function', 'ok': False}.get
+
+/tests/test_final_state.py:584: AssertionError
+_______________ test_pure_merge_patch_does_not_mutate_arguments ________________
+
+probe = <function probe.<locals>.run_cases at 0x79d695610360>
+
+    def test_pure_merge_patch_does_not_mutate_arguments(probe):
+        cases = [
+            {"kind": "merge", "target": target, "patch": patch}
+            for target, patch, _ in MERGE_CASES
+        ]
+        results = probe(cases)
+        for (target, patch, _expected), result in zip(MERGE_CASES, results):
+>           assert result.get("mutated") is False, (
+                f"mergePatch must be pure, but it mutated its arguments for target={target!r} "
+                f"patch={patch!r}"
+            )
+E           AssertionError: mergePatch must be pure, but it mutated its arguments for target={'a': {'b': 1, 'c': 2}} patch={'a': {'c': 3}}
+E           assert None is False
+E            +  where None = <built-in method get of dict object at 0x79d695539080>('mutated')
+E            +    where <built-in method get of dict object at 0x79d695539080> = {'error': 'mod.mergePatch is not a function', 'ok': False}.get
+
+/tests/test_final_state.py:600: AssertionError
+_______________________ test_pure_effective_preferences ________________________
+
+probe = <function probe.<locals>.run_cases at 0x79d695610360>
+
+    def test_pure_effective_preferences(probe):
+        results = probe([{"kind": "effective", "stored": doc} for doc in EFFECTIVE_CASES])
+        for stored, result in zip(EFFECTIVE_CASES, results):
+>           assert result.get("ok") is True, (
+                f"effectivePreferences({stored!r}) raised: {result.get('error')!r}"
+            )
+E           AssertionError: effectivePreferences({}) raised: 'mod.effectivePreferences is not a function'
+E           assert False is True
+E            +  where False = <built-in method get of dict object at 0x79d695b176c0>('ok')
+E            +    where <built-in method get of dict object at 0x79d695b176c0> = {'error': 'mod.effectivePreferences is not a function', 'ok': False}.get
+
+/tests/test_final_state.py:617: AssertionError
+____________________ test_module_exports_and_error_taxonomy ____________________
+
+probe = <function probe.<locals>.run_cases at 0x79d695610360>
+
+    def test_module_exports_and_error_taxonomy(probe):
+        names = [
+            "SYSTEM_DEFAULTS",
+            "mergePatch",
+            "effectivePreferences",
+            "applyPatch",
+            "readPreferences",
+            "readHistory",
+            "PreferenceError",
+            "MalformedPatchError",
+            "UnknownUserError",
+            "UnknownNamespaceError",
+            "TypeMismatchError",
+            "StaleVersionError",
+        ]
+        error_names = [
+            "MalformedPatchError",
+            "UnknownUserError",
+            "UnknownNamespaceError",
+            "TypeMismatchError",
+            "StaleVersionError",
+        ]
+        result = probe([{"kind": "exports", "names": names, "errorNames": error_names}])[0]
+        assert result.get("ok") is True, f"Inspecting the module exports failed: {result!r}"
+        value = result["value"]
+    
+        for func in [
+            "mergePatch",
+            "effectivePreferences",
+            "applyPatch",
+            "readPreferences",
+            "readHistory",
+        ]:
+>           assert value["kinds"].get(func) == "function", (
+                f"src/prefs.ts must export `{func}` as a function, got "
+                f"{value['kinds'].get(func)!r}"
+            )
+E           AssertionError: src/prefs.ts must export `mergePatch` as a function, got 'undefined'
+E           assert 'undefined' == 'function'
+E             
+E             - function
+E             + undefined
+
+/tests/test_final_state.py:674: AssertionError
+_____________________ test_cli_read_and_effective_layering _____________________
+
+server = True
+
+    def test_cli_read_and_effective_layering(server):
+>       responses = cli(
+            [
+                {"op": "read", "email": "grace@example.com"},
+                {"op": "read", "email": "hedy@example.com"},
+            ]
+        )
+
+/tests/test_final_state.py:706: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'grace@example.com', 'op': 'read'}, {'email': 'hedy@example.com', 'op': 'read'}]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "read", "email": "grace@example.com"}
+E         {"op": "read", "email": "hedy@example.com"}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+________________________ test_cli_patch_matrix_for_ada _________________________
+
+server = True
+
+    def test_cli_patch_matrix_for_ada(server):
+        email = "ada@example.com"
+        requests_ = [
+            {"op": "patch", "email": email, "patch": patch} for patch in ADA_PATCHES
+        ]
+        requests_.append({"op": "read", "email": email})
+>       responses = cli(requests_)
+                    ^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:759: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'ada@example.com', 'op': 'patch', 'patch': {'ui': {'sidebar': {'visible': False}}}}, {'email': 'ada@example...il': 'ada@example.com', 'op': 'patch', 'patch': {'ui': {'pinned': ['c']}}}, {'email': 'ada@example.com', 'op': 'read'}]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "ada@example.com", "patch": {"ui": {"sidebar": {"visible": false}}}}
+E         {"op": "patch", "email": "ada@example.com", "patch": {"ui": {"theme": null}, "editor": {"soft_wrap": false}}}
+E         {"op": "patch", "email": "ada@example.com", "patch": {"ui": {"pinned": ["a", "b"]}}}
+E         {"op": "patch", "email": "ada@example.com", "patch": {"ui": {"pinned": ["c"]}}}
+E         {"op": "read", "email": "ada@example.com"}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+________________________ test_cli_history_chain_for_ada ________________________
+
+server = True
+
+    def test_cli_history_chain_for_ada(server):
+        email = "ada@example.com"
+>       entries = assert_history(cli([{"op": "history", "email": email}])[0], email)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:798: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'ada@example.com', 'op': 'history'}], timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "history", "email": "ada@example.com"}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+_________________ test_cli_noop_patch_is_idempotent_for_grace __________________
+
+server = True
+
+    def test_cli_noop_patch_is_idempotent_for_grace(server):
+        email = "grace@example.com"
+        patch = {"ui": {"theme": "dark"}}
+>       responses = cli(
+            [
+                {"op": "patch", "email": email, "patch": {}},
+                {"op": "patch", "email": email, "patch": patch},
+                {"op": "patch", "email": email, "patch": patch},
+                {"op": "history", "email": email},
+            ]
+        )
+
+/tests/test_final_state.py:838: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'grace@example.com', 'op': 'patch', 'patch': {}}, {'email': 'grace@example.com', 'op': 'patch', 'patch': {'...race@example.com', 'op': 'patch', 'patch': {'ui': {'theme': 'dark'}}}, {'email': 'grace@example.com', 'op': 'history'}]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "grace@example.com", "patch": {}}
+E         {"op": "patch", "email": "grace@example.com", "patch": {"ui": {"theme": "dark"}}}
+E         {"op": "patch", "email": "grace@example.com", "patch": {"ui": {"theme": "dark"}}}
+E         {"op": "history", "email": "grace@example.com"}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+___________ test_cli_empty_namespace_object_is_created_for_katherine ___________
+
+server = True
+
+    def test_cli_empty_namespace_object_is_created_for_katherine(server):
+        email = "katherine@example.com"
+>       responses = cli(
+            [
+                {"op": "patch", "email": email, "patch": {"ui": {}}},
+                {"op": "patch", "email": email, "patch": {"ui": {}}},
+            ]
+        )
+
+/tests/test_final_state.py:879: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'katherine@example.com', 'op': 'patch', 'patch': {'ui': {}}}, {'email': 'katherine@example.com', 'op': 'patch', 'patch': {'ui': {}}}]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "katherine@example.com", "patch": {"ui": {}}}
+E         {"op": "patch", "email": "katherine@example.com", "patch": {"ui": {}}}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+____________ test_cli_rejects_invalid_patches_without_side_effects _____________
+
+server = True
+
+    def test_cli_rejects_invalid_patches_without_side_effects(server):
+        email = "alan@example.com"
+        accepted = {"editor": {"nickname": "vimmy", "tab_size": 8}}
+        requests_ = [{"op": "patch", "email": email, "patch": patch} for patch, _ in REJECTIONS]
+        requests_.append({"op": "patch", "email": "nobody@example.com", "patch": {"ui": {}}})
+        requests_.append({"op": "read", "email": email})
+        requests_.append({"op": "history", "email": email})
+        requests_.append({"op": "patch", "email": email, "patch": accepted})
+>       responses = cli(requests_)
+                    ^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:927: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'alan@example.com', 'op': 'patch', 'patch': {'experiments': {'beta': True}}}, {'email': 'alan@example.com',...': {'pinned': {'first': 1}}}}, {'email': 'alan@example.com', 'op': 'patch', 'patch': {'ui': {'sidebar': [1, 2]}}}, ...]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "alan@example.com", "patch": {"experiments": {"beta": true}}}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"experiments": null}}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"editor": {"tab_size": "4"}}}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"ui": {"sidebar": {"visible": "yes"}}}}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"ui": {"pinned": {"first": 1}}}}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"ui": {"sidebar": [1, 2]}}}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"notifications": {"push": {"enabled": 1}}}}
+E         {"op": "patch", "email": "nobody@example.com", "patch": {"ui": {}}}
+E         {"op": "read", "email": "alan@example.com"}
+E         {"op": "history", "email": "alan@example.com"}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"editor": {"nickname": "vimmy", "tab_size": 8}}}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+_____________________ test_cli_rejects_malformed_requests ______________________
+
+server = True
+
+    def test_cli_rejects_malformed_requests(server):
+        email = "alan@example.com"
+        malformed = [
+            {"op": "patch", "email": email},
+            {"op": "patch", "email": email, "patch_text": "{oops"},
+            {"op": "patch", "email": email, "patch": [1, 2]},
+            {"op": "patch", "email": email, "patch": {}, "patch_text": "{}"},
+            {"op": "patch", "email": email, "patch": {"ui": {}}, "expected_version": "1"},
+            {"op": "purge", "email": email},
+        ]
+>       responses = cli(malformed + [{"op": "read", "email": email}])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:981: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'alan@example.com', 'op': 'patch'}, {'email': 'alan@example.com', 'op': 'patch', 'patch_text': '{oops'}, {'....com', 'expected_version': '1', 'op': 'patch', 'patch': {'ui': {}}}, {'email': 'alan@example.com', 'op': 'purge'}, ...]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "alan@example.com"}
+E         {"op": "patch", "email": "alan@example.com", "patch_text": "{oops"}
+E         {"op": "patch", "email": "alan@example.com", "patch": [1, 2]}
+E         {"op": "patch", "email": "alan@example.com", "patch": {}, "patch_text": "{}"}
+E         {"op": "patch", "email": "alan@example.com", "patch": {"ui": {}}, "expected_version": "1"}
+E         {"op": "purge", "email": "alan@example.com"}
+E         {"op": "read", "email": "alan@example.com"}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+___________________ test_cli_rejects_stale_expected_version ____________________
+
+server = True
+
+    def test_cli_rejects_stale_expected_version(server):
+        email = "linus@example.com"
+        patch = {"notifications": {"batch_size": 50}}
+>       responses = cli(
+            [
+                {"op": "patch", "email": email, "patch": patch, "expected_version": 5},
+                {"op": "patch", "email": email, "patch": patch, "expected_version": 0},
+                {
+                    "op": "patch",
+                    "email": email,
+                    "patch": {"notifications": {"batch_size": 60}},
+                    "expected_version": 0,
+                },
+                {
+                    "op": "patch",
+                    "email": email,
+                    "patch": {"nope": {"x": 1}},
+                    "expected_version": 7,
+                },
+                {"op": "history", "email": email},
+                {"op": "read", "email": email},
+            ]
+        )
+
+/tests/test_final_state.py:1002: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'linus@example.com', 'expected_version': 5, 'op': 'patch', 'patch': {'notifications': {'batch_size': 50}}},...h': {'nope': {'x': 1}}}, {'email': 'linus@example.com', 'op': 'history'}, {'email': 'linus@example.com', 'op': 'read'}]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "linus@example.com", "patch": {"notifications": {"batch_size": 50}}, "expected_version": 5}
+E         {"op": "patch", "email": "linus@example.com", "patch": {"notifications": {"batch_size": 50}}, "expected_version": 0}
+E         {"op": "patch", "email": "linus@example.com", "patch": {"notifications": {"batch_size": 60}}, "expected_version": 0}
+E         {"op": "patch", "email": "linus@example.com", "patch": {"nope": {"x": 1}}, "expected_version": 7}
+E         {"op": "history", "email": "linus@example.com"}
+E         {"op": "read", "email": "linus@example.com"}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+______________________ test_cli_dry_run_does_not_persist _______________________
+
+server = True
+
+    def test_cli_dry_run_does_not_persist(server):
+        email = "hedy@example.com"
+        patch = {"ui": {"theme": "dark", "sidebar": {"width": 400}}}
+>       responses = cli(
+            [
+                {"op": "patch", "email": email, "patch": patch, "dry_run": True},
+                {"op": "read", "email": email},
+                {"op": "history", "email": email},
+                {
+                    "op": "patch",
+                    "email": email,
+                    "patch": {"editor": {"tab_size": True}},
+                    "dry_run": True,
+                },
+            ]
+        )
+
+/tests/test_final_state.py:1059: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'dry_run': True, 'email': 'hedy@example.com', 'op': 'patch', 'patch': {'ui': {'sidebar': {'width': 400}, 'theme': 'd...p': 'history'}, {'dry_run': True, 'email': 'hedy@example.com', 'op': 'patch', 'patch': {'editor': {'tab_size': True}}}]
+timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "hedy@example.com", "patch": {"ui": {"theme": "dark", "sidebar": {"width": 400}}}, "dry_run": true}
+E         {"op": "read", "email": "hedy@example.com"}
+E         {"op": "history", "email": "hedy@example.com"}
+E         {"op": "patch", "email": "hedy@example.com", "patch": {"editor": {"tab_size": true}}, "dry_run": true}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+____________________ test_concurrent_patches_are_serialized ____________________
+
+server = True
+
+    def test_concurrent_patches_are_serialized(server):
+        email = "edsger@example.com"
+    
+        def apply(patch):
+            return cli([{"op": "patch", "email": email, "patch": patch}], timeout=300)[0]
+    
+        started = time.time()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(CONCURRENT_PATCHES)) as pool:
+>           results = list(pool.map(apply, CONCURRENT_PATCHES))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/concurrent/futures/_base.py:619: in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:317: in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/usr/lib/python3.12/concurrent/futures/thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tests/test_final_state.py:1119: in apply
+    return cli([{"op": "patch", "email": email, "patch": patch}], timeout=300)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'edsger@example.com', 'op': 'patch', 'patch': {'ui': {'theme': 'dark'}}}]
+timeout = 300
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "patch", "email": "edsger@example.com", "patch": {"ui": {"theme": "dark"}}}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+________________ test_database_maintains_version_and_updated_at ________________
+
+server = True
+
+    def test_database_maintains_version_and_updated_at(server):
+        email = "barbara@example.com"
+>       before = gel_query(
+            f"select PrefUser {{ version, updated_at }} filter .email = '{email}'"
+        )
+
+/tests/test_final_state.py:1187: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "select PrefUser { version, updated_at } filter .email = 'barbara@example.com'"
+timeout = 180
+
+    def gel_query(query, timeout=180):
+        proc = _run(["gel", "query", "-F", "json-lines", query], timeout=timeout)
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed: {query}\nstdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed: select PrefUser { version, updated_at } filter .email = 'barbara@example.com'
+E         stdout: 
+E         stderr: error: InvalidReferenceError: object type 'default::PrefUser' has no link or property 'version'
+E           ┌─ <query>:1:19
+E           │
+E         1 │ select PrefUser { version, updated_at } filter .email = 'barbara@example.com'
+E           │                   ^^^^^^^ error
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json-lines', "select PrefUser { version, updated_at } filter .email = 'b...elect PrefUser { version, updated_at } filter .email = 'barbara@example.com'\n  │                   ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:121: AssertionError
+_______________ test_randomized_patch_sequence_matches_reference _______________
+
+server = True
+
+    def test_randomized_patch_sequence_matches_reference(server):
+        email = "hedy@example.com"
+        rng = random.Random(20260805)
+        patches = [copy.deepcopy(rng.choice(PATCH_POOL)) for _ in range(10)]
+    
+>       start = assert_read(cli([{"op": "read", "email": email}])[0], email)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1251: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requests_ = [{'email': 'hedy@example.com', 'op': 'read'}], timeout = 180
+
+    def cli(requests_, timeout=180):
+        """Feed JSON Lines requests to the service CLI and return parsed responses."""
+        payload = "".join(json.dumps(req) + "\n" for req in requests_)
+        proc = _run([os.path.join("node_modules", ".bin", "tsx"), os.path.join("src", "cli.ts")],
+                    cwd=PROJECT_DIR, timeout=timeout, stdin_data=payload)
+>       assert proc.returncode == 0, (
+            "`node_modules/.bin/tsx src/cli.ts` must exit 0.\n"
+            f"rc={proc.returncode}\nrequests: {payload}\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr[-4000:]}"
+        )
+E       AssertionError: `node_modules/.bin/tsx src/cli.ts` must exit 0.
+E         rc=1
+E         requests: {"op": "read", "email": "hedy@example.com"}
+E         
+E         stdout: 
+E         stderr: /home/user/prefsvc/src/prefs.ts:8
+E           throw new Error("prefsvc: " + what + " is not implemented");
+E                 ^
+E         
+E         
+E         Error: prefsvc: the preference service command line is not implemented
+E             at notImplemented (/home/user/prefsvc/src/prefs.ts:8:9)
+E             at <anonymous> (/home/user/prefsvc/src/cli.ts:3:1)
+E             at Object.<anonymous> (/home/user/prefsvc/src/cli.ts:3:53)
+E             at Module._compile (node:internal/modules/cjs/loader:1521:14)
+E             at Object.transformer (/home/user/prefsvc/node_modules/tsx/dist/register-BcxQ17Jo.cjs:9:3339)
+E             at Module.load (node:internal/modules/cjs/loader:1266:32)
+E             at Module._load (node:internal/modules/cjs/loader:1091:12)
+E             at cjsLoader (node:internal/modules/esm/translators:298:15)
+E             at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)
+E             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+E         
+E         Node.js v20.20.2
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node_modules/.bin/tsx', 'src/cli.ts'], returncode=1, stdout='', stderr='/home/user/prefsvc/src...ules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)\n\nNode.js v20.20.2\n').returncode
+
+/tests/test_final_state.py:148: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_project_layout_and_typecheck
+FAILED ../tests/test_final_state.py::test_migrations_created_and_applied - As...
+FAILED ../tests/test_final_state.py::test_prefuser_schema_shape - AssertionEr...
+FAILED ../tests/test_final_state.py::test_prefchange_schema_shape - Assertion...
+FAILED ../tests/test_final_state.py::test_prefchange_version_is_unique_per_user
+FAILED ../tests/test_final_state.py::test_seeded_data_survived_the_migration
+FAILED ../tests/test_final_state.py::test_pure_merge_patch_matrix - Assertion...
+FAILED ../tests/test_final_state.py::test_pure_merge_patch_does_not_mutate_arguments
+FAILED ../tests/test_final_state.py::test_pure_effective_preferences - Assert...
+FAILED ../tests/test_final_state.py::test_module_exports_and_error_taxonomy
+FAILED ../tests/test_final_state.py::test_cli_read_and_effective_layering - A...
+FAILED ../tests/test_final_state.py::test_cli_patch_matrix_for_ada - Assertio...
+FAILED ../tests/test_final_state.py::test_cli_history_chain_for_ada - Asserti...
+FAILED ../tests/test_final_state.py::test_cli_noop_patch_is_idempotent_for_grace
+FAILED ../tests/test_final_state.py::test_cli_empty_namespace_object_is_created_for_katherine
+FAILED ../tests/test_final_state.py::test_cli_rejects_invalid_patches_without_side_effects
+FAILED ../tests/test_final_state.py::test_cli_rejects_malformed_requests - As...
+FAILED ../tests/test_final_state.py::test_cli_rejects_stale_expected_version
+FAILED ../tests/test_final_state.py::test_cli_dry_run_does_not_persist - Asse...
+FAILED ../tests/test_final_state.py::test_concurrent_patches_are_serialized
+FAILED ../tests/test_final_state.py::test_database_maintains_version_and_updated_at
+FAILED ../tests/test_final_state.py::test_randomized_patch_sequence_matches_reference
+======================== 21 failed, 1 passed in 11.51s =========================

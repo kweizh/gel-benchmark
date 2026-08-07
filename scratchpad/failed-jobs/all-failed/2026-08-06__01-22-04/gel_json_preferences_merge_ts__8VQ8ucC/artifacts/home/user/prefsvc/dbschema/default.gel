@@ -1,0 +1,10 @@
+module default {
+  type PrefUser {
+    required email: str {
+      constraint exclusive;
+    };
+    required preferences: json {
+      default := to_json('{}');
+    };
+  }
+}

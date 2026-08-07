@@ -1,0 +1,183 @@
+[37m2026-08-05 17:23:11.834[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	pochi v0.6.20
+[37m2026-08-05 17:23:11.839[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	PochiConfigManager[39m[22m[0m[0m	add workspace config: /root/.pochi/config.jsonc
+[37m2026-08-05 17:23:12.153[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	BuiltInBundle[39m[22m[0m[0m	Materializing 16 built-in files to /tmp/pochi-builtin-ef402bc2bbe8f440
+[37m2026-08-05 17:23:12.309[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:532913[39m[0m[0m[1m[37m	loadAgents[39m[22m[0m[0m	Loaded 6 custom agents (6 valid, 0 invalid)
+[37m2026-08-05 17:23:12.400[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:532914[39m[0m[0m[1m[37m	loadSkills[39m[22m[0m[0m	Loaded 3 skills (3 valid, 0 invalid)
+[37m2026-08-05 17:23:12.426[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:443306[39m[0m[0m[1m[37m	PochiVendor[39m[22m[0m[0m	JWT is expiring or missing, fetching a new one
+[37m2026-08-05 17:23:13.704[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:419194[39m[0m[0m[1m[37m	MCPHub[39m[22m[0m[0m	MCP servers configuration changed via signal:
+[37m2026-08-05 17:23:13.704[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:419306[39m[0m[0m[1m[37m	MCPHub[39m[22m[0m[0m	Build MCPHub Status
+[37m2026-08-05 17:23:13.843[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Starting task runner...
+[37m2026-08-05 17:23:14.007[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:490790[39m[0m[0m[1m[37m	generateTaskTitle[39m[22m[0m[0m	Generating task title, old: null, new: # Typed catalog analytics on Gel with a generated TypeScript query builder
+[37m2026-08-05 17:23:24.175[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531016[39m[0m[0m[1m[37m	listFiles[39m[22m[0m[0m	handling listFile with dirPath /home/user/catalog and recursive [33mtrue[39m
+[37m2026-08-05 17:23:27.460[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:490790[39m[0m[0m[1m[37m	generateTaskTitle[39m[22m[0m[0m	Generating task title, old: # Typed catalog analytics on Gel with a generated TypeScript query builder, new: Build typed catalog CLI with Gel schema and query builder
+[37m2026-08-05 17:23:30.911[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/default.gel" resolvedPath="/home/user/catalog/dbschema/default.gel" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:23:30.912[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:23:30.912[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/src/cli.ts" resolvedPath="/home/user/catalog/src/cli.ts" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:23:30.912[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/package.json" resolvedPath="/home/user/catalog/package.json" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/tsconfig.json" resolvedPath="/home/user/catalog/tsconfig.json" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/gel.toml" resolvedPath="/home/user/catalog/gel.toml" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/data/resources.json" resolvedPath="/home/user/catalog/data/resources.json" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:23:30.913[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:23:30.914[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/migrations/00001-m1eopvn.edgeql" resolvedPath="/home/user/catalog/dbschema/migrations/00001-m1eopvn.edgeql" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:23:30.914[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:23:30.916[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/default.gel" mtime=1785949353223 contentLen=125
+[37m2026-08-05 17:23:30.918[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/src/cli.ts" mtime=1785949353842 contentLen=127
+[37m2026-08-05 17:23:30.921[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/package.json" mtime=1785949353418 contentLen=267
+[37m2026-08-05 17:23:30.924[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/tsconfig.json" mtime=1785949353628 contentLen=306
+[37m2026-08-05 17:23:30.926[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/gel.toml" mtime=1785949353019 contentLen=32
+[37m2026-08-05 17:23:30.928[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/data/resources.json" mtime=1785949354049 contentLen=1245
+[37m2026-08-05 17:23:30.930[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/migrations/00001-m1eopvn.edgeql" mtime=1785949411060 contentLen=282
+[37m2026-08-05 17:23:55.391[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531016[39m[0m[0m[1m[37m	listFiles[39m[22m[0m[0m	handling listFile with dirPath /home/user/catalog/dbschema/migrations and recursive [90mundefined[39m
+[37m2026-08-05 17:24:07.603[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/migrations/00002-m1igybj.edgeql" resolvedPath="/home/user/catalog/dbschema/migrations/00002-m1igybj.edgeql" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:24:07.604[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:24:07.606[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/migrations/00002-m1igybj.edgeql" mtime=1785950631007 contentLen=871
+[37m2026-08-05 17:24:32.867[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/edgeql-js/modules/default.ts" resolvedPath="/home/user/catalog/dbschema/edgeql-js/modules/default.ts" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:24:32.867[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:24:32.875[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/edgeql-js/modules/default.ts" mtime=1785950665905 contentLen=4304
+[37m2026-08-05 17:24:38.113[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/edgeql-js/index.ts" resolvedPath="/home/user/catalog/dbschema/edgeql-js/index.ts" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:24:38.114[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:24:38.114[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/edgeql-js/query.ts" resolvedPath="/home/user/catalog/dbschema/edgeql-js/query.ts" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:24:38.115[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:24:38.118[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/edgeql-js/index.ts" mtime=1785949415691 contentLen=1192
+[37m2026-08-05 17:24:38.120[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/edgeql-js/query.ts" mtime=1785949415647 contentLen=1802
+[37m2026-08-05 17:24:43.654[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js \.run\b|run =|run:|function run|runnable [90mundefined[39m
+[37m2026-08-05 17:24:43.655[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'\\.run\\b|run =|run:|function run|runnable'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js'[39m
+]
+[37m2026-08-05 17:24:48.285[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/edgeql-js/insert.ts" resolvedPath="/home/user/catalog/dbschema/edgeql-js/insert.ts" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:24:48.285[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:24:48.288[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/edgeql-js/insert.ts" mtime=1785949415646 contentLen=8845
+[37m2026-08-05 17:25:56.686[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js/modules/std.ts ^export function (count|sum|round|min|max|len)\b [90mundefined[39m
+[37m2026-08-05 17:25:56.687[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'^export function (count|sum|round|min|max|len)\\b'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js/modules/std.ts'[39m
+]
+[37m2026-08-05 17:26:00.268[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js/modules/std function (count|sum|round|min|max)\b [90mundefined[39m
+[37m2026-08-05 17:26:00.269[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'function (count|sum|round|min|max)\\b'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js/modules/std'[39m
+]
+[37m2026-08-05 17:26:04.096[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531016[39m[0m[0m[1m[37m	listFiles[39m[22m[0m[0m	handling listFile with dirPath /home/user/catalog/dbschema/edgeql-js/modules/std and recursive [90mundefined[39m
+[37m2026-08-05 17:26:09.048[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js/modules function count|function sum|function round|function min|function max|function len [90mundefined[39m
+[37m2026-08-05 17:26:09.048[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'function count|function sum|function round|function min|function max|function len'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js/modules'[39m
+]
+[37m2026-08-05 17:26:31.469[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js export function is\b|function is<|\"is\"|$is [90mundefined[39m
+[37m2026-08-05 17:26:31.470[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'export function is\\b|function is<|\\"is\\"|$is'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js'[39m
+]
+[37m2026-08-05 17:26:35.654[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/edgeql-js/select.ts" resolvedPath="/home/user/catalog/dbschema/edgeql-js/select.ts" isVirtual=false cacheExists=true shouldCache=true startLine=340 endLine=430
+[37m2026-08-05 17:26:35.654[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState=undefined
+[37m2026-08-05 17:26:35.660[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/edgeql-js/select.ts" mtime=1785949415647 contentLen=3272
+[37m2026-08-05 17:26:49.652[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js __type__ [90mundefined[39m
+[37m2026-08-05 17:26:49.653[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'__type__'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js'[39m
+]
+[37m2026-08-05 17:27:16.329[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js/select.ts order_by|filter_single|OrderByExpr|ASC|DESC [90mundefined[39m
+[37m2026-08-05 17:27:16.329[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'order_by|filter_single|OrderByExpr|ASC|DESC'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js/select.ts'[39m
+]
+[37m2026-08-05 17:27:29.873[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js PolyShapeElement [90mundefined[39m
+[37m2026-08-05 17:27:29.873[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'PolyShapeElement'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js'[39m
+]
+[37m2026-08-05 17:27:43.317[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/edgeql-js/select.ts" resolvedPath="/home/user/catalog/dbschema/edgeql-js/select.ts" isVirtual=false cacheExists=true shouldCache=true startLine=90 endLine=185
+[37m2026-08-05 17:27:43.317[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState={startLine=340, endLine=430, timestamp=1785949415647}
+[37m2026-08-05 17:27:43.321[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/edgeql-js/select.ts" mtime=1785949415647 contentLen=2820
+[37m2026-08-05 17:27:55.455[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js/modules/std.ts assert_exists|assert_single|assert_distinct [90mundefined[39m
+[37m2026-08-05 17:27:55.455[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'assert_exists|assert_single|assert_distinct'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js/modules/std.ts'[39m
+]
+[37m2026-08-05 17:28:16.223[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js/modules/std.ts int64|type \$int64 [90mundefined[39m
+[37m2026-08-05 17:28:16.223[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'int64|type \\$int64'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js/modules/std.ts'[39m
+]
+[37m2026-08-05 17:28:44.371[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js FreeObject|freeObject [90mundefined[39m
+[37m2026-08-05 17:28:44.371[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'FreeObject|freeObject'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js'[39m
+]
+[37m2026-08-05 17:28:59.590[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	searchFiles /home/user/catalog/dbschema/edgeql-js \$infer\b [90mundefined[39m
+[37m2026-08-05 17:28:59.591[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531736[39m[0m[0m[1m[37m	RipgrepUtils[39m[22m[0m[0m	command /usr/bin/rg [
+  [32m'--json'[39m,
+  [32m'--case-sensitive'[39m,
+  [32m'--binary'[39m,
+  [32m'--sortr'[39m,
+  [32m'modified'[39m,
+  [32m'\\$infer\\b'[39m,
+  [32m'/home/user/catalog/dbschema/edgeql-js'[39m
+]
+[37m2026-08-05 17:32:00.871[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: path="/home/user/catalog/dbschema/default.gel" resolvedPath="/home/user/catalog/dbschema/default.gel" isVirtual=false cacheExists=true shouldCache=true startLine=undefined endLine=undefined
+[37m2026-08-05 17:32:00.872[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: existingState={startLine=undefined, endLine=undefined, timestamp=1785950626033}
+[37m2026-08-05 17:32:00.878[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m/$bunfs/pochi:531688[39m[0m[0m[1m[37m	FileStateCache[39m[22m[0m[0m	withReadFileCache: populating cache for "/home/user/catalog/dbschema/default.gel" mtime=1785950626033 contentLen=538
+[37m2026-08-05 17:32:21.322[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Task runner finished successfully.
+[37m2026-08-05 17:32:21.322[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Shutting down...
+[37m2026-08-05 17:32:21.363[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37mnative:7[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Shutdown completed. Process will exit.
+[37m2026-08-05 17:32:21.364[39m[0m[0m	[32m[1mDEBUG[22m[39m[0m[0m	[37m[39m[0m[0m[1m[37m	Pochi[39m[22m[0m[0m	Process exiting with code 0

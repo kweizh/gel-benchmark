@@ -1,0 +1,30 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 19 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_python_gel_client_importable PASSED
+../bootstrap/test_initial_state.py::test_pytest_and_ctrf_plugin_installed PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_present_with_base_types PASSED
+../bootstrap/test_initial_state.py::test_schema_file_has_no_globals_or_policies_yet PASSED
+../bootstrap/test_initial_state.py::test_exactly_one_migration_is_present PASSED
+../bootstrap/test_initial_state.py::test_gateway_stub_exists_and_is_unimplemented PASSED
+../bootstrap/test_initial_state.py::test_gateway_stub_raises_not_implemented 
+-------------------------------- live log call ---------------------------------
+DEBUG    asyncio:selector_events.py:64 Using selector: EpollSelector
+PASSED
+../bootstrap/test_initial_state.py::test_migration_history_is_in_sync PASSED
+../bootstrap/test_initial_state.py::test_one_migration_recorded_in_database PASSED
+../bootstrap/test_initial_state.py::test_no_globals_declared_yet PASSED
+../bootstrap/test_initial_state.py::test_no_access_policies_declared_yet PASSED
+../bootstrap/test_initial_state.py::test_base_type_shape PASSED
+../bootstrap/test_initial_state.py::test_no_computed_backlinks_yet PASSED
+../bootstrap/test_initial_state.py::test_seeded_tenants_are_present PASSED
+../bootstrap/test_initial_state.py::test_seeded_workspaces_are_present PASSED
+../bootstrap/test_initial_state.py::test_seeded_documents_and_comments_are_present PASSED
+../bootstrap/test_initial_state.py::test_data_is_wide_open_before_the_task PASSED
+
+============================= 19 passed in 41.16s ==============================

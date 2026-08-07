@@ -1,0 +1,1315 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 25 items
+
+../tests/test_final_state.py ...F..EEE.EEFFFFFFFFFFFFF                   [100%]
+
+==================================== ERRORS ====================================
+____ ERROR at setup of test_database_rejects_non_positive_transfer_amounts _____
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    @pytest.fixture(scope="session")
+    def reference(api):
+        """Two accounts and one committed transfer used by the raw-EdgeQL probes."""
+    
+        async def body(client):
+            await api.create_account(
+                client, code=f"{TOKEN}-RA", opening_balance=D("40.00")
+            )
+            await api.create_account(client, code=f"{TOKEN}-RB", opening_balance=D("0.00"))
+            record = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-RA",
+                recipient=f"{TOKEN}-RB",
+                amount=D("4.00"),
+                idempotency_key=f"{TOKEN}-ref",
+            )
+            return record
+    
+>       record = run_async(body)
+                 ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:314: in body
+    await api.create_account(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67ed2d90>
+code = 'efbf16ea-RA', opening_balance = Decimal('40.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+____________ ERROR at setup of test_database_rejects_self_transfer _____________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    @pytest.fixture(scope="session")
+    def reference(api):
+        """Two accounts and one committed transfer used by the raw-EdgeQL probes."""
+    
+        async def body(client):
+            await api.create_account(
+                client, code=f"{TOKEN}-RA", opening_balance=D("40.00")
+            )
+            await api.create_account(client, code=f"{TOKEN}-RB", opening_balance=D("0.00"))
+            record = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-RA",
+                recipient=f"{TOKEN}-RB",
+                amount=D("4.00"),
+                idempotency_key=f"{TOKEN}-ref",
+            )
+            return record
+    
+>       record = run_async(body)
+                 ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:314: in body
+    await api.create_account(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67ed2d90>
+code = 'efbf16ea-RA', opening_balance = Decimal('40.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+______ ERROR at setup of test_database_rejects_duplicate_idempotency_key _______
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    @pytest.fixture(scope="session")
+    def reference(api):
+        """Two accounts and one committed transfer used by the raw-EdgeQL probes."""
+    
+        async def body(client):
+            await api.create_account(
+                client, code=f"{TOKEN}-RA", opening_balance=D("40.00")
+            )
+            await api.create_account(client, code=f"{TOKEN}-RB", opening_balance=D("0.00"))
+            record = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-RA",
+                recipient=f"{TOKEN}-RB",
+                amount=D("4.00"),
+                idempotency_key=f"{TOKEN}-ref",
+            )
+            return record
+    
+>       record = run_async(body)
+                 ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:314: in body
+    await api.create_account(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67ed2d90>
+code = 'efbf16ea-RA', opening_balance = Decimal('40.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+__________ ERROR at setup of test_database_rejects_zero_ledger_entry ___________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    @pytest.fixture(scope="session")
+    def reference(api):
+        """Two accounts and one committed transfer used by the raw-EdgeQL probes."""
+    
+        async def body(client):
+            await api.create_account(
+                client, code=f"{TOKEN}-RA", opening_balance=D("40.00")
+            )
+            await api.create_account(client, code=f"{TOKEN}-RB", opening_balance=D("0.00"))
+            record = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-RA",
+                recipient=f"{TOKEN}-RB",
+                amount=D("4.00"),
+                idempotency_key=f"{TOKEN}-ref",
+            )
+            return record
+    
+>       record = run_async(body)
+                 ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:314: in body
+    await api.create_account(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67ed2d90>
+code = 'efbf16ea-RA', opening_balance = Decimal('40.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+_ ERROR at setup of test_database_rejects_two_entries_for_the_same_account_and_transfer _
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    @pytest.fixture(scope="session")
+    def reference(api):
+        """Two accounts and one committed transfer used by the raw-EdgeQL probes."""
+    
+        async def body(client):
+            await api.create_account(
+                client, code=f"{TOKEN}-RA", opening_balance=D("40.00")
+            )
+            await api.create_account(client, code=f"{TOKEN}-RB", opening_balance=D("0.00"))
+            record = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-RA",
+                recipient=f"{TOKEN}-RB",
+                amount=D("4.00"),
+                idempotency_key=f"{TOKEN}-ref",
+            )
+            return record
+    
+>       record = run_async(body)
+                 ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:314: in body
+    await api.create_account(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67ed2d90>
+code = 'efbf16ea-RA', opening_balance = Decimal('40.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+=================================== FAILURES ===================================
+___________________________ test_transfer_type_shape ___________________________
+
+gel_server = True
+
+    def test_transfer_type_shape(gel_server):
+        props, links = _introspect("default::Transfer")
+        assert "idempotency_key" in props, "`Transfer.idempotency_key` is missing."
+        assert props["idempotency_key"]["required"] is True, (
+            "`Transfer.idempotency_key` must be required."
+        )
+        assert "amount" in props, "`Transfer.amount` is missing."
+        assert props["amount"]["required"] is True, "`Transfer.amount` must be required."
+        assert "created_at" in props, "`Transfer.created_at` is missing."
+        for name in ("sender", "recipient"):
+            assert name in links, f"`Transfer.{name}` link is missing."
+            assert links[name]["required"] is True, f"`Transfer.{name}` must be required."
+            assert links[name]["cardinality"] == "One", f"`Transfer.{name}` must be single."
+            assert links[name]["target"]["name"] == "default::Account", (
+                f"`Transfer.{name}` must point at `default::Account`, got "
+                f"{links[name]['target']['name']}"
+            )
+>       assert "entries" in links, "`Transfer.entries` is missing."
+E       AssertionError: `Transfer.entries` is missing.
+E       assert 'entries' in {'__type__': {'name': '__type__', 'required': True, 'cardinality': 'One', 'target': {'name': 'schema::ObjectType'}}, '...count'}}, 'sender': {'name': 'sender', 'required': True, 'cardinality': 'One', 'target': {'name': 'default::Account'}}}
+
+/tests/test_final_state.py:267: AssertionError
+_______________ test_balance_and_entries_are_derived_not_stored ________________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+gel_server = True
+
+    def test_balance_and_entries_are_derived_not_stored(api, gel_server):
+        """A transfer written with raw EdgeQL must still be reflected by balance/entries."""
+        funder = f"{TOKEN}-CMPF"
+        code = f"{TOKEN}-CMP"
+    
+        async def body(client):
+            await api.create_account(client, code=funder, opening_balance=D("10.00"))
+            created = await api.create_account(client, code=code, opening_balance=D("0.00"))
+            before = (
+                await api.get_balance(client, account=funder),
+                await api.get_balance(client, account=code),
+            )
+            raw = await client.query_single(
+                """
+                with
+                    moved := (insert Transfer {
+                        idempotency_key := <str>$key,
+                        amount := <decimal>'7.00',
+                        sender := assert_single((select Account filter .code = <str>$funder)),
+                        recipient := assert_single((select Account filter .code = <str>$code)),
+                    }),
+                    debit := (insert LedgerEntry {
+                        amount := <decimal>'-7.00',
+                        account := assert_single((select Account filter .code = <str>$funder)),
+                        transfer := moved,
+                    }),
+                    credit := (insert LedgerEntry {
+                        amount := <decimal>'7.00',
+                        account := assert_single((select Account filter .code = <str>$code)),
+                        transfer := moved,
+                    })
+                select {
+                    tid := <str>moved.id,
+                    debit_id := <str>debit.id,
+                    credit_id := <str>credit.id,
+                }
+                """,
+                key=f"{TOKEN}-raw-pair",
+                funder=funder,
+                code=code,
+            )
+            after = (
+                await api.get_balance(client, account=funder),
+                await api.get_balance(client, account=code),
+            )
+            linked = await client.query_single(
+                "select count((select Transfer filter .id = <uuid>$tid).entries)",
+                tid=uuid.UUID(raw.tid),
+            )
+            await client.execute(
+                "delete LedgerEntry filter .id in {<uuid>$d, <uuid>$c}",
+                d=uuid.UUID(raw.debit_id),
+                c=uuid.UUID(raw.credit_id),
+            )
+            await client.execute(
+                "delete Transfer filter .id = <uuid>$tid", tid=uuid.UUID(raw.tid)
+            )
+            restored = (
+                await api.get_balance(client, account=funder),
+                await api.get_balance(client, account=code),
+            )
+            return created, before, after, linked, restored
+    
+>       created, before, after, linked, restored = run_async(body)
+                                                   ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:553: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:496: in body
+    await api.create_account(client, code=funder, opening_balance=D("10.00"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd670e9850>
+code = 'efbf16ea-CMPF', opening_balance = Decimal('10.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+_________________ test_create_account_happy_path_and_duplicate _________________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_create_account_happy_path_and_duplicate(api):
+        async def body(client):
+            created = await api.create_account(
+                client, code=f"{TOKEN}-A", opening_balance=D("100.00")
+            )
+            duplicate = None
+            try:
+                await api.create_account(
+                    client, code=f"{TOKEN}-A", opening_balance=D("5.00")
+                )
+            except api.DuplicateAccount as exc:
+                duplicate = exc
+            count = await client.query_single(
+                "select count((select Account filter .code = <str>$c))", c=f"{TOKEN}-A"
+            )
+            return created, duplicate, count
+    
+>       created, duplicate, count = run_async(body)
+                                    ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:595: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:580: in body
+    created = await api.create_account(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd673e1210>
+code = 'efbf16ea-A', opening_balance = Decimal('100.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+_____________ test_create_account_rejects_invalid_opening_balance ______________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_create_account_rejects_invalid_opening_balance(api):
+        async def body(client):
+            raised = {}
+            for label, value in (("negative", D("-1.00")), ("sub_cent", D("0.005"))):
+                try:
+                    await api.create_account(
+                        client,
+                        code=f"{TOKEN}-BAD-{label}",
+                        opening_balance=value,
+                    )
+                    raised[label] = None
+                except api.InvalidAmount as exc:
+                    raised[label] = exc
+            count = await client.query_single(
+                "select count((select Account filter .code like <str>$p ++ '%'))",
+                p=f"{TOKEN}-BAD-",
+            )
+            return raised, count
+    
+>       raised, count = run_async(body)
+                        ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:629: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:615: in body
+    await api.create_account(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67317690>
+code = 'efbf16ea-BAD-negative', opening_balance = Decimal('-1.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+________________ test_single_transfer_creates_balanced_entries _________________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_single_transfer_creates_balanced_entries(api):
+        async def body(client):
+            await api.create_account(client, code=f"{TOKEN}-B", opening_balance=D("0.00"))
+            record = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-A",
+                recipient=f"{TOKEN}-B",
+                amount=D("30.25"),
+                idempotency_key=f"{TOKEN}-k1",
+            )
+            sender_balance = await api.get_balance(client, account=f"{TOKEN}-A")
+            recipient_balance = await api.get_balance(client, account=f"{TOKEN}-B")
+            row = await _transfer_row(client, f"{TOKEN}-k1")
+            entries = await _entries_of(client, f"{TOKEN}-k1")
+            return record, sender_balance, recipient_balance, row, entries
+    
+>       record, sender_balance, recipient_balance, row, entries = run_async(body)
+                                                                  ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:658: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:644: in body
+    await api.create_account(client, code=f"{TOKEN}-B", opening_balance=D("0.00"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd672e4710>
+code = 'efbf16ea-B', opening_balance = Decimal('0.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+_________ test_replaying_the_same_idempotency_key_does_not_move_money __________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_replaying_the_same_idempotency_key_does_not_move_money(api):
+        async def body(client):
+            replay = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-A",
+                recipient=f"{TOKEN}-B",
+                amount=D("99.00"),
+                idempotency_key=f"{TOKEN}-k1",
+            )
+            sender_balance = await api.get_balance(client, account=f"{TOKEN}-A")
+            recipient_balance = await api.get_balance(client, account=f"{TOKEN}-B")
+            count = await client.query_single(
+                "select count((select Transfer filter .idempotency_key = <str>$k))",
+                k=f"{TOKEN}-k1",
+            )
+            entries = await _entries_of(client, f"{TOKEN}-k1")
+            return replay, sender_balance, recipient_balance, count, len(entries)
+    
+>       replay, sender_balance, recipient_balance, count, entry_count = run_async(body)
+                                                                        ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:714: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:698: in body
+    replay = await api.create_transfer(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67155810>
+sender = 'efbf16ea-A', recipient = 'efbf16ea-B', amount = Decimal('99.00')
+idempotency_key = 'efbf16ea-k1'
+
+    async def create_transfer(
+        client,
+        *,
+        sender: str,
+        recipient: str,
+        amount: Decimal,
+        idempotency_key: str,
+    ) -> dict:
+        """Move money and return
+        ``{"id", "sender", "recipient", "amount", "idempotency_key", "created"}``.
+        """
+>       raise NotImplementedError("create_transfer is not implemented yet")
+E       NotImplementedError: create_transfer is not implemented yet
+
+/home/user/ledger/ledger_api.py:56: NotImplementedError
+___________ test_invalid_transfers_are_rejected_without_side_effects ___________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_invalid_transfers_are_rejected_without_side_effects(api):
+        cases = [
+            ("zero", dict(amount=D("0.00")), "InvalidAmount"),
+            ("negative", dict(amount=D("-1.00")), "InvalidAmount"),
+            ("sub_cent", dict(amount=D("0.005")), "InvalidAmount"),
+            (
+                "same_account",
+                dict(sender=f"{TOKEN}-A", recipient=f"{TOKEN}-A", amount=D("1.00")),
+                "SameAccountTransfer",
+            ),
+            (
+                "unknown_recipient",
+                dict(recipient=f"{TOKEN}-nope", amount=D("1.00")),
+                "UnknownAccount",
+            ),
+            (
+                "unknown_sender",
+                dict(sender=f"{TOKEN}-nope", amount=D("1.00")),
+                "UnknownAccount",
+            ),
+            (
+                "insufficient",
+                dict(sender=f"{TOKEN}-B", recipient=f"{TOKEN}-A", amount=D("30.26")),
+                "InsufficientFunds",
+            ),
+            (
+                "amount_beats_unknown_account",
+                dict(recipient=f"{TOKEN}-nope", amount=D("-1.00")),
+                "InvalidAmount",
+            ),
+            (
+                "same_account_beats_unknown_account",
+                dict(
+                    sender=f"{TOKEN}-nope",
+                    recipient=f"{TOKEN}-nope",
+                    amount=D("5.00"),
+                ),
+                "SameAccountTransfer",
+            ),
+        ]
+    
+        async def body(client):
+            before_entries = await _entry_count(client)
+            outcomes = {}
+            for label, overrides, expected in cases:
+                kwargs = dict(
+                    sender=f"{TOKEN}-A",
+                    recipient=f"{TOKEN}-B",
+                    amount=D("1.00"),
+                    idempotency_key=f"{TOKEN}-neg-{label}",
+                )
+                kwargs.update(overrides)
+                expected_exc = getattr(api, expected)
+                try:
+                    await api.create_transfer(client, **kwargs)
+                    outcomes[label] = "no-exception"
+                except expected_exc:
+                    outcomes[label] = "ok"
+                except api.LedgerError as exc:
+                    outcomes[label] = type(exc).__name__
+            after_entries = await _entry_count(client)
+            leaked = await client.query_single(
+                "select count((select Transfer filter .idempotency_key like <str>$p ++ '%'))",
+                p=f"{TOKEN}-neg-",
+            )
+            sender_balance = await api.get_balance(client, account=f"{TOKEN}-A")
+            recipient_balance = await api.get_balance(client, account=f"{TOKEN}-B")
+            return outcomes, before_entries, after_entries, leaked, sender_balance, recipient_balance
+    
+        (
+            outcomes,
+            before_entries,
+            after_entries,
+            leaked,
+            sender_balance,
+            recipient_balance,
+>       ) = run_async(body)
+            ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:805: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:783: in body
+    await api.create_transfer(client, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd671f6cd0>
+sender = 'efbf16ea-A', recipient = 'efbf16ea-B', amount = Decimal('0.00')
+idempotency_key = 'efbf16ea-neg-zero'
+
+    async def create_transfer(
+        client,
+        *,
+        sender: str,
+        recipient: str,
+        amount: Decimal,
+        idempotency_key: str,
+    ) -> dict:
+        """Move money and return
+        ``{"id", "sender", "recipient", "amount", "idempotency_key", "created"}``.
+        """
+>       raise NotImplementedError("create_transfer is not implemented yet")
+E       NotImplementedError: create_transfer is not implemented yet
+
+/home/user/ledger/ledger_api.py:56: NotImplementedError
+__________________ test_unknown_account_lookups_are_rejected ___________________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_unknown_account_lookups_are_rejected(api):
+        async def body(client):
+            results = {}
+            try:
+                await api.get_balance(client, account=f"{TOKEN}-nope")
+                results["balance"] = "no-exception"
+            except api.UnknownAccount:
+                results["balance"] = "ok"
+            try:
+                await api.get_statement(client, account=f"{TOKEN}-nope")
+                results["statement"] = "no-exception"
+            except api.UnknownAccount:
+                results["statement"] = "ok"
+            return results
+    
+>       results = run_async(body)
+                  ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:837: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:826: in body
+    await api.get_balance(client, account=f"{TOKEN}-nope")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd67302890>
+account = 'efbf16ea-nope'
+
+    async def get_balance(client, *, account: str) -> str:
+        """Return the current balance of ``account``."""
+>       raise NotImplementedError("get_balance is not implemented yet")
+E       NotImplementedError: get_balance is not implemented yet
+
+/home/user/ledger/ledger_api.py:61: NotImplementedError
+__________________ test_transfer_may_drain_an_account_exactly __________________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_transfer_may_drain_an_account_exactly(api):
+        async def body(client):
+            record = await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-B",
+                recipient=f"{TOKEN}-A",
+                amount=D("30.25"),
+                idempotency_key=f"{TOKEN}-drain",
+            )
+            return record, await api.get_balance(client, account=f"{TOKEN}-B")
+    
+>       record, balance = run_async(body)
+                          ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:855: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:846: in body
+    record = await api.create_transfer(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd671ec710>
+sender = 'efbf16ea-B', recipient = 'efbf16ea-A', amount = Decimal('30.25')
+idempotency_key = 'efbf16ea-drain'
+
+    async def create_transfer(
+        client,
+        *,
+        sender: str,
+        recipient: str,
+        amount: Decimal,
+        idempotency_key: str,
+    ) -> dict:
+        """Move money and return
+        ``{"id", "sender", "recipient", "amount", "idempotency_key", "created"}``.
+        """
+>       raise NotImplementedError("create_transfer is not implemented yet")
+E       NotImplementedError: create_transfer is not implemented yet
+
+/home/user/ledger/ledger_api.py:56: NotImplementedError
+___________________ test_statement_ordering_shape_and_limit ____________________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_statement_ordering_shape_and_limit(api):
+        async def body(client):
+            await api.create_account(client, code=f"{TOKEN}-S", opening_balance=D("20.00"))
+            await api.create_account(client, code=f"{TOKEN}-C1", opening_balance=D("0.00"))
+            await api.create_account(client, code=f"{TOKEN}-C2", opening_balance=D("0.00"))
+            await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-S",
+                recipient=f"{TOKEN}-C1",
+                amount=D("5.00"),
+                idempotency_key=f"{TOKEN}-s01",
+            )
+            await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-S",
+                recipient=f"{TOKEN}-C2",
+                amount=D("1.50"),
+                idempotency_key=f"{TOKEN}-s02",
+            )
+            await api.create_transfer(
+                client,
+                sender=f"{TOKEN}-C1",
+                recipient=f"{TOKEN}-S",
+                amount=D("2.00"),
+                idempotency_key=f"{TOKEN}-s03",
+            )
+            full = await api.get_statement(client, account=f"{TOKEN}-S")
+            limited = await api.get_statement(client, account=f"{TOKEN}-S", limit=2)
+            balance = await api.get_balance(client, account=f"{TOKEN}-S")
+            return full, limited, balance
+    
+>       full, limited, balance = run_async(body)
+                                 ^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:898: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:869: in body
+    await api.create_account(client, code=f"{TOKEN}-S", opening_balance=D("20.00"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd673ef590>
+code = 'efbf16ea-S', opening_balance = Decimal('20.00')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+___________ test_concurrent_transfer_storm_keeps_the_ledger_balanced ___________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_concurrent_transfer_storm_keeps_the_ledger_balanced(api):
+        senders = [f"{TOKEN}-CS{i}" for i in range(8)]
+        recipients = [f"{TOKEN}-CR{i}" for i in range(8)]
+    
+        async def body(client):
+            for code in senders:
+                await api.create_account(client, code=code, opening_balance=D("50.00"))
+            for code in recipients:
+                await api.create_account(client, code=code, opening_balance=D("0.00"))
+    
+            plan = []
+            for i, sender in enumerate(senders):
+                for j in (i, (i + 1) % len(recipients)):
+                    plan.append((sender, recipients[j], f"{TOKEN}-storm-{i}{j}"))
+    
+            started = time.monotonic()
+            results = await asyncio.gather(
+                *(
+                    api.create_transfer(
+                        client,
+                        sender=sender,
+                        recipient=recipient,
+                        amount=D("1.00"),
+                        idempotency_key=key,
+                    )
+                    for sender, recipient, key in plan
+                )
+            )
+            elapsed = time.monotonic() - started
+    
+            stored = await client.query_single(
+                "select count((select Transfer filter .idempotency_key like <str>$p ++ '%'))",
+                p=f"{TOKEN}-storm-",
+            )
+            entry_counts = await client.query(
+                """
+                select (
+                    select Transfer filter .idempotency_key like <str>$p ++ '%'
+                ) { n := count(.entries) }
+                """,
+                p=f"{TOKEN}-storm-",
+            )
+            entry_sum = await client.query_single(
+                """
+                select <str>sum((
+                    select LedgerEntry
+                    filter .transfer.idempotency_key like <str>$p ++ '%'
+                ).amount)
+                """,
+                p=f"{TOKEN}-storm-",
+            )
+            balances = {}
+            for code in senders + recipients:
+                balances[code] = await api.get_balance(client, account=code)
+            negatives = await client.query_single(
+                "select count((select Account filter .balance < 0))"
+            )
+            return results, elapsed, stored, [row.n for row in entry_counts], entry_sum, balances, negatives
+    
+>       results, elapsed, stored, entry_counts, entry_sum, balances, negatives = run_async(
+            body, timeout=300, concurrency=8
+        )
+
+/tests/test_final_state.py:995: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def main():
+        if concurrency is None:
+            client = gel.create_async_client()
+        else:
+>           client = gel.create_async_client(concurrency=concurrency)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: create_async_client() got an unexpected keyword argument 'concurrency'
+
+/tests/test_final_state.py:113: TypeError
+__________ test_concurrent_calls_sharing_one_key_create_one_transfer ___________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_concurrent_calls_sharing_one_key_create_one_transfer(api):
+        sender = f"{TOKEN}-DS"
+        recipient = f"{TOKEN}-DR"
+        key = f"{TOKEN}-dup"
+    
+        async def body(client):
+            await api.create_account(client, code=sender, opening_balance=D("20.00"))
+            await api.create_account(client, code=recipient, opening_balance=D("0.00"))
+            results = await asyncio.gather(
+                *(
+                    api.create_transfer(
+                        client,
+                        sender=sender,
+                        recipient=recipient,
+                        amount=D("2.00"),
+                        idempotency_key=key,
+                    )
+                    for _ in range(6)
+                )
+            )
+            stored = await client.query_single(
+                "select count((select Transfer filter .idempotency_key = <str>$k))", k=key
+            )
+            row = await _transfer_row(client, key)
+            balances = (
+                await api.get_balance(client, account=sender),
+                await api.get_balance(client, account=recipient),
+            )
+            return results, stored, row, balances
+    
+>       results, stored, row, balances = run_async(body, timeout=300, concurrency=6)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1057: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def main():
+        if concurrency is None:
+            client = gel.create_async_client()
+        else:
+>           client = gel.create_async_client(concurrency=concurrency)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: create_async_client() got an unexpected keyword argument 'concurrency'
+
+/tests/test_final_state.py:113: TypeError
+____________ test_randomised_sequence_matches_an_independent_model _____________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_randomised_sequence_matches_an_independent_model(api):
+        rng = random.Random()
+        codes = [f"{TOKEN}-R{i}" for i in range(5)]
+        openings = {
+            code: (D(rng.randrange(0, 20001)) / D(100)).quantize(D("0.01"))
+            for code in codes
+        }
+        plan = []
+        for n in range(18):
+            sender, recipient = rng.sample(codes, 2)
+            amount = (D(rng.randrange(1, 12001)) / D(100)).quantize(D("0.01"))
+            plan.append((sender, recipient, amount, f"{TOKEN}-rnd-{n:02d}"))
+    
+        model = dict(openings)
+        expectations = []
+        for sender, recipient, amount, key in plan:
+            if model[sender] >= amount:
+                model[sender] -= amount
+                model[recipient] += amount
+                expectations.append("ok")
+            else:
+                expectations.append("insufficient")
+    
+        async def body(client):
+            for code in codes:
+                await api.create_account(client, code=code, opening_balance=openings[code])
+            observed = []
+            for sender, recipient, amount, key in plan:
+                try:
+                    await api.create_transfer(
+                        client,
+                        sender=sender,
+                        recipient=recipient,
+                        amount=amount,
+                        idempotency_key=key,
+                    )
+                    observed.append("ok")
+                except api.InsufficientFunds:
+                    observed.append("insufficient")
+                except api.LedgerError as exc:
+                    observed.append(type(exc).__name__)
+            balances = {}
+            for code in codes:
+                balances[code] = await api.get_balance(client, account=code)
+            entry_sum = await client.query_single(
+                """
+                select <str>sum((
+                    select LedgerEntry
+                    filter .transfer.idempotency_key like <str>$p ++ '%'
+                ).amount)
+                """,
+                p=f"{TOKEN}-rnd-",
+            )
+            stored = await client.query_single(
+                "select count((select Transfer filter .idempotency_key like <str>$p ++ '%'))",
+                p=f"{TOKEN}-rnd-",
+            )
+            return observed, balances, entry_sum, stored
+    
+>       observed, balances, entry_sum, stored = run_async(body, timeout=300)
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+/tests/test_final_state.py:115: in main
+    return await asyncio.wait_for(body(client), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/tasks.py:520: in wait_for
+    return await fut
+           ^^^^^^^^^
+/tests/test_final_state.py:1107: in body
+    await api.create_account(client, code=code, opening_balance=openings[code])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <gel.asyncio_client.AsyncIOClient object at 0x7dbd68180fd0>
+code = 'efbf16ea-R0', opening_balance = Decimal('47.05')
+
+    async def create_account(client, *, code: str, opening_balance: Decimal) -> dict:
+        """Create an account and return ``{"id", "code", "balance"}``."""
+>       raise NotImplementedError("create_account is not implemented yet")
+E       NotImplementedError: create_account is not implemented yet
+
+/home/user/ledger/ledger_api.py:42: NotImplementedError
+_________________________ test_global_invariants_hold __________________________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_global_invariants_hold(api):
+        async def body(client):
+            entry_sum = await client.query_single(
+                """
+                select <str>sum((
+                    select LedgerEntry
+                    filter .transfer.idempotency_key like <str>$p ++ '%'
+                ).amount)
+                """,
+                p=f"{TOKEN}-",
+            )
+            rows = await client.query(
+                """
+                select (select Account filter .code like <str>$p ++ '%') {
+                    code,
+                    bal := <str>.balance,
+                    ob := <str>.opening_balance,
+                    esum := <str>sum(.<account[is LedgerEntry].amount),
+                }
+                """,
+                p=f"{TOKEN}-",
+            )
+            negatives = await client.query_single(
+                "select count((select Account filter .balance < 0))"
+            )
+            return entry_sum, rows, negatives
+    
+        entry_sum, rows, negatives = run_async(body)
+        assert D(entry_sum) == D("0"), (
+            f"Double-entry invariant violated: all entries must sum to zero, got {entry_sum}"
+        )
+>       assert len(rows) > 0, "No verification accounts were found in the database."
+E       AssertionError: No verification accounts were found in the database.
+E       assert 0 > 0
+E        +  where 0 = len([])
+
+/tests/test_final_state.py:1191: AssertionError
+==================================== PASSES ====================================
+______________________ test_migration_history_is_in_sync _______________________
+---------------------------- Captured stdout setup -----------------------------
+gel-start.sh stdout:
+gel-start: a server is already listening on 127.0.0.1:5656
+
+gel-start.sh stderr:
+
+_________________ test_database_rejects_duplicate_account_code _________________
+----------------------------- Captured stdout call -----------------------------
+a second Account with code ACC-1001 was rejected with ConstraintViolationError
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_a_new_migration_was_created_without_touching_the_baseline
+PASSED ../tests/test_final_state.py::test_migration_history_is_in_sync
+PASSED ../tests/test_final_state.py::test_account_type_shape
+PASSED ../tests/test_final_state.py::test_ledger_entry_type_shape
+PASSED ../tests/test_final_state.py::test_seeded_accounts_are_preserved
+PASSED ../tests/test_final_state.py::test_database_rejects_duplicate_account_code
+ERROR ../tests/test_final_state.py::test_database_rejects_non_positive_transfer_amounts
+ERROR ../tests/test_final_state.py::test_database_rejects_self_transfer - Not...
+ERROR ../tests/test_final_state.py::test_database_rejects_duplicate_idempotency_key
+ERROR ../tests/test_final_state.py::test_database_rejects_zero_ledger_entry
+ERROR ../tests/test_final_state.py::test_database_rejects_two_entries_for_the_same_account_and_transfer
+FAILED ../tests/test_final_state.py::test_transfer_type_shape - AssertionErro...
+FAILED ../tests/test_final_state.py::test_balance_and_entries_are_derived_not_stored
+FAILED ../tests/test_final_state.py::test_create_account_happy_path_and_duplicate
+FAILED ../tests/test_final_state.py::test_create_account_rejects_invalid_opening_balance
+FAILED ../tests/test_final_state.py::test_single_transfer_creates_balanced_entries
+FAILED ../tests/test_final_state.py::test_replaying_the_same_idempotency_key_does_not_move_money
+FAILED ../tests/test_final_state.py::test_invalid_transfers_are_rejected_without_side_effects
+FAILED ../tests/test_final_state.py::test_unknown_account_lookups_are_rejected
+FAILED ../tests/test_final_state.py::test_transfer_may_drain_an_account_exactly
+FAILED ../tests/test_final_state.py::test_statement_ordering_shape_and_limit
+FAILED ../tests/test_final_state.py::test_concurrent_transfer_storm_keeps_the_ledger_balanced
+FAILED ../tests/test_final_state.py::test_concurrent_calls_sharing_one_key_create_one_transfer
+FAILED ../tests/test_final_state.py::test_randomised_sequence_matches_an_independent_model
+FAILED ../tests/test_final_state.py::test_global_invariants_hold - AssertionE...
+==================== 14 failed, 6 passed, 5 errors in 3.70s ====================

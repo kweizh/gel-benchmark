@@ -1,0 +1,14 @@
+{
+  "name": "vault",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vault document collaboration service",
+  "scripts": {},
+  "dependencies": {
+    "gel": "2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.24",
+    "typescript": "5.7.3"
+  }
+}

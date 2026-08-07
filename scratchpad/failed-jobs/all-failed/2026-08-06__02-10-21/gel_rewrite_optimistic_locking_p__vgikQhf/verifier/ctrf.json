@@ -1,0 +1,230 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T19:06:46.368731+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 22,
+            "passed": 21,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785956800323,
+            "stop": 1785956806368
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_project_files_exist",
+                "status": "passed",
+                "duration": 0,
+                "start": 1785956800425,
+                "stop": 1785956800425,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1785956800425,
+                "stop": 1785956800426,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_in_sync",
+                "status": "passed",
+                "duration": 1511,
+                "start": 1785956800426,
+                "stop": 1785956801937,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_document_schema_shape",
+                "status": "passed",
+                "duration": 222,
+                "start": 1785956801938,
+                "stop": 1785956802160,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_document_revision_schema_shape",
+                "status": "passed",
+                "duration": 44,
+                "start": 1785956802160,
+                "stop": 1785956802204,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_document_rewrites_declared",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 85,
+                "start": 1785956802205,
+                "stop": 1785956802290,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_document_rewrites_declared(gel_server):\n        pointers = introspect(\"default::Document\")\n    \n        def kinds(name):\n            return {rw[\"kind\"] for rw in pointers[name][\"rewrites\"]}\n    \n        assert \"Update\" in kinds(\"revision\"), (\n            \"default::Document.revision must carry an update rewrite rule, \"\n            f\"found rewrites {sorted(kinds('revision'))}.\"\n        )\n        assert {\"Insert\", \"Update\"} <= kinds(\"modified_at\"), (\n            \"default::Document.modified_at must carry insert and update rewrite rules, \"\n            f\"found {sorted(kinds('modified_at'))}.\"\n        )\n        assert {\"Insert\", \"Update\"} <= kinds(\"title_modified_at\"), (\n            \"default::Document.title_modified_at must carry insert and update rewrite \"\n            f\"rules, found {sorted(kinds('title_modified_at'))}.\"\n        )\n        created_kinds = kinds(\"created_at\")\n>       assert \"Update\" not in created_kinds, (\n            \"default::Document.created_at must not be rewritten on update; \"\n            f\"found {sorted(created_kinds)}.\"\n        )\nE       AssertionError: default::Document.created_at must not be rewritten on update; found ['Insert', 'Update'].\nE       assert 'Update' not in {'Insert', 'Update'}\n\n/tests/test_final_state.py:314: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_history_revision_uniqueness_enforced",
+                "status": "passed",
+                "duration": 83,
+                "start": 1785956802291,
+                "stop": 1785956802374,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_slug_uniqueness_enforced_by_database",
+                "status": "passed",
+                "duration": 112,
+                "start": 1785956802375,
+                "stop": 1785956802487,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_create_document_happy_path",
+                "status": "passed",
+                "duration": 67,
+                "start": 1785956802488,
+                "stop": 1785956802555,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_compare_and_set_update",
+                "status": "passed",
+                "duration": 51,
+                "start": 1785956802555,
+                "stop": 1785956802606,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_stale_revision_rejected",
+                "status": "passed",
+                "duration": 71,
+                "start": 1785956802606,
+                "stop": 1785956802677,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unknown_slug_raises_document_not_found",
+                "status": "passed",
+                "duration": 85,
+                "start": 1785956802677,
+                "stop": 1785956802762,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_empty_update_raises_value_error",
+                "status": "passed",
+                "duration": 23,
+                "start": 1785956802762,
+                "stop": 1785956802785,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_slug_conflict_leaves_state_untouched",
+                "status": "passed",
+                "duration": 38,
+                "start": 1785956802785,
+                "stop": 1785956802823,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_revision_is_enforced_by_the_database",
+                "status": "passed",
+                "duration": 147,
+                "start": 1785956802824,
+                "stop": 1785956802971,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_title_modified_at_tracks_specified_title",
+                "status": "passed",
+                "duration": 198,
+                "start": 1785956802971,
+                "stop": 1785956803169,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_raw_insert_with_minimal_properties",
+                "status": "passed",
+                "duration": 126,
+                "start": 1785956803169,
+                "stop": 1785956803295,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_concurrent_appends_converge",
+                "status": "passed",
+                "duration": 776,
+                "start": 1785956803296,
+                "stop": 1785956804072,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_create_update_show_history",
+                "status": "passed",
+                "duration": 559,
+                "start": 1785956804073,
+                "stop": 1785956804632,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_stale_revision_exit_code",
+                "status": "passed",
+                "duration": 531,
+                "start": 1785956804632,
+                "stop": 1785956805163,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_not_found_and_conflict_exit_codes",
+                "status": "passed",
+                "duration": 375,
+                "start": 1785956805163,
+                "stop": 1785956805538,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_cli_race_accepts_every_append",
+                "status": "passed",
+                "duration": 830,
+                "start": 1785956805538,
+                "stop": 1785956806368,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

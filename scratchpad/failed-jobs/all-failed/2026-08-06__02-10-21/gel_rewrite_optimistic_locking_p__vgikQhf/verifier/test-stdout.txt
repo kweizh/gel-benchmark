@@ -1,0 +1,72 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 22 items
+
+../tests/test_final_state.py .....F................                      [100%]
+
+=================================== FAILURES ===================================
+_______________________ test_document_rewrites_declared ________________________
+
+gel_server = True
+
+    def test_document_rewrites_declared(gel_server):
+        pointers = introspect("default::Document")
+    
+        def kinds(name):
+            return {rw["kind"] for rw in pointers[name]["rewrites"]}
+    
+        assert "Update" in kinds("revision"), (
+            "default::Document.revision must carry an update rewrite rule, "
+            f"found rewrites {sorted(kinds('revision'))}."
+        )
+        assert {"Insert", "Update"} <= kinds("modified_at"), (
+            "default::Document.modified_at must carry insert and update rewrite rules, "
+            f"found {sorted(kinds('modified_at'))}."
+        )
+        assert {"Insert", "Update"} <= kinds("title_modified_at"), (
+            "default::Document.title_modified_at must carry insert and update rewrite "
+            f"rules, found {sorted(kinds('title_modified_at'))}."
+        )
+        created_kinds = kinds("created_at")
+>       assert "Update" not in created_kinds, (
+            "default::Document.created_at must not be rewritten on update; "
+            f"found {sorted(created_kinds)}."
+        )
+E       AssertionError: default::Document.created_at must not be rewritten on update; found ['Insert', 'Update'].
+E       assert 'Update' not in {'Insert', 'Update'}
+
+/tests/test_final_state.py:314: AssertionError
+==================================== PASSES ====================================
+________________________ test_migration_status_in_sync _________________________
+---------------------------- Captured stdout setup -----------------------------
+=== start-gel.sh stdout ===
+gel server already running
+
+=== start-gel.sh stderr ===
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_project_files_exist
+PASSED ../tests/test_final_state.py::test_migration_files_exist
+PASSED ../tests/test_final_state.py::test_migration_status_in_sync
+PASSED ../tests/test_final_state.py::test_document_schema_shape
+PASSED ../tests/test_final_state.py::test_document_revision_schema_shape
+PASSED ../tests/test_final_state.py::test_history_revision_uniqueness_enforced
+PASSED ../tests/test_final_state.py::test_slug_uniqueness_enforced_by_database
+PASSED ../tests/test_final_state.py::test_create_document_happy_path
+PASSED ../tests/test_final_state.py::test_compare_and_set_update
+PASSED ../tests/test_final_state.py::test_stale_revision_rejected
+PASSED ../tests/test_final_state.py::test_unknown_slug_raises_document_not_found
+PASSED ../tests/test_final_state.py::test_empty_update_raises_value_error
+PASSED ../tests/test_final_state.py::test_slug_conflict_leaves_state_untouched
+PASSED ../tests/test_final_state.py::test_revision_is_enforced_by_the_database
+PASSED ../tests/test_final_state.py::test_title_modified_at_tracks_specified_title
+PASSED ../tests/test_final_state.py::test_raw_insert_with_minimal_properties
+PASSED ../tests/test_final_state.py::test_concurrent_appends_converge
+PASSED ../tests/test_final_state.py::test_cli_create_update_show_history
+PASSED ../tests/test_final_state.py::test_cli_stale_revision_exit_code
+PASSED ../tests/test_final_state.py::test_cli_not_found_and_conflict_exit_codes
+PASSED ../tests/test_final_state.py::test_cli_race_accepts_every_append
+FAILED ../tests/test_final_state.py::test_document_rewrites_declared - Assert...
+========================= 1 failed, 21 passed in 6.05s =========================

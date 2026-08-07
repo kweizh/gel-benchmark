@@ -1,0 +1,27 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 19 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_start_helper_available PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_gel_toml_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_exists PASSED
+../bootstrap/test_initial_state.py::test_exactly_one_migration_present PASSED
+../bootstrap/test_initial_state.py::test_reporting_queries_not_created_yet PASSED
+../bootstrap/test_initial_state.py::test_server_is_reachable PASSED
+../bootstrap/test_initial_state.py::test_migrations_are_applied PASSED
+../bootstrap/test_initial_state.py::test_seeded_categories PASSED
+../bootstrap/test_initial_state.py::test_seeded_tree_is_multi_level PASSED
+../bootstrap/test_initial_state.py::test_seeded_products PASSED
+../bootstrap/test_initial_state.py::test_products_reference_categories PASSED
+../bootstrap/test_initial_state.py::test_categories_with_empty_subtrees_exist PASSED
+../bootstrap/test_initial_state.py::test_category_has_no_ancestry_pointers_yet PASSED
+../bootstrap/test_initial_state.py::test_product_type_shape PASSED
+../bootstrap/test_initial_state.py::test_relocation_type_absent PASSED
+../bootstrap/test_initial_state.py::test_no_triggers_or_rewrites_yet PASSED
+../bootstrap/test_initial_state.py::test_pytest_tooling_available PASSED
+
+======================== 19 passed in 67.77s (0:01:07) =========================

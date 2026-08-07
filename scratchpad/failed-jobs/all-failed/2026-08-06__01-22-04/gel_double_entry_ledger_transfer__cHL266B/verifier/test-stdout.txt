@@ -1,0 +1,217 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 25 items
+
+../tests/test_final_state.py .....................FF..                   [100%]
+
+=================================== FAILURES ===================================
+___________ test_concurrent_transfer_storm_keeps_the_ledger_balanced ___________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_concurrent_transfer_storm_keeps_the_ledger_balanced(api):
+        senders = [f"{TOKEN}-CS{i}" for i in range(8)]
+        recipients = [f"{TOKEN}-CR{i}" for i in range(8)]
+    
+        async def body(client):
+            for code in senders:
+                await api.create_account(client, code=code, opening_balance=D("50.00"))
+            for code in recipients:
+                await api.create_account(client, code=code, opening_balance=D("0.00"))
+    
+            plan = []
+            for i, sender in enumerate(senders):
+                for j in (i, (i + 1) % len(recipients)):
+                    plan.append((sender, recipients[j], f"{TOKEN}-storm-{i}{j}"))
+    
+            started = time.monotonic()
+            results = await asyncio.gather(
+                *(
+                    api.create_transfer(
+                        client,
+                        sender=sender,
+                        recipient=recipient,
+                        amount=D("1.00"),
+                        idempotency_key=key,
+                    )
+                    for sender, recipient, key in plan
+                )
+            )
+            elapsed = time.monotonic() - started
+    
+            stored = await client.query_single(
+                "select count((select Transfer filter .idempotency_key like <str>$p ++ '%'))",
+                p=f"{TOKEN}-storm-",
+            )
+            entry_counts = await client.query(
+                """
+                select (
+                    select Transfer filter .idempotency_key like <str>$p ++ '%'
+                ) { n := count(.entries) }
+                """,
+                p=f"{TOKEN}-storm-",
+            )
+            entry_sum = await client.query_single(
+                """
+                select <str>sum((
+                    select LedgerEntry
+                    filter .transfer.idempotency_key like <str>$p ++ '%'
+                ).amount)
+                """,
+                p=f"{TOKEN}-storm-",
+            )
+            balances = {}
+            for code in senders + recipients:
+                balances[code] = await api.get_balance(client, account=code)
+            negatives = await client.query_single(
+                "select count((select Account filter .balance < 0))"
+            )
+            return results, elapsed, stored, [row.n for row in entry_counts], entry_sum, balances, negatives
+    
+>       results, elapsed, stored, entry_counts, entry_sum, balances, negatives = run_async(
+            body, timeout=300, concurrency=8
+        )
+
+/tests/test_final_state.py:995: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def main():
+        if concurrency is None:
+            client = gel.create_async_client()
+        else:
+>           client = gel.create_async_client(concurrency=concurrency)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: create_async_client() got an unexpected keyword argument 'concurrency'
+
+/tests/test_final_state.py:113: TypeError
+__________ test_concurrent_calls_sharing_one_key_create_one_transfer ___________
+
+api = <module 'ledger_api' from '/home/user/ledger/ledger_api.py'>
+
+    def test_concurrent_calls_sharing_one_key_create_one_transfer(api):
+        sender = f"{TOKEN}-DS"
+        recipient = f"{TOKEN}-DR"
+        key = f"{TOKEN}-dup"
+    
+        async def body(client):
+            await api.create_account(client, code=sender, opening_balance=D("20.00"))
+            await api.create_account(client, code=recipient, opening_balance=D("0.00"))
+            results = await asyncio.gather(
+                *(
+                    api.create_transfer(
+                        client,
+                        sender=sender,
+                        recipient=recipient,
+                        amount=D("2.00"),
+                        idempotency_key=key,
+                    )
+                    for _ in range(6)
+                )
+            )
+            stored = await client.query_single(
+                "select count((select Transfer filter .idempotency_key = <str>$k))", k=key
+            )
+            row = await _transfer_row(client, key)
+            balances = (
+                await api.get_balance(client, account=sender),
+                await api.get_balance(client, account=recipient),
+            )
+            return results, stored, row, balances
+    
+>       results, stored, row, balances = run_async(body, timeout=300, concurrency=6)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1057: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:119: in run_async
+    return asyncio.run(main())
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def main():
+        if concurrency is None:
+            client = gel.create_async_client()
+        else:
+>           client = gel.create_async_client(concurrency=concurrency)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: create_async_client() got an unexpected keyword argument 'concurrency'
+
+/tests/test_final_state.py:113: TypeError
+==================================== PASSES ====================================
+______________________ test_migration_history_is_in_sync _______________________
+---------------------------- Captured stdout setup -----------------------------
+gel-start.sh stdout:
+gel-start: a server is already listening on 127.0.0.1:5656
+
+gel-start.sh stderr:
+
+_____________ test_database_rejects_non_positive_transfer_amounts ______________
+----------------------------- Captured stdout call -----------------------------
+a Transfer with amount -5.00 was rejected with ConstraintViolationError
+a Transfer with amount 0.00 was rejected with ConstraintViolationError
+_____________________ test_database_rejects_self_transfer ______________________
+----------------------------- Captured stdout call -----------------------------
+a Transfer whose sender equals its recipient was rejected with ConstraintViolationError
+_______________ test_database_rejects_duplicate_idempotency_key ________________
+----------------------------- Captured stdout call -----------------------------
+a Transfer reusing an existing idempotency_key was rejected with ConstraintViolationError
+_________________ test_database_rejects_duplicate_account_code _________________
+----------------------------- Captured stdout call -----------------------------
+a second Account with code ACC-1001 was rejected with ConstraintViolationError
+___________________ test_database_rejects_zero_ledger_entry ____________________
+----------------------------- Captured stdout call -----------------------------
+a LedgerEntry with amount 0 was rejected with ConstraintViolationError
+_____ test_database_rejects_two_entries_for_the_same_account_and_transfer ______
+----------------------------- Captured stdout call -----------------------------
+a second LedgerEntry for one (account, transfer) pair was rejected with ConstraintViolationError
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_a_new_migration_was_created_without_touching_the_baseline
+PASSED ../tests/test_final_state.py::test_migration_history_is_in_sync
+PASSED ../tests/test_final_state.py::test_account_type_shape
+PASSED ../tests/test_final_state.py::test_transfer_type_shape
+PASSED ../tests/test_final_state.py::test_ledger_entry_type_shape
+PASSED ../tests/test_final_state.py::test_seeded_accounts_are_preserved
+PASSED ../tests/test_final_state.py::test_database_rejects_non_positive_transfer_amounts
+PASSED ../tests/test_final_state.py::test_database_rejects_self_transfer
+PASSED ../tests/test_final_state.py::test_database_rejects_duplicate_idempotency_key
+PASSED ../tests/test_final_state.py::test_database_rejects_duplicate_account_code
+PASSED ../tests/test_final_state.py::test_database_rejects_zero_ledger_entry
+PASSED ../tests/test_final_state.py::test_database_rejects_two_entries_for_the_same_account_and_transfer
+PASSED ../tests/test_final_state.py::test_balance_and_entries_are_derived_not_stored
+PASSED ../tests/test_final_state.py::test_create_account_happy_path_and_duplicate
+PASSED ../tests/test_final_state.py::test_create_account_rejects_invalid_opening_balance
+PASSED ../tests/test_final_state.py::test_single_transfer_creates_balanced_entries
+PASSED ../tests/test_final_state.py::test_replaying_the_same_idempotency_key_does_not_move_money
+PASSED ../tests/test_final_state.py::test_invalid_transfers_are_rejected_without_side_effects
+PASSED ../tests/test_final_state.py::test_unknown_account_lookups_are_rejected
+PASSED ../tests/test_final_state.py::test_transfer_may_drain_an_account_exactly
+PASSED ../tests/test_final_state.py::test_statement_ordering_shape_and_limit
+PASSED ../tests/test_final_state.py::test_randomised_sequence_matches_an_independent_model
+PASSED ../tests/test_final_state.py::test_global_invariants_hold
+FAILED ../tests/test_final_state.py::test_concurrent_transfer_storm_keeps_the_ledger_balanced
+FAILED ../tests/test_final_state.py::test_concurrent_calls_sharing_one_key_create_one_transfer
+========================= 2 failed, 23 passed in 4.03s =========================

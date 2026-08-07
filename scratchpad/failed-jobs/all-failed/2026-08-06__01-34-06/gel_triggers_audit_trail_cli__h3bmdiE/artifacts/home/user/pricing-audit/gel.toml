@@ -1,0 +1,5 @@
+[project]
+schema-dir = "dbschema"
+
+[instance]
+server-version = "6.11"

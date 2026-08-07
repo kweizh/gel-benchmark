@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 28 items
+
+../tests/test_final_state.py ............................                [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_project_files_present
+PASSED ../tests/test_final_state.py::test_corpus_file_unmodified
+PASSED ../tests/test_final_state.py::test_migration_status_reports_up_to_date
+PASSED ../tests/test_final_state.py::test_article_type_has_required_properties
+PASSED ../tests/test_final_state.py::test_slug_uniqueness_is_enforced
+PASSED ../tests/test_final_state.py::test_weighted_fts_index_is_declared
+PASSED ../tests/test_final_state.py::test_corpus_is_loaded
+PASSED ../tests/test_final_state.py::test_loader_is_idempotent
+PASSED ../tests/test_final_state.py::test_default_paging_and_tie_break
+PASSED ../tests/test_final_state.py::test_title_beats_summary_beats_body
+PASSED ../tests/test_final_state.py::test_title_match_outranks_body_match
+PASSED ../tests/test_final_state.py::test_scores_are_positive_rounded_and_non_increasing[trail]
+PASSED ../tests/test_final_state.py::test_scores_are_positive_rounded_and_non_increasing[aurora]
+PASSED ../tests/test_final_state.py::test_scores_are_positive_rounded_and_non_increasing[harbor]
+PASSED ../tests/test_final_state.py::test_unpublished_articles_are_never_returned
+PASSED ../tests/test_final_state.py::test_query_without_any_match
+PASSED ../tests/test_final_state.py::test_pagination_pages_rebuild_the_full_ordering
+PASSED ../tests/test_final_state.py::test_offset_past_the_end_returns_empty_page
+PASSED ../tests/test_final_state.py::test_search_reflects_live_database_state
+PASSED ../tests/test_final_state.py::test_search_is_case_and_form_insensitive[TRAIL]
+PASSED ../tests/test_final_state.py::test_search_is_case_and_form_insensitive[trails]
+PASSED ../tests/test_final_state.py::test_query_with_apostrophe_is_echoed_and_matched
+PASSED ../tests/test_final_state.py::test_argument_errors[no-args]
+PASSED ../tests/test_final_state.py::test_argument_errors[empty-query]
+PASSED ../tests/test_final_state.py::test_argument_errors[non-integer-limit]
+PASSED ../tests/test_final_state.py::test_argument_errors[zero-limit]
+PASSED ../tests/test_final_state.py::test_argument_errors[negative-offset]
+PASSED ../tests/test_final_state.py::test_argument_errors[too-many]
+============================== 28 passed in 4.33s ==============================

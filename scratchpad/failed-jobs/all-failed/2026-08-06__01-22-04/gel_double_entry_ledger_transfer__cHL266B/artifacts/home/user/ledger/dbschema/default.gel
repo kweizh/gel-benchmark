@@ -1,0 +1,46 @@
+module default {
+    type Account {
+        required code: str {
+            constraint exclusive;
+        }
+        required opening_balance: decimal;
+
+        # Derived, never stored: opening balance plus every ledger entry
+        # ever posted against this account.
+        balance := .opening_balance + sum(.<account[is LedgerEntry].amount);
+    }
+
+    type Transfer {
+        required idempotency_key: str {
+            constraint exclusive;
+        }
+        required amount: decimal {
+            constraint expression on (__subject__ > 0.0n) {
+                errmessage := "amount must be positive";
+            }
+        }
+        required sender: Account;
+        required recipient: Account;
+        required created_at: datetime {
+            default := datetime_of_statement();
+        }
+
+        multi entries := .<transfer[is LedgerEntry];
+
+        constraint expression on (__subject__.sender != __subject__.recipient) {
+            errmessage := "sender and recipient must be different accounts";
+        }
+    }
+
+    type LedgerEntry {
+        required amount: decimal {
+            constraint expression on (__subject__ != 0.0n) {
+                errmessage := "amount must not be zero";
+            }
+        }
+        required account: Account;
+        required transfer: Transfer;
+
+        constraint exclusive on ((.account, .transfer));
+    }
+}

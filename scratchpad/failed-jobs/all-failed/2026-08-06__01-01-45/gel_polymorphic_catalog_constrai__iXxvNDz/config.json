@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_polymorphic_catalog_constraints_cli",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_polymorphic_catalog_constrai__iXxvNDz",
+    "trials_dir": "jobs/2026-08-06__01-01-45",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "google/gemini-3.5-flash",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "201ef23b-b25d-4930-ab3f-84fd9102523c"
+}

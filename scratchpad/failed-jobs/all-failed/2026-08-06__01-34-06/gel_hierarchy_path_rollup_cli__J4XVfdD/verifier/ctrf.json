@@ -1,0 +1,281 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-05T17:44:44.583936+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 21,
+            "passed": 0,
+            "failed": 21,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1785951881644,
+            "stop": 1785951884583
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migrations_applied_and_in_sync",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 68,
+                "start": 1785951881777,
+                "stop": 1785951881845,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_migrations_applied_and_in_sync(gel_server):\n        migrations = sorted(glob.glob(os.path.join(MIGRATIONS_DIR, \"*.edgeql\")))\n>       assert len(migrations) >= 2, (\n            f\"Expected at least two migration files in {MIGRATIONS_DIR} (the baked one plus the \"\n            f\"schema change), found: {migrations}\"\n        )\nE       AssertionError: Expected at least two migration files in /home/user/catalog/dbschema/migrations (the baked one plus the schema change), found: ['/home/user/catalog/dbschema/migrations/00001-m13fvfx.edgeql']\nE       assert 1 >= 2\nE        +  where 1 = len(['/home/user/catalog/dbschema/migrations/00001-m13fvfx.edgeql'])\n\n/tests/test_final_state.py:312: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_depth_and_path_are_stored_properties_with_insert_rewrites",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 348,
+                "start": 1785951881846,
+                "stop": 1785951882194,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_depth_and_path_are_stored_properties_with_insert_rewrites(gel_server):\n        category = object_of(\"default::Category\")\n        for name, scalar in ((\"depth\", \"std::int64\"), (\"path\", \"std::str\")):\n            prop = pointer(category[\"prop_details\"], name)\n>           assert prop is not None, f\"default::Category has no property {name!r}.\"\nE           AssertionError: default::Category has no property 'depth'.\nE           assert None is not None\n\n/tests/test_final_state.py:331: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_children_and_ancestors_are_computed_multi_links",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 71,
+                "start": 1785951882194,
+                "stop": 1785951882265,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_children_and_ancestors_are_computed_multi_links(gel_server):\n        category = object_of(\"default::Category\")\n        for name in (\"children\", \"ancestors\"):\n            link = pointer(category[\"link_details\"], name)\n>           assert link is not None, f\"default::Category has no link {name!r}.\"\nE           AssertionError: default::Category has no link 'children'.\nE           assert None is not None\n\n/tests/test_final_state.py:353: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_exclusive_path_constraint_declared",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 370,
+                "start": 1785951882265,
+                "stop": 1785951882635,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_exclusive_path_constraint_declared(gel_server):\n        category = object_of(\"default::Category\")\n        matches = [\n            c\n            for c in category[\"constraint_details\"]\n            if c[\"name\"] == \"std::exclusive\" and c[\"subjectexpr\"] and \"path\" in c[\"subjectexpr\"]\n        ]\n>       assert matches, (\n            \"default::Category must declare a std::exclusive constraint on the path; found \"\n            f\"constraints: {category['constraint_details']!r}\"\n        )\nE       AssertionError: default::Category must declare a std::exclusive constraint on the path; found constraints: []\nE       assert []\n\n/tests/test_final_state.py:370: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_type_shape",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 69,
+                "start": 1785951882635,
+                "stop": 1785951882704,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_relocation_type_shape(gel_server):\n>       relocation = object_of(\"default::Relocation\")\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:377: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'default::Relocation'\n\n    def object_of(name):\n        rows = gel_json(\n            \"select schema::ObjectType { \"\n            \"  name, \"\n            \"  prop_details := (select .pointers[is schema::Property] { \"\n            \"     name, required, cardinality, expr, target_name := .target.name, \"\n            \"     rewrite_kinds := .rewrites.kind }), \"\n            \"  link_details := (select .pointers[is schema::Link] { \"\n            \"     name, required, cardinality, expr, target_name := .target.name, \"\n            \"     rewrite_kinds := .rewrites.kind }), \"\n            \"  constraint_details := (select .constraints { name, subjectexpr }), \"\n            \"  trigger_details := (select .triggers { name, kinds, timing }) \"\n            \"} filter .name = '\" + name + \"'\"\n        )\n>       assert rows, f\"Object type {name} does not exist in the schema.\"\nE       AssertionError: Object type default::Relocation does not exist in the schema.\nE       assert []\n\n/tests/test_final_state.py:268: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_triggers_declared",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 84,
+                "start": 1785951882705,
+                "stop": 1785951882789,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_relocation_triggers_declared(gel_server):\n>       relocation = object_of(\"default::Relocation\")\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:409: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'default::Relocation'\n\n    def object_of(name):\n        rows = gel_json(\n            \"select schema::ObjectType { \"\n            \"  name, \"\n            \"  prop_details := (select .pointers[is schema::Property] { \"\n            \"     name, required, cardinality, expr, target_name := .target.name, \"\n            \"     rewrite_kinds := .rewrites.kind }), \"\n            \"  link_details := (select .pointers[is schema::Link] { \"\n            \"     name, required, cardinality, expr, target_name := .target.name, \"\n            \"     rewrite_kinds := .rewrites.kind }), \"\n            \"  constraint_details := (select .constraints { name, subjectexpr }), \"\n            \"  trigger_details := (select .triggers { name, kinds, timing }) \"\n            \"} filter .name = '\" + name + \"'\"\n        )\n>       assert rows, f\"Object type {name} does not exist in the schema.\"\nE       AssertionError: Object type default::Relocation does not exist in the schema.\nE       assert []\n\n/tests/test_final_state.py:268: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_seeded_data_intact",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 100,
+                "start": 1785951882789,
+                "stop": 1785951882889,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_seeded_data_intact(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:429: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_stored_path_and_depth_match_the_tree",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 101,
+                "start": 1785951882890,
+                "stop": 1785951882991,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_stored_path_and_depth_match_the_tree(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:440: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_ancestors_and_children_links_match_the_tree",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 117,
+                "start": 1785951882991,
+                "stop": 1785951883108,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_ancestors_and_children_links_match_the_tree(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:456: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_query_files_exist",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 7,
+                "start": 1785951883109,
+                "stop": 1785951883116,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "def test_query_files_exist():\n        for relpath in (TREE_QUERY, ROLLUP_QUERY, ROOT_TOTALS_QUERY):\n            path = os.path.join(PROJECT_DIR, relpath)\n>           assert os.path.isfile(path), f\"Missing required query file {path}.\"\nE           AssertionError: Missing required query file /home/user/catalog/queries/tree.edgeql.\nE           assert False\nE            +  where False = <function isfile at 0x7e0ab9c9bba0>('/home/user/catalog/queries/tree.edgeql')\nE            +    where <function isfile at 0x7e0ab9c9bba0> = <module 'posixpath' (frozen)>.isfile\nE            +      where <module 'posixpath' (frozen)> = os.path\n\n/tests/test_final_state.py:483: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_tree_query_contract",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 361,
+                "start": 1785951883116,
+                "stop": 1785951883477,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_tree_query_contract(gel_server):\n>       check_tree_output()\n\n/tests/test_final_state.py:683: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:493: in check_tree_output\n    rows = fetch_categories()\n           ^^^^^^^^^^^^^^^^^^\n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_subtree_rollup_query_contract",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 105,
+                "start": 1785951883477,
+                "stop": 1785951883582,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_subtree_rollup_query_contract(gel_server):\n>       check_rollup_output()\n\n/tests/test_final_state.py:687: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:546: in check_rollup_output\n    rows = fetch_categories()\n           ^^^^^^^^^^^^^^^^^^\n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_root_totals_query_contract",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 117,
+                "start": 1785951883582,
+                "stop": 1785951883699,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_root_totals_query_contract(gel_server):\n>       check_root_totals_output()\n\n/tests/test_final_state.py:691: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:634: in check_root_totals_output\n    rows = fetch_categories()\n           ^^^^^^^^^^^^^^^^^^\n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_new_categories_get_ancestry_automatically",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 136,
+                "start": 1785951883699,
+                "stop": 1785951883835,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_new_categories_get_ancestry_automatically(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:698: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_sibling_slug_is_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 101,
+                "start": 1785951883835,
+                "stop": 1785951883936,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_duplicate_sibling_slug_is_rejected(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:756: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_root_slug_is_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 112,
+                "start": 1785951883936,
+                "stop": 1785951884048,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_duplicate_root_slug_is_rejected(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:784: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_moves_the_whole_subtree",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 101,
+                "start": 1785951884048,
+                "stop": 1785951884149,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_relocation_moves_the_whole_subtree(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:806: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_reports_follow_the_relocation",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 108,
+                "start": 1785951884149,
+                "stop": 1785951884257,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_reports_follow_the_relocation(gel_server):\n>       check_tree_output()\n\n/tests/test_final_state.py:883: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:493: in check_tree_output\n    rows = fetch_categories()\n           ^^^^^^^^^^^^^^^^^^\n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_relocation_to_root_level",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 111,
+                "start": 1785951884257,
+                "stop": 1785951884368,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_relocation_to_root_level(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:889: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_cycle_creating_relocations_are_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 102,
+                "start": 1785951884368,
+                "stop": 1785951884470,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_cycle_creating_relocations_are_rejected(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:944: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_destination_slug_collision_is_rejected",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 113,
+                "start": 1785951884470,
+                "stop": 1785951884583,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_destination_slug_collision_is_rejected(gel_server):\n>       rows = fetch_categories()\n               ^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:977: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/tests/test_final_state.py:140: in fetch_categories\n    rows = gel_json(\"select Category { id, slug, name, parent_id := .parent.id, path, depth }\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nquery = 'select Category { id, slug, name, parent_id := .parent.id, path, depth }'\n\n    def gel_json(query):\n        proc = run_gel([\"query\", \"-F\", \"json\", query])\n>       assert proc.returncode == 0, (\n            f\"gel query failed.\\nquery: {query}\\nstdout: {proc.stdout}\\nstderr: {proc.stderr}\"\n        )\nE       AssertionError: gel query failed.\nE         query: select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE         stdout: \nE         stderr: error: InvalidReferenceError: object type 'default::Category' has no link or property 'path'\nE           \u250c\u2500 <query>:1:60\nE           \u2502\nE         1 \u2502 select Category { id, slug, name, parent_id := .parent.id, path, depth }\nE           \u2502                                                            ^^^^ error\nE         \nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select Category { id, slug, name, parent_id := .parent.id, path,...parent_id := .parent.id, path, depth }\\n  \u2502                                                            ^^^^ error\\n\\n\").returncode\n\n/tests/test_final_state.py:104: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

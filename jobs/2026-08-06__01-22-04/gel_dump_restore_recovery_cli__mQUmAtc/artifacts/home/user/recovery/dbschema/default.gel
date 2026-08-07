@@ -1,0 +1,27 @@
+module default {
+  type Warehouse {
+    required code: str {
+      constraint exclusive;
+      constraint regexp(r'^[A-Z0-9-]{3,12}$');
+    }
+    required name: str;
+  }
+
+  type Shipment {
+    required seq: int64 {
+      constraint exclusive;
+    }
+    required tracking: str {
+      constraint exclusive;
+      constraint regexp(r'^[A-Z0-9-]{6,20}$');
+    }
+    required weight_kg: float64 {
+      constraint min_ex_value(0);
+    }
+    required status: str {
+      constraint one_of('pending', 'in_transit', 'delivered', 'returned');
+    }
+    origin_code: str;
+    required origin: Warehouse;
+  }
+}
