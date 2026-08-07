@@ -1,7 +1,7 @@
 1:"$Sreact.fragment"
 2:"$Sreact.suspense"
 3:I[42654,["/gel-benchmark/_next/static/chunks/babff0e7418ab052.js","/gel-benchmark/_next/static/chunks/3ecbb78a8ff87549.js","/gel-benchmark/_next/static/chunks/ad9522f885dbe9ec.js","/gel-benchmark/_next/static/chunks/2ee232ed1e88c469.js"],"TasksPageClient"]
-10:I[75049,["/gel-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/gel-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"OutletBoundary"]
+14:I[75049,["/gel-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/gel-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"OutletBoundary"]
 4:T1203,# Reconcile Two Parallel Feature Branches in a Gel Database Project
 
 ## Background
@@ -209,7 +209,135 @@ Your job is to replace it: model the catalog in Gel's schema language, get that 
   In every failure case, including `db_error`, the database contents must be exactly what they were before the invocation.
 - A batch of 200 records must be processed within 60 seconds.
 
-7:T1a78,# Referential Integrity for a Document Workspace Graph (Gel)
+7:T215f,# Gel: stored defaults vs. read-time computeds vs. volatility
+
+## Background
+
+A local **Gel 6.11** server, the `gel` CLI and the Gel **Python** client are already installed in this container. An empty Gel project skeleton is waiting for you.
+
+A lab data team keeps mixing up three different things that all *look* like "the value is filled in for me": a stored `default` captured once when a row is inserted, a pointer whose value is derived every time it is read, and expressions whose volatility class decides where Gel will even accept them. You must build a schema plus a Python program that makes those differences *observable and machine-checkable*.
+
+## Requirements
+
+Model this schema in module `default` and migrate it (a migration history on disk is mandatory; the branch must end up in sync):
+
+- `Sample` — non-computed pointers `label` (`str`, required, single, exclusive), `grams` (`float64`, required, single), `intake_ref` (`uuid`, required, single, read-only, filled in by a stored default that yields a *different* value for every row even inside one statement), `intake_at` (`datetime`, required, single, read-only, filled in by a stored default that yields the *same* value for every row created by one statement).
+- `Sample` also exposes these derived-at-read-time pointers, all of which must be reported by schema introspection as computed: `label_key` (required, single, `std::str`, the lower-cased `label`), `age` (required, single, `std::duration`, how long ago the row was taken in, measured from the start of the reading statement), `assay_count` (required, single, `std::int64`), `measurement_count` (required, single, `std::int64`), `total_value` (required, single, `std::float64`, the sum of the values of its assays), `measurements` (single=false/`Many`, target type exactly `default::Measurement`), `assays` (`Many`, target exactly `default::Assay`), `batches` (`Many`, target exactly `default::Batch`), and `certificate` (cardinality `One`, not required, target exactly `default::Certificate`).
+- `Measurement` — **abstract**, with `code` (`str`, required, single) and `sample` (link to `Sample`, required, single).
+- `Assay` and `Calibration` — concrete types extending `Measurement`; `Assay` adds `value` (`float64`, required, single) and `Calibration` adds `bias` (`float64`, required, single).
+- `Certificate` — `serial` (`str`, required, single, exclusive) and `sample` (link to `Sample`, required, single, exclusive).
+- `Batch` — `code` (`str`, required, single, exclusive), `samples` (link to `Sample`, `Many`) carrying a link property `position` (`int64`, single), and `sample_count` (computed, required, single, `std::int64`).
+
+Then ship a Python program that rebuilds a fixed dataset from scratch, observes the semantics above, and emits a JSON report.
+
+The dataset the program must materialise on every run (deleting any pre-existing objects of these types first, so the run is repeatable):
+
+- Four `Sample`s created by **one single EdgeQL statement**: `Alpha-01`/1.5, `Bravo-02`/2.25, `Charlie-03`/3.0, `Delta-04`/4.75 (`label`/`grams`).
+- One more `Sample` created by a **later, separate statement**: `Echo-05`/5.5.
+- `Assay`s (`code`, sample `label`, `value`): `A1`/`Alpha-01`/10.0, `A2`/`Alpha-01`/2.5, `A3`/`Bravo-02`/7.25.
+- `Calibration`s (`code`, sample `label`, `bias`): `C1`/`Alpha-01`/0.5, `C2`/`Charlie-03`/-1.25.
+- One `Certificate`: `serial` `CERT-ALPHA`, for `Alpha-01`.
+- One `Batch`: `code` `BATCH-1`, linked to `Alpha-01` (`position` 1), `Bravo-02` (`position` 2), `Charlie-03` (`position` 3).
+- Finally the sample originally labelled `Delta-04` is updated to `label` `Zulu-99` and `grams` 9.0.
+
+## Implementation Hints
+
+- Project path: `/home/user/gelproj`. The schema must live under `/home/user/gelproj/dbschema` and the migration files under `/home/user/gelproj/dbschema/migrations`.
+- The Gel server must be reachable before you touch the database: `/usr/local/bin/gel-start.sh` is idempotent, starts the local server if it is not up and blocks until it accepts connections. Connection settings are already exported in the environment (`GEL_HOST`, `GEL_PORT`, `GEL_USER`, `GEL_BRANCH`, `GEL_CLIENT_TLS_SECURITY`); do not change them, do not add credentials, and do not use any network service outside this container.
+- Command: `python3 main.py`, run from `/home/user/gelproj`. It must exit with status 0 and write the report to `/home/user/gelproj/report.json` (UTF-8 JSON object).
+- `/home/user/gelproj/semantics.py` must define `build_report` as an `async def` coroutine function taking no arguments and returning the report as a `dict`; it must talk to Gel through the asynchronous Gel Python client, and `main.py` must obtain the report from it. Importing `semantics` must not by itself touch the database.
+- The program must be fully rerunnable: two consecutive runs must leave the same database contents and produce **exactly equal** report documents. Therefore the report must not contain any wall-clock timestamp, duration, UUID, object id or any other value that varies between runs — only counts, booleans, and deterministically derived values.
+- Report shape (all keys mandatory, exact spelling):
+  - `introspection`: object keyed by the six short type names `Sample`, `Measurement`, `Assay`, `Calibration`, `Certificate`, `Batch`. Each value is `{"abstract": bool, "pointers": {<pointer name>: {"cardinality": "One"|"Many", "required": bool, "computed": bool, "target": "<fully qualified target type name>"}}}`. Include every pointer you declared for that type (inherited ones included) but exclude `id` and `__type__`. `computed` must be true exactly for pointers whose value comes from a schema expression.
+  - `link_properties`: `{"Batch.samples": {"position": {"cardinality": ..., "required": ..., "target": ...}}}`, i.e. the introspected metadata of the link property only (never `source`/`target`).
+  - `defaults`: `batch_insert_size` (int), `distinct_intake_at_in_batch` (int), `distinct_intake_ref_in_batch` (int) — all three describing the four samples created by the single statement; `intake_at_unchanged_after_update` and `intake_ref_unchanged_after_update` (bool) — whether the stored defaults of the re-labelled sample survived its update untouched; `late_intake_at_not_before_batch` (bool) — whether `Echo-05`'s intake instant is not earlier than the batch's; and `readonly_update_rejected`: `{"rejected": bool, "error_class": str, "error_message": str}` recording what happens when the program tries to assign a new value to `intake_at` of an existing sample (`error_class` is the client exception's class name, `error_message` its string form).
+  - `computed`: `label_key_before_update` and `label_key_after_update` (str) for the sample that gets re-labelled; `alpha_assay_count_before`, `alpha_measurement_count_before` (int) and `alpha_total_value_before` (float) read from `Alpha-01` while no measurement exists yet; `alpha_assay_count_after`, `alpha_measurement_count_after` (int) and `alpha_total_value_after` (float) read after the measurements exist — with no update ever applied to the `Sample` objects themselves in between; `age_non_negative` (bool); and `age_difference_matches_intake_difference` (bool), which must be computed by reading, **within one single statement**, the derived age of `Alpha-01` and of `Echo-05` and checking that the difference of those two ages is exactly equal to the difference of their two intake instants.
+  - `volatility`: `schema_computed_volatile` and `cartesian_volatile`, each `{"rejected": bool, "error_class": str, "error_message": str}`. The first records what the server answers when a *schema-level* computed pointer whose expression is volatile is submitted to it; the second records what it answers for a query that takes the cartesian product of a multi-element set with a volatile expression. Neither probe may leave any residue: after them the branch schema must still contain exactly the six declared object types and the migration history must still be in sync. Also report `schema_unchanged_after_probe` (bool).
+  - `samples`: array with one entry per `Sample`, ordered by `label` ascending, each `{"label": str, "label_key": str, "assay_count": int, "measurement_count": int, "total_value": float, "has_certificate": bool, "batch_codes": [str]}` with `batch_codes` sorted ascending.
+  - `batch`: `{"code": str, "sample_count": int, "members": [{"label": str, "position": int}]}` with `members` ordered by `position` ascending, `position` read from the link property.
+
+8:T2412,# Gel: Delegated Constraints, Multiple Inheritance, and a TypeScript Ingest Classifier
+
+## Background
+A hardware fleet team keeps its asset registry in a local **Gel 6** database (the graph-relational database formerly known as EdgeDB). Their compliance rules are expressed entirely as schema-level constraints, and a nightly batch job pushes a JSON manifest into the registry. Records that break a rule must not sink the whole batch: they have to be rejected individually, classified by the rule they broke, and reported.
+
+Your job is to design the schema, migrate it, and build the batch ingest tool.
+
+A local Gel 6 server is installed in this container but is not started automatically: run `bash /usr/local/bin/gel-ensure-server.sh` to bring it up (the helper is idempotent and blocks until the server accepts queries). Its connection settings are already supplied through preconfigured `GEL_*` environment variables — do not change them, and do not point the tool at any other instance. Everything else you need is already installed: the `gel` CLI, Node.js, TypeScript tooling and the `gel` npm client, with `node_modules` already populated. Treat the environment as offline and do not try to download packages.
+
+## Requirements
+
+### 1. Schema and migration
+Design the schema for module `default` and apply it through Gel's migration system, so that `dbschema/migrations/` holds the applied migration(s) and the database reports being fully migrated.
+
+The schema must contain exactly these object types, with exactly these pointer names:
+
+- `Region` — required `key: str`. `key` must be unique across all `Region` objects; the violation must report the message `REGION_KEY_DUPLICATE`.
+- abstract type `Revisioned` — required `revision: int64` whose minimum allowed value is `1`; the violation must report the message `REVISION_TOO_LOW`.
+- abstract type `Taggable` — a **multi** property `tags: str`; every individual tag value must satisfy the shared token rule (below) with a length limit of `12`.
+- abstract type `Asset`, which must extend **both** `Revisioned` and `Taggable`, with:
+  - required `code: str` — must satisfy the shared token rule with a length limit of `16`, and must be unique **only among objects of the same concrete asset type**. The very same `code` value must remain insertable under a *different* concrete asset type. A same-type duplicate must report the message `CODE_DUPLICATE_IN_KIND`.
+  - required `serial: str` — must be unique **across the whole `Asset` hierarchy**, i.e. a value used by one concrete asset type must be rejected for every other concrete asset type too. The violation must report the message `SERIAL_DUPLICATE_GLOBAL`.
+  - required single link `region` pointing at `Region`.
+  - required `slot: int64`, required `capacity: int64`, required `reserved: int64`.
+  - the pair (`region`, `slot`) must be unique **only among objects of the same concrete asset type**; the same (`region`, `slot`) pair must remain insertable under a different concrete asset type. The violation must report the message `SLOT_DUPLICATE_IN_KIND`.
+  - `reserved` must never be greater than `capacity`; the violation must report the message `CAPACITY_EXCEEDED`.
+- `ServerAsset`, extending `Asset` — required `hostname: str`.
+- `StorageAsset`, extending `Asset` — required `volume_gb: int64`.
+- `Operator` — required `name: str`, unique across all `Operator` objects, violation message `OPERATOR_NAME_DUPLICATE`; plus a **multi** link `crew` pointing at `Asset` that carries a link property `role: str`. A single `Operator` must never be linked to two assets carrying the same `role` value (two *different* `Operator` objects may each use the same `role`). The violation must report the message `ROLE_DUPLICATE_FOR_OPERATOR`.
+
+The **shared token rule** must be expressed as exactly one user-defined *abstract* constraint in module `default` that accepts a single `int64` parameter and is reused at both sites (`Asset.code` with `16`, `Taggable.tags` with `12`). No other user-defined abstract constraint may exist in module `default`. A value satisfies the rule when it matches the regular expression `^[A-Z][A-Z0-9_]*$` **and** its length is less than or equal to the parameter. A violation must report the message `TOKEN_INVALID(max=16)` for `code` and `TOKEN_INVALID(max=12)` for `tags`.
+
+All of the messages above are the exact, complete error text the database must produce — no prefixes, no suffixes, no punctuation of your own.
+
+### 2. Batch ingest CLI (TypeScript)
+Build a re-runnable command-line tool that ingests a JSON manifest and writes a JSON report.
+
+- It must read the manifest, make sure every region key it declares exists, then attempt every asset record against the live database, one record at a time, in strictly ascending `seq` order.
+- A record that the database refuses must be recorded as rejected and must leave nothing behind in the database, while every following record is still attempted.
+- Records are mapped to concrete types by their `kind` field: `"server"` -> `ServerAsset`, `"storage"` -> `StorageAsset`.
+- The tool must be safe to run repeatedly against a database that already holds data: pre-existing rows must be honoured as uniqueness conflicts rather than crashing the run, and re-declaring already existing region keys must not fail.
+
+## Implementation Hints
+- Project path: `/home/user/assetreg`
+- Command: `bash /home/user/assetreg/run-ingest.sh --input <manifest.json> --report <report.json>`. Both flags are mandatory and may appear in either order. Create `run-ingest.sh` yourself; it may launch whatever runtime you like as long as the TypeScript sources of the tool live under `/home/user/assetreg/src/` and drive the database through the `gel` npm client.
+- Manifest format (UTF-8 JSON object):
+
+  ```json
+  {
+    "regions": ["EU_WEST", "US_EAST"],
+    "assets": [
+      {
+        "seq": 1,
+        "kind": "server",
+        "code": "ALPHA",
+        "serial": "SN-0001",
+        "region": "EU_WEST",
+        "slot": 1,
+        "capacity": 10,
+        "reserved": 2,
+        "revision": 1,
+        "tags": ["WEB"],
+        "hostname": "host-1"
+      }
+    ]
+  }
+  ```
+
+  `seq` values are unique positive integers but are not necessarily contiguous or pre-sorted. The `assets` array may be empty. `tags` may be absent (treat as no tags). `hostname` and `volume_gb` may be absent; when a record omits the property its concrete type requires, the database itself must be the one to reject it. Every record in any manifest you will be given breaks at most one of the declared rules, and every `region` value used by an asset record also appears in `regions`.
+- Report file: a JSON object whose top-level keys are exactly `total`, `inserted`, `rejected`, `results`, `reason_counts` and `schema`.
+  - `total` is the number of asset records in the manifest; `inserted` and `rejected` are the counts of each outcome and must sum to `total`.
+  - `results` is an array with one entry per asset record, ordered by ascending `seq`, each entry having exactly the keys `seq`, `kind`, `serial`, `status`, `reason`, `error_class`. `status` is `"inserted"` or `"rejected"`. For an inserted record `reason` and `error_class` are both `null`.
+  - For a rejected record, `reason` is the constraint error message the database produced — that is, exactly the single-line message text declared for the violated constraint in your schema, with none of the extra diagnostic lines (query excerpt, `Details:`, `Hint:`) that the client appends to the raw error. When the database instead refused the record because a required value was absent, `reason` is the literal string `MISSING_REQUIRED`. `error_class` is `"ConstraintViolationError"` in the first case and `"MissingRequiredError"` in the second.
+  - `reason_counts` maps every `reason` string that occurred at least once to how many times it occurred; reasons that never occurred must be absent.
+  - `schema` is an object with exactly the keys `abstract_constraints`, `delegated_pointer_constraints` and `delegated_object_constraints`, and every one of its values must be derived from live schema introspection performed during the run — never from a hardcoded literal:
+    - `abstract_constraints`: ascending array of the module-qualified names of all abstract constraints defined in module `default`.
+    - `delegated_pointer_constraints`: ascending, de-duplicated array of `"<TypeName>.<pointerName>"` strings (type name written without its module prefix) for every constraint attached to a pointer of a module-`default` object type that is marked as delegated.
+    - `delegated_object_constraints`: ascending, de-duplicated array of module-`default` object type names (without the module prefix) that carry at least one delegated object-level constraint.
+- Exit codes: `0` when nothing was rejected, `2` when at least one record was rejected (the report file must still be written in full), and `1` when a required flag is missing or the manifest cannot be read or parsed (in that case no report file may be written and a diagnostic must go to stderr).
+- The last line the tool writes to stdout must be exactly `SUMMARY inserted=<inserted> rejected=<rejected>` with the two integers from the report.
+
+9:T1a78,# Referential Integrity for a Document Workspace Graph (Gel)
 
 ## Background
 
@@ -286,7 +414,7 @@ The reported numbers must be derived from the actual database state after the pu
 - Everything must live in the `default` module of the branch the environment connects to (`main`).
 - Keep the data volume tiny; the verification graph contains only a few dozen objects.
 
-8:T1ed1,# Gel disaster recovery: restore a backup, repair the data, harden the schema, re-dump
+a:T1ed1,# Gel disaster recovery: restore a backup, repair the data, harden the schema, re-dump
 
 ## Background
 
@@ -348,7 +476,7 @@ Valid objects must of course still be insertable.
   - `roundtrip_ok` — a boolean, `true` only when the restored throw-away copy and the target branch agree on `counts`, `status_counts`, `warehouse_counts`, `total_weight_kg` and `tracking_checksum`.
 - Exit codes of that command: `0` when the report was produced and `roundtrip_ok` is `true`; `2` when `/home/user/recovery/backups/recovered.dump` does not exist, in which case stdout must be exactly the JSON object `{"error": "dump_not_found"}`; `3` when the target branch does not exist on the instance, in which case stdout must be exactly the JSON object `{"error": "branch_not_found"}`; `4` when the report was produced but `roundtrip_ok` is `false`. The missing-dump condition takes precedence over the missing-branch condition.
 
-9:T10e7,# Weighted Full-Text Search Ranking over a Gel Knowledge Base (CLI only)
+b:T10e7,# Weighted Full-Text Search Ranking over a Gel Knowledge Base (CLI only)
 
 ## Background
 A small documentation site keeps its articles in a JSON corpus and wants a relevance-ranked search endpoint backed by a local **Gel 7.1** instance. The project directory already contains an empty schema module and the corpus file; the database is empty. Everything must be done with the `gel` CLI, SDL and EdgeQL — no Gel client library is installed and no network access is available.
@@ -382,7 +510,7 @@ A small documentation site keeps its articles in a JSON corpus and wants a relev
 - Argument errors — no `QUERY`, an empty `QUERY`, more than three arguments, a `LIMIT` or `OFFSET` that is not a non-negative decimal integer, or a `LIMIT` below `1` — must make `scripts/search.sh` exit with status `2`, print nothing on stdout, and print the text `usage: search.sh QUERY [LIMIT] [OFFSET]` on stderr.
 - Both scripts must work when invoked as `bash scripts/<name>.sh` from the project directory, and must always read the current database state rather than any precomputed answer.
 
-a:T1e5f,# Ranked Full-Text Search over a Gel Knowledge Base
+c:T1e5f,# Ranked Full-Text Search over a Gel Knowledge Base
 
 ## Background
 
@@ -524,7 +652,62 @@ must print nothing on stdout, write a message to stderr, and exit with status 2.
 - Keep the whole solution inside `/home/user/kbsearch`; `seed.py`, `search_service.py` and
   `search_cli.py` must be importable/runnable with that directory as the working directory.
 
-b:T1b01,# In-Database Pricing Library: Multi-Module Gel Schema
+d:T2402,# Gel GraphQL-over-HTTP Gateway with Dual-Protocol Verification
+
+## Background
+Gel 7 (formerly EdgeDB) can expose a full CRUD GraphQL API over plain HTTP directly from the database, but only once the correct built-in extension has been enabled through a real schema migration. A locally installed Gel 7 server is already present in this environment; once started it listens on `127.0.0.1:5656` (branch `main`). The `gel` CLI and the Python client are pre-installed and pre-configured through environment variables, so no credentials, project linking, or cloud access is required. Start (or restart) the server at any time with the idempotent helper `start-gel-server.sh`, which blocks until the server accepts queries.
+
+You must model a small service registry, expose it over Gel's HTTP GraphQL endpoint, and build a Python gateway that talks to that endpoint and cross-checks every result against the same data read over Gel's native binary protocol.
+
+**Everything is local. Only `127.0.0.1` may be contacted. No external network access, no package installation, and no additional services are available or permitted — every dependency you need is already installed.**
+
+## Requirements
+
+### 1. Schema and migration
+Author the schema in `dbschema/default.gel` and bring the database in sync with it through the normal migration workflow, so that `gel migration status` reports the database is up to date and `dbschema/migrations/` contains the applied migration file(s).
+
+The database's HTTP GraphQL endpoint must be live at `http://127.0.0.1:5656/branch/main/graphql` after your migration is applied.
+
+Module `default` must define exactly these named entities (names are checked literally):
+
+- Object type `Team` with required property `name` of type `str` that is unique across all teams, required property `region` of type `str`, a computed multi link `services` holding every `Service` that points at this team through its `owner` link, and a computed single property `service_count` of type `int64` holding how many such services exist.
+- Object type `Service` with required property `name` of type `str` that is unique across all services, required property `tier` of type `int64`, required property `active` of type `bool`, a required single link `owner` to `Team`, and a computed single property `team_name` of type `str` holding the owning team's name.
+- An expression alias named `ActiveService` that yields exactly the `Service` objects whose `active` is true.
+
+All three must be reachable through the GraphQL endpoint, including `ActiveService` as a top-level GraphQL query field and `service_count`/`team_name`/`services` as selectable fields.
+
+### 2. Seed data
+Load the fixture at `data/seed.json` into the database so that afterwards the database contains exactly the 3 teams and exactly the 9 services described there, with matching `region`, `tier`, `active` and team ownership. Do not add, drop or alter any other objects.
+
+### 3. The gateway module
+Create an importable Python module at `gateway.py` in the project root. It must speak GraphQL to `http://127.0.0.1:5656/branch/main/graphql` over plain HTTP and expose exactly the following public names.
+
+- `GatewayError` — an `Exception` subclass carrying an attribute `errors` that is a list of error-message strings (empty list when there are none).
+- `ServiceNotFound` — a subclass of `GatewayError`.
+- `endpoint_url(branch="main")` — returns the GraphQL URL string for that branch; `endpoint_url()` must return exactly `http://127.0.0.1:5656/branch/main/graphql`.
+- `execute(query, variables=None, operation_name=None, branch="main")` — sends one GraphQL request and returns a `dict` with exactly the keys `data`, `errors`, `status`. `data` is the response's GraphQL data object or `None` when absent, `errors` is the list of error-message strings (empty list when there are none), `status` is the integer HTTP status code of the response. It must never raise for a GraphQL-level error nor for a non-2xx HTTP response; when the response body is not JSON, `data` must be `None` and `errors` must be a one-element list holding the whitespace-stripped response body.
+- `last_request()` — returns a `dict` with exactly the keys `url`, `query`, `variables`, `operation_name` describing the most recent GraphQL request the module actually sent (`variables` is `{}` when none were sent, `operation_name` is `None` when none was sent), or `None` if the module has not sent one yet.
+- `list_services(region=None, min_tier=None, active_only=False, limit=None, offset=0)` — returns a list of dicts, each with exactly the keys `name`, `tier`, `active`, `team`, `region`, ordered by `name` ascending. `team` is the owning team's name and `region` is the owning team's region. `region` restricts results to services whose owning team has that region; `min_tier` keeps services whose `tier` is greater than or equal to it; `active_only=True` keeps only active services; `limit`/`offset` select a window of the ordered, filtered result. Selection, ordering and windowing must be performed by the database, not in Python: the request recorded by `last_request()` must always carry an `order` argument, must carry a `filter` argument whenever any of `region`, `min_tier` or `active_only` narrows the result, must carry a `first` argument whenever `limit` is not `None`, and must carry an `after` argument whenever `offset` is greater than 0. `limit` must be `None` or a positive integer and `offset` must be a non-negative integer; anything else must raise `ValueError` without sending a request.
+- `fetch_teams()` — returns a list of dicts, each with exactly the keys `team`, `region`, `service_count`, `active_service_count`, `services`, ordered by `team` ascending. `services` is the list of that team's service names ordered ascending, `service_count` is the total number of services owned by the team, `active_service_count` is how many of them are active.
+- `create_service(name, tier, active, team)` — inserts a new service linked to the existing team with that name, and returns the created record as a dict with exactly the keys `name`, `tier`, `active`, `team`, `region`. The values must travel as GraphQL variables: the request recorded by `last_request()` must expose them under `variables` and its `query` document must not contain the literal `name` value. If the database reports any GraphQL error (for example because no such team exists) it must raise `GatewayError` with a non-empty `errors` list, and nothing may be inserted.
+- `retire_service(name)` — updates the named service so that `active` becomes false and returns the updated record with the same five keys as `create_service`; raises `ServiceNotFound` when no service has that name.
+- `delete_service(name)` — deletes the named service and returns the deleted record with the same five keys; raises `ServiceNotFound` when no service has that name.
+- `verify_parity()` — fetches every service over the HTTP GraphQL endpoint and independently fetches the same services over Gel's native binary protocol, then returns a dict with exactly the keys `http_count`, `binary_count`, `match`, `differences`. `http_count` and `binary_count` are integers, `match` is a bool that is true only when both protocols yield the identical set of service records (name, tier, active, owning team and region), and `differences` is a sorted list of strings that is empty if and only if `match` is true.
+- `build_report()` — returns a dict with exactly the keys `endpoint`, `teams`, `pages`, `parity`. `endpoint` is `endpoint_url()`. `teams` is the output of `fetch_teams()`. `pages` is a dict with exactly the keys `page_1`, `page_2`, `page_3`, where each value is the list of service names in that page when all services ordered by `name` ascending are split into consecutive pages of size 2 (`page_1` is the first two names, `page_2` the next two, `page_3` the next two). `parity` is the output of `verify_parity()`.
+
+### 4. The report command
+Create `report.py` in the project root. Running `python3 report.py` from the project root must (re)create `out/report.json` containing exactly the JSON object returned by `build_report()`, and exit with status 0.
+
+## Implementation Hints
+- Project path: `/home/user/gateway` — all relative paths above are relative to it, and `report.py` is run from there.
+- The Gel server listens on `127.0.0.1:5656`; the branch is `main`; the pinned server is Gel 7.
+- `start-gel-server.sh` is on `PATH` and is safe to call repeatedly; it returns only once the server is answering queries.
+- Connection settings for both the `gel` CLI and the Python client are already provided through environment variables — do not create a `gel.toml` and do not run `gel project init`.
+- The fixture `data/seed.json` is read-only input; do not edit it.
+- Integer-valued GraphQL variables, filter/order/pagination argument shapes, and how aliases and computeds are reflected are all part of what you must get right; the endpoint requires no authentication in this environment.
+- The graders import `gateway` as a top-level module from the project root and call the functions listed above directly, and they also run `python3 report.py` from the project root.
+
+e:T1b01,# In-Database Pricing Library: Multi-Module Gel Schema
 
 ## Background
 A billing team is tired of every service re-implementing money arithmetic slightly differently, so the rules must live **inside the database** as a reusable library: generic money helpers in one schema module, the billing domain in another, and read models in a third. A Gel 6 project skeleton and a local Gel server are already available in this container. No cloud instance, hosted database or external service is involved: everything runs locally inside the container.
@@ -569,7 +752,7 @@ Declare these three as schema **aliases** (introspectable as aliases) that all l
 - The verifier deletes every `billing::LineItem`, `billing::Invoice` and `billing::Customer` object and inserts its own fixtures, so do not depend on any pre-existing or self-seeded data; the schema must work on an empty database.
 - Decimal values are compared numerically, so trailing zeros do not matter, but the numeric value must be exact.
 
-c:T1657,# Typed catalog analytics on Gel with a generated TypeScript query builder
+f:T1657,# Typed catalog analytics on Gel with a generated TypeScript query builder
 
 ## Background
 `/home/user/catalog` is a TypeScript (Node.js) project wired to a local **Gel 6** instance. The database currently only knows about writers (`Author` objects, already seeded); the learning-content catalog itself has not been modelled yet, and the reporting CLI is an unimplemented stub. Your job is to model the catalog, load it, and ship a strictly-typed analytics CLI that talks to Gel exclusively through the code-generated, fully-typed query builder produced by `@gel/generate` — no hand-written EdgeQL strings anywhere in the application source.
@@ -599,8 +782,201 @@ Everything runs locally and the machine must be treated as offline: `gel`, `@gel
 - `npx tsc --noEmit -p tsconfig.json` must exit `0`, and `strict` must stay enabled in `tsconfig.json`.
 - Escape hatches are forbidden in the application source: no file under `src/` may contain the whole word `any` (case-insensitive), nor the text `@ts-ignore`, `@ts-expect-error` or `@ts-nocheck`, nor any of the substrings `.query(`, `.querySingle(`, `.queryRequired(`, `.queryRequiredSingle(`, `.queryJSON(`, `.querySingleJSON(`, `.queryRequiredJSON(`, `.queryRequiredSingleJSON(`, `.execute(`, `.executeSQL(` — the generated query builder is the only way the CLI may reach the database.
 
-0:{"buildId":"_7rPoLvTHXnXR2q12k6kl","rsc":["$","$1","c",{"children":[["$","div",null,{"className":"min-h-screen bg-background text-foreground font-sans selection:bg-primary/20","children":[["$","div",null,{"className":"fixed inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 dark:opacity-40"}],["$","$2",null,{"fallback":["$","div",null,{"className":"container mx-auto py-8 text-center","children":"Loading tasks..."}],"children":["$","$L3",null,{"tasksData":[{"taskName":"gel_branch_migration_rebase_workflow_cli","instruction":"$4","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_branch_migration_rebase_work__jA4ppCt","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":574.357,"latency_breakdown":{"env_setup":136.63,"agent_setup":6.532,"agent_exec":393.366,"verifier":23.263},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":393.366},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_branch_migration_rebase_work__zp674St","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":650.334,"latency_breakdown":{"env_setup":6.062,"agent_setup":6.132,"agent_exec":603.781,"verifier":17.156},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.781},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_branch_migration_rebase_work__8h5jfUG","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":643.623,"latency_breakdown":{"env_setup":5.919,"agent_setup":6.081,"agent_exec":603.753,"verifier":12.847},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.753},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_branch_migration_rebase_work__7SWbAxj","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":715.132,"latency_breakdown":{"env_setup":5.831,"agent_setup":6.574,"agent_exec":603.767,"verifier":13.691},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.767}]},{"taskName":"gel_bulk_upsert_conflict_pipeline_py","instruction":"$5","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_bulk_upsert_conflict_pipelin__JK6GxcD","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":565.958,"latency_breakdown":{"env_setup":77.201,"agent_setup":6.211,"agent_exec":455.08,"verifier":10.841},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":455.08},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_bulk_upsert_conflict_pipelin__hjRfFG7","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":358.706,"latency_breakdown":{"env_setup":7.925,"agent_setup":6.152,"agent_exec":318.427,"verifier":11.072},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":318.427},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_bulk_upsert_conflict_pipelin__feaDBm6","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":644.381,"latency_breakdown":{"env_setup":6.827,"agent_setup":6.696,"agent_exec":603.78,"verifier":10.593},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":603.78},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_bulk_upsert_conflict_pipelin__yFS799W","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":690.357,"latency_breakdown":{"env_setup":6.103,"agent_setup":6.262,"agent_exec":560.55,"verifier":77.266},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":560.55}]},{"taskName":"gel_bulk_upsert_conflict_ts","instruction":"$6","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_bulk_upsert_conflict_ts__a9XpQWF","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":1202.295,"latency_breakdown":{"env_setup":76.554,"agent_setup":6.197,"agent_exec":1083.136,"verifier":19.58},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":1083.136},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_bulk_upsert_conflict_ts__EHRLnwY","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":690.065,"latency_breakdown":{"env_setup":5.844,"agent_setup":6.251,"agent_exec":645.308,"verifier":18.021},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":645.308},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_bulk_upsert_conflict_ts__NsyBi4Y","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":2163.25,"latency_breakdown":{"env_setup":5.926,"agent_setup":6.197,"agent_exec":2116.219,"verifier":18.286},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":2116.219},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_bulk_upsert_conflict_ts__wUrKtSN","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":2384.322,"latency_breakdown":{"env_setup":78.986,"agent_setup":6.112,"agent_exec":2265.642,"verifier":18.045},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":2265.642}]},{"taskName":"gel_deletion_policies_referential_integrity","instruction":"$7","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_deletion_policies_referentia__wSEWTVQ","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":506.268,"latency_breakdown":{"env_setup":57.4,"agent_setup":8.898,"agent_exec":402.538,"verifier":15.629},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":402.538},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_deletion_policies_referentia__PSSuYbe","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":440.353,"latency_breakdown":{"env_setup":6.794,"agent_setup":9.354,"agent_exec":386.699,"verifier":15.891},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":386.699},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_deletion_policies_referentia__TsKAtb8","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":658.768,"latency_breakdown":{"env_setup":6.619,"agent_setup":8.731,"agent_exec":605.468,"verifier":15.778},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":605.468},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_deletion_policies_referentia__tLQkhwb","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":713.605,"latency_breakdown":{"env_setup":6.462,"agent_setup":8.638,"agent_exec":604.965,"verifier":17.514},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":604.965}]},{"taskName":"gel_dump_restore_recovery_cli","instruction":"$8","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_dump_restore_recovery_cli__AtLacdk","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1053.696,"latency_breakdown":{"env_setup":155.016,"agent_setup":6.154,"agent_exec":376.946,"verifier":502.42},"taskName":"gel_dump_restore_recovery_cli","exec_duration":376.946},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_dump_restore_recovery_cli__mQUmAtc","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":705.073,"latency_breakdown":{"env_setup":8.64,"agent_setup":6.109,"agent_exec":614.126,"verifier":63.099},"taskName":"gel_dump_restore_recovery_cli","exec_duration":614.126},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_dump_restore_recovery_cli__tGyrwYT","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":2046.778,"latency_breakdown":{"env_setup":5.856,"agent_setup":5.962,"agent_exec":1469.005,"verifier":553.183},"taskName":"gel_dump_restore_recovery_cli","exec_duration":1469.005},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_dump_restore_recovery_cli__jj9NaDf","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1671.084,"latency_breakdown":{"env_setup":5.772,"agent_setup":6.239,"agent_exec":1568.067,"verifier":45.595},"taskName":"gel_dump_restore_recovery_cli","exec_duration":1568.067}]},{"taskName":"gel_fts_search_ranking_cli","instruction":"$9","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_fts_search_ranking_cli__jNXnwnr","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":657.475,"latency_breakdown":{"env_setup":76.029,"agent_setup":6.83,"agent_exec":545.172,"verifier":14.427},"taskName":"gel_fts_search_ranking_cli","exec_duration":545.172},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_fts_search_ranking_cli__qQ3SYPn","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":584.29,"latency_breakdown":{"env_setup":6.087,"agent_setup":6.715,"agent_exec":543.063,"verifier":14.055},"taskName":"gel_fts_search_ranking_cli","exec_duration":543.063},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_fts_search_ranking_cli__H4x6A7N","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":641.123,"latency_breakdown":{"env_setup":6.07,"agent_setup":6.706,"agent_exec":604.048,"verifier":10.544},"taskName":"gel_fts_search_ranking_cli","exec_duration":604.048},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_fts_search_ranking_cli__nWQHUYo","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":705.85,"latency_breakdown":{"env_setup":5.893,"agent_setup":6.808,"agent_exec":604.033,"verifier":12.651},"taskName":"gel_fts_search_ranking_cli","exec_duration":604.033}]},{"taskName":"gel_fulltext_search_ranking_py","instruction":"$a","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_fulltext_search_ranking_py__AuhGRgG","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":705.185,"latency_breakdown":{"env_setup":57.647,"agent_setup":6.774,"agent_exec":604.001,"verifier":20.81},"taskName":"gel_fulltext_search_ranking_py","exec_duration":604.001},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_fulltext_search_ranking_py__UbKYbFL","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":513.77,"latency_breakdown":{"env_setup":6.423,"agent_setup":6.754,"agent_exec":470.178,"verifier":14.384},"taskName":"gel_fulltext_search_ranking_py","exec_duration":470.178},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_fulltext_search_ranking_py__FcVyT6N","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":648.577,"latency_breakdown":{"env_setup":7.849,"agent_setup":6.742,"agent_exec":604.094,"verifier":14.007},"taskName":"gel_fulltext_search_ranking_py","exec_duration":604.094},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_fulltext_search_ranking_py__KYFovQB","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":726.29,"latency_breakdown":{"env_setup":9.035,"agent_setup":6.743,"agent_exec":603.967,"verifier":21.866},"taskName":"gel_fulltext_search_ranking_py","exec_duration":603.967}]},{"taskName":"gel_multimodule_functions_aliases_library","instruction":"$b","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_multimodule_functions_aliase__USrYqoH","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":609.52,"latency_breakdown":{"env_setup":47.147,"agent_setup":6.159,"agent_exec":530.38,"verifier":12.065},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":530.38},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_multimodule_functions_aliase__V6GFt24","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":496.952,"latency_breakdown":{"env_setup":5.97,"agent_setup":6.146,"agent_exec":459.08,"verifier":11.649},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":459.08},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_multimodule_functions_aliase__4UiPBnV","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":645.461,"latency_breakdown":{"env_setup":5.842,"agent_setup":6.078,"agent_exec":604.146,"verifier":14.797},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":604.146},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_multimodule_functions_aliase__LqHXoug","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":713.935,"latency_breakdown":{"env_setup":5.852,"agent_setup":6.237,"agent_exec":603.736,"verifier":11.517},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":603.736}]},{"taskName":"gel_query_builder_codegen_ts","instruction":"$c","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_query_builder_codegen_ts__F3WSMJ9","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":633.92,"latency_breakdown":{"env_setup":114.336,"agent_setup":6.868,"agent_exec":456.621,"verifier":30.306},"taskName":"gel_query_builder_codegen_ts","exec_duration":456.621},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_query_builder_codegen_ts__GGbeHbC","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":664.985,"latency_breakdown":{"env_setup":6.982,"agent_setup":6.642,"agent_exec":604.062,"verifier":29.93},"taskName":"gel_query_builder_codegen_ts","exec_duration":604.062},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_query_builder_codegen_ts__7UnH8yk","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":664.705,"latency_breakdown":{"env_setup":6.043,"agent_setup":6.666,"agent_exec":603.867,"verifier":29.896},"taskName":"gel_query_builder_codegen_ts","exec_duration":603.867},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_query_builder_codegen_ts__zGJ9wfy","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":703.321,"latency_breakdown":{"env_setup":5.893,"agent_setup":6.662,"agent_exec":604.026,"verifier":51.878},"taskName":"gel_query_builder_codegen_ts","exec_duration":604.026}]}]}]}]]}],["$Ld","$Le"],"$Lf"]}],"loading":null,"isPartial":false}
-d:["$","script","script-0",{"src":"/gel-benchmark/_next/static/chunks/ad9522f885dbe9ec.js","async":true}]
-e:["$","script","script-1",{"src":"/gel-benchmark/_next/static/chunks/2ee232ed1e88c469.js","async":true}]
-f:["$","$L10",null,{"children":["$","$2",null,{"name":"Next.MetadataOutlet","children":"$@11"}]}]
-11:null
+10:T2693,# Gel — Set-Operator Reconciliation CLI (EdgeQL through the `gel` command line only)
+
+## Background
+
+`/home/user/reconcile` holds a **Gel 6** project used by a stock-audit team. Its schema
+(`dbschema/default.gel`, `module default`) already declares four object types, a first migration has
+already been created and applied, and the local Gel instance is already seeded with audit data:
+
+- `Warehouse` — `required code: str` (exclusive), `required region: str`
+- `Sku` — `required code: str` (exclusive), `required label: str`
+- `ShelfCount` — one physical count line: `required warehouse: Warehouse`, `required sku: Sku`, `required quantity: int64`, `required tag: str`
+- `LedgerLine` — one book-keeping line: the same four fields
+
+Nothing guarantees that a `(warehouse, sku)` pair appears at most once in `ShelfCount` (or in
+`LedgerLine`): re-counts, split pallets and correction lines all produce extra rows. Auditors need a
+reconciliation tool that answers *set-shaped* questions about this data — what was counted but never
+booked, what was booked but never counted, what overlaps, what is duplicated, and where a single
+answer is guaranteed versus where it is not.
+
+Build that tool.
+
+## Requirements
+
+### 1. Schema computeds
+
+Extend `module default` in `dbschema/default.gel` with the computed pointers listed below, then create
+and apply a new migration with the Gel CLI. When you are done, `dbschema/migrations/` must contain at
+least two migration files and the instance's migration state must be in sync with `dbschema/`.
+
+Each computed **must be declared with exactly the modifier keywords shown** (they are asserted through
+`schema::ObjectType` introspection, i.e. the resulting pointer's `cardinality` and `required` values),
+and each must be a real computed pointer (non-empty `expr`).
+
+On `Warehouse`:
+
+| pointer | declared modifiers | meaning |
+| --- | --- | --- |
+| `shelf_units` | `required single` (`std::int64`) | sum of `quantity` over every `ShelfCount` row whose `warehouse` is this warehouse; `0` when there are none |
+| `ledger_units` | `required single` (`std::int64`) | same, over `LedgerLine` rows |
+| `counted_skus` | `multi` (link to `default::Sku`) | the distinct `Sku` objects that have at least one `ShelfCount` row in this warehouse |
+| `ledger_skus` | `multi` (link to `default::Sku`) | the distinct `Sku` objects that have at least one `LedgerLine` row in this warehouse |
+| `unreconciled_skus` | `multi` (link to `default::Sku`) | the distinct symmetric difference of `counted_skus` and `ledger_skus` |
+| `is_balanced` | `required single` (`std::bool`) | `true` if and only if `unreconciled_skus` is empty **and** `shelf_units` equals `ledger_units` |
+
+On `Sku`:
+
+| pointer | declared modifiers | meaning |
+| --- | --- | --- |
+| `sole_warehouse` | `single`, not required (link to `default::Warehouse`) | the one `Warehouse` in which this SKU has `ShelfCount` rows, **only** when that warehouse is unique; the empty set when the SKU has shelf counts in zero warehouses or in two or more warehouses. Reading this pointer must never raise an error for any SKU in the database. |
+
+### 2. Reconciliation CLI
+
+Create the executable entrypoint `/home/user/reconcile/reconcile.sh`. It is always invoked as
+
+```
+bash /home/user/reconcile/reconcile.sh <report> [flags]
+```
+
+and must behave identically no matter which directory it is invoked from. Every EdgeQL statement it
+runs must live in a `.edgeql` file inside `/home/user/reconcile/queries/` (that directory must exist
+and hold at least four non-empty `.edgeql` files when you are finished) and must be executed against
+the live database through the `gel` command-line client on every invocation — results are read fresh
+each time and must never be cached, snapshotted or hard-coded, because the database contents change
+between invocations.
+
+On success the command writes **exactly one JSON document to stdout and nothing else**, and exits `0`.
+Every integer field is a JSON number, every boolean field is a JSON boolean. Whitespace/indentation of
+the JSON is free. All arrays of code strings contain **distinct** values sorted in ascending
+byte-order of the string, unless stated otherwise.
+
+#### `balance`
+
+```json
+{
+  "report": "balance",
+  "warehouses": [
+    {
+      "code": "<warehouse code>",
+      "shelf_units": 0,
+      "ledger_units": 0,
+      "counted_skus": ["<sku code>"],
+      "ledger_skus": ["<sku code>"],
+      "both": ["<sku code>"],
+      "shelf_only": ["<sku code>"],
+      "ledger_only": ["<sku code>"],
+      "all_skus": ["<sku code>"],
+      "unreconciled_skus": ["<sku code>"],
+      "is_balanced": true
+    }
+  ]
+}
+```
+
+One entry per `Warehouse` in the database, ordered by `code` ascending. `counted_skus`,
+`ledger_skus`, `unreconciled_skus`, `shelf_units`, `ledger_units` and `is_balanced` are the SKU codes
+/ values of the schema computeds of section 1. `both` is the intersection of `counted_skus` and
+`ledger_skus`; `shelf_only` is `counted_skus` minus `ledger_skus`; `ledger_only` is `ledger_skus`
+minus `counted_skus`; `all_skus` is their union. Empty arrays where nothing matches.
+
+#### `sku <CODE>` and `sku <CODE> --strict`
+
+```json
+{
+  "report": "sku",
+  "code": "<CODE as given on the command line>",
+  "exists": true,
+  "sole_warehouse": "<warehouse code>",
+  "shelf_warehouses": ["<warehouse code>"],
+  "shelf_units": 0,
+  "ledger_units": 0
+}
+```
+
+- `exists` — whether a `Sku` with that `code` exists.
+- `sole_warehouse` — the code of the `Sku.sole_warehouse` computed, or JSON `null` when it is empty.
+- `shelf_warehouses` — codes of the distinct warehouses in which the SKU has `ShelfCount` rows.
+- `shelf_units` / `ledger_units` — the SKU's total `quantity` across **all** warehouses in
+  `ShelfCount` and in `LedgerLine` respectively; `0` when there are no rows.
+- When the SKU code is unknown, and `--strict` was **not** passed: exit `0` and report
+  `"exists": false`, `"sole_warehouse": null`, `"shelf_warehouses": []`, `"shelf_units": 0`,
+  `"ledger_units": 0`.
+- When the SKU code is unknown and `--strict` **was** passed: print nothing on stdout, write a line
+  containing `error: sku not found: <CODE>` to stderr, and exit with status `3`.
+- When the SKU code is known, `--strict` changes nothing: same JSON, exit `0`.
+
+#### `duplicates` and `duplicates --assert`
+
+```json
+{
+  "report": "duplicates",
+  "clean": false,
+  "pairs": [
+    {"warehouse": "<warehouse code>", "sku": "<sku code>", "rows": 2, "quantities": [1, 2]}
+  ]
+}
+```
+
+`pairs` lists every `(warehouse, sku)` combination having **more than one** `ShelfCount` row, ordered
+by `warehouse` ascending then `sku` ascending. `rows` is how many `ShelfCount` rows that combination
+has; `quantities` lists those rows' `quantity` values sorted ascending (duplicated values are kept, so
+`quantities` always has exactly `rows` elements). `clean` is `true` exactly when `pairs` is empty.
+With `--assert`, if at least one such combination exists the command must print nothing on stdout,
+write a line containing `error: duplicate shelf counts` to stderr and exit with status `4`; if there
+are none it prints the same JSON as without the flag and exits `0`.
+
+#### `matrix` and `matrix --sku <CODE>`
+
+```json
+{
+  "report": "matrix",
+  "cells": [
+    {"warehouse": "<warehouse code>", "sku": "<sku code>", "shelf": 0, "ledger": 0, "delta": 0}
+  ],
+  "total_delta": 0
+}
+```
+
+`cells` covers the **full cross product** of every `Warehouse` with every `Sku` in the database —
+including combinations that have no `ShelfCount` and no `LedgerLine` row at all, which report
+`"shelf": 0, "ledger": 0, "delta": 0`. `shelf` is the sum of `ShelfCount.quantity` for that exact
+`(warehouse, sku)` pair, `ledger` the same for `LedgerLine`, and `delta` is `shelf - ledger`. Cells
+are ordered by `warehouse` ascending then `sku` ascending. `total_delta` is the sum of `delta` over
+the emitted cells. With `--sku <CODE>` only the cells for that one SKU are emitted (still one per
+warehouse, still ordered by warehouse); if the code matches no `Sku`, `cells` is `[]` and
+`total_delta` is `0`, exit `0`.
+
+#### Argument errors
+
+- An unrecognised report name: nothing on stdout, a line containing `error: unknown report: <name>`
+  on stderr, exit status `2`.
+- `sku` invoked with no code argument: nothing on stdout, a line containing `error: missing sku code`
+  on stderr, exit status `2`.
+
+## Implementation Hints
+
+- Project path: `/home/user/reconcile` (contains `gel.toml`, `dbschema/default.gel` and
+  `dbschema/migrations/`). Do not move or rename it.
+- Command: `bash /home/user/reconcile/reconcile.sh <report> [flags]`, with the exact reports, flags,
+  JSON keys, ordering, exit statuses and stderr markers specified above.
+- The local Gel server is started with `gel-ctl start` (idempotent; it returns only once the server
+  accepts connections) and its status can be checked with `gel-ctl status`. Connection settings are
+  already exported as `GEL_*` environment variables, so plain `gel ...` commands connect to the
+  seeded instance without extra connection flags. Run `gel-ctl start` before using the CLI.
+- **Runtime restriction:** the solution must consist only of shell scripts and EdgeQL. No Python,
+  Node/TypeScript, Ruby or Perl program may be added: after your work, searching `/home/user/reconcile`
+  for files named `*.py`, `*.js`, `*.mjs`, `*.cjs`, `*.ts`, `*.rb` or `*.pl` must return nothing, and
+  `reconcile.sh` must not invoke `python`, `python3`, `node`, `deno`, `bun`, `ruby` or `perl`. Shell
+  utilities available in the image (including `jq`) are allowed.
+- The database is mutated between invocations by the auditors' harness (rows and even whole
+  warehouses and SKUs are added and removed); every report must reflect the database state at the
+  moment it runs.
+- Seed rows carry `tag` values that have no meaning for any report; never filter on `tag`.
+
+0:{"buildId":"i8bgovPF0_dNumJqO6HOu","rsc":["$","$1","c",{"children":[["$","div",null,{"className":"min-h-screen bg-background text-foreground font-sans selection:bg-primary/20","children":[["$","div",null,{"className":"fixed inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 dark:opacity-40"}],["$","$2",null,{"fallback":["$","div",null,{"className":"container mx-auto py-8 text-center","children":"Loading tasks..."}],"children":["$","$L3",null,{"tasksData":[{"taskName":"gel_branch_migration_rebase_workflow_cli","instruction":"$4","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_branch_migration_rebase_work__jA4ppCt","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":574.357,"latency_breakdown":{"env_setup":136.63,"agent_setup":6.532,"agent_exec":393.366,"verifier":23.263},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":393.366},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_branch_migration_rebase_work__zp674St","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":650.334,"latency_breakdown":{"env_setup":6.062,"agent_setup":6.132,"agent_exec":603.781,"verifier":17.156},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.781},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_branch_migration_rebase_work__8h5jfUG","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":643.623,"latency_breakdown":{"env_setup":5.919,"agent_setup":6.081,"agent_exec":603.753,"verifier":12.847},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.753},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_branch_migration_rebase_work__7SWbAxj","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":715.132,"latency_breakdown":{"env_setup":5.831,"agent_setup":6.574,"agent_exec":603.767,"verifier":13.691},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.767}]},{"taskName":"gel_bulk_upsert_conflict_pipeline_py","instruction":"$5","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_bulk_upsert_conflict_pipelin__JK6GxcD","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":565.958,"latency_breakdown":{"env_setup":77.201,"agent_setup":6.211,"agent_exec":455.08,"verifier":10.841},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":455.08},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_bulk_upsert_conflict_pipelin__hjRfFG7","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":358.706,"latency_breakdown":{"env_setup":7.925,"agent_setup":6.152,"agent_exec":318.427,"verifier":11.072},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":318.427},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_bulk_upsert_conflict_pipelin__feaDBm6","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":644.381,"latency_breakdown":{"env_setup":6.827,"agent_setup":6.696,"agent_exec":603.78,"verifier":10.593},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":603.78},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_bulk_upsert_conflict_pipelin__yFS799W","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":690.357,"latency_breakdown":{"env_setup":6.103,"agent_setup":6.262,"agent_exec":560.55,"verifier":77.266},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":560.55}]},{"taskName":"gel_bulk_upsert_conflict_ts","instruction":"$6","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_bulk_upsert_conflict_ts__a9XpQWF","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":1202.295,"latency_breakdown":{"env_setup":76.554,"agent_setup":6.197,"agent_exec":1083.136,"verifier":19.58},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":1083.136},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_bulk_upsert_conflict_ts__EHRLnwY","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":690.065,"latency_breakdown":{"env_setup":5.844,"agent_setup":6.251,"agent_exec":645.308,"verifier":18.021},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":645.308},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_bulk_upsert_conflict_ts__NsyBi4Y","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":2163.25,"latency_breakdown":{"env_setup":5.926,"agent_setup":6.197,"agent_exec":2116.219,"verifier":18.286},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":2116.219},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_bulk_upsert_conflict_ts__wUrKtSN","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":2384.322,"latency_breakdown":{"env_setup":78.986,"agent_setup":6.112,"agent_exec":2265.642,"verifier":18.045},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":2265.642}]},{"taskName":"gel_computed_defaults_volatility_rules_py","instruction":"$7","trials":[{"job_name":"2026-08-07__13-07-29","trial_name":"gel_computed_defaults_volatility__J558o3k","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":147.222,"latency_breakdown":{"env_setup":73.266,"agent_setup":6.236,"agent_exec":8.841,"verifier":46.915},"taskName":"gel_computed_defaults_volatility_rules_py","exec_duration":8.841},{"job_name":"2026-08-07__13-07-31","trial_name":"gel_computed_defaults_volatility__ZCr69iy","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":541.988,"latency_breakdown":{"env_setup":60.012,"agent_setup":6.226,"agent_exec":411.741,"verifier":49.896},"taskName":"gel_computed_defaults_volatility_rules_py","exec_duration":411.741},{"job_name":"2026-08-07__13-21-29","trial_name":"gel_computed_defaults_volatility__rwYQ2bT","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":954.551,"latency_breakdown":{"env_setup":5.819,"agent_setup":6.666,"agent_exec":876.102,"verifier":51.825},"taskName":"gel_computed_defaults_volatility_rules_py","exec_duration":876.102},{"job_name":"2026-08-07__13-22-37","trial_name":"gel_computed_defaults_volatility__hmpD4tE","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":82.854,"latency_breakdown":{"env_setup":6.972,"agent_setup":6.102,"agent_exec":10.741,"verifier":47.175},"taskName":"gel_computed_defaults_volatility_rules_py","exec_duration":10.741}]},{"taskName":"gel_delegated_constraints_inheritance_ts","instruction":"$8","trials":[{"job_name":"2026-08-07__13-07-29","trial_name":"gel_delegated_constraints_inheri__cbyeNZh","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":715.655,"latency_breakdown":{"env_setup":61.097,"agent_setup":6.71,"agent_exec":600.408,"verifier":14.301},"taskName":"gel_delegated_constraints_inheritance_ts","exec_duration":600.408},{"job_name":"2026-08-07__13-07-31","trial_name":"gel_delegated_constraints_inheri__thspvmJ","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":597.577,"latency_breakdown":{"env_setup":77.799,"agent_setup":6.155,"agent_exec":478.626,"verifier":15.634},"taskName":"gel_delegated_constraints_inheritance_ts","exec_duration":478.626},{"job_name":"2026-08-07__13-21-29","trial_name":"gel_delegated_constraints_inheri__NqhoMMV","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1146.252,"latency_breakdown":{"env_setup":5.805,"agent_setup":6.628,"agent_exec":909.071,"verifier":187.464},"taskName":"gel_delegated_constraints_inheritance_ts","exec_duration":909.071},{"job_name":"2026-08-07__13-22-37","trial_name":"gel_delegated_constraints_inheri__VjgmBBX","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1211.867,"latency_breakdown":{"env_setup":5.909,"agent_setup":6.155,"agent_exec":960.366,"verifier":200.221},"taskName":"gel_delegated_constraints_inheritance_ts","exec_duration":960.366}]},{"taskName":"gel_deletion_policies_referential_integrity","instruction":"$9","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_deletion_policies_referentia__wSEWTVQ","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":506.268,"latency_breakdown":{"env_setup":57.4,"agent_setup":8.898,"agent_exec":402.538,"verifier":15.629},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":402.538},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_deletion_policies_referentia__PSSuYbe","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":440.353,"latency_breakdown":{"env_setup":6.794,"agent_setup":9.354,"agent_exec":386.699,"verifier":15.891},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":386.699},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_deletion_policies_referentia__TsKAtb8","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":658.768,"latency_breakdown":{"env_setup":6.619,"agent_setup":8.731,"agent_exec":605.468,"verifier":15.778},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":605.468},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_deletion_policies_referentia__tLQkhwb","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":713.605,"latency_breakdown":{"env_setup":6.462,"agent_setup":8.638,"agent_exec":604.965,"verifier":17.514},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":604.965}]},{"taskName":"gel_dump_restore_recovery_cli","instruction":"$a","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_dump_restore_recovery_cli__AtLacdk","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1053.696,"latency_breakdown":{"env_setup":155.016,"agent_setup":6.154,"agent_exec":376.946,"verifier":502.42},"taskName":"gel_dump_restore_recovery_cli","exec_duration":376.946},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_dump_restore_recovery_cli__mQUmAtc","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":705.073,"latency_breakdown":{"env_setup":8.64,"agent_setup":6.109,"agent_exec":614.126,"verifier":63.099},"taskName":"gel_dump_restore_recovery_cli","exec_duration":614.126},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_dump_restore_recovery_cli__tGyrwYT","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":2046.778,"latency_breakdown":{"env_setup":5.856,"agent_setup":5.962,"agent_exec":1469.005,"verifier":553.183},"taskName":"gel_dump_restore_recovery_cli","exec_duration":1469.005},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_dump_restore_recovery_cli__jj9NaDf","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1671.084,"latency_breakdown":{"env_setup":5.772,"agent_setup":6.239,"agent_exec":1568.067,"verifier":45.595},"taskName":"gel_dump_restore_recovery_cli","exec_duration":1568.067}]},{"taskName":"gel_fts_search_ranking_cli","instruction":"$b","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_fts_search_ranking_cli__jNXnwnr","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":657.475,"latency_breakdown":{"env_setup":76.029,"agent_setup":6.83,"agent_exec":545.172,"verifier":14.427},"taskName":"gel_fts_search_ranking_cli","exec_duration":545.172},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_fts_search_ranking_cli__qQ3SYPn","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":584.29,"latency_breakdown":{"env_setup":6.087,"agent_setup":6.715,"agent_exec":543.063,"verifier":14.055},"taskName":"gel_fts_search_ranking_cli","exec_duration":543.063},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_fts_search_ranking_cli__H4x6A7N","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":641.123,"latency_breakdown":{"env_setup":6.07,"agent_setup":6.706,"agent_exec":604.048,"verifier":10.544},"taskName":"gel_fts_search_ranking_cli","exec_duration":604.048},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_fts_search_ranking_cli__nWQHUYo","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":705.85,"latency_breakdown":{"env_setup":5.893,"agent_setup":6.808,"agent_exec":604.033,"verifier":12.651},"taskName":"gel_fts_search_ranking_cli","exec_duration":604.033}]},{"taskName":"gel_fulltext_search_ranking_py","instruction":"$c","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_fulltext_search_ranking_py__AuhGRgG","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":705.185,"latency_breakdown":{"env_setup":57.647,"agent_setup":6.774,"agent_exec":604.001,"verifier":20.81},"taskName":"gel_fulltext_search_ranking_py","exec_duration":604.001},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_fulltext_search_ranking_py__UbKYbFL","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":513.77,"latency_breakdown":{"env_setup":6.423,"agent_setup":6.754,"agent_exec":470.178,"verifier":14.384},"taskName":"gel_fulltext_search_ranking_py","exec_duration":470.178},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_fulltext_search_ranking_py__FcVyT6N","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":648.577,"latency_breakdown":{"env_setup":7.849,"agent_setup":6.742,"agent_exec":604.094,"verifier":14.007},"taskName":"gel_fulltext_search_ranking_py","exec_duration":604.094},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_fulltext_search_ranking_py__KYFovQB","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":726.29,"latency_breakdown":{"env_setup":9.035,"agent_setup":6.743,"agent_exec":603.967,"verifier":21.866},"taskName":"gel_fulltext_search_ranking_py","exec_duration":603.967}]},{"taskName":"gel_graphql_http_endpoint_integration_py","instruction":"$d","trials":[{"job_name":"2026-08-07__13-07-29","trial_name":"gel_graphql_http_endpoint_integr__235sN46","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":595.644,"latency_breakdown":{"env_setup":79.73,"agent_setup":6.672,"agent_exec":483.791,"verifier":10.572},"taskName":"gel_graphql_http_endpoint_integration_py","exec_duration":483.791},{"job_name":"2026-08-07__13-07-31","trial_name":"gel_graphql_http_endpoint_integr__CkMNxH3","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":505.366,"latency_breakdown":{"env_setup":116.685,"agent_setup":6.224,"agent_exec":355.346,"verifier":12.56},"taskName":"gel_graphql_http_endpoint_integration_py","exec_duration":355.346},{"job_name":"2026-08-07__13-21-29","trial_name":"gel_graphql_http_endpoint_integr__7fvWAHv","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":820.471,"latency_breakdown":{"env_setup":5.346,"agent_setup":6.232,"agent_exec":783.04,"verifier":11.037},"taskName":"gel_graphql_http_endpoint_integration_py","exec_duration":783.04},{"job_name":"2026-08-07__13-22-37","trial_name":"gel_graphql_http_endpoint_integr__A6w6vFv","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":828.787,"latency_breakdown":{"env_setup":6.063,"agent_setup":6.276,"agent_exec":764.932,"verifier":17.664},"taskName":"gel_graphql_http_endpoint_integration_py","exec_duration":764.932}]},{"taskName":"gel_multimodule_functions_aliases_library","instruction":"$e","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_multimodule_functions_aliase__USrYqoH","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":609.52,"latency_breakdown":{"env_setup":47.147,"agent_setup":6.159,"agent_exec":530.38,"verifier":12.065},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":530.38},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_multimodule_functions_aliase__V6GFt24","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":496.952,"latency_breakdown":{"env_setup":5.97,"agent_setup":6.146,"agent_exec":459.08,"verifier":11.649},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":459.08},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_multimodule_functions_aliase__4UiPBnV","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":645.461,"latency_breakdown":{"env_setup":5.842,"agent_setup":6.078,"agent_exec":604.146,"verifier":14.797},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":604.146},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_multimodule_functions_aliase__LqHXoug","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":713.935,"latency_breakdown":{"env_setup":5.852,"agent_setup":6.237,"agent_exec":603.736,"verifier":11.517},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":603.736}]},{"taskName":"gel_query_builder_codegen_ts","instruction":"$f","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_query_builder_codegen_ts__F3WSMJ9","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":633.92,"latency_breakdown":{"env_setup":114.336,"agent_setup":6.868,"agent_exec":456.621,"verifier":30.306},"taskName":"gel_query_builder_codegen_ts","exec_duration":456.621},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_query_builder_codegen_ts__GGbeHbC","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":664.985,"latency_breakdown":{"env_setup":6.982,"agent_setup":6.642,"agent_exec":604.062,"verifier":29.93},"taskName":"gel_query_builder_codegen_ts","exec_duration":604.062},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_query_builder_codegen_ts__7UnH8yk","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":664.705,"latency_breakdown":{"env_setup":6.043,"agent_setup":6.666,"agent_exec":603.867,"verifier":29.896},"taskName":"gel_query_builder_codegen_ts","exec_duration":603.867},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_query_builder_codegen_ts__zGJ9wfy","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":703.321,"latency_breakdown":{"env_setup":5.893,"agent_setup":6.662,"agent_exec":604.026,"verifier":51.878},"taskName":"gel_query_builder_codegen_ts","exec_duration":604.026}]},{"taskName":"gel_set_operators_cardinality_assertions_cli","instruction":"$10","trials":[{"job_name":"2026-08-07__13-07-29","trial_name":"gel_set_operators_cardinality_as__SnaHBaN","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":854.136,"latency_breakdown":{"env_setup":71.205,"agent_setup":6.13,"agent_exec":740.924,"verifier":22.187},"taskName":"gel_set_operators_cardinality_assertions_cli","exec_duration":740.924},{"job_name":"2026-08-07__13-07-31","trial_name":"gel_set_operators_cardinality_as__3MpyDzL","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":764.203,"latency_breakdown":{"env_setup":58.922,"agent_setup":6.797,"agent_exec":664.469,"verifier":17.444},"taskName":"gel_set_operators_cardinality_assertions_cli","exec_duration":664.469},{"job_name":"2026-08-07__13-21-29","trial_name":"gel_set_operators_cardinality_as__jDhUmyv","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":1270.656,"latency_breakdown":{"env_setup":5.799,"agent_setup":6.067,"agent_exec":1220.438,"verifier":22.841},"taskName":"gel_set_operators_cardinality_assertions_cli","exec_duration":1220.438},{"job_name":"2026-08-07__13-22-37","trial_name":"gel_set_operators_cardinality_as__nR9Qcaa","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":2479.167,"latency_breakdown":{"env_setup":5.757,"agent_setup":6.112,"agent_exec":2403.752,"verifier":21.706},"taskName":"gel_set_operators_cardinality_assertions_cli","exec_duration":2403.752}]}]}]}]]}],["$L11","$L12"],"$L13"]}],"loading":null,"isPartial":false}
+11:["$","script","script-0",{"src":"/gel-benchmark/_next/static/chunks/ad9522f885dbe9ec.js","async":true}]
+12:["$","script","script-1",{"src":"/gel-benchmark/_next/static/chunks/2ee232ed1e88c469.js","async":true}]
+13:["$","$L14",null,{"children":["$","$2",null,{"name":"Next.MetadataOutlet","children":"$@15"}]}]
+15:null
