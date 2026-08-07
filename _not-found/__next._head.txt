@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[75049,["/gel-benchmark/_next/static/chunks/eee3fa4a069aaac4.js","/gel-benchmark/_next/static/chunks/c21188132e0e0d48.js","/gel-benchmark/_next/static/chunks/3ecbb78a8ff87549.js"],"ViewportBoundary"]
+3:I[75049,["/gel-benchmark/_next/static/chunks/eee3fa4a069aaac4.js","/gel-benchmark/_next/static/chunks/c21188132e0e0d48.js","/gel-benchmark/_next/static/chunks/3ecbb78a8ff87549.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+0:{"buildId":"_7rPoLvTHXnXR2q12k6kl","rsc":["$","$1","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Gel Benchmark"}],["$","meta","1",{"name":"description","content":"Performance results of AI coding models on gel tasks, measuring success rate and execution time with high precision."}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"loading":null,"isPartial":false}

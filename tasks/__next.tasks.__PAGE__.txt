@@ -1,0 +1,606 @@
+1:"$Sreact.fragment"
+2:"$Sreact.suspense"
+3:I[42654,["/gel-benchmark/_next/static/chunks/babff0e7418ab052.js","/gel-benchmark/_next/static/chunks/3ecbb78a8ff87549.js","/gel-benchmark/_next/static/chunks/ad9522f885dbe9ec.js","/gel-benchmark/_next/static/chunks/2ee232ed1e88c469.js"],"TasksPageClient"]
+10:I[75049,["/gel-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/gel-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"OutletBoundary"]
+4:T1203,# Reconcile Two Parallel Feature Branches in a Gel Database Project
+
+## Background
+The `branchlab` project is an editorial catalog backed by a local **Gel 7.1** instance named `devinst`. The project is already linked to that instance, its active branch is `main`, `main` already has one applied migration and it already holds production-like data (four `Author` objects and twelve `Article` objects).
+
+Two teams now need to extend the catalog at the same time, each on its own Gel database branch, and their work has to be reconciled back onto `main` afterwards without losing a single row.
+
+Everything runs locally inside this container. There is no network access, no cloud, and no external service.
+
+## Requirements
+
+### The two features
+Develop each feature on its **own Gel branch**, and make both branches diverge from `main` as it is *right now* (neither feature branch may be started from the other, and neither may already contain the other's schema changes when its own migration is created):
+
+- Branch `feat_tags` introduces tagging:
+  - a new object type `Tag` with a `required label: str` that is exclusive;
+  - a new `multi tags: Tag` link on `Article`.
+- Branch `feat_review` introduces the review workflow:
+  - a new `required review_state: str` property on `Article`.
+
+Each feature branch must contribute **exactly one** new migration.
+
+### The reconciled `main`
+When you are done, `main` must satisfy all of the following:
+
+- Its schema contains **both** features exactly as described above (`Tag`, `Article.tags`, `Article.review_state`).
+- Its migration history is **linear** and contains **exactly three** migrations: the pre-existing one, plus one migration per feature (every migration has at most one parent, and the three form a single chain rooted at the pre-existing migration).
+- All pre-existing data survives **in place**: the same four `Author` objects and the same twelve `Article` objects, with unchanged `id` values, unchanged `name`/`country`, unchanged `title`/`word_count`, and unchanged article-to-author links. Nothing may be deleted and re-inserted.
+- Every pre-existing article is back-filled so that `review_state` is `"needs_review"` when its `word_count` is 1200 or more, and `"archived"` otherwise.
+- Exactly one `Tag` object exists, with `label` `"longform"`, and it is linked through `Article.tags` to exactly those articles whose `word_count` is 1000 or more. Every other article has no tags.
+
+### The surviving branches
+- At the end, the instance must hold **exactly two** branches: `main` and `feat_review`. `feat_tags` must no longer exist, and no scratch/temporary branch may be left behind.
+- `feat_review` must end up carrying the same three-migration linear history as `main`.
+- The project's active branch must be `main`.
+- Run from the project directory, `gel migration status` must exit with status `0` for `main` **and** for `feat_review` (i.e. the working schema files, the migration files on disk, and each branch's applied history all agree).
+- `dbschema/default.gel` must describe the final combined schema, and `dbschema/migrations/` must contain exactly the three migration files of that history — no leftovers.
+
+## Implementation Hints
+- Project path: `/home/user/branchlab` (a git repository; git state is not graded).
+- Gel instance name: `devinst`. If the server is not running, start it with `gel-start` (it waits until the instance accepts connections). Never destroy, wipe or re-create the instance or the `main` branch.
+- Reproduction script: `/home/user/branchlab/reconcile.sh`. It must be executable, begin with a `#!` shebang line, and contain at least three comment lines documenting what it does. It must be safe to run again on the already-reconciled project: `bash /home/user/branchlab/reconcile.sh` must exit `0` within 10 minutes and must leave the end state described above completely unchanged.
+- Report file: `/home/user/branchlab/reconcile-report.json`, a JSON object with exactly these five keys:
+  - `main_branch` (string): the name of the reconciled trunk branch;
+  - `feature_branches` (array of strings): the names of the two feature branches you created, sorted in ascending order;
+  - `surviving_branches` (array of strings): the names of all branches that still exist on the instance, sorted in ascending order;
+  - `final_migration_count` (integer): the number of migrations in the final history of the trunk branch;
+  - `reproduction_script` (string): the absolute path of the reproduction script.
+- No requirement is placed on the data stored in `feat_review`; only its schema and migration history are graded.
+
+5:T16d0,# Idempotent bulk catalog ingestion with Gel
+
+## Background
+
+`/home/user/catalog` is a Gel project (Gel server 6.11) already linked to a running local instance named `geltask`. Its schema currently defines a single object type, `Supplier` (properties `code` and `name`, `code` is exclusive), and it has exactly one applied migration.
+
+A partner ERP publishes product-catalog snapshots as batches of JSON-ish records. Snapshots get replayed all the time (retries, overlapping cron runs), so ingestion has to be genuinely *idempotent*: replaying a snapshot that carries nothing new must leave the database untouched. Batches also arrive dirty: malformed rows, rows pointing at suppliers that do not exist, and the same product repeated twice inside one batch.
+
+## Requirements
+
+### 1. Schema
+
+Add a `Product` object type to module `default` and bring it into the database through the project's migration history, so that the project stays in sync with the instance. `Product` has these **required** members:
+
+| member | type | notes |
+| --- | --- | --- |
+| `source_system` | `str` | |
+| `external_id` | `str` | |
+| `name` | `str` | the database must refuse values longer than 200 characters |
+| `price_cents` | `int64` | the database must refuse negative values |
+| `revision` | `int64` | |
+| `updated_at` | `datetime` | |
+| `supplier` | single link to `Supplier` | |
+
+The pair `(source_system, external_id)` is the **natural key** of a product, and the database itself must refuse a second `Product` carrying a natural key that already exists.
+
+`Product` must not require any member beyond the seven listed above, and it must stay insertable by a plain EdgeQL `insert` that supplies exactly those seven members.
+
+Do not change the existing `Supplier` type and do not rewrite the existing migration.
+
+### 2. Ingestion API
+
+Create a Python package `catalog_ingest` inside the project that exposes:
+
+```python
+# /home/user/catalog/catalog_ingest/pipeline.py
+async def ingest_batch(client, records):
+    ...
+```
+
+`client` is an already-connected asynchronous Gel client object handed in by the caller, and `records` is a `list`. `ingest_batch` must work exclusively through that object; it must not open a connection of its own.
+
+### 3. Per-record acceptance rules
+
+Records are processed in list order. A record is **well-formed** when it is a `dict` that carries:
+
+- `source_system`: non-empty `str`
+- `external_id`: non-empty `str`
+- `name`: non-empty `str`
+- `price_cents`: `int` that is `>= 0` (a `bool` does not qualify as an `int` here)
+- `supplier_code`: non-empty `str`
+
+Any additional key in the record is ignored. Every record is classified by the **first** matching rule:
+
+1. not well-formed — rejected, reason `invalid_record`
+2. the database holds no `Supplier` whose `code` equals `supplier_code` — rejected, reason `unknown_supplier`
+3. its natural key equals the natural key of an **earlier, non-rejected** record of the same call — rejected, reason `duplicate_key` (the earlier record is the one that gets applied)
+
+Anything else is **accepted**. These rules are exhaustive: an accepted record must be handed to the database even when the database is going to refuse it.
+
+### 4. Effect of accepted records
+
+- Natural key absent from the database: a new `Product` is created with `revision` 1 and `updated_at` set to the ingestion timestamp.
+- Natural key present, and `name`, `price_cents` and the linked supplier all already equal the incoming values: nothing at all changes for that product — its stored `revision` and `updated_at` keep their previous values.
+- Natural key present, and at least one of those three differs: the three are overwritten, `revision` becomes the stored `revision` plus 1, and `updated_at` becomes the ingestion timestamp.
+
+### 5. Return value
+
+`ingest_batch` returns a `dict` with exactly the keys `inserted`, `updated`, `unchanged`, `rejected` and `rejects`:
+
+- `inserted`, `updated`, `unchanged`: `int`, the number of accepted records that produced each of the three outcomes of section 4, in that order.
+- `rejected`: `int`, equal to `len(rejects)`.
+- `rejects`: `list` of `dict`s, each with exactly the keys `index` (`int`, 0-based position of the record inside `records`) and `reason` (one of the three strings of section 3), ordered by ascending `index`.
+- `inserted + updated + unchanged + rejected` always equals `len(records)`.
+
+### 6. Atomicity
+
+Every database write of one call belongs to a single all-or-nothing unit. When the database refuses the batch, the error must propagate out of `ingest_batch`, and not one product may have been created or modified by that call.
+
+### 7. Round-trip budget
+
+One call to `ingest_batch` may execute **at most 3** EdgeQL statements through the supplied client, no matter how large the batch is. A statement execution is counted as a call to `query`, `query_single`, `query_required_single`, `query_json`, `query_single_json`, `query_required_single_json` or `execute`, both on the client itself and on any transaction object obtained from it.
+
+## Implementation Hints
+
+- Project path: `/home/user/catalog`
+- Python import path: `catalog_ingest.pipeline`, coroutine function `ingest_batch`, imported with `/home/user/catalog` as the working directory.
+- The Gel CLI (`gel`), the Gel 6.11 server and the `gel` Python client 3.1.0 are installed locally. No external service is available or needed — everything runs against the local instance.
+- The instance is **not** started automatically when the container boots. Run `gel-start-instance` (idempotent, already on `PATH`) to bring it up; the database server runs under the unprivileged account `gelsrv`, while everything else runs as `root`.
+- Schema changes have to travel through migration files under `dbschema/migrations`; the checked-out project and the instance must end up in sync.
+
+6:T1b4e,# Idempotent Bulk Catalog Sync (Gel + TypeScript)
+
+## Background
+An e-commerce team receives product catalogs from upstream suppliers as batches of JSON records. The catalog itself lives in a local **Gel 6** instance (the graph-relational database formerly known as EdgeDB). Today the import is a hand-written loop that creates duplicate categories, silently doubles products when a batch is replayed, and leaves half-imported data behind when one record is rejected.
+
+Your job is to replace it: model the catalog in Gel's schema language, get that schema into the database through Gel's migration engine, and build a re-runnable synchronisation CLI in TypeScript on top of the official `gel` npm client. The CLI must be able to ingest the same batch any number of times without changing the database after the first successful run, and it must tell the operator, per record, what actually happened.
+
+## Requirements
+- Define the catalog data model in the project's Gel schema and apply it to the running instance through a migration, so that the instance's migration state is in sync with the files on disk.
+- Implement a batch synchronisation CLI that reads a JSON batch file and, for every record, either creates a product or brings the existing product in line with the record.
+- Resolve the objects a product points to (its category, its tags) on demand: they are created when they are not there yet, reused otherwise, and never duplicated — no matter how many records in the batch (or how many previous runs) reference the same name.
+- Classify every record's outcome and report it, together with per-batch totals, as machine-readable output.
+- Apply the whole batch atomically: either every record in the batch lands, or none does.
+- Reject malformed batches with a documented, machine-readable error contract, without touching the database.
+
+## Implementation Hints
+- Project path: `/home/user/catalog-sync`. Work inside it; the Gel project directory (`gel.toml`, `dbschema/`) is already there and already linked to the local instance `local_gel`, so client connection details are discovered from the project directory — do not introduce connection environment variables, DSNs, or credentials of your own.
+- The local Gel instance is not running when you start. Start it with `/usr/local/bin/gel-start.sh` (idempotent, must be run as `root`; it returns once the instance answers queries, which can take up to ~30 s).
+- Treat the environment as offline. Every dependency you need is already installed under `/home/user/catalog-sync/node_modules` (including the pinned `gel` client and TypeScript); do not run `npm install`/`npm ci`, do not upgrade anything, and do not add dependencies.
+- Command: `node dist/sync.js --input <path/to/batch.json>`, executed with the working directory `/home/user/catalog-sync`. `/home/user/catalog-sync/dist/sync.js` must already exist and run as-is — verification never builds the project for you.
+- Schema: module `default` must contain object types named exactly `Category`, `Tag` and `Product` with these pointers (all names exact, in module `default`):
+  - `Category`: required property `name` of type `str`, unique across all `Category` objects.
+  - `Tag`: required property `label` of type `str`, unique across all `Tag` objects.
+  - `Product`: required property `sku` of type `str`, unique across all `Product` objects; required property `name` of type `str`; required property `price_cents` of type `int64` that rejects negative values; required property `stock` of type `int64` that accepts `0`..`100000` inclusive and rejects any value outside that range; a required single link `category` to `Category`; and a `multi` link `tags` to `Tag`.
+- Batch file format — a JSON array of record objects:
+
+  ```json
+  [
+    {
+      "sku": "non-empty string",
+      "name": "non-empty string",
+      "price_cents": 0,
+      "stock": 0,
+      "category": "non-empty string",
+      "tags": ["non-empty string"]
+    }
+  ]
+  ```
+
+  `price_cents` and `stock` are integers `>= 0`. `tags` is optional; when it is absent the record has no tags. An empty array is a valid batch.
+- Sync semantics: a product is identified by its `sku`; `category` and each entry of `tags` identify a `Category` by `name` and a `Tag` by `label`. After a successful run a product's `tags` links must be exactly the de-duplicated set named by its record — tags no longer named are unlinked, while `Tag` and `Category` objects themselves are never deleted. A record's outcome is `inserted` when no product with that `sku` existed before this run, `updated` when it existed but at least one of `name`, `price_cents`, `stock`, its category name or its tag set differed from the record, and `unchanged` when everything already matched. Consequently, re-running a batch that was already applied must report every record as `unchanged` and must neither create nor modify any object.
+- The batch must reach the server as set-based work parameterised by the batch data (one JSON parameter for the whole batch), not as one query per record, and it must run inside a client-managed transaction with the client's automatic retry behaviour.
+- Success output: exit code `0` and exactly one JSON document on stdout (nothing else on stdout; put any human-readable logging on stderr):
+
+  ```json
+  {
+    "ok": true,
+    "total": 3,
+    "inserted": 2,
+    "updated": 1,
+    "unchanged": 0,
+    "results": [
+      {"sku": "A-1", "outcome": "inserted", "category": "tools", "tags": ["metal", "sale"]}
+    ]
+  }
+  ```
+
+  `total` is the number of records in the batch, `inserted`/`updated`/`unchanged` are the outcome counts, and `results` holds one entry per record sorted by `sku` in ascending lexicographic order, where `outcome` is one of `inserted`/`updated`/`unchanged`, `category` is the record's category name and `tags` is the de-duplicated tag list sorted in ascending lexicographic order.
+- Failure output: exactly one JSON document on stdout shaped `{"ok": false, "error_code": "<code>", "message": "<non-empty string>"}` plus the matching exit code:
+  - exit `2`, `error_code` `input_unreadable`: no `--input` argument was given, the file does not exist, or its content is not valid JSON.
+  - exit `3`, `error_code` `invalid_record`: the top-level JSON value is not an array, or some record violates the batch format above. Add the key `index` holding the 0-based position of the first offending record, or `null` when the top-level value itself is not an array.
+  - exit `4`, `error_code` `duplicate_sku`: the same `sku` appears in more than one record. Add the key `sku` holding the first `sku` that repeats. Record-format validation takes precedence over duplicate detection.
+  - exit `5`, `error_code` `db_error`: the database rejected the batch (for example a value the schema forbids).
+  In every failure case, including `db_error`, the database contents must be exactly what they were before the invocation.
+- A batch of 200 records must be processed within 60 seconds.
+
+7:T1a78,# Referential Integrity for a Document Workspace Graph (Gel)
+
+## Background
+
+A small document-management product stores its data in a **Gel 6.11** database (a local, single-container instance is already installed and its project skeleton is already created). The product team keeps losing data integrity: purging a workspace leaves orphaned folders and documents behind, shared file blobs are deleted while other documents still point at them, documents that legal has already archived get wiped by careless cleanup scripts, and a batch job that releases editors breaks whenever a document is still checked out.
+
+Management has decided that **the database itself** must guarantee these rules, so that no application, script or REPL session can violate them. Your job is to design the graph schema that encodes the rules and to deliver the workspace purge routine that the product will call.
+
+## Requirements
+
+### 1. Schema
+
+Define these object types in the `default` module, with exactly these names, properties, links and cardinalities:
+
+- `Workspace`
+  - `name`: required `str`, unique across all workspaces
+- `Folder`
+  - `name`: required `str`
+  - `workspace`: required single link to `Workspace`
+- `Attachment`
+  - `filename`: required `str`, unique across all attachments
+  - `byte_size`: required `int64`
+- `Editor`
+  - `email`: required `str`, unique across all editors
+- `Document`
+  - `title`: required `str`
+  - `folder`: required single link to `Folder`
+  - `attachments`: optional `multi` link to `Attachment`
+  - `checked_out_by`: optional single link to `Editor`
+- `ArchivedRecord`
+  - `label`: required `str`, unique across all archived records
+  - `document`: required single link to `Document`
+  - `archived_at`: required `datetime` that is populated automatically when a record is inserted without it
+
+Apart from `archived_at`, no other property or link may be required beyond the list above: objects are created supplying only the fields listed here, so any extra field you add must have a default.
+
+The schema must be delivered through the project's migration history (`dbschema/migrations/`) and must be fully applied to the running instance, with no pending or divergent migrations.
+
+### 2. Integrity rules enforced by the database
+
+All of the rules below must hold for **plain EdgeQL `delete` statements executed directly against the database**, with no application code, trigger scripts, or manual clean-up steps involved:
+
+1. **Container purge cascades.** Deleting a `Workspace` also removes every `Folder` of that workspace and every `Document` in those folders. Deleting a single `Folder` also removes every `Document` in it. No orphaned `Folder` or `Document` may survive.
+2. **Shared blobs are garbage-collected, but only when orphaned.** When a `Document` disappears (whether deleted directly or removed as part of a cascade), every `Attachment` it linked through `attachments` is deleted **unless** at least one surviving `Document` still links that same `Attachment` through `attachments`; such still-referenced attachments must survive intact.
+3. **Archived documents are protected.** Any deletion that would remove a `Document` that is referenced by `ArchivedRecord.document` must fail with a Gel constraint-violation error (a `gel.errors.ConstraintViolationError`) and must leave the database unchanged. This includes indirect attempts, i.e. deleting the `Folder` or the `Workspace` that contains such a document, which must fail as well.
+4. **Checked-out editors are protected only until the end of the transaction.** Deleting an `Editor` that is still referenced by `Document.checked_out_by` must fail with a Gel constraint-violation error and leave both the editor and the referencing documents in place. However, the violation must **not** be reported while the transaction is still open: a single transaction that first deletes the `Editor` and only afterwards stops the referencing documents from pointing at it must commit successfully. Deleting an `Editor` that no document references must succeed and must never delete or modify any `Document`.
+
+### 3. Purge routine
+
+Deliver a Python module `purge.py` in the project root exposing:
+
+```python
+async def purge_workspace(client, workspace_name: str) -> dict
+```
+
+`client` is an already-connected `gel` asynchronous client. The routine purges the workspace with the given `name` and reports what the purge removed. It must:
+
+- perform the whole purge (and the bookkeeping it needs) inside a **single database transaction**, so that a purge that is refused by the database leaves absolutely no trace;
+- raise `LookupError` and change nothing if no `Workspace` has that name;
+- let a database integrity error propagate to the caller unwrapped (the caller must receive the original `gel.errors.ConstraintViolationError`) and leave the database exactly as it was;
+- return a `dict` with exactly the keys `workspace`, `folders_deleted`, `documents_deleted`, `attachments_deleted`, `attachments_kept`, where:
+  - `workspace` is the purged workspace's `name` (`str`);
+  - `folders_deleted` (`int`) is how many `Folder` objects of that workspace existed before the call and no longer exist after it;
+  - `documents_deleted` (`int`) is how many `Document` objects in those folders existed before the call and no longer exist after it;
+  - `attachments_deleted` (`int`) is how many distinct `Attachment` objects were linked through `attachments` by those documents before the call and no longer exist after it;
+  - `attachments_kept` (`int`) is how many distinct `Attachment` objects were linked through `attachments` by those documents before the call and still exist after it.
+
+The reported numbers must be derived from the actual database state after the purge, not from assumptions about what the schema does.
+
+## Implementation Hints
+
+- Project path: `/home/user/docmgr` (already contains `gel.toml` and `dbschema/default.gel`).
+- The Gel server for this project runs locally inside this container and listens on `127.0.0.1:5656`; connection settings are already provided through the environment, so `gel` CLI commands run from the project directory and `gel.create_async_client()` both connect without extra configuration. If the server is not running yet, run `gel-serve` (a helper on `PATH` that starts the local server in the background and returns once it accepts connections). There is no network access to any external service.
+- Python module path: `/home/user/docmgr/purge.py`; it must be importable on its own (`import purge` from the project directory) without side effects at import time.
+- Everything must live in the `default` module of the branch the environment connects to (`main`).
+- Keep the data volume tiny; the verification graph contains only a few dozen objects.
+
+8:T1ed1,# Gel disaster recovery: restore a backup, repair the data, harden the schema, re-dump
+
+## Background
+
+A small logistics service stores `Warehouse` and `Shipment` objects in a local **Gel 7** instance. Last night a maintenance script went wrong on the working branch `main`: shipments were deleted, `origin` links were cleared and a warehouse row was removed. The only good copy of the pre-incident data is the backup file that operations left behind at `/home/user/recovery/backups/pre_incident.dump`.
+
+That pre-incident data was never clean either: tracking codes were entered with stray whitespace and inconsistent case, some statuses use legacy spellings, some weights are negative or zero, some shipments lost their `origin` link, and a few tracking codes are duplicated. The team wants the recovered copy to be normalized **and** protected by a stricter schema so this class of garbage can never be inserted again.
+
+You own the recovery. Everything runs locally; there is no network service to call.
+
+## Requirements
+
+1. **Recover into a new branch.** Bring the pre-incident backup back online on the same instance, in a branch named exactly `recovered`.
+2. **Leave `main` alone.** Branch `main` must keep exactly the data, schema and migration history it has right now. It must not be repaired, migrated, wiped, renamed or dropped.
+3. **Normalize the recovered data** by applying the repair rules below, in order (each rule sees the result of the previous ones). `seq` is the immutable identity of a shipment: never change it, never invent new objects, and never delete anything the rules do not tell you to delete.
+4. **Harden the schema** of `recovered` through the project's migration workflow, so the server itself enforces the invariants listed below. The project's `dbschema/` must describe the hardened schema, the pre-existing migration history must be preserved and extended (not rewritten), and `recovered` must end up fully migrated and in sync with `dbschema/`.
+5. **Produce a fresh backup** of the repaired, hardened `recovered` branch at exactly `/home/user/recovery/backups/recovered.dump`. Keep `/home/user/recovery/backups/pre_incident.dump` in place and unmodified.
+6. **Ship the verification CLI** described in *Implementation notes*.
+
+### Repair rules (applied in this order)
+
+- **R1 — warehouse codes.** Every `Warehouse.code` becomes its own value trimmed of leading/trailing whitespace and upper-cased.
+- **R2 — tracking codes.** Every `Shipment.tracking` becomes its own value with **every** whitespace character removed (leading, trailing and interior) and then upper-cased.
+- **R3 — statuses.** Normalize every `Shipment.status`: trim it, lower-case it, then turn every space and every hyphen into an underscore. Then translate the legacy spellings `awaiting` → `pending`, `transit` → `in_transit`, `complete` → `delivered`, `done` → `delivered`, `return` → `returned`, `returned_to_sender` → `returned`. A shipment with no status at all becomes `pending`. The canonical statuses are exactly `pending`, `in_transit`, `delivered` and `returned`.
+- **R4 — weights.** A shipment whose `weight_kg` is negative keeps its absolute value. A shipment whose `weight_kg` is exactly `0` or absent is unrecoverable and must be deleted.
+- **R5 — origins.** A shipment that already has an `origin` link keeps it, whatever its `origin_code` says. A shipment without an `origin` link is linked to the warehouse whose (already normalized) `code` equals its `origin_code` trimmed and upper-cased; if it has no `origin_code`, or no warehouse matches, that shipment is unrecoverable and must be deleted. Afterwards every surviving shipment's `origin_code` property must be exactly equal to the `code` of the warehouse it is linked to.
+- **R6 — duplicates.** Among the shipments that still survive and share the same `tracking`, keep only the one with the smallest `seq` and delete the others.
+- **R7 — stale warehouses.** Delete every `Warehouse` that no surviving shipment is linked to.
+
+### Invariants the hardened schema must enforce on `recovered`
+
+After your work, the server must reject any insert or update that would violate any of these:
+
+- `Warehouse.code`: present, unique across warehouses, and matching `^[A-Z0-9-]{3,12}$`.
+- `Shipment.tracking`: present, unique across shipments, and matching `^[A-Z0-9-]{6,20}$`.
+- `Shipment.weight_kg`: present and strictly greater than `0`.
+- `Shipment.status`: present and one of the four canonical statuses.
+- `Shipment.origin`: present.
+
+Valid objects must of course still be insertable.
+
+## Implementation notes
+
+- Project path: `/home/user/recovery` — it is a Gel project already linked to the local instance named `recovery`; `dbschema/default.gel` and `dbschema/migrations/` describe the current (loose) schema.
+- The local Gel 7 server may not be running yet. `gel-start` (already on `PATH`) starts it if needed, waits until it accepts connections, and is safe to call repeatedly.
+- Command: `bash /home/user/recovery/scripts/verify_recovery.sh [--branch <name>]`. It must work from any working directory, must be re-runnable any number of times with identical results, and must default to the branch `recovered` when `--branch` is not given.
+- The command validates the backup at `/home/user/recovery/backups/recovered.dump` by restoring it into a throw-away branch named exactly `verify_roundtrip` (dropping and recreating that branch if it is already there) and comparing that restored copy with the target branch. The throw-away branch must never be left behind: once the command has finished, `verify_roundtrip` must not exist.
+- The command writes **only** a single JSON object to stdout (diagnostics, if any, go to stderr) with exactly these top-level keys in this exact order:
+  - `branch` — the target branch name.
+  - `dump_path` — `/home/user/recovery/backups/recovered.dump`.
+  - `dump_size_bytes` — that file's size in bytes, as a number.
+  - `dump_sha256` — that file's SHA-256, 64 lower-case hex characters.
+  - `migration_count` — how many migrations the target branch's history contains, as a number.
+  - `counts` — an object with exactly the keys `Warehouse` then `Shipment`, holding the number of objects of each type in the target branch.
+  - `status_counts` — an object with exactly the keys `delivered`, `in_transit`, `pending`, `returned`, in that order, holding how many shipments of the target branch carry each status (`0` when none).
+  - `warehouse_counts` — an object whose keys are the codes of all warehouses of the target branch sorted ascending, each holding how many shipments are linked to that warehouse (`0` when none).
+  - `total_weight_kg` — the sum of `weight_kg` over the target branch's shipments, rounded to 3 decimal places, as a number.
+  - `tracking_checksum` — the SHA-256 (64 lower-case hex characters) of the UTF-8 text obtained by sorting the target branch's `tracking` values in ascending code-point order and joining them with a single newline character, with no trailing newline; for an empty branch, the SHA-256 of the empty string.
+  - `roundtrip_branch` — `verify_roundtrip`.
+  - `roundtrip_ok` — a boolean, `true` only when the restored throw-away copy and the target branch agree on `counts`, `status_counts`, `warehouse_counts`, `total_weight_kg` and `tracking_checksum`.
+- Exit codes of that command: `0` when the report was produced and `roundtrip_ok` is `true`; `2` when `/home/user/recovery/backups/recovered.dump` does not exist, in which case stdout must be exactly the JSON object `{"error": "dump_not_found"}`; `3` when the target branch does not exist on the instance, in which case stdout must be exactly the JSON object `{"error": "branch_not_found"}`; `4` when the report was produced but `roundtrip_ok` is `false`. The missing-dump condition takes precedence over the missing-branch condition.
+
+9:T10e7,# Weighted Full-Text Search Ranking over a Gel Knowledge Base (CLI only)
+
+## Background
+A small documentation site keeps its articles in a JSON corpus and wants a relevance-ranked search endpoint backed by a local **Gel 7.1** instance. The project directory already contains an empty schema module and the corpus file; the database is empty. Everything must be done with the `gel` CLI, SDL and EdgeQL — no Gel client library is installed and no network access is available.
+
+## Requirements
+- Model the corpus in the `default` module as an object type `Article` with the required properties `slug` (identity of an article, no two articles may share one), `title`, `summary`, `body`, `section` (all `str`) and `published` (`bool`).
+- Make `Article` searchable by natural-language English terms, where a term found in the `title` is more relevant than the same term found in the `summary`, which in turn is more relevant than the same term found in the `body`.
+- Capture the schema in the project's migration history and apply it, so that the CLI reports the database as up to date afterwards.
+- Provide `scripts/load.sh`, which loads the corpus into the database and can be run repeatedly without creating duplicates or leaving stale rows behind.
+- Provide `scripts/search.sh`, a relevance-ranked, paginated search command over the loaded articles.
+
+## Implementation Hints
+- Project path: `/home/user/kb-search` (all commands below are run from this directory).
+- The database is a local Gel 7.1 instance; connection details are already provided through the environment. The server is idempotently (re)started by running `gel-start`, which returns once the instance answers queries. Nothing in this task may reach the network.
+- Corpus file: `/home/user/kb-search/data/corpus.json` — a JSON array of objects with the keys `slug`, `title`, `summary`, `body`, `section`, `published`. This file is an input and must not be edited, moved, or deleted.
+- After `bash scripts/load.sh` exits (status `0`), every corpus record must exist as exactly one `Article` whose property values are copied verbatim from that record, and the database must contain no other `Article` objects. Re-running it must leave the same state.
+- Search command: `bash scripts/search.sh QUERY [LIMIT] [OFFSET]`, with `LIMIT` defaulting to `5` and `OFFSET` defaulting to `0`. `QUERY` is arbitrary search text (it may contain spaces or apostrophes, and will never contain the two-character sequence `$$`).
+- On success `scripts/search.sh` must exit `0` and print to stdout exactly one JSON object (and nothing else) with the keys `query`, `limit`, `offset`, `total`, `results`:
+  - `query`: the `QUERY` argument, echoed verbatim.
+  - `limit`, `offset`: the effective limit and offset as integers.
+  - `total`: the number of matching articles before pagination.
+  - `results`: an array of objects, each having exactly the keys `rank`, `slug`, `title`, `section`, `score`.
+- Matching and ranking contract:
+  - Only `published` articles may match, and an article only matches if its relevance score is greater than `0`.
+  - Relevance must be full-text relevance for the English language, computed with custom category weights so that a hit in `title` counts with weight `1.0`, a hit in `summary` with weight `0.5`, and a hit in `body` with weight `0.1`.
+  - Matching articles are ordered by score descending, and articles with an identical score are ordered by `slug` ascending.
+  - `results` contains the page of that ordering selected by `OFFSET` and `LIMIT`, in ranking order.
+  - `rank` is the 1-based position of the article in the full ordering (so the first item of a page is `OFFSET + 1`).
+  - `score` is the relevance score rounded to 4 decimal places.
+  - When nothing matches, `total` is `0` and `results` is an empty array (still exit status `0`).
+- Argument errors — no `QUERY`, an empty `QUERY`, more than three arguments, a `LIMIT` or `OFFSET` that is not a non-negative decimal integer, or a `LIMIT` below `1` — must make `scripts/search.sh` exit with status `2`, print nothing on stdout, and print the text `usage: search.sh QUERY [LIMIT] [OFFSET]` on stderr.
+- Both scripts must work when invoked as `bash scripts/<name>.sh` from the project directory, and must always read the current database state rather than any precomputed answer.
+
+a:T1e5f,# Ranked Full-Text Search over a Gel Knowledge Base
+
+## Background
+
+The Orbital Ledger platform team keeps its engineering handbook in **Gel 6.11** (the graph-relational
+database formerly known as EdgeDB). A local Gel server, the `gel` CLI and a Python 3 environment with
+the Gel client are already installed in this container, and a bare project skeleton together with the
+article corpus is waiting for you at `/home/user/kbsearch`.
+
+Right now nothing works: the schema is empty, the database holds no data, and there is no search code.
+Turn the skeleton into a working ranked knowledge-base search: model the articles, migrate the
+database, load the corpus, and expose an asynchronous Python search API plus a thin command line
+front end on top of it.
+
+## Requirements
+
+### 1. Schema and migration
+
+Declare the handbook model in `dbschema/default.gel` and move the database to that model through the
+project's migration history. `gel migration status` must report that the database is up to date, and
+the generated migration file(s) must be present in the project.
+
+The model must contain an object type `default::Article` with exactly these properties:
+
+- `slug` — required `str`, unique across all articles (a second insert reusing an existing slug must be
+  rejected by the database).
+- `title` — required `str`.
+- `summary` — required `str`.
+- `body` — required `str`.
+- `status` — required, and typed by a custom enum scalar type `default::ArticleStatus` whose values are
+  `draft`, `published` and `archived`, declared in exactly that order.
+- `tags` — optional `multi` `str`.
+
+`title`, `summary` and `body` must all be searchable, and the searchable definition must make `title`
+more relevant than `summary`, and `summary` more relevant than `body`.
+
+### 2. Corpus loader
+
+`/home/user/kbsearch/seed.py`, executed as `python3 seed.py` from the project directory, must load every
+record of `/home/user/kbsearch/seed_data.json` into the database. It has to be re-runnable: after any
+number of runs the database must hold exactly one `Article` per `slug`, with the field values taken
+from the file (`tags` is a set, its order in the file is not significant). Never edit `seed_data.json`.
+
+### 3. Search service
+
+`/home/user/kbsearch/search_service.py` must expose
+
+```python
+async def search_articles(
+    query: str,
+    *,
+    status: str | None = None,
+    tag: str | None = None,
+    limit: int = 10,
+    offset: int = 0,
+) -> dict
+```
+
+It has to be usable on its own (`asyncio.run(search_articles("some words"))`) and must return exactly
+this payload — no extra keys at either level:
+
+```json
+{
+  "query": "<the query string, exactly as received>",
+  "total": "<how many articles match the query under the given filters, ignoring limit and offset>",
+  "limit": "<the limit that was applied>",
+  "offset": "<the offset that was applied>",
+  "results": [
+    {
+      "rank": "<1-based position in the full ordered match list; the first object of a page starting at offset N has rank N+1>",
+      "slug": "<the article slug>",
+      "title": "<the article title>",
+      "status": "<draft | published | archived>",
+      "tags": "<the article's tags as a list of strings, sorted ascending>",
+      "score": "<the relevance score, a number strictly greater than 0>",
+      "highlight": "<the article title with matched query words wrapped, see below>"
+    }
+  ]
+}
+```
+
+Behaviour that must hold:
+
+- **Matching.** The query is split on whitespace into terms. An article matches when at least one term
+  matches text in its `title`, `summary` or `body`. Matching is case-insensitive and English language
+  aware, so a term also matches morphological variants of the same word (a search for `policies` must
+  find an article whose text only contains `policy`). Articles that do not match must not appear, and
+  every returned object must carry a `score` greater than 0.
+- **Ranking.** Results are ordered by `score` descending. The same term found in `title` must produce a
+  strictly higher score than when it is found only in `summary`, which in turn must be strictly higher
+  than when it is found only in `body`; and an article matching more of the query terms in a given
+  field must score strictly higher than an article matching fewer of them in that same field.
+- **Deterministic tie-break.** Articles with equal scores must be ordered by `slug` ascending, so
+  repeated identical calls always return the same order.
+- **Filters.** `status`, when given, restricts results to articles in that status. `tag`, when given,
+  restricts results to articles carrying that exact tag; an unknown tag simply yields no matches. Both
+  filters must be applied together with the search, and `total` must reflect the filtered match count.
+- **Pagination.** `offset` skips that many leading matches, `limit` caps how many result objects are
+  returned, and `total` never depends on either. A `limit` of 0 and an `offset` beyond the last match
+  both yield an empty `results` list together with the correct `total`.
+- **Empty query.** A query that is empty or only whitespace matches nothing: `total` 0 and an empty
+  `results` list, without raising.
+- **Rejected arguments.** `limit` and `offset` must be non-negative integers and `status`, when given,
+  must be one of the three status values; anything else must raise `ValueError`.
+- **Highlighting.** `highlight` is the article `title` in which every case-insensitive whole-word
+  occurrence of a query term is wrapped in `<b>` and `</b>`, preserving the original characters of the
+  title. An occurrence counts as whole-word when it is neither directly preceded nor directly followed
+  by an ASCII letter or digit, and only literal occurrences are wrapped (morphological variants are
+  not). Query terms for highlighting are the whitespace-separated pieces of the query with leading and
+  trailing non-alphanumeric characters stripped. If nothing in the title matches, `highlight` is the
+  unchanged title.
+- **Live data.** Results must reflect the database contents at call time: an article inserted or
+  deleted by another process must be reflected on the very next call, with no rebuild step.
+
+### 4. Command line front end
+
+`/home/user/kbsearch/search_cli.py`, executed from the project directory as
+
+```
+python3 search_cli.py --query <text> [--status <status>] [--tag <tag>] [--limit <n>] [--offset <n>]
+```
+
+must print the payload described above as a single JSON object on stdout and exit 0. When an argument
+is invalid — an unknown status, a negative or non-integer `limit`/`offset`, or a missing `--query` — it
+must print nothing on stdout, write a message to stderr, and exit with status 2. `--limit` defaults to
+10 and `--offset` defaults to 0.
+
+## Implementation Hints
+
+- Project path: `/home/user/kbsearch` (it already contains `gel.toml`, an empty `dbschema/default.gel`
+  and `seed_data.json`).
+- The local Gel 6.11 server is not running when you start. Run `start-gel.sh` to bring it up; it is
+  idempotent and only returns once the server answers queries. Do not run any other database server.
+- `GEL_DSN` and `GEL_CLIENT_TLS_SECURITY` are already exported, so the `gel` CLI and the Gel Python
+  client connect to the local instance without any extra arguments or credentials.
+- The default `python3` already provides the Gel Python client and `pytest`. Everything must work fully
+  offline: no hosted service, no cloud instance, no API key, and no embedding or AI provider.
+- Schema changes must go through the migration history — a database that has drifted away from
+  `dbschema/` counts as a failure.
+- Keep the whole solution inside `/home/user/kbsearch`; `seed.py`, `search_service.py` and
+  `search_cli.py` must be importable/runnable with that directory as the working directory.
+
+b:T1b01,# In-Database Pricing Library: Multi-Module Gel Schema
+
+## Background
+A billing team is tired of every service re-implementing money arithmetic slightly differently, so the rules must live **inside the database** as a reusable library: generic money helpers in one schema module, the billing domain in another, and read models in a third. A Gel 6 project skeleton and a local Gel server are already available in this container. No cloud instance, hosted database or external service is involved: everything runs locally inside the container.
+
+## Requirements
+Deliver a migrated Gel schema, split across **three modules** (`util`, `billing`, `reports`), that satisfies every contract below. Everything is verified over EdgeQL against the live local instance using fully-qualified names, so names, parameter names, parameter kinds, cardinalities and numeric results must match exactly.
+
+All rounding in this task is **decimal** rounding with ties going **away from zero** (Gel `decimal` semantics), never floating-point rounding. Percentages are whole or fractional percents (`10` means 10%).
+
+### Module `util` - reusable, data-independent functions
+Declare these schema functions with exactly these names, parameter names, parameter kinds and return types:
+
+1. `util::money_round(amount: decimal) -> decimal` - `amount` rounded to 2 decimal places.
+2. `util::money_round(amount: decimal, places: int64) -> decimal` - `amount` rounded to `places` decimal places; `places` may be zero or negative. It must coexist with (1) as an overload of the same name, and a three-argument call must not resolve.
+3. `util::total_of(variadic amounts: decimal) -> decimal` - the sum of all supplied amounts, rounded to 2 decimal places. A call with no arguments must yield `0`.
+4. `util::apply_discount(amount: decimal, pct: decimal, floor_amount: optional decimal) -> decimal` - let `d` be `amount` reduced by `pct` percent and then rounded to 2 decimal places. When `floor_amount` is a non-empty value the result is the greater of `d` and `floor_amount`; when `floor_amount` is an empty set the result is `d`. `floor_amount` is the only `optional` parameter anywhere in this task.
+5. `util::gross_with_tax(net: decimal, named only tax_pct: decimal = 0) -> decimal` - `net` increased by `tax_pct` percent, rounded to 2 decimal places. `tax_pct` must be passable **only** by name and must default to `0`, so a two-positional-argument call must not resolve.
+6. `util::installments(total: decimal, count: int64) -> set of decimal` - returns a **set** (not an array, not a single value) of exactly `count` amounts whose sum is exactly `total`: the first `count - 1` elements each equal `total / count` rounded to 2 decimal places, and the final element is `total` minus the sum of those. Returns the empty set when `count < 1`. Its declared return type must be set-returning.
+
+### Module `billing` - domain types and one data-dependent function
+- `billing::Customer`: required `name: str` (unique across customers), required `discount_pct: decimal` defaulting to `0`.
+- `billing::LineItem`: required link `invoice` to `billing::Invoice`, required `description: str`, required `qty: int64`, required `unit_price: decimal`, plus a single computed `line_total` equal to `qty` times `unit_price` rounded to 2 decimal places. A `LineItem` whose `unit_price` differs from its own 2-decimal-place rounding (e.g. `1.234`) must be rejected at write time by a schema constraint.
+- `billing::Invoice`: required `code: str` (unique across invoices), required link `customer` to `billing::Customer`, required `paid: bool` defaulting to `false`, an optional single `minimum_charge: decimal`, required `installment_count: int64` defaulting to `1`, plus these computeds:
+  - `lines`: the (possibly empty) set of `billing::LineItem` objects whose `invoice` points at this invoice.
+  - `subtotal` (single): the sum of `line_total` over `lines`, rounded to 2 decimal places; `0` when the invoice has no lines.
+  - `total_due` (single): the invoice `subtotal` discounted by its customer `discount_pct` and floored by the invoice `minimum_charge` when that property is set, with exactly the semantics of `util::apply_discount`.
+- `billing::customer_outstanding(customer_name: str) -> decimal` - the sum of `total_due` over the unpaid invoices of the customer with that exact `name`, rounded to 2 decimal places; `0` when there is no such customer or no unpaid invoice. Its effective volatility must be `Stable`.
+- The computed pointers `billing::LineItem.line_total`, `billing::Invoice.subtotal` and `billing::Invoice.total_due` must be defined by calling the `util` functions across the module boundary instead of re-implementing the arithmetic: their stored expressions must reference the `util` module.
+
+### Module `reports` - read models as schema aliases
+Declare these three as schema **aliases** (introspectable as aliases) that all live in `reports`:
+- `reports::UnpaidInvoice` - the invoices whose `paid` is `false`; selecting it yields invoice objects, so `code`, `subtotal` and `total_due` are selectable from it.
+- `reports::CustomerBalance` - customers, each additionally exposing a single computed `outstanding`: the sum of `total_due` over that customer unpaid invoices, rounded to 2 decimal places (`0` when there are none). It must reflect data changes immediately, so marking an invoice paid changes it.
+- `reports::InvoicePlan` - invoices, each additionally exposing a multi computed `plan`: the installment amounts obtained by splitting the invoice `total_due` into `installment_count` parts exactly as `util::installments` does.
+
+## Implementation Hints
+- Project path: `/home/user/pricing` (it already contains `gel.toml` and `dbschema/`).
+- The local Gel server is not necessarily running: `gel-start` (already on `PATH`) starts it if needed and returns once it accepts connections. `GEL_DSN` and the TLS setting are already exported in the environment, so the CLI and client libraries connect with no extra flags.
+- File layout: module `util` must be declared in `dbschema/util.gel`, module `billing` in `dbschema/billing.gel`, and module `reports` in `dbschema/reports.gel`.
+- Nothing this task introduces may end up in the `default` module: after your work there must be no non-builtin object type, function or alias whose name starts with `default::`.
+- The work must be committed as migration files under `dbschema/migrations/` and applied to the running instance, leaving the instance and the schema directory in sync (a fresh `gel migration status` must report being up to date).
+- The verifier deletes every `billing::LineItem`, `billing::Invoice` and `billing::Customer` object and inserts its own fixtures, so do not depend on any pre-existing or self-seeded data; the schema must work on an empty database.
+- Decimal values are compared numerically, so trailing zeros do not matter, but the numeric value must be exact.
+
+c:T1657,# Typed catalog analytics on Gel with a generated TypeScript query builder
+
+## Background
+`/home/user/catalog` is a TypeScript (Node.js) project wired to a local **Gel 6** instance. The database currently only knows about writers (`Author` objects, already seeded); the learning-content catalog itself has not been modelled yet, and the reporting CLI is an unimplemented stub. Your job is to model the catalog, load it, and ship a strictly-typed analytics CLI that talks to Gel exclusively through the code-generated, fully-typed query builder produced by `@gel/generate` — no hand-written EdgeQL strings anywhere in the application source.
+
+Everything runs locally and the machine must be treated as offline: `gel`, `@gel/generate`, `typescript`, `tsx` and `@types/node` are already installed under `node_modules` at pinned versions, and nothing else may be downloaded.
+
+## Requirements
+1. Extend the schema in `dbschema/default.gel` so the database exposes:
+   - an **abstract** object type `Resource` with required single properties `title` (`str`, unique across *all* resources), `minutes` (`int64`) and `level` (`str`), plus a required single link `author` pointing at `Author`;
+   - a concrete type `Article` extending `Resource` with a required single property `word_count` (`int64`);
+   - a concrete type `Video` extending `Resource` with a required single property `has_captions` (`bool`);
+   - two computeds on `Author`: `resources`, the (possibly empty) set of every `Resource` whose `author` link points at that author, and `resource_count` (`int64`), how many such resources exist.
+2. Record that schema change as a new migration file in `dbschema/migrations/` and apply it, so `gel migration status` reports that the database is up to date.
+3. Regenerate the `@gel/generate` query builder into `dbschema/edgeql-js/` so it reflects the final schema.
+4. Implement the catalog CLI in `src/cli.ts` with the subcommands described below. Every database read and write it performs must be expressed through the generated query builder, and each report must reflect the database contents at the moment the command runs.
+
+## Implementation Hints
+- Project path: `/home/user/catalog`. Run every command with that directory as the working directory.
+- A local Gel 6 instance is preconfigured (data directory, branch `main`, connection settings exported in the image environment). Run `gel-start.sh` to make sure the server is up; it is idempotent and returns once the server answers queries.
+- Command: `npx tsx src/cli.ts <subcommand> [flags]`. Successful subcommands print exactly one JSON document to stdout (nothing else on stdout) and exit `0`.
+- Catalog input lives at `data/resources.json`: an array of entries with the keys `kind` (`"article"` or `"video"`), `title`, `author` (the `name` of an existing `Author`), `minutes`, `level`, and either `word_count` (articles) or `has_captions` (videos).
+- `npx tsx src/cli.ts load` inserts every entry of `data/resources.json` that is not in the database yet, as the matching `Article`/`Video` object linked to the named author. It must be safe to run repeatedly: re-running it must neither fail nor duplicate anything. It prints an object with exactly the keys `articles`, `videos` and `total` — the number of `Article`, `Video` and `Resource` objects in the database after the load.
+- `npx tsx src/cli.ts report authors` prints an array with one object per `Author` in the database (authors with no resources included), each having exactly the keys `name`, `articles`, `videos`, `total_minutes`, `avg_minutes` and `top_title`: the counts of that author's articles and videos, the sum of their resources' `minutes`, that sum divided by their resource count rounded to 2 decimal places (`0` when the author has no resources), and the `title` of their longest resource by `minutes` — ties broken by title ascending, `null` when the author has no resources. Order the array by `total_minutes` descending, then `name` ascending.
+- `npx tsx src/cli.ts report levels` prints an array with one object per distinct `level` value present among the resources, ordered by `level` ascending, each having exactly the keys `level`, `count`, `articles`, `videos`, `total_minutes`, `total_words` and `captioned_videos`: the number of resources in the bucket, how many of them are articles, how many are videos, the sum of their `minutes`, the sum of `word_count` over the bucket's articles, and how many of the bucket's videos have `has_captions` true.
+- `npx tsx src/cli.ts report author --name <name>` prints one object with exactly the keys `name`, `country`, `resource_count`, `total_minutes` and `titles` for the author whose `name` equals `<name>` exactly (names may contain apostrophes and spaces); `titles` is the array of that author's resource titles sorted ascending (empty array when there are none). When no author has that name, print nothing on stdout, write `author not found: <name>` to stderr and exit `3`.
+- Any unrecognised subcommand, or `report author` without a usable `--name` value, must print nothing on stdout, write a message to stderr and exit `2`.
+- `npx tsc --noEmit -p tsconfig.json` must exit `0`, and `strict` must stay enabled in `tsconfig.json`.
+- Escape hatches are forbidden in the application source: no file under `src/` may contain the whole word `any` (case-insensitive), nor the text `@ts-ignore`, `@ts-expect-error` or `@ts-nocheck`, nor any of the substrings `.query(`, `.querySingle(`, `.queryRequired(`, `.queryRequiredSingle(`, `.queryJSON(`, `.querySingleJSON(`, `.queryRequiredJSON(`, `.queryRequiredSingleJSON(`, `.execute(`, `.executeSQL(` — the generated query builder is the only way the CLI may reach the database.
+
+0:{"buildId":"_7rPoLvTHXnXR2q12k6kl","rsc":["$","$1","c",{"children":[["$","div",null,{"className":"min-h-screen bg-background text-foreground font-sans selection:bg-primary/20","children":[["$","div",null,{"className":"fixed inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 dark:opacity-40"}],["$","$2",null,{"fallback":["$","div",null,{"className":"container mx-auto py-8 text-center","children":"Loading tasks..."}],"children":["$","$L3",null,{"tasksData":[{"taskName":"gel_branch_migration_rebase_workflow_cli","instruction":"$4","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_branch_migration_rebase_work__jA4ppCt","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":574.357,"latency_breakdown":{"env_setup":136.63,"agent_setup":6.532,"agent_exec":393.366,"verifier":23.263},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":393.366},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_branch_migration_rebase_work__zp674St","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":650.334,"latency_breakdown":{"env_setup":6.062,"agent_setup":6.132,"agent_exec":603.781,"verifier":17.156},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.781},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_branch_migration_rebase_work__8h5jfUG","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":643.623,"latency_breakdown":{"env_setup":5.919,"agent_setup":6.081,"agent_exec":603.753,"verifier":12.847},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.753},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_branch_migration_rebase_work__7SWbAxj","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":715.132,"latency_breakdown":{"env_setup":5.831,"agent_setup":6.574,"agent_exec":603.767,"verifier":13.691},"taskName":"gel_branch_migration_rebase_workflow_cli","exec_duration":603.767}]},{"taskName":"gel_bulk_upsert_conflict_pipeline_py","instruction":"$5","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_bulk_upsert_conflict_pipelin__JK6GxcD","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":565.958,"latency_breakdown":{"env_setup":77.201,"agent_setup":6.211,"agent_exec":455.08,"verifier":10.841},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":455.08},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_bulk_upsert_conflict_pipelin__hjRfFG7","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":358.706,"latency_breakdown":{"env_setup":7.925,"agent_setup":6.152,"agent_exec":318.427,"verifier":11.072},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":318.427},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_bulk_upsert_conflict_pipelin__feaDBm6","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":644.381,"latency_breakdown":{"env_setup":6.827,"agent_setup":6.696,"agent_exec":603.78,"verifier":10.593},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":603.78},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_bulk_upsert_conflict_pipelin__yFS799W","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":690.357,"latency_breakdown":{"env_setup":6.103,"agent_setup":6.262,"agent_exec":560.55,"verifier":77.266},"taskName":"gel_bulk_upsert_conflict_pipeline_py","exec_duration":560.55}]},{"taskName":"gel_bulk_upsert_conflict_ts","instruction":"$6","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_bulk_upsert_conflict_ts__a9XpQWF","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":1202.295,"latency_breakdown":{"env_setup":76.554,"agent_setup":6.197,"agent_exec":1083.136,"verifier":19.58},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":1083.136},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_bulk_upsert_conflict_ts__EHRLnwY","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":690.065,"latency_breakdown":{"env_setup":5.844,"agent_setup":6.251,"agent_exec":645.308,"verifier":18.021},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":645.308},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_bulk_upsert_conflict_ts__NsyBi4Y","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":false,"latency_sec":2163.25,"latency_breakdown":{"env_setup":5.926,"agent_setup":6.197,"agent_exec":2116.219,"verifier":18.286},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":2116.219},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_bulk_upsert_conflict_ts__wUrKtSN","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":2384.322,"latency_breakdown":{"env_setup":78.986,"agent_setup":6.112,"agent_exec":2265.642,"verifier":18.045},"taskName":"gel_bulk_upsert_conflict_ts","exec_duration":2265.642}]},{"taskName":"gel_deletion_policies_referential_integrity","instruction":"$7","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_deletion_policies_referentia__wSEWTVQ","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":506.268,"latency_breakdown":{"env_setup":57.4,"agent_setup":8.898,"agent_exec":402.538,"verifier":15.629},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":402.538},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_deletion_policies_referentia__PSSuYbe","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":440.353,"latency_breakdown":{"env_setup":6.794,"agent_setup":9.354,"agent_exec":386.699,"verifier":15.891},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":386.699},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_deletion_policies_referentia__TsKAtb8","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":658.768,"latency_breakdown":{"env_setup":6.619,"agent_setup":8.731,"agent_exec":605.468,"verifier":15.778},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":605.468},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_deletion_policies_referentia__tLQkhwb","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":713.605,"latency_breakdown":{"env_setup":6.462,"agent_setup":8.638,"agent_exec":604.965,"verifier":17.514},"taskName":"gel_deletion_policies_referential_integrity","exec_duration":604.965}]},{"taskName":"gel_dump_restore_recovery_cli","instruction":"$8","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_dump_restore_recovery_cli__AtLacdk","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1053.696,"latency_breakdown":{"env_setup":155.016,"agent_setup":6.154,"agent_exec":376.946,"verifier":502.42},"taskName":"gel_dump_restore_recovery_cli","exec_duration":376.946},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_dump_restore_recovery_cli__mQUmAtc","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":705.073,"latency_breakdown":{"env_setup":8.64,"agent_setup":6.109,"agent_exec":614.126,"verifier":63.099},"taskName":"gel_dump_restore_recovery_cli","exec_duration":614.126},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_dump_restore_recovery_cli__tGyrwYT","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":2046.778,"latency_breakdown":{"env_setup":5.856,"agent_setup":5.962,"agent_exec":1469.005,"verifier":553.183},"taskName":"gel_dump_restore_recovery_cli","exec_duration":1469.005},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_dump_restore_recovery_cli__jj9NaDf","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":1671.084,"latency_breakdown":{"env_setup":5.772,"agent_setup":6.239,"agent_exec":1568.067,"verifier":45.595},"taskName":"gel_dump_restore_recovery_cli","exec_duration":1568.067}]},{"taskName":"gel_fts_search_ranking_cli","instruction":"$9","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_fts_search_ranking_cli__jNXnwnr","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":657.475,"latency_breakdown":{"env_setup":76.029,"agent_setup":6.83,"agent_exec":545.172,"verifier":14.427},"taskName":"gel_fts_search_ranking_cli","exec_duration":545.172},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_fts_search_ranking_cli__qQ3SYPn","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":584.29,"latency_breakdown":{"env_setup":6.087,"agent_setup":6.715,"agent_exec":543.063,"verifier":14.055},"taskName":"gel_fts_search_ranking_cli","exec_duration":543.063},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_fts_search_ranking_cli__H4x6A7N","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":641.123,"latency_breakdown":{"env_setup":6.07,"agent_setup":6.706,"agent_exec":604.048,"verifier":10.544},"taskName":"gel_fts_search_ranking_cli","exec_duration":604.048},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_fts_search_ranking_cli__nWQHUYo","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":705.85,"latency_breakdown":{"env_setup":5.893,"agent_setup":6.808,"agent_exec":604.033,"verifier":12.651},"taskName":"gel_fts_search_ranking_cli","exec_duration":604.033}]},{"taskName":"gel_fulltext_search_ranking_py","instruction":"$a","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_fulltext_search_ranking_py__AuhGRgG","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":705.185,"latency_breakdown":{"env_setup":57.647,"agent_setup":6.774,"agent_exec":604.001,"verifier":20.81},"taskName":"gel_fulltext_search_ranking_py","exec_duration":604.001},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_fulltext_search_ranking_py__UbKYbFL","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":513.77,"latency_breakdown":{"env_setup":6.423,"agent_setup":6.754,"agent_exec":470.178,"verifier":14.384},"taskName":"gel_fulltext_search_ranking_py","exec_duration":470.178},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_fulltext_search_ranking_py__FcVyT6N","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":648.577,"latency_breakdown":{"env_setup":7.849,"agent_setup":6.742,"agent_exec":604.094,"verifier":14.007},"taskName":"gel_fulltext_search_ranking_py","exec_duration":604.094},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_fulltext_search_ranking_py__KYFovQB","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":726.29,"latency_breakdown":{"env_setup":9.035,"agent_setup":6.743,"agent_exec":603.967,"verifier":21.866},"taskName":"gel_fulltext_search_ranking_py","exec_duration":603.967}]},{"taskName":"gel_multimodule_functions_aliases_library","instruction":"$b","trials":[{"job_name":"2026-08-05__14-49-33","trial_name":"gel_multimodule_functions_aliase__USrYqoH","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":609.52,"latency_breakdown":{"env_setup":47.147,"agent_setup":6.159,"agent_exec":530.38,"verifier":12.065},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":530.38},{"job_name":"2026-08-05__15-19-35","trial_name":"gel_multimodule_functions_aliase__V6GFt24","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":496.952,"latency_breakdown":{"env_setup":5.97,"agent_setup":6.146,"agent_exec":459.08,"verifier":11.649},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":459.08},{"job_name":"2026-08-05__16-04-52","trial_name":"gel_multimodule_functions_aliase__4UiPBnV","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":645.461,"latency_breakdown":{"env_setup":5.842,"agent_setup":6.078,"agent_exec":604.146,"verifier":14.797},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":604.146},{"job_name":"2026-08-05__16-35-27","trial_name":"gel_multimodule_functions_aliase__LqHXoug","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":713.935,"latency_breakdown":{"env_setup":5.852,"agent_setup":6.237,"agent_exec":603.736,"verifier":11.517},"taskName":"gel_multimodule_functions_aliases_library","exec_duration":603.736}]},{"taskName":"gel_query_builder_codegen_ts","instruction":"$c","trials":[{"job_name":"2026-08-06__01-01-45","trial_name":"gel_query_builder_codegen_ts__F3WSMJ9","model":"gemini-3.5-flash","rawModel":"google/gemini-3.5-flash","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":false,"latency_sec":633.92,"latency_breakdown":{"env_setup":114.336,"agent_setup":6.868,"agent_exec":456.621,"verifier":30.306},"taskName":"gel_query_builder_codegen_ts","exec_duration":456.621},{"job_name":"2026-08-06__01-22-04","trial_name":"gel_query_builder_codegen_ts__GGbeHbC","model":"claude-5-sonnet","rawModel":"anthropic/claude-5-sonnet","agent":"Agents.pochi:Pochi","passed":true,"reward":1,"error":true,"latency_sec":664.985,"latency_breakdown":{"env_setup":6.982,"agent_setup":6.642,"agent_exec":604.062,"verifier":29.93},"taskName":"gel_query_builder_codegen_ts","exec_duration":604.062},{"job_name":"2026-08-06__01-34-06","trial_name":"gel_query_builder_codegen_ts__7UnH8yk","model":"deepseek-4-pro","rawModel":"deepseek/deepseek-4-pro","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":664.705,"latency_breakdown":{"env_setup":6.043,"agent_setup":6.666,"agent_exec":603.867,"verifier":29.896},"taskName":"gel_query_builder_codegen_ts","exec_duration":603.867},{"job_name":"2026-08-06__02-10-21","trial_name":"gel_query_builder_codegen_ts__zGJ9wfy","model":"glm-5.2","rawModel":"zai/glm-5.2","agent":"Agents.pochi:Pochi","passed":false,"reward":0,"error":true,"latency_sec":703.321,"latency_breakdown":{"env_setup":5.893,"agent_setup":6.662,"agent_exec":604.026,"verifier":51.878},"taskName":"gel_query_builder_codegen_ts","exec_duration":604.026}]}]}]}]]}],["$Ld","$Le"],"$Lf"]}],"loading":null,"isPartial":false}
+d:["$","script","script-0",{"src":"/gel-benchmark/_next/static/chunks/ad9522f885dbe9ec.js","async":true}]
+e:["$","script","script-1",{"src":"/gel-benchmark/_next/static/chunks/2ee232ed1e88c469.js","async":true}]
+f:["$","$L10",null,{"children":["$","$2",null,{"name":"Next.MetadataOutlet","children":"$@11"}]}]
+11:null
