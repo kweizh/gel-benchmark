@@ -1,0 +1,372 @@
+- Initializing MCP connections...
+You
+# Gel — Set-Operator Reconciliation CLI (EdgeQL through the `gel` command line only) ## Background `/home/user/reconcile` holds a **Gel 6** project used by a stock-audit team. Its schema (`dbschema/default.gel`, `module default`) already declares four object types, a first migration has already been created and applied, and the local Gel instance is already seeded with audit data: * `Warehouse` — `required code: str` (exclusive), `required region: str` * `Sku` — `required code: str` (exclusive), `required label: str` * `ShelfCount` — one physical count line: `required warehouse: Warehouse`, `required sku: Sku`, `required quantity: int64`, `required tag: str` * `LedgerLine` — one book-keeping line: the same four fields Nothing guarantees that a `(warehouse, sku)` pair appears at most once in `ShelfCount` (or in `LedgerLine`): re-counts, split pallets and correction lines all produce extra rows. Auditors need a reconciliation tool that answers *set-shaped* questions about this data — what was counted but never booked, what was booked but never counted, what overlaps, what is duplicated, and where a single answer is guaranteed versus where it is not. Build that tool. ## Requirements ### 1. Schema computeds Extend `module default` in `dbschema/default.gel` with the computed pointers listed below, then create and apply a new migration with the Gel CLI. When you are done, `dbschema/migrations/` must contain at least two migration files and the instance's migration state must be in sync with `dbschema/`. Each computed **must be declared with exactly the modifier keywords shown** (they are asserted through `schema::ObjectType` introspection, i.e. the resulting pointer's `cardinality` and `required` values), and each must be a real computed pointer (non-empty `expr`). On `Warehouse`: | pointer | declared modifiers | meaning | | ------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- | | `shelf_units` | `required single` (`std::int64`) | sum of `quantity` over every `ShelfCount` row whose `warehouse` is this warehouse; `0` when there are none | | `ledger_units` | `required single` (`std::int64`) | same, over `LedgerLine` rows | | `counted_skus` | `multi` (link to `default::Sku`) | the distinct `Sku` objects that have at least one `ShelfCount` row in this warehouse | | `ledger_skus` | `multi` (link to `default::Sku`) | the distinct `Sku` objects that have at least one `LedgerLine` row in this warehouse | | `unreconciled_skus` | `multi` (link to `default::Sku`) | the distinct symmetric difference of `counted_skus` and `ledger_skus` | | `is_balanced` | `required single` (`std::bool`) | `true` if and only if `unreconciled_skus` is empty **and** `shelf_units` equals `ledger_units` | On `Sku`: | pointer | declared modifiers | meaning | | ---------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | | `sole_warehouse` | `single`, not required (link to `default::Warehouse`) | the one `Warehouse` in which this SKU has `ShelfCount` rows, **only** when that warehouse is unique; the empty set when the SKU has shelf counts in zero warehouses or in two or more warehouses. Reading this pointer must never raise an error for any SKU in the database. | ### 2. Reconciliation CLI Create the executable entrypoint `/home/user/reconcile/reconcile.sh`. It is always invoked as ``` bash /home/user/reconcile/reconcile.sh <report> [flags] ``` and must behave identically no matter which directory it is invoked from. Every EdgeQL statement it runs must live in a `.edgeql` file inside `/home/user/reconcile/queries/` (that directory must exist and hold at least four non-empty `.edgeql` files when you are finished) and must be executed against the live database through the `gel` command-line client on every invocation — results are read fresh each time and must never be cached, snapshotted or hard-coded, because the database contents change between invocations. On success the command writes **exactly one JSON document to stdout and nothing else**, and exits `0`. Every integer field is a JSON number, every boolean field is a JSON boolean. Whitespace/indentation of the JSON is free. All arrays of code strings contain **distinct** values sorted in ascending byte-order of the string, unless stated otherwise. #### `balance` ```json { "report": "balance", "warehouses": [ { "code": "<warehouse code>", "shelf_units": 0, "ledger_units": 0, "counted_skus": ["<sku code>"], "ledger_skus": ["<sku code>"], "both": ["<sku code>"], "shelf_only": ["<sku code>"], "ledger_only": ["<sku code>"], "all_skus": ["<sku code>"], "unreconciled_skus": ["<sku code>"], "is_balanced": true } ] } ``` One entry per `Warehouse` in the database, ordered by `code` ascending. `counted_skus`, `ledger_skus`, `unreconciled_skus`, `shelf_units`, `ledger_units` and `is_balanced` are the SKU codes / values of the schema computeds of section 1. `both` is the intersection of `counted_skus` and `ledger_skus`; `shelf_only` is `counted_skus` minus `ledger_skus`; `ledger_only` is `ledger_skus` minus `counted_skus`; `all_skus` is their union. Empty arrays where nothing matches. #### `sku <CODE>` and `sku <CODE> --strict` ```json { "report": "sku", "code": "<CODE as given on the command line>", "exists": true, "sole_warehouse": "<warehouse code>", "shelf_warehouses": ["<warehouse code>"], "shelf_units": 0, "ledger_units": 0 } ``` * `exists` — whether a `Sku` with that `code` exists. * `sole_warehouse` — the code of the `Sku.sole_warehouse` computed, or JSON `null` when it is empty. * `shelf_warehouses` — codes of the distinct warehouses in which the SKU has `ShelfCount` rows. * `shelf_units` / `ledger_units` — the SKU's total `quantity` across **all** warehouses in `ShelfCount` and in `LedgerLine` respectively; `0` when there are no rows. * When the SKU code is unknown, and `--strict` was **not** passed: exit `0` and report `"exists": false`, `"sole_warehouse": null`, `"shelf_warehouses": []`, `"shelf_units": 0`, `"ledger_units": 0`. * When the SKU code is unknown and `--strict` **was** passed: print nothing on stdout, write a line containing `error: sku not found: <CODE>` to stderr, and exit with status `3`. * When the SKU code is known, `--strict` changes nothing: same JSON, exit `0`. #### `duplicates` and `duplicates --assert` ```json { "report": "duplicates", "clean": false, "pairs": [ {"warehouse": "<warehouse code>", "sku": "<sku code>", "rows": 2, "quantities": [1, 2]} ] } ``` `pairs` lists every `(warehouse, sku)` combination having **more than one** `ShelfCount` row, ordered by `warehouse` ascending then `sku` ascending. `rows` is how many `ShelfCount` rows that combination has; `quantities` lists those rows' `quantity` values sorted ascending (duplicated values are kept, so `quantities` always has exactly `rows` elements). `clean` is `true` exactly when `pairs` is empty. With `--assert`, if at least one such combination exists the command must print nothing on stdout, write a line containing `error: duplicate shelf counts` to stderr and exit with status `4`; if there are none it prints the same JSON as without the flag and exits `0`. #### `matrix` and `matrix --sku <CODE>` ```json { "report": "matrix", "cells": [ {"warehouse": "<warehouse code>", "sku": "<sku code>", "shelf": 0, "ledger": 0, "delta": 0} ], "total_delta": 0 } ``` `cells` covers the **full cross product** of every `Warehouse` with every `Sku` in the database — including combinations that have no `ShelfCount` and no `LedgerLine` row at all, which report `"shelf": 0, "ledger": 0, "delta": 0`. `shelf` is the sum of `ShelfCount.quantity` for that exact `(warehouse, sku)` pair, `ledger` the same for `LedgerLine`, and `delta` is `shelf - ledger`. Cells are ordered by `warehouse` ascending then `sku` ascending. `total_delta` is the sum of `delta` over the emitted cells. With `--sku <CODE>` only the cells for that one SKU are emitted (still one per warehouse, still ordered by warehouse); if the code matches no `Sku`, `cells` is `[]` and `total_delta` is `0`, exit `0`. #### Argument errors * An unrecognised report name: nothing on stdout, a line containing `error: unknown report: <name>` on stderr, exit status `2`. * `sku` invoked with no code argument: nothing on stdout, a line containing `error: missing sku code` on stderr, exit status `2`. ## Implementation Hints * Project path: `/home/user/reconcile` (contains `gel.toml`, `dbschema/default.gel` and `dbschema/migrations/`). Do not move or rename it. * Command: `bash /home/user/reconcile/reconcile.sh <report> [flags]`, with the exact reports, flags, JSON keys, ordering, exit statuses and stderr markers specified above. * The local Gel server is started with `gel-ctl start` (idempotent; it returns only once the server accepts connections) and its status can be checked with `gel-ctl status`. Connection settings are already exported as `GEL_*` environment variables, so plain `gel ...` commands connect to the seeded instance without extra connection flags. Run `gel-ctl start` before using the CLI. * **Runtime restriction:** the solution must consist only of shell scripts and EdgeQL. No Python, Node/TypeScript, Ruby or Perl program may be added: after your work, searching `/home/user/reconcile` for files named `*.py`, `*.js`, `*.mjs`, `*.cjs`, `*.ts`, `*.rb` or `*.pl` must return nothing, and `reconcile.sh` must not invoke `python`, `python3`, `node`, `deno`, `bun`, `ruby` or `perl`. Shell utilities available in the image (including `jq`) are allowed. * The database is mutated between invocations by the auditors' harness (rows and even whole warehouses and SKUs are added and removed); every report must reflect the database state at the moment it runs. * Seed rows carry `tag` values that have no meaning for any report; never filter on `tag`.   
+
+Pochi
+💫 Executing gel-ctl start; gel-ctl status ✔ 
+📂 Listing files in /home/user/reconcile recursively ✔ 
+📖 Reading /home/user/reconcile/dbschema/default.gel ✔ 
+📖 Reading /home/user/reconcile/dbschema/migrations/00001-m1vlbzc.edgeql ✔ 
+📖 Reading /home/user/reconcile/gel.toml ✔ 
+💭 Thinking for 2678 characters   
+🔎 Searching the web for EdgeQL SDL computed property explicit cardinality "required single" example schema .gel ✔ 
+💭 Thinking for 297 characters   
+🔎 Searching the web for EdgeQL "except" "intersect" set operators object sets Gel documentation ✔ 
+💭 Thinking for 859 characters   
+🔧 Applying diff to /home/user/reconcile/dbschema/default.gel ✔ 
+Now let's create and apply the migration.   
+💫 Executing cd /home/user/reconcile && gel migration create --non-interactive 2>&1 | tail -80 ✔ 
+💭 Thinking for 771 characters   
+🔧 Applying diff to /home/user/reconcile/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/reconcile && gel migration create --non-interactive 2>&1 | tail -100 ✔ 
+💭 Thinking for 234 characters   
+📖 Reading /home/user/reconcile/dbschema/default.gel ✔ 
+💭 Thinking for 940 characters   
+💫 Executing cd /home/user/reconcile && cp dbschema/default.gel /tmp/default.gel.bak ✔ 
+🔧 Applying diff to /home/user/reconcile/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/reconcile && gel migration create --non-interactive 2>&1 | tail -100 ✔ 
+💫 Executing cd /home/user/reconcile && ls dbschema/migrations && gel migration create --non-interactive; echo EXIT=$? ✔ 
+It created migration 00002. Let's check its content, then re-add the Sku computed and diagnose separately.   
+📖 Reading /home/user/reconcile/dbschema/migrations/00002-m1x6ope.edgeql ✔ 
+Warehouse computeds work fine. Now let's migrate and add the Sku computed separately to isolate the issue.   
+💫 Executing cd /home/user/reconcile && gel migrate 2>&1 | tail -50 ✔ 
+Now let's add the sole_warehouse computed back and try creating migration in isolation.   
+🔧 Applying diff to /home/user/reconcile/dbschema/default.gel ✖ "Search content does not match the file content. Try to reread the file for the latest content."
+📖 Reading /home/user/reconcile/dbschema/default.gel ✔ 
+🔧 Applying diff to /home/user/reconcile/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/reconcile && gel migration create --non-interactive 2>&1 | tail -100 ✔ 
+💭 Thinking for 886 characters   
+🔧 Applying diff to /home/user/reconcile/dbschema/default.gel ✔ 
+💫 Executing cd /home/user/reconcile && gel migration create --non-interactive 2>&1 | tail -100 ✔ 
+That worked. Let's check the migration file and apply it.   
+💫 Executing cd /home/user/reconcile && ls dbschema/migrations && cat dbschema/migrations/00003*.edgeql 2>/dev/null; gel migrate 2>&1 | tail -50 ✔ 
+Migrations applied successfully. Now let's test the computeds against the seeded data.   
+💫 Executing cd /home/user/reconcile && gel query "select Warehouse { code, shelf_units, ledger_units, counted_skus: {code}, ledger_skus: {code}, unreconciled_skus: {code}, is_balanced } order by .code;" 2>&1 | head -100 ✔ 
+Computeds work correctly. Now test `sole_warehouse`:   
+💫 Executing cd /home/user/reconcile && gel query "select Sku { code, sole_warehouse: {code} } order by .code;" 2>&1 ✔ 
+Now let's verify introspection asserts for cardinality/required match spec exactly.   
+💫 Executing cd /home/user/reconcile && gel query "
+select schema::ObjectType {name, pointers: {name, cardinality, required, expr} filter .name in {'shelf_units','ledger_units','counted_skus','ledger_skus','unreconciled_skus','is_balanced','sole_warehouse'}}
+filter .name in {'default::Warehouse','default::Sku'};
+" 2>&1 ✔ 
+All match the spec exactly (cardinality One+required=true for shelf_units/ledger_units/is_balanced, Many+required=false for the multi links, One+required=false for sole_warehouse). Now let's explore the data more to build the CLI queries.   
+💫 Executing cd /home/user/reconcile && gel query "select count(Warehouse); select count(Sku); select count(ShelfCount); select count(LedgerLine);" 2>&1 ✔ 
+💫 Executing cd /home/user/reconcile && for q in "select count(Warehouse)" "select count(Sku)" "select count(ShelfCount)" "select count(LedgerLine)"; do echo "$q =>"; gel query "$q"; done ✔ 
+💭 Thinking for 259 characters   
+💫 Executing gel query --help 2>&1; echo ---; gel --help 2>&1 | head -50 ✔ 
+💭 Thinking for 267 characters   
+💫 Executing cd /home/user/reconcile && gel query "select {a:=1,b:=[1,2,3]};" -F json; echo "---"; gel query "select {a:=1,b:=[1,2,3]};" -F json-pretty ✔ 
+💫 Executing cd /home/user/reconcile && gel query "select {1,2,3};" -F json-pretty; echo "---multi"; gel query "select Warehouse{code} order by .code;" -F json-pretty ✔ 
+💭 Thinking for 1445 characters   
+💫 Executing gel query --help-connect 2>&1 | head -5; gel query -h 2>&1 ✔ 
+💫 Executing gel --help-connect 2>&1 | head -60 ✔ 
+💭 Thinking for 2821 characters   
+💫 Executing cd /home/user/reconcile && gel query "select 'a\\'b';" 2>&1 ✔ 
+💭 Thinking for 810 characters   
+💫 Executing cd /home/user/reconcile && gel query "with s := (select Sku filter .code = 'NOPE') select {code:='NOPE', exists := exists s, sole_warehouse := s.sole_warehouse.code, shelf_units := sum(s.<sku[is ShelfCount].quantity)};" -F json 2>&1 ✖ "Command exited with code 1"
+💫 Executing cd /home/user/reconcile && gel query "with s := (select Sku filter .code = 'NOPE') select {code:='NOPE', \`exists\` := exists s, sole_warehouse := s.sole_warehouse.code, shelf_units := sum(s.<sku[is ShelfCount].quantity)};" -F json 2>&1
+echo ---
+gel query "with s := (select Sku filter .code = 'SKU-001') select {code:='SKU-001', \`exists\` := exists s, sole_warehouse := s.sole_warehouse.code, shelf_units := sum(s.<sku[is ShelfCount].quantity)};" -F json 2>&1 ✔ 
+Confirmed: missing optional single serializes as `null`, and `exists` needs backticks. Now let's build shelf_warehouses array and full sku query.   
+💫 Executing cd /home/user/reconcile && gel query "with s := (select Sku filter .code = 'SKU-001') select {shelf_warehouses := array_agg((select distinct s.<sku[is ShelfCount].warehouse order by .code).code)};" -F json 2>&1 ✔ 
+That works well. Now let's build the balance query and test it.   
+💫 Executing cd /home/user/reconcile && cat > /tmp/balance_test.edgeql << 'EOF'
+select {
+  report := "balance",
+  warehouses := array_agg((
+    select Warehouse {
+      code,
+      shelf_units,
+      ledger_units,
+      counted_skus := (select .counted_skus.code order by .counted_skus.code),
+      ledger_skus := (select .ledger_skus.code order by .ledger_skus.code),
+      both := (with x := (.counted_skus intersect .ledger_skus) select x.code order by x.code),
+      shelf_only := (with x := (.counted_skus except .ledger_skus) select x.code order by x.code),
+      ledger_only := (with x := (.ledger_skus except .counted_skus) select x.code order by x.code),
+      all_skus := (with x := distinct (.counted_skus union .ledger_skus) select x.code order by x.code),
+      unreconciled_skus := (select .unreconciled_skus.code order by .unreconciled_skus.code),
+      is_balanced,
+    }
+    order by .code
+  )),
+};
+EOF
+gel query -f /tmp/balance_test.edgeql -F json 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 283 characters   
+💫 Executing cat > /tmp/balance_test.edgeql << 'EOF'
+select {
+  report := "balance",
+  warehouses := array_agg((
+    select Warehouse {
+      code,
+      shelf_units,
+      ledger_units,
+      counted_skus := (with cs := .counted_skus select cs.code order by cs.code),
+      ledger_skus := (with ls := .ledger_skus select ls.code order by ls.code),
+      both := (with x := (.counted_skus intersect .ledger_skus) select x.code order by x.code),
+      shelf_only := (with x := (.counted_skus except .ledger_skus) select x.code order by x.code),
+      ledger_only := (with x := (.ledger_skus except .counted_skus) select x.code order by x.code),
+      all_skus := (with x := distinct (.counted_skus union .ledger_skus) select x.code order by x.code),
+      unreconciled_skus := (with u := .unreconciled_skus select u.code order by u.code),
+      is_balanced,
+    }
+    order by .code
+  )),
+};
+EOF
+cd /home/user/reconcile && gel query -f /tmp/balance_test.edgeql -F json 2>&1 ✖ "Command exited with code 1"
+💭 Thinking for 303 characters   
+💫 Executing cat > /tmp/balance_test.edgeql << 'EOF'
+select {
+  report := "balance",
+  warehouses := array_agg((
+    select Warehouse {
+      code,
+      shelf_units,
+      ledger_units,
+      counted_codes := (with cs := .counted_skus select cs.code order by cs.code),
+      ledger_codes := (with ls := .ledger_skus select ls.code order by ls.code),
+      both_codes := (with x := (.counted_skus intersect .ledger_skus) select x.code order by x.code),
+      shelf_only_codes := (with x := (.counted_skus except .ledger_skus) select x.code order by x.code),
+      ledger_only_codes := (with x := (.ledger_skus except .counted_skus) select x.code order by x.code),
+      all_codes := (with x := distinct (.counted_skus union .ledger_skus) select x.code order by x.code),
+      unreconciled_codes := (with u := .unreconciled_skus select u.code order by u.code),
+      is_balanced,
+    }
+    order by .code
+  )),
+};
+EOF
+cd /home/user/reconcile && gel query -f /tmp/balance_test.edgeql -F json 2>&1 ✔ 
+This works perfectly. Now let's build the duplicates query.   
+💫 Executing cat > /tmp/dup_test.edgeql << 'EOF'
+with pairs := (
+  group ShelfCount by .warehouse, .sku
+)
+select {
+  report := "duplicates",
+  pairs := array_agg((
+    select pairs {
+      warehouse := .key.warehouse.code,
+      sku := .key.sku.code,
+      rows := count(.elements),
+      quantities := array_agg((select .elements.quantity order by .elements.quantity)),
+    }
+    filter count(.elements) > 1
+    order by .key.warehouse.code then .key.sku.code
+  )),
+};
+EOF
+cd /home/user/reconcile && gel query -f /tmp/dup_test.edgeql -F json 2>&1 ✖ "Command exited with code 1"
+💫 Executing cat > /tmp/dup_test.edgeql << 'EOF'
+with pairs := (
+  group ShelfCount by .warehouse, .sku
+)
+select {
+  report := "duplicates",
+  pairs := array_agg((
+    select pairs {
+      warehouse := .key.warehouse.code,
+      sku := .key.sku.code,
+      rows := count(.elements),
+      quantities := (with q := .elements select array_agg(q.quantity order by q.quantity)),
+    }
+    filter count(.elements) > 1
+    order by .key.warehouse.code then .key.sku.code
+  )),
+};
+EOF
+cd /home/user/reconcile && gel query -f /tmp/dup_test.edgeql -F json 2>&1 ✔ 
+Now the matrix query.   
+💫 Executing cat > /tmp/matrix_test.edgeql << 'EOF'
+with pairs := (
+  for w in (select Warehouse) union (
+    for s in (select Sku filter true) union (
+      select {
+        warehouse := w.code,
+        sku := s.code,
+        shelf := sum((select ShelfCount filter .warehouse = w and .sku = s).quantity),
+        ledger := sum((select LedgerLine filter .warehouse = w and .sku = s).quantity),
+        delta := sum((select ShelfCount filter .warehouse = w and .sku = s).quantity) - sum((select LedgerLine filter .warehouse = w and .sku = s).quantity),
+      }
+    )
+  )
+)
+select {
+  report := "matrix",
+  cells := array_agg((select pairs order by .warehouse then .sku)),
+  total_delta := sum(pairs.delta),
+};
+EOF
+cd /home/user/reconcile && time gel query -f /tmp/matrix_test.edgeql -F json 2>&1 ✔ 
+💭 Thinking for 334 characters   
+💫 Executing cat > /tmp/matrix_test2.edgeql << 'EOF'
+with pairs := (
+  for w in (select Warehouse) union (
+    for s in (select Sku) union (
+      select {
+        warehouse := w.code,
+        sku := s.code,
+        shelf := sum((select ShelfCount filter .warehouse.id = w.id and .sku.id = s.id).quantity),
+        ledger := sum((select LedgerLine filter .warehouse.id = w.id and .sku.id = s.id).quantity),
+      }
+    )
+  )
+)
+select pairs limit 3;
+EOF
+cd /home/user/reconcile && gel query -f /tmp/matrix_test2.edgeql -F json 2>&1 ✔ 
+💫 Executing cat > /tmp/matrix_test3.edgeql << 'EOF'
+with pairs := (
+  for w in (select Warehouse) union (
+    select {
+      warehouse := w.code,
+    }
+  )
+)
+select pairs;
+EOF
+cd /home/user/reconcile && gel query -f /tmp/matrix_test3.edgeql -F json 2>&1 ✔ 
+💫 Executing cat > /tmp/matrix_test4.edgeql << 'EOF'
+select (
+  for w in (select Warehouse) union (
+    select {
+      warehouse := w.code,
+    }
+  )
+);
+EOF
+cd /home/user/reconcile && gel query -f /tmp/matrix_test4.edgeql -F json 2>&1 ✔ 
+💭 Thinking for 358 characters   
+💫 Executing cat > /tmp/matrix_test5.edgeql << 'EOF'
+with pairs := (
+  for w in (select Warehouse) union (
+    select {
+      warehouse := w.code,
+    }
+  )
+)
+select pairs {warehouse};
+EOF
+cd /home/user/reconcile && gel query -f /tmp/matrix_test5.edgeql -F json 2>&1 ✔ 
+Explicit shape works. Let's rebuild the full matrix query with explicit shapes everywhere.   
+💫 Executing cat > /tmp/matrix_test6.edgeql << 'EOF'
+with pairs := (
+  for w in (select Warehouse) union (
+    for s in (select Sku filter true) union (
+      select {
+        warehouse := w.code,
+        sku := s.code,
+        shelf := sum((select ShelfCount filter .warehouse = w and .sku = s).quantity),
+        ledger := sum((select LedgerLine filter .warehouse = w and .sku = s).quantity),
+        delta := sum((select ShelfCount filter .warehouse = w and .sku = s).quantity) - sum((select LedgerLine filter .warehouse = w and .sku = s).quantity),
+      }
+    )
+  )
+)
+select {
+  report := "matrix",
+  cells := array_agg((select pairs {warehouse, sku, shelf, ledger, delta} order by .warehouse then .sku)),
+  total_delta := sum((select pairs {delta}).delta),
+};
+EOF
+cd /home/user/reconcile && time gel query -f /tmp/matrix_test6.edgeql -F json 2>&1 ✔ 
+💭 Thinking for 9 characters   
+💫 Executing cd /home/user/reconcile && gel query -f /tmp/matrix_test6.edgeql -F json 2>/tmp/err.txt 1>/tmp/out.txt; echo "STDOUT:"; cat /tmp/out.txt; echo "STDERR:"; cat /tmp/err.txt | head -5 ✔ 
+💭 Thinking for 390 characters   
+💫 Executing cd /home/user/reconcile && gel query -f /tmp/matrix_test6.edgeql -F json >/tmp/out.txt 2>/tmp/err.txt; echo "EXIT=$?"; wc -l /tmp/err.txt ✔ 
+💭 Thinking for 3948 characters   
+💫 Executing mkdir -p /home/user/reconcile/queries ✔ 
+✏️  Writing /home/user/reconcile/queries/balance.edgeql ✔ 
+✏️  Writing /home/user/reconcile/queries/sku.edgeql ✔ 
+✏️  Writing /home/user/reconcile/queries/duplicates.edgeql ✔ 
+✏️  Writing /home/user/reconcile/queries/matrix.edgeql ✔ 
+Now let's test the sku query with an unknown code to verify array_agg on empty gives `[]`.   
+💫 Executing cd /home/user/reconcile && sed "s/__CODE__/NOPE/g" queries/sku.edgeql > /tmp/sku_nope.edgeql && gel query -f /tmp/sku_nope.edgeql -F json 2>&1
+echo ---
+sed "s/__CODE__/SKU-001/g" queries/sku.edgeql > /tmp/sku_1.edgeql && gel query -f /tmp/sku_1.edgeql -F json 2>&1 ✔ 
+Both work correctly. Now let's test the duplicates query.   
+💫 Executing cd /home/user/reconcile && gel query -f queries/duplicates.edgeql -F json 2>&1 ✔ 
+All queries work. Now let's write the reconcile.sh script.   
+✏️  Writing /home/user/reconcile/reconcile.sh ✔ 
+💭 Thinking for 672 characters   
+🔧 Applying diff to /home/user/reconcile/reconcile.sh ✔ 
+🔧 Applying diff to /home/user/reconcile/reconcile.sh ✔ 
+💭 Thinking for 348 characters   
+Now let's test the script end-to-end.   
+💫 Executing chmod +x /home/user/reconcile/reconcile.sh
+cd /tmp && bash /home/user/reconcile/reconcile.sh balance; echo "EXIT=$?" ✔ 
+Excellent. Now let's test sku, duplicates, and matrix reports.   
+💫 Executing cd /tmp
+echo "-- sku known --"; bash /home/user/reconcile/reconcile.sh sku SKU-001; echo "EXIT=$?"
+echo "-- sku unknown no strict --"; bash /home/user/reconcile/reconcile.sh sku NOPE; echo "EXIT=$?"
+echo "-- sku unknown strict --"; bash /home/user/reconcile/reconcile.sh sku NOPE --strict; echo "EXIT=$?"
+echo "-- sku known strict --"; bash /home/user/reconcile/reconcile.sh sku SKU-005 --strict; echo "EXIT=$?"
+echo "-- sku missing code --"; bash /home/user/reconcile/reconcile.sh sku; echo "EXIT=$?" ✔ 
+All working correctly. Now let's test duplicates and matrix.   
+💫 Executing cd /tmp
+echo "-- duplicates --"; bash /home/user/reconcile/reconcile.sh duplicates; echo "EXIT=$?"
+echo "-- duplicates assert --"; bash /home/user/reconcile/reconcile.sh duplicates --assert; echo "EXIT=$?"
+echo "-- matrix --"; bash /home/user/reconcile/reconcile.sh matrix | head -c 500; echo; echo "EXIT=$?"
+echo "-- matrix --sku SKU-005 --"; bash /home/user/reconcile/reconcile.sh matrix --sku SKU-005; echo "EXIT=$?"
+echo "-- matrix --sku NOPE --"; bash /home/user/reconcile/reconcile.sh matrix --sku NOPE; echo "EXIT=$?"
+echo "-- unknown report --"; bash /home/user/reconcile/reconcile.sh foo; echo "EXIT=$?" ✔ 
+All reports work as expected. Let's verify stdout is truly empty for error cases (checking stdout/stderr separately).   
+💫 Executing cd /tmp
+bash /home/user/reconcile/reconcile.sh duplicates --assert >/tmp/o1 2>/tmp/e1; echo "exit=$? stdout=[$(cat /tmp/o1)] stderr=[$(cat /tmp/e1)]"
+bash /home/user/reconcile/reconcile.sh sku NOPE --strict >/tmp/o2 2>/tmp/e2; echo "exit=$? stdout=[$(cat /tmp/o2)] stderr=[$(cat /tmp/e2)]"
+bash /home/user/reconcile/reconcile.sh foo >/tmp/o3 2>/tmp/e3; echo "exit=$? stdout=[$(cat /tmp/o3)] stderr=[$(cat /tmp/e3)]"
+bash /home/user/reconcile/reconcile.sh sku >/tmp/o4 2>/tmp/e4; echo "exit=$? stdout=[$(cat /tmp/o4)] stderr=[$(cat /tmp/e4)]" ✔ 
+All error cases behave exactly per spec. Let's also verify JSON validity of each report's output and check every field type explicitly.   
+💫 Executing cd /tmp
+for r in balance duplicates; do
+  echo "=== $r ==="
+  bash /home/user/reconcile/reconcile.sh $r | jq . > /dev/null && echo "valid json"
+done
+bash /home/user/reconcile/reconcile.sh matrix | jq . > /dev/null && echo "matrix valid json"
+bash /home/user/reconcile/reconcile.sh sku SKU-001 | jq . > /dev/null && echo "sku valid json"
+# test running from different directory
+cd /home/user/reconcile && bash reconcile.sh balance | jq -r '.report'
+cd / && bash /home/user/reconcile/reconcile.sh balance | jq -r '.report' ✔ 
+Works correctly from any directory. Now let's double check the `sort ascending byte-order` requirement — EdgeQL's default string ordering should match byte-order for ASCII codes like `SKU-001`. Let's verify with a broader check and also confirm distinctness (in case of duplicate sku codes across pairs in `all_skus`/`both` etc., already handled via `distinct`).   
+💫 Executing cd /home/user/reconcile && gel query "select {a:={'b','A','a','B'}};" -F json 2>&1 ✔ 
+💫 Executing cd /home/user/reconcile && gel query "select (with x:={'b','A','a','B','SKU-01','SKU-1','sku-01'} select x order by x);" -F json 2>&1 ✔ 
+💭 Thinking for 308 characters   
+💫 Executing cd /home/user/reconcile && find . -regex '.*\.\(py\|js\|mjs\|cjs\|ts\|rb\|pl\)$'; echo "---"; grep -nE '\b(python3?|node|deno|bun|ruby|perl)\b' reconcile.sh; echo "grep exit=$?" ✔ 
+No forbidden files or interpreter calls. Now let's double check migration state is in sync and check the final schema file content.   
+💫 Executing cd /home/user/reconcile && gel migration status 2>&1; echo "---"; ls dbschema/migrations ✔ 
+Migration state is in sync with three migration files (≥2 required). Let's view the final schema file for a sanity check.   
+📖 Reading /home/user/reconcile/dbschema/default.gel ✔ 
+💭 Thinking for 8 characters   
+💫 Executing cd /home/user/reconcile && gel query "insert Warehouse {code := 'W-TEST', region := 'test-region'};" 2>&1
+bash reconcile.sh balance | jq -r '.warehouses[].code'
+gel query "delete Warehouse filter .code = 'W-TEST';" 2>&1
+bash reconcile.sh balance | jq -r '.warehouses[].code' ✔ 
+Live database reads confirmed — no caching, data reflects mutations immediately. Let's do a final review of the reconcile.sh script and clean up the backup file.   
+💫 Executing rm -f /tmp/default.gel.bak; cat /home/user/reconcile/reconcile.sh ✔ 
+💭 Thinking for 397 characters   
+💫 Executing bash /home/user/reconcile/reconcile.sh >/tmp/o5 2>/tmp/e5; echo "exit=$? out=[$(cat /tmp/o5)] err=[$(cat /tmp/e5)]" ✔ 
+This is a reasonable edge case (not specified). Let's run a final comprehensive check of all requirements including checking for trailing test with duplicate quantities sorted and quote-escaping in sku codes.   
+💫 Executing cd /home/user/reconcile && gel query "insert Sku {code := q'{O'Brien}', label := 'test label'};" 2>&1
+bash reconcile.sh sku "O'Brien"
+gel query "delete Sku filter .code = q'{O'Brien}';" 2>&1 ✖ "Command exited with code 1"
+💫 Executing cd /home/user/reconcile && gel query "insert Sku {code := 'O\\'Brien', label := 'test label'};" 2>&1
+bash reconcile.sh sku "O'Brien"
+gel query "delete Sku filter .code = 'O\\'Brien';" 2>&1 ✔ 
+Quote-escaping works correctly for both existing and non-existing codes with special characters. The database is cleaned back to its original state. All requirements have been verified.   
+🎉 Task Completed
+Implemented the full solution in `/home/user/reconcile`:
+
+**1. Schema (`dbschema/default.gel`)** — added all required computeds to `Warehouse` (`shelf_units`, `ledger_units`, `counted_skus`, `ledger_skus`, `unreconciled_skus`, `is_balanced`) and `Sku` (`sole_warehouse`, built with `assert_single` + an `if/else` expression so it never raises, even under two migrations. Verified via `schema::ObjectType` introspection that cardinality/`required` values match the spec exactly. Two new migrations (`00002`, `00003`) were created and applied with `gel migration create`/`gel migrate`; `gel migration status` confirms the DB is in sync.
+
+**2. Queries (`queries/*.edgeql`)** — four non-empty EdgeQL files (`balance.edgeql`, `sku.edgeql`, `duplicates.edgeql`, `matrix.edgeql`), each a real, parameterless-or-templated EdgeQL statement that reads live data (set intersect/except/union, `group by`, cross-product `for`-loops, `array_agg`/`order by` for deterministic sorted output).
+
+**3. CLI (`reconcile.sh`)** — a pure bash script (no Python/Node/Ruby/Perl) that:
+- Resolves its own directory so it works from any cwd.
+- Starts the Gel server idempotently, then always shells out to the live `gel query -F json` for fresh data (no caching).
+- Implements `balance`, `sku <CODE> [--strict]`, `duplicates [--assert]`, `matrix [--sku <CODE>]` with exact JSON shapes, key ordering rules (ascending byte-order via EdgeQL `order by`), and exit codes (`0`/`2`/`3`/`4`) plus the required stderr error markers, verified empty-stdout-on-error.
+- Safely embeds user-supplied codes into EdgeQL string literals via backslash-escaping (tested with an embedded `'`).
+
+All behaviors were manually verified against the live seeded database: correct JSON for every report, correct handling of unknown SKUs (with/without `--strict`), duplicate detection (with/without `--assert`), the sku-filtered/full cross-product matrix, live-mutation reflection (inserted/deleted a warehouse and a quote-containing SKU and confirmed results updated instantly), and confirmed no forbidden runtime files or interpreter invocations exist in the project.
+   
+  

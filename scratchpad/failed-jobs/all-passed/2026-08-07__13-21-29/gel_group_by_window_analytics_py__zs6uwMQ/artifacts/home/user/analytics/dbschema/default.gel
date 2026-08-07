@@ -1,0 +1,40 @@
+module default {
+  type Category {
+    required name: str {
+      constraint exclusive;
+    }
+    required region: str;
+  }
+
+  type Refund {
+    required external_id: str {
+      constraint exclusive;
+    }
+    required sale: Sale;
+    required amount_cents: int64 {
+      constraint min_value(1);
+    }
+    required refunded_at: datetime;
+  }
+
+  type Sale {
+    required order_ref: str {
+      constraint exclusive;
+    }
+    required occurred_at: datetime;
+    required amount_cents: int64;
+    required units: int64;
+    required channel: str;
+    required category: Category;
+
+    index on ((.channel, .occurred_at));
+
+    property refund_count: int64 {
+      using (count(.<sale[IS Refund]));
+    }
+
+    property net_cents: int64 {
+      using (.amount_cents - sum(.<sale[IS Refund].amount_cents));
+    }
+  }
+}

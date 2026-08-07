@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_sql_protocol_adapter_psycopg_py",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_sql_protocol_adapter_psycopg__dVdQLxG",
+    "trials_dir": "jobs/2026-08-07__13-07-29",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "anthropic/claude-5-sonnet",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "997f3b1f-bdb6-4d27-afff-aec26e7ee58e"
+}

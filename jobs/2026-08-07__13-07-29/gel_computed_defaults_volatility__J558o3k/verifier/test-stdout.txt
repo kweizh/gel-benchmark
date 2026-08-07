@@ -1,0 +1,632 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 31 items
+
+../tests/test_final_state.py FF.EFFFFFFFFFEEEEEEEEEEEEEEEEEE             [100%]
+
+==================================== ERRORS ====================================
+____________ ERROR at setup of test_build_report_is_async_callable _____________
+
+    @pytest.fixture(scope="session")
+    def semantics_module():
+>       assert os.path.isfile(SEMANTICS_PATH), f"{SEMANTICS_PATH} does not exist."
+E       AssertionError: /home/user/gelproj/semantics.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x74b4584a0220>('/home/user/gelproj/semantics.py')
+E        +    where <function isfile at 0x74b4584a0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:201: AssertionError
+_________ ERROR at setup of test_report_introspection_matches_database _________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_________ ERROR at setup of test_report_link_properties_match_database _________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+___________________ ERROR at setup of test_seeded_row_counts ___________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_____________ ERROR at setup of test_sample_labels_and_updated_row _____________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_________________ ERROR at setup of test_report_samples_array __________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+__________ ERROR at setup of test_computed_values_match_direct_query ___________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+____________ ERROR at setup of test_batch_and_link_property_values _____________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_________________ ERROR at setup of test_report_defaults_block _________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_________ ERROR at setup of test_defaults_captured_once_per_statement __________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+______ ERROR at setup of test_computed_pointers_react_to_new_measurements ______
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_______ ERROR at setup of test_computed_key_follows_its_source_property ________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_________________ ERROR at setup of test_report_computed_block _________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+_________ ERROR at setup of test_read_time_age_invariant_from_database _________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+________________ ERROR at setup of test_report_volatility_block ________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+____ ERROR at setup of test_volatile_expressions_are_refused_by_the_server _____
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+________________ ERROR at setup of test_probes_left_no_residue _________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+________ ERROR at setup of test_program_is_rerunnable_and_deterministic ________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    @pytest.fixture(scope="session")
+    def report(client):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "main.py"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=900,
+            env=os.environ.copy(),
+        )
+>       assert proc.returncode == 0, (
+            "`python3 main.py` did not exit with status 0: "
+            f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+        )
+E       AssertionError: `python3 main.py` did not exit with status 0: stdout='' stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n"
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'main.py'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/gelproj/main.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:186: AssertionError
+___ ERROR at setup of test_build_report_coroutine_returns_the_same_document ____
+
+    @pytest.fixture(scope="session")
+    def semantics_module():
+>       assert os.path.isfile(SEMANTICS_PATH), f"{SEMANTICS_PATH} does not exist."
+E       AssertionError: /home/user/gelproj/semantics.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x74b4584a0220>('/home/user/gelproj/semantics.py')
+E        +    where <function isfile at 0x74b4584a0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:201: AssertionError
+=================================== FAILURES ===================================
+__________________________ test_solution_files_exist ___________________________
+
+    def test_solution_files_exist():
+>       assert os.path.isfile(MAIN_PATH), f"{MAIN_PATH} does not exist."
+E       AssertionError: /home/user/gelproj/main.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x74b4584a0220>('/home/user/gelproj/main.py')
+E        +    where <function isfile at 0x74b4584a0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:225: AssertionError
+____________________ test_schema_and_migration_files_exist _____________________
+
+    def test_schema_and_migration_files_exist():
+        schema_files = glob.glob(os.path.join(SCHEMA_DIR, "*.gel"))
+        assert schema_files, f"No *.gel schema file found under {SCHEMA_DIR}."
+        migrations = glob.glob(os.path.join(MIGRATIONS_DIR, "*.edgeql"))
+>       assert migrations, (
+            f"No *.edgeql migration file found under {MIGRATIONS_DIR}; a migration "
+            "history on disk is mandatory."
+        )
+E       AssertionError: No *.edgeql migration file found under /home/user/gelproj/dbschema/migrations; a migration history on disk is mandatory.
+E       assert []
+
+/tests/test_final_state.py:233: AssertionError
+________________ test_declared_object_types_are_exactly_the_six ________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    def test_declared_object_types_are_exactly_the_six(client):
+        rows = _json(
+            client,
+            "select schema::ObjectType { name } filter .name like 'default::%' order by .name",
+        )
+        names = sorted(row["name"] for row in rows)
+        expected = sorted(f"default::{n}" for n in SHORT_TYPES)
+>       assert names == expected, (
+            f"Module `default` must contain exactly {expected}, found {names}."
+        )
+E       AssertionError: Module `default` must contain exactly ['default::Assay', 'default::Batch', 'default::Calibration', 'default::Certificate', 'default::Measurement', 'default::Sample'], found [].
+E       assert [] == ['default::As...ault::Sample']
+E         
+E         Right contains 6 more items, first extra item: 'default::Assay'
+E         Use -v to get more diff
+
+/tests/test_final_state.py:281: AssertionError
+__________________ test_pointer_contract_in_database[Sample] ___________________
+
+db_introspection = {}, short_name = 'Sample'
+
+    @pytest.mark.parametrize("short_name", SHORT_TYPES)
+    def test_pointer_contract_in_database(db_introspection, short_name):
+        full_name = f"default::{short_name}"
+>       assert full_name in db_introspection, f"Object type {full_name} does not exist."
+E       AssertionError: Object type default::Sample does not exist.
+E       assert 'default::Sample' in {}
+
+/tests/test_final_state.py:289: AssertionError
+________________ test_pointer_contract_in_database[Measurement] ________________
+
+db_introspection = {}, short_name = 'Measurement'
+
+    @pytest.mark.parametrize("short_name", SHORT_TYPES)
+    def test_pointer_contract_in_database(db_introspection, short_name):
+        full_name = f"default::{short_name}"
+>       assert full_name in db_introspection, f"Object type {full_name} does not exist."
+E       AssertionError: Object type default::Measurement does not exist.
+E       assert 'default::Measurement' in {}
+
+/tests/test_final_state.py:289: AssertionError
+___________________ test_pointer_contract_in_database[Assay] ___________________
+
+db_introspection = {}, short_name = 'Assay'
+
+    @pytest.mark.parametrize("short_name", SHORT_TYPES)
+    def test_pointer_contract_in_database(db_introspection, short_name):
+        full_name = f"default::{short_name}"
+>       assert full_name in db_introspection, f"Object type {full_name} does not exist."
+E       AssertionError: Object type default::Assay does not exist.
+E       assert 'default::Assay' in {}
+
+/tests/test_final_state.py:289: AssertionError
+________________ test_pointer_contract_in_database[Calibration] ________________
+
+db_introspection = {}, short_name = 'Calibration'
+
+    @pytest.mark.parametrize("short_name", SHORT_TYPES)
+    def test_pointer_contract_in_database(db_introspection, short_name):
+        full_name = f"default::{short_name}"
+>       assert full_name in db_introspection, f"Object type {full_name} does not exist."
+E       AssertionError: Object type default::Calibration does not exist.
+E       assert 'default::Calibration' in {}
+
+/tests/test_final_state.py:289: AssertionError
+________________ test_pointer_contract_in_database[Certificate] ________________
+
+db_introspection = {}, short_name = 'Certificate'
+
+    @pytest.mark.parametrize("short_name", SHORT_TYPES)
+    def test_pointer_contract_in_database(db_introspection, short_name):
+        full_name = f"default::{short_name}"
+>       assert full_name in db_introspection, f"Object type {full_name} does not exist."
+E       AssertionError: Object type default::Certificate does not exist.
+E       assert 'default::Certificate' in {}
+
+/tests/test_final_state.py:289: AssertionError
+___________________ test_pointer_contract_in_database[Batch] ___________________
+
+db_introspection = {}, short_name = 'Batch'
+
+    @pytest.mark.parametrize("short_name", SHORT_TYPES)
+    def test_pointer_contract_in_database(db_introspection, short_name):
+        full_name = f"default::{short_name}"
+>       assert full_name in db_introspection, f"Object type {full_name} does not exist."
+E       AssertionError: Object type default::Batch does not exist.
+E       assert 'default::Batch' in {}
+
+/tests/test_final_state.py:289: AssertionError
+___________ test_stored_defaults_are_declared_readonly_with_defaults ___________
+
+db_introspection = {}
+
+    def test_stored_defaults_are_declared_readonly_with_defaults(db_introspection):
+>       pointers = {p["name"]: p for p in db_introspection["default::Sample"]["pointers"]}
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'default::Sample'
+
+/tests/test_final_state.py:318: KeyError
+_______________________ test_link_property_introspection _______________________
+
+client = <gel.blocking_client.Client object at 0x74b457444790>
+
+    def test_link_property_introspection(client):
+        rows = _json(client, LINK_PROPS_QUERY)
+>       assert rows, "Object type default::Batch was not found."
+E       AssertionError: Object type default::Batch was not found.
+E       assert []
+
+/tests/test_final_state.py:330: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+ERROR ../tests/test_final_state.py::test_build_report_is_async_callable - Ass...
+ERROR ../tests/test_final_state.py::test_report_introspection_matches_database
+ERROR ../tests/test_final_state.py::test_report_link_properties_match_database
+ERROR ../tests/test_final_state.py::test_seeded_row_counts - AssertionError: ...
+ERROR ../tests/test_final_state.py::test_sample_labels_and_updated_row - Asse...
+ERROR ../tests/test_final_state.py::test_report_samples_array - AssertionErro...
+ERROR ../tests/test_final_state.py::test_computed_values_match_direct_query
+ERROR ../tests/test_final_state.py::test_batch_and_link_property_values - Ass...
+ERROR ../tests/test_final_state.py::test_report_defaults_block - AssertionErr...
+ERROR ../tests/test_final_state.py::test_defaults_captured_once_per_statement
+ERROR ../tests/test_final_state.py::test_computed_pointers_react_to_new_measurements
+ERROR ../tests/test_final_state.py::test_computed_key_follows_its_source_property
+ERROR ../tests/test_final_state.py::test_report_computed_block - AssertionErr...
+ERROR ../tests/test_final_state.py::test_read_time_age_invariant_from_database
+ERROR ../tests/test_final_state.py::test_report_volatility_block - AssertionE...
+ERROR ../tests/test_final_state.py::test_volatile_expressions_are_refused_by_the_server
+ERROR ../tests/test_final_state.py::test_probes_left_no_residue - AssertionEr...
+ERROR ../tests/test_final_state.py::test_program_is_rerunnable_and_deterministic
+ERROR ../tests/test_final_state.py::test_build_report_coroutine_returns_the_same_document
+FAILED ../tests/test_final_state.py::test_solution_files_exist - AssertionErr...
+FAILED ../tests/test_final_state.py::test_schema_and_migration_files_exist - ...
+FAILED ../tests/test_final_state.py::test_declared_object_types_are_exactly_the_six
+FAILED ../tests/test_final_state.py::test_pointer_contract_in_database[Sample]
+FAILED ../tests/test_final_state.py::test_pointer_contract_in_database[Measurement]
+FAILED ../tests/test_final_state.py::test_pointer_contract_in_database[Assay]
+FAILED ../tests/test_final_state.py::test_pointer_contract_in_database[Calibration]
+FAILED ../tests/test_final_state.py::test_pointer_contract_in_database[Certificate]
+FAILED ../tests/test_final_state.py::test_pointer_contract_in_database[Batch]
+FAILED ../tests/test_final_state.py::test_stored_defaults_are_declared_readonly_with_defaults
+FAILED ../tests/test_final_state.py::test_link_property_introspection - Asser...
+=================== 11 failed, 1 passed, 19 errors in 38.42s ===================

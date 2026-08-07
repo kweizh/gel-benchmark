@@ -1,0 +1,47 @@
+# Gel: stored defaults vs. read-time computeds vs. volatility
+
+## Background
+
+A local **Gel 6.11** server, the `gel` CLI and the Gel **Python** client are already installed in this container. An empty Gel project skeleton is waiting for you.
+
+A lab data team keeps mixing up three different things that all *look* like "the value is filled in for me": a stored `default` captured once when a row is inserted, a pointer whose value is derived every time it is read, and expressions whose volatility class decides where Gel will even accept them. You must build a schema plus a Python program that makes those differences *observable and machine-checkable*.
+
+## Requirements
+
+Model this schema in module `default` and migrate it (a migration history on disk is mandatory; the branch must end up in sync):
+
+- `Sample` — non-computed pointers `label` (`str`, required, single, exclusive), `grams` (`float64`, required, single), `intake_ref` (`uuid`, required, single, read-only, filled in by a stored default that yields a *different* value for every row even inside one statement), `intake_at` (`datetime`, required, single, read-only, filled in by a stored default that yields the *same* value for every row created by one statement).
+- `Sample` also exposes these derived-at-read-time pointers, all of which must be reported by schema introspection as computed: `label_key` (required, single, `std::str`, the lower-cased `label`), `age` (required, single, `std::duration`, how long ago the row was taken in, measured from the start of the reading statement), `assay_count` (required, single, `std::int64`), `measurement_count` (required, single, `std::int64`), `total_value` (required, single, `std::float64`, the sum of the values of its assays), `measurements` (single=false/`Many`, target type exactly `default::Measurement`), `assays` (`Many`, target exactly `default::Assay`), `batches` (`Many`, target exactly `default::Batch`), and `certificate` (cardinality `One`, not required, target exactly `default::Certificate`).
+- `Measurement` — **abstract**, with `code` (`str`, required, single) and `sample` (link to `Sample`, required, single).
+- `Assay` and `Calibration` — concrete types extending `Measurement`; `Assay` adds `value` (`float64`, required, single) and `Calibration` adds `bias` (`float64`, required, single).
+- `Certificate` — `serial` (`str`, required, single, exclusive) and `sample` (link to `Sample`, required, single, exclusive).
+- `Batch` — `code` (`str`, required, single, exclusive), `samples` (link to `Sample`, `Many`) carrying a link property `position` (`int64`, single), and `sample_count` (computed, required, single, `std::int64`).
+
+Then ship a Python program that rebuilds a fixed dataset from scratch, observes the semantics above, and emits a JSON report.
+
+The dataset the program must materialise on every run (deleting any pre-existing objects of these types first, so the run is repeatable):
+
+- Four `Sample`s created by **one single EdgeQL statement**: `Alpha-01`/1.5, `Bravo-02`/2.25, `Charlie-03`/3.0, `Delta-04`/4.75 (`label`/`grams`).
+- One more `Sample` created by a **later, separate statement**: `Echo-05`/5.5.
+- `Assay`s (`code`, sample `label`, `value`): `A1`/`Alpha-01`/10.0, `A2`/`Alpha-01`/2.5, `A3`/`Bravo-02`/7.25.
+- `Calibration`s (`code`, sample `label`, `bias`): `C1`/`Alpha-01`/0.5, `C2`/`Charlie-03`/-1.25.
+- One `Certificate`: `serial` `CERT-ALPHA`, for `Alpha-01`.
+- One `Batch`: `code` `BATCH-1`, linked to `Alpha-01` (`position` 1), `Bravo-02` (`position` 2), `Charlie-03` (`position` 3).
+- Finally the sample originally labelled `Delta-04` is updated to `label` `Zulu-99` and `grams` 9.0.
+
+## Implementation Hints
+
+- Project path: `/home/user/gelproj`. The schema must live under `/home/user/gelproj/dbschema` and the migration files under `/home/user/gelproj/dbschema/migrations`.
+- The Gel server must be reachable before you touch the database: `/usr/local/bin/gel-start.sh` is idempotent, starts the local server if it is not up and blocks until it accepts connections. Connection settings are already exported in the environment (`GEL_HOST`, `GEL_PORT`, `GEL_USER`, `GEL_BRANCH`, `GEL_CLIENT_TLS_SECURITY`); do not change them, do not add credentials, and do not use any network service outside this container.
+- Command: `python3 main.py`, run from `/home/user/gelproj`. It must exit with status 0 and write the report to `/home/user/gelproj/report.json` (UTF-8 JSON object).
+- `/home/user/gelproj/semantics.py` must define `build_report` as an `async def` coroutine function taking no arguments and returning the report as a `dict`; it must talk to Gel through the asynchronous Gel Python client, and `main.py` must obtain the report from it. Importing `semantics` must not by itself touch the database.
+- The program must be fully rerunnable: two consecutive runs must leave the same database contents and produce **exactly equal** report documents. Therefore the report must not contain any wall-clock timestamp, duration, UUID, object id or any other value that varies between runs — only counts, booleans, and deterministically derived values.
+- Report shape (all keys mandatory, exact spelling):
+  - `introspection`: object keyed by the six short type names `Sample`, `Measurement`, `Assay`, `Calibration`, `Certificate`, `Batch`. Each value is `{"abstract": bool, "pointers": {<pointer name>: {"cardinality": "One"|"Many", "required": bool, "computed": bool, "target": "<fully qualified target type name>"}}}`. Include every pointer you declared for that type (inherited ones included) but exclude `id` and `__type__`. `computed` must be true exactly for pointers whose value comes from a schema expression.
+  - `link_properties`: `{"Batch.samples": {"position": {"cardinality": ..., "required": ..., "target": ...}}}`, i.e. the introspected metadata of the link property only (never `source`/`target`).
+  - `defaults`: `batch_insert_size` (int), `distinct_intake_at_in_batch` (int), `distinct_intake_ref_in_batch` (int) — all three describing the four samples created by the single statement; `intake_at_unchanged_after_update` and `intake_ref_unchanged_after_update` (bool) — whether the stored defaults of the re-labelled sample survived its update untouched; `late_intake_at_not_before_batch` (bool) — whether `Echo-05`'s intake instant is not earlier than the batch's; and `readonly_update_rejected`: `{"rejected": bool, "error_class": str, "error_message": str}` recording what happens when the program tries to assign a new value to `intake_at` of an existing sample (`error_class` is the client exception's class name, `error_message` its string form).
+  - `computed`: `label_key_before_update` and `label_key_after_update` (str) for the sample that gets re-labelled; `alpha_assay_count_before`, `alpha_measurement_count_before` (int) and `alpha_total_value_before` (float) read from `Alpha-01` while no measurement exists yet; `alpha_assay_count_after`, `alpha_measurement_count_after` (int) and `alpha_total_value_after` (float) read after the measurements exist — with no update ever applied to the `Sample` objects themselves in between; `age_non_negative` (bool); and `age_difference_matches_intake_difference` (bool), which must be computed by reading, **within one single statement**, the derived age of `Alpha-01` and of `Echo-05` and checking that the difference of those two ages is exactly equal to the difference of their two intake instants.
+  - `volatility`: `schema_computed_volatile` and `cartesian_volatile`, each `{"rejected": bool, "error_class": str, "error_message": str}`. The first records what the server answers when a *schema-level* computed pointer whose expression is volatile is submitted to it; the second records what it answers for a query that takes the cartesian product of a multi-element set with a volatile expression. Neither probe may leave any residue: after them the branch schema must still contain exactly the six declared object types and the migration history must still be in sync. Also report `schema_unchanged_after_probe` (bool).
+  - `samples`: array with one entry per `Sample`, ordered by `label` ascending, each `{"label": str, "label_key": str, "assay_count": int, "measurement_count": int, "total_value": float, "has_certificate": bool, "batch_codes": [str]}` with `batch_codes` sorted ascending.
+  - `batch`: `{"code": str, "sample_count": int, "members": [{"label": str, "position": int}]}` with `members` ordered by `position` ascending, `position` read from the link property.
+

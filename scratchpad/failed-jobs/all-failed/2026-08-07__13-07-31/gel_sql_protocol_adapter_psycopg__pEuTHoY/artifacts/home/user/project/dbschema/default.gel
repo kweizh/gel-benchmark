@@ -1,0 +1,39 @@
+module catalog {
+    abstract type Asset {
+        required title: str;
+        required slug: str {
+            constraint exclusive;
+        }
+    }
+
+    type Artist {
+        required handle: str {
+            constraint exclusive;
+        }
+        required name: str;
+        required country: str {
+            constraint expression on (re_test(r'^[A-Z]{2}$', __subject__));
+        }
+        multi aliases: str;
+    }
+
+    type Album extending Asset {
+        required year: int32;
+        label: str;
+        index on (.year);
+    }
+
+    type Track extending Asset {
+        required duration_ms: int64 {
+            constraint expression on (__subject__ >= 1);
+        }
+        required royalty_rate: decimal;
+        required album: Album;
+        multi tags: str;
+        multi link contributors: Artist {
+            property role: str;
+            property share_bp: int64;
+        }
+        property payout_micros := <int64>math::floor(<decimal>.duration_ms * .royalty_rate);
+    }
+}

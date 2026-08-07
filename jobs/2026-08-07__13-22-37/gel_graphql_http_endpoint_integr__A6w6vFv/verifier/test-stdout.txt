@@ -1,0 +1,556 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 37 items
+
+../tests/test_final_state.py ...........EEEEEEEEEEEEEEEEEEEEEEEEE.       [100%]
+
+==================================== ERRORS ====================================
+_____________________ ERROR at setup of test_endpoint_url ______________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+__________________ ERROR at setup of test_execute_happy_path ___________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+________________ ERROR at setup of test_execute_with_variables _________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_____________ ERROR at setup of test_execute_graphql_error_payload _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+___________ ERROR at setup of test_execute_non_json_transport_error ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_______________ ERROR at setup of test_list_services_unfiltered ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+______________ ERROR at setup of test_list_services_region_filter ______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_____________ ERROR at setup of test_list_services_min_tier_filter _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_______________ ERROR at setup of test_list_services_active_only _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+____________ ERROR at setup of test_list_services_combined_filters _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+______________ ERROR at setup of test_list_services_empty_result _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+__________ ERROR at setup of test_list_services_pagination_boundaries __________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_____ ERROR at setup of test_list_services_invalid_window_raises[kwargs0] ______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_____ ERROR at setup of test_list_services_invalid_window_raises[kwargs1] ______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_____ ERROR at setup of test_list_services_invalid_window_raises[kwargs2] ______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_____ ERROR at setup of test_list_services_invalid_window_raises[kwargs3] ______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_______ ERROR at setup of test_list_services_records_server_side_request _______
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+___________ ERROR at setup of test_list_services_reflects_live_data ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+______________________ ERROR at setup of test_fetch_teams ______________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_____________________ ERROR at setup of test_verify_parity _____________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+_______________ ERROR at setup of test_create_and_delete_service _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+____________ ERROR at setup of test_create_service_failure_is_clean ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+____________________ ERROR at setup of test_retire_service _____________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+________________ ERROR at setup of test_missing_service_errors _________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+___________ ERROR at setup of test_report_command_regenerates_report ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def gw(gel_server):
+        """Import the executor's gateway module from the project root."""
+>       assert os.path.isfile(
+            os.path.join(PROJECT_DIR, "gateway.py")
+        ), f"{PROJECT_DIR}/gateway.py does not exist."
+E       AssertionError: /home/user/gateway/gateway.py does not exist.
+E       assert False
+E        +  where False = <function isfile at 0x7d4e1daf0220>('/home/user/gateway/gateway.py')
+E        +    where <function isfile at 0x7d4e1daf0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/gateway/gateway.py' = <function join at 0x7d4e1daf0c20>('/home/user/gateway', 'gateway.py')
+E        +      where <function join at 0x7d4e1daf0c20> = <module 'posixpath' (frozen)>.join
+E        +        where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:127: AssertionError
+==================================== PASSES ====================================
+_______________________ test_migration_status_is_in_sync _______________________
+---------------------------- Captured stdout setup -----------------------------
+--- start-gel-server.sh stdout ---
+gel server ready on 127.0.0.1:5656
+
+--- start-gel-server.sh stderr ---
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_schema_file_exists
+PASSED ../tests/test_final_state.py::test_migration_file_created
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+PASSED ../tests/test_final_state.py::test_graphql_extension_enabled
+PASSED ../tests/test_final_state.py::test_active_service_alias_exists
+PASSED ../tests/test_final_state.py::test_team_type_shape
+PASSED ../tests/test_final_state.py::test_service_type_shape
+PASSED ../tests/test_final_state.py::test_seed_counts
+PASSED ../tests/test_final_state.py::test_seed_rows_exact
+PASSED ../tests/test_final_state.py::test_raw_http_alias_query
+PASSED ../tests/test_final_state.py::test_raw_http_team_computeds
+PASSED ../tests/test_final_state.py::test_no_schema_drift_at_end
+ERROR ../tests/test_final_state.py::test_endpoint_url - AssertionError: /home...
+ERROR ../tests/test_final_state.py::test_execute_happy_path - AssertionError:...
+ERROR ../tests/test_final_state.py::test_execute_with_variables - AssertionEr...
+ERROR ../tests/test_final_state.py::test_execute_graphql_error_payload - Asse...
+ERROR ../tests/test_final_state.py::test_execute_non_json_transport_error - A...
+ERROR ../tests/test_final_state.py::test_list_services_unfiltered - Assertion...
+ERROR ../tests/test_final_state.py::test_list_services_region_filter - Assert...
+ERROR ../tests/test_final_state.py::test_list_services_min_tier_filter - Asse...
+ERROR ../tests/test_final_state.py::test_list_services_active_only - Assertio...
+ERROR ../tests/test_final_state.py::test_list_services_combined_filters - Ass...
+ERROR ../tests/test_final_state.py::test_list_services_empty_result - Asserti...
+ERROR ../tests/test_final_state.py::test_list_services_pagination_boundaries
+ERROR ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs0]
+ERROR ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs1]
+ERROR ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs2]
+ERROR ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs3]
+ERROR ../tests/test_final_state.py::test_list_services_records_server_side_request
+ERROR ../tests/test_final_state.py::test_list_services_reflects_live_data - A...
+ERROR ../tests/test_final_state.py::test_fetch_teams - AssertionError: /home/...
+ERROR ../tests/test_final_state.py::test_verify_parity - AssertionError: /hom...
+ERROR ../tests/test_final_state.py::test_create_and_delete_service - Assertio...
+ERROR ../tests/test_final_state.py::test_create_service_failure_is_clean - As...
+ERROR ../tests/test_final_state.py::test_retire_service - AssertionError: /ho...
+ERROR ../tests/test_final_state.py::test_missing_service_errors - AssertionEr...
+ERROR ../tests/test_final_state.py::test_report_command_regenerates_report - ...
+======================== 12 passed, 25 errors in 8.66s =========================

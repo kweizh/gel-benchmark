@@ -1,0 +1,118 @@
+{
+    "id": "21776f65-b3e2-4fa6-8c3f-b3414f64cbfd",
+    "task_name": "gel_graphql_http_endpoint_integration_py",
+    "trial_name": "gel_graphql_http_endpoint_integr__CkMNxH3",
+    "trial_uri": "file:///home/kw/code/zealt/pochi-harbor/jobs/2026-08-07__13-07-31/gel_graphql_http_endpoint_integr__CkMNxH3",
+    "task_id": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_graphql_http_endpoint_integration_py"
+    },
+    "source": "pending-tasks",
+    "task_checksum": "ec41fdb5d4165a79843da0e9a8721e988926ab5203c84efaf25f12360e0a4ed4",
+    "config": {
+        "task": {
+            "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_graphql_http_endpoint_integration_py",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "pending-tasks"
+        },
+        "trial_name": "gel_graphql_http_endpoint_integr__CkMNxH3",
+        "trials_dir": "jobs/2026-08-07__13-07-31",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "agents.pochi:Pochi",
+            "import_path": null,
+            "model_name": "google/gemini-3.5-flash",
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "env": {
+                "POCHI_API_KEY": "${POCHI_API_KEY}"
+            },
+            "mcp_servers": []
+        },
+        "environment": {
+            "type": "daytona",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [
+            "/home/user"
+        ],
+        "extra_instruction_paths": [],
+        "job_id": "5c63ce15-ef0c-4a5e-aaed-9f164f072962"
+    },
+    "agent_info": {
+        "name": "pochi",
+        "version": "0.6.20",
+        "model_info": {
+            "name": "gemini-3.5-flash",
+            "provider": "google"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 0,
+        "n_cache_tokens": 0,
+        "n_output_tokens": 3398331,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-08-07T05:07:34.943664Z",
+    "finished_at": "2026-08-07T05:16:00.309019Z",
+    "environment_setup": {
+        "started_at": "2026-08-07T05:07:35.060006Z",
+        "finished_at": "2026-08-07T05:09:31.745868Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-08-07T05:09:31.745972Z",
+        "finished_at": "2026-08-07T05:09:37.969141Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-08-07T05:09:37.969301Z",
+        "finished_at": "2026-08-07T05:15:33.315450Z"
+    },
+    "verifier": {
+        "started_at": "2026-08-07T05:15:46.810841Z",
+        "finished_at": "2026-08-07T05:15:59.370700Z"
+    },
+    "step_results": null
+}

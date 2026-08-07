@@ -1,0 +1,362 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-07T05:17:23.398401+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 37,
+            "passed": 37,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1786079841054,
+            "stop": 1786079843398
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_schema_file_exists",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079841120,
+                "stop": 1786079841120,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_file_created",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079841120,
+                "stop": 1786079841121,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_is_in_sync",
+                "status": "passed",
+                "duration": 924,
+                "start": 1786079841121,
+                "stop": 1786079842045,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_graphql_extension_enabled",
+                "status": "passed",
+                "duration": 61,
+                "start": 1786079842045,
+                "stop": 1786079842106,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_active_service_alias_exists",
+                "status": "passed",
+                "duration": 13,
+                "start": 1786079842106,
+                "stop": 1786079842119,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_team_type_shape",
+                "status": "passed",
+                "duration": 172,
+                "start": 1786079842119,
+                "stop": 1786079842291,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_service_type_shape",
+                "status": "passed",
+                "duration": 105,
+                "start": 1786079842291,
+                "stop": 1786079842396,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seed_counts",
+                "status": "passed",
+                "duration": 4,
+                "start": 1786079842396,
+                "stop": 1786079842400,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seed_rows_exact",
+                "status": "passed",
+                "duration": 17,
+                "start": 1786079842400,
+                "stop": 1786079842417,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_raw_http_alias_query",
+                "status": "passed",
+                "duration": 55,
+                "start": 1786079842417,
+                "stop": 1786079842472,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_raw_http_team_computeds",
+                "status": "passed",
+                "duration": 63,
+                "start": 1786079842472,
+                "stop": 1786079842535,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_endpoint_url",
+                "status": "passed",
+                "duration": 7,
+                "start": 1786079842535,
+                "stop": 1786079842542,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_execute_happy_path",
+                "status": "passed",
+                "duration": 33,
+                "start": 1786079842542,
+                "stop": 1786079842575,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_execute_with_variables",
+                "status": "passed",
+                "duration": 46,
+                "start": 1786079842575,
+                "stop": 1786079842621,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_execute_graphql_error_payload",
+                "status": "passed",
+                "duration": 57,
+                "start": 1786079842622,
+                "stop": 1786079842679,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_execute_non_json_transport_error",
+                "status": "passed",
+                "duration": 5,
+                "start": 1786079842679,
+                "stop": 1786079842684,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_unfiltered",
+                "status": "passed",
+                "duration": 3,
+                "start": 1786079842684,
+                "stop": 1786079842687,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_region_filter",
+                "status": "passed",
+                "duration": 55,
+                "start": 1786079842687,
+                "stop": 1786079842742,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_min_tier_filter",
+                "status": "passed",
+                "duration": 53,
+                "start": 1786079842743,
+                "stop": 1786079842796,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_active_only",
+                "status": "passed",
+                "duration": 54,
+                "start": 1786079842796,
+                "stop": 1786079842850,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_combined_filters",
+                "status": "passed",
+                "duration": 4,
+                "start": 1786079842850,
+                "stop": 1786079842854,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_empty_result",
+                "status": "passed",
+                "duration": 3,
+                "start": 1786079842854,
+                "stop": 1786079842857,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_pagination_boundaries",
+                "status": "passed",
+                "duration": 118,
+                "start": 1786079842857,
+                "stop": 1786079842975,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_invalid_window_raises",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079842975,
+                "stop": 1786079842976,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_invalid_window_raises",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079842977,
+                "stop": 1786079842977,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_invalid_window_raises",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079842978,
+                "stop": 1786079842978,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_invalid_window_raises",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079842979,
+                "stop": 1786079842979,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_records_server_side_request",
+                "status": "passed",
+                "duration": 103,
+                "start": 1786079842980,
+                "stop": 1786079843083,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_list_services_reflects_live_data",
+                "status": "passed",
+                "duration": 46,
+                "start": 1786079843084,
+                "stop": 1786079843130,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_fetch_teams",
+                "status": "passed",
+                "duration": 3,
+                "start": 1786079843130,
+                "stop": 1786079843133,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_verify_parity",
+                "status": "passed",
+                "duration": 40,
+                "start": 1786079843133,
+                "stop": 1786079843173,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_create_and_delete_service",
+                "status": "passed",
+                "duration": 17,
+                "start": 1786079843173,
+                "stop": 1786079843190,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_create_service_failure_is_clean",
+                "status": "passed",
+                "duration": 7,
+                "start": 1786079843190,
+                "stop": 1786079843197,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_retire_service",
+                "status": "passed",
+                "duration": 23,
+                "start": 1786079843197,
+                "stop": 1786079843220,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_missing_service_errors",
+                "status": "passed",
+                "duration": 6,
+                "start": 1786079843221,
+                "stop": 1786079843227,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_command_regenerates_report",
+                "status": "passed",
+                "duration": 167,
+                "start": 1786079843227,
+                "stop": 1786079843394,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_no_schema_drift_at_end",
+                "status": "passed",
+                "duration": 3,
+                "start": 1786079843394,
+                "stop": 1786079843397,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

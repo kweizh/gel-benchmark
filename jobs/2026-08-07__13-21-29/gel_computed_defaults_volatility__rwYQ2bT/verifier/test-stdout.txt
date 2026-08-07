@@ -1,0 +1,85 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 31 items
+
+../tests/test_final_state.py ...................F...........             [100%]
+
+=================================== FAILURES ===================================
+_____________________ test_batch_and_link_property_values ______________________
+
+client = <gel.blocking_client.Client object at 0x7d5e77f93150>
+report = {'introspection': {'Assay': {'abstract': False, 'pointers': {'code': {'cardinality': 'One', 'required': True, 'compute...4', 'label_key_after_update': 'zulu-99', 'alpha_assay_count_before': 0, 'alpha_measurement_count_before': 0, ...}, ...}
+
+    def test_batch_and_link_property_values(client, report):
+        batch = _single(
+            client,
+            """
+            select assert_single(Batch {
+                code,
+                sample_count,
+                members := (select .samples { label, position := @position } order by @position)
+            })
+            """,
+        )
+        assert batch["code"] == "BATCH-1", f"Batch code should be BATCH-1, got {batch['code']}."
+        assert batch["sample_count"] == 3, (
+            f"Batch.sample_count should be 3, got {batch['sample_count']}."
+        )
+        members = [(m["label"], m["position"]) for m in batch["members"]]
+        assert members == [("Alpha-01", 1), ("Bravo-02", 2), ("Charlie-03", 3)], (
+            f"Batch members/positions queried from the database are {members}."
+        )
+        reported = report.get("batch")
+        assert isinstance(reported, dict), "report['batch'] must be an object."
+        assert reported.get("code") == "BATCH-1", "report['batch']['code'] should be BATCH-1."
+        assert reported.get("sample_count") == 3, "report['batch']['sample_count'] should be 3."
+        reported_members = [
+            (m.get("label"), m.get("position")) for m in reported.get("members", [])
+        ]
+>       assert reported_members == members, (
+            f"report['batch']['members'] is {reported_members}, expected {members} "
+            "ordered by position ascending."
+        )
+E       AssertionError: report['batch']['members'] is [('Alpha-01', None), ('Bravo-02', None), ('Charlie-03', None)], expected [('Alpha-01', 1), ('Bravo-02', 2), ('Charlie-03', 3)] ordered by position ascending.
+E       assert [('Alpha-01',...ie-03', None)] == [('Alpha-01',...arlie-03', 3)]
+E         
+E         At index 0 diff: ('Alpha-01', None) != ('Alpha-01', 1)
+E         Use -v to get more diff
+
+/tests/test_final_state.py:532: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_solution_files_exist
+PASSED ../tests/test_final_state.py::test_schema_and_migration_files_exist
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+PASSED ../tests/test_final_state.py::test_build_report_is_async_callable
+PASSED ../tests/test_final_state.py::test_declared_object_types_are_exactly_the_six
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Sample]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Measurement]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Assay]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Calibration]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Certificate]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Batch]
+PASSED ../tests/test_final_state.py::test_stored_defaults_are_declared_readonly_with_defaults
+PASSED ../tests/test_final_state.py::test_link_property_introspection
+PASSED ../tests/test_final_state.py::test_report_introspection_matches_database
+PASSED ../tests/test_final_state.py::test_report_link_properties_match_database
+PASSED ../tests/test_final_state.py::test_seeded_row_counts
+PASSED ../tests/test_final_state.py::test_sample_labels_and_updated_row
+PASSED ../tests/test_final_state.py::test_report_samples_array
+PASSED ../tests/test_final_state.py::test_computed_values_match_direct_query
+PASSED ../tests/test_final_state.py::test_report_defaults_block
+PASSED ../tests/test_final_state.py::test_defaults_captured_once_per_statement
+PASSED ../tests/test_final_state.py::test_computed_pointers_react_to_new_measurements
+PASSED ../tests/test_final_state.py::test_computed_key_follows_its_source_property
+PASSED ../tests/test_final_state.py::test_report_computed_block
+PASSED ../tests/test_final_state.py::test_read_time_age_invariant_from_database
+PASSED ../tests/test_final_state.py::test_report_volatility_block
+PASSED ../tests/test_final_state.py::test_volatile_expressions_are_refused_by_the_server
+PASSED ../tests/test_final_state.py::test_probes_left_no_residue
+PASSED ../tests/test_final_state.py::test_program_is_rerunnable_and_deterministic
+PASSED ../tests/test_final_state.py::test_build_report_coroutine_returns_the_same_document
+FAILED ../tests/test_final_state.py::test_batch_and_link_property_values - As...
+======================== 1 failed, 30 passed in 42.38s =========================

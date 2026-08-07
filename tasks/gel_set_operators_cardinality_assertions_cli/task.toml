@@ -1,0 +1,25 @@
+version = "1.0"
+
+[metadata]
+tags = ["gel"]
+
+[environment]
+build_timeout_sec = 1800.0
+allow_internet = true
+memory_mb = 4096
+mcp_servers = []
+
+[environment.env]
+
+
+[agent]
+timeout_sec = 2400.0
+
+[verifier]
+timeout_sec = 1800.0
+
+[verifier.env]
+
+
+[solution.env]
+

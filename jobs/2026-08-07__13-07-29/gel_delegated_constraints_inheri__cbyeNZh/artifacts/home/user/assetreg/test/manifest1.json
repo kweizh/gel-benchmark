@@ -1,0 +1,138 @@
+{
+  "regions": ["EU_WEST", "US_EAST"],
+  "assets": [
+    {
+      "seq": 1,
+      "kind": "server",
+      "code": "ALPHA",
+      "serial": "SN-0001",
+      "region": "EU_WEST",
+      "slot": 1,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 1,
+      "tags": ["WEB"],
+      "hostname": "host-1"
+    },
+    {
+      "seq": 2,
+      "kind": "storage",
+      "code": "ALPHA",
+      "serial": "SN-0002",
+      "region": "EU_WEST",
+      "slot": 2,
+      "capacity": 20,
+      "reserved": 5,
+      "revision": 1,
+      "volume_gb": 500
+    },
+    {
+      "seq": 3,
+      "kind": "server",
+      "code": "ALPHA",
+      "serial": "SN-0003",
+      "region": "EU_WEST",
+      "slot": 3,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 1,
+      "hostname": "host-3"
+    },
+    {
+      "seq": 4,
+      "kind": "storage",
+      "code": "BETA",
+      "serial": "SN-0001",
+      "region": "US_EAST",
+      "slot": 1,
+      "capacity": 20,
+      "reserved": 2,
+      "revision": 1,
+      "volume_gb": 100
+    },
+    {
+      "seq": 5,
+      "kind": "server",
+      "code": "GAMMA",
+      "serial": "SN-0005",
+      "region": "EU_WEST",
+      "slot": 1,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 1,
+      "hostname": "host-5"
+    },
+    {
+      "seq": 6,
+      "kind": "storage",
+      "code": "DELTA",
+      "serial": "SN-0006",
+      "region": "EU_WEST",
+      "slot": 1,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 1,
+      "volume_gb": 10
+    },
+    {
+      "seq": 7,
+      "kind": "server",
+      "code": "EPSILON",
+      "serial": "SN-0007",
+      "region": "US_EAST",
+      "slot": 9,
+      "capacity": 10,
+      "reserved": 20,
+      "revision": 1,
+      "hostname": "host-7"
+    },
+    {
+      "seq": 8,
+      "kind": "server",
+      "code": "ZETA",
+      "serial": "SN-0008",
+      "region": "US_EAST",
+      "slot": 10,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 0,
+      "hostname": "host-8"
+    },
+    {
+      "seq": 9,
+      "kind": "server",
+      "code": "toolowercase",
+      "serial": "SN-0009",
+      "region": "US_EAST",
+      "slot": 11,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 1,
+      "hostname": "host-9"
+    },
+    {
+      "seq": 10,
+      "kind": "server",
+      "code": "ETA",
+      "serial": "SN-0010",
+      "region": "US_EAST",
+      "slot": 12,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 1,
+      "tags": ["waytoolongtag"],
+      "hostname": "host-10"
+    },
+    {
+      "seq": 11,
+      "kind": "server",
+      "code": "THETA",
+      "serial": "SN-0011",
+      "region": "US_EAST",
+      "slot": 13,
+      "capacity": 10,
+      "reserved": 2,
+      "revision": 1
+    }
+  ]
+}

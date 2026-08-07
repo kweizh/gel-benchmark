@@ -1,0 +1,313 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-07T05:15:51.082747+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 29,
+            "passed": 6,
+            "failed": 23,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1786079740451,
+            "stop": 1786079751082
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_schema_object_types_exist",
+                "status": "passed",
+                "duration": 4929,
+                "start": 1786079740505,
+                "stop": 1786079745434,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_schema_pointers_are_declared",
+                "status": "passed",
+                "duration": 309,
+                "start": 1786079745434,
+                "stop": 1786079745743,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_uniqueness_constraints_are_enforced",
+                "status": "passed",
+                "duration": 2357,
+                "start": 1786079745743,
+                "stop": 1786079748100,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_exist",
+                "status": "passed",
+                "duration": 2,
+                "start": 1786079748100,
+                "stop": 1786079748102,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_is_up_to_date",
+                "status": "passed",
+                "duration": 1155,
+                "start": 1786079748102,
+                "stop": 1786079749257,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_history_recorded_in_db",
+                "status": "passed",
+                "duration": 216,
+                "start": 1786079749258,
+                "stop": 1786079749474,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_batch_a_counts",
+                "status": "failed",
+                "duration": 1279,
+                "start": 1786079749474,
+                "stop": 1786079750753,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_a_products_payload",
+                "status": "failed",
+                "duration": 18,
+                "start": 1786079750754,
+                "stop": 1786079750772,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_a_totals",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079750772,
+                "stop": 1786079750784,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_a_persisted_state",
+                "status": "failed",
+                "duration": 11,
+                "start": 1786079750784,
+                "stop": 1786079750795,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_replay_is_rejected_as_stale",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079750795,
+                "stop": 1786079750807,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_revision_zero_is_invalid_payload",
+                "status": "failed",
+                "duration": 16,
+                "start": 1786079750807,
+                "stop": 1786079750823,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_b_counts",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079750823,
+                "stop": 1786079750835,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_b_products_payload",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079750835,
+                "stop": 1786079750847,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_b_totals",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079750847,
+                "stop": 1786079750859,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_b_persisted_state",
+                "status": "failed",
+                "duration": 11,
+                "start": 1786079750859,
+                "stop": 1786079750870,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_payload_rolls_everything_back",
+                "status": "failed",
+                "duration": 63,
+                "start": 1786079750870,
+                "stop": 1786079750933,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_malformed_payloads_are_rejected",
+                "status": "failed",
+                "duration": 15,
+                "start": 1786079750933,
+                "stop": 1786079750948,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_malformed_payloads_are_rejected",
+                "status": "failed",
+                "duration": 11,
+                "start": 1786079750948,
+                "stop": 1786079750959,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_malformed_payloads_are_rejected",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079750959,
+                "stop": 1786079750971,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_malformed_payloads_are_rejected",
+                "status": "failed",
+                "duration": 11,
+                "start": 1786079750971,
+                "stop": 1786079750982,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_malformed_payloads_are_rejected",
+                "status": "failed",
+                "duration": 11,
+                "start": 1786079750983,
+                "stop": 1786079750994,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_missing_input_file_is_io_error",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079750994,
+                "stop": 1786079751006,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_unparseable_input_is_io_error",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079751006,
+                "stop": 1786079751018,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_missing_input_flag_is_io_error",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079751018,
+                "stop": 1786079751030,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_d_counts_and_totals",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079751030,
+                "stop": 1786079751042,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_batch_d_persisted_state",
+                "status": "failed",
+                "duration": 12,
+                "start": 1786079751042,
+                "stop": 1786079751054,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_concurrent_sources_do_not_collide",
+                "status": "failed",
+                "duration": 16,
+                "start": 1786079751054,
+                "stop": 1786079751070,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            },
+            {
+                "name": "test_final_state.py::test_stdout_contains_only_json",
+                "status": "failed",
+                "duration": 11,
+                "start": 1786079751071,
+                "stop": 1786079751082,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "clean_catalog = True\n\n    @pytest.fixture(scope=\"session\")\n    def batch_a(clean_catalog):\n        path = write_payload(\"payload_a.json\", PAYLOAD_A)\n>       return ingest_ok(path, \"batch A\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:311: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput_path = '/tmp/verify/payload_a.json', context = 'batch A'\n\n    def ingest_ok(input_path, context: str):\n        proc = run_ingest(input_path)\n        body = parse_stdout(proc, context)\n>       assert proc.returncode == 0, (\n            f\"{context}: expected exit code 0, got {proc.returncode}. \"\n            f\"stdout={proc.stdout!r} stderr={proc.stderr[-2000:]!r}\"\n        )\nE       AssertionError: batch A: expected exit code 0, got 1. stdout='{\"ok\":false,\"error_code\":\"INVALID_PAYLOAD\",\"message\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n' stderr=''\nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['npx', 'tsx', 'src/ingest.ts', '--input', '/tmp/verify/payload_a.json'], returncode=1, stdout='...ssage\":\"Another query is in progress. Use the query methods on \\'Client\\' to run queries concurrently.\"}\\n', stderr='').returncode\n\n/tests/test_final_state.py:205: AssertionError"
+            }
+        ]
+    }
+}

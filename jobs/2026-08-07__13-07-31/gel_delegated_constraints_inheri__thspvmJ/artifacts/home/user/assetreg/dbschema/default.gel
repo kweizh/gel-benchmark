@@ -1,0 +1,79 @@
+module default {
+    abstract constraint token_rule(max: int64) {
+        using (
+            re_test(r'^[A-Z][A-Z0-9_]*$', __subject__) and
+            len(__subject__) <= max
+        );
+        errmessage := 'TOKEN_INVALID(max={max})';
+    }
+
+    type Region {
+        required key: str {
+            constraint exclusive {
+                errmessage := 'REGION_KEY_DUPLICATE';
+            }
+        }
+    }
+
+    abstract type Revisioned {
+        required revision: int64 {
+            constraint min_value(1) {
+                errmessage := 'REVISION_TOO_LOW';
+            }
+        }
+    }
+
+    abstract type Taggable {
+        multi tags: str {
+            constraint token_rule(12);
+        }
+    }
+
+    abstract type Asset extending Revisioned, Taggable {
+        required code: str {
+            constraint token_rule(16);
+            delegated constraint exclusive {
+                errmessage := 'CODE_DUPLICATE_IN_KIND';
+            }
+        }
+        required serial: str {
+            constraint exclusive {
+                errmessage := 'SERIAL_DUPLICATE_GLOBAL';
+            }
+        }
+        required region: Region;
+        required slot: int64;
+        required capacity: int64;
+        required reserved: int64;
+
+        delegated constraint exclusive on ((.region, .slot)) {
+            errmessage := 'SLOT_DUPLICATE_IN_KIND';
+        }
+
+        constraint expression on (.reserved <= .capacity) {
+            errmessage := 'CAPACITY_EXCEEDED';
+        }
+    }
+
+    type ServerAsset extending Asset {
+        required hostname: str;
+    }
+
+    type StorageAsset extending Asset {
+        required volume_gb: int64;
+    }
+
+    type Operator {
+        required name: str {
+            constraint exclusive {
+                errmessage := 'OPERATOR_NAME_DUPLICATE';
+            }
+        }
+        multi crew: Asset {
+            property role: str;
+            constraint exclusive on (@role) {
+                errmessage := 'ROLE_DUPLICATE_FOR_OPERATOR';
+            }
+        }
+    }
+}

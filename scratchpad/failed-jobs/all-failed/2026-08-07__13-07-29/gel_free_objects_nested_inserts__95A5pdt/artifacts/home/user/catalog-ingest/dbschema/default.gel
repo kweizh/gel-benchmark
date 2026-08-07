@@ -1,0 +1,41 @@
+module default {
+  type Vendor {
+    required code: str {
+      constraint exclusive;
+    }
+    required name: str;
+  }
+
+  type Tag {
+    required label: str {
+      constraint exclusive;
+    }
+  }
+
+  type Product {
+    required sku: str {
+      constraint exclusive;
+    }
+    required title: str;
+    required price_cents: int64;
+    required revision: int64;
+    required vendor: Vendor;
+    multi tags: Tag;
+  }
+
+  type Variant {
+    required product: Product;
+    required code: str;
+    required label: str;
+    required stock: int64;
+
+    constraint exclusive on ((.product, .code));
+  }
+
+  type SyncSource {
+    required code: str {
+      constraint exclusive;
+    }
+    required revision: int64;
+  }
+}

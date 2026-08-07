@@ -1,0 +1,362 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-07T05:42:38.963292+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 37,
+            "passed": 37,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1786081344705,
+            "stop": 1786081358963
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_entrypoint_exists",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786081344751,
+                "stop": 1786081344752,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_queries_directory_holds_edgeql_files",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786081344752,
+                "stop": 1786081344752,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_no_foreign_runtime_source_files_in_project",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786081344752,
+                "stop": 1786081344753,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_entrypoint_does_not_invoke_foreign_runtimes",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786081344753,
+                "stop": 1786081344753,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_migration_file_created",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786081344753,
+                "stop": 1786081344754,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_state_in_sync",
+                "status": "passed",
+                "duration": 1731,
+                "start": 1786081344754,
+                "stop": 1786081346485,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_warehouse_scalar_computeds_declared",
+                "status": "passed",
+                "duration": 200,
+                "start": 1786081346485,
+                "stop": 1786081346685,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_warehouse_multi_link_computeds_declared",
+                "status": "passed",
+                "duration": 87,
+                "start": 1786081346685,
+                "stop": 1786081346772,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_sole_warehouse_declared",
+                "status": "passed",
+                "duration": 84,
+                "start": 1786081346772,
+                "stop": 1786081346856,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_computeds_are_readable_for_every_object",
+                "status": "passed",
+                "duration": 471,
+                "start": 1786081346856,
+                "stop": 1786081347327,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_warehouse_computed_values",
+                "status": "passed",
+                "duration": 233,
+                "start": 1786081347327,
+                "stop": 1786081347560,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_balance_report_baseline",
+                "status": "passed",
+                "duration": 180,
+                "start": 1786081347561,
+                "stop": 1786081347741,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_balance_sku_arrays_are_distinct",
+                "status": "passed",
+                "duration": 152,
+                "start": 1786081347741,
+                "stop": 1786081347893,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 183,
+                "start": 1786081347893,
+                "stop": 1786081348076,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 195,
+                "start": 1786081348076,
+                "stop": 1786081348271,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 195,
+                "start": 1786081348271,
+                "stop": 1786081348466,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 201,
+                "start": 1786081348466,
+                "stop": 1786081348667,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 198,
+                "start": 1786081348667,
+                "stop": 1786081348865,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 198,
+                "start": 1786081348865,
+                "stop": 1786081349063,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 204,
+                "start": 1786081349063,
+                "stop": 1786081349267,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_unknown_code_without_strict",
+                "status": "passed",
+                "duration": 201,
+                "start": 1786081349268,
+                "stop": 1786081349469,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_unknown_code_with_strict_fails",
+                "status": "passed",
+                "duration": 171,
+                "start": 1786081349470,
+                "stop": 1786081349641,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_known_code_with_strict_succeeds",
+                "status": "passed",
+                "duration": 199,
+                "start": 1786081349642,
+                "stop": 1786081349841,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicates_report_baseline",
+                "status": "passed",
+                "duration": 187,
+                "start": 1786081349841,
+                "stop": 1786081350028,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicates_assert_fails_when_duplicates_exist",
+                "status": "passed",
+                "duration": 171,
+                "start": 1786081350028,
+                "stop": 1786081350199,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicates_clean_state",
+                "status": "passed",
+                "duration": 841,
+                "start": 1786081350199,
+                "stop": 1786081351040,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_matrix_report_baseline",
+                "status": "passed",
+                "duration": 199,
+                "start": 1786081351040,
+                "stop": 1786081351239,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_matrix_report_filtered_by_sku",
+                "status": "passed",
+                "duration": 190,
+                "start": 1786081351240,
+                "stop": 1786081351430,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_matrix_report_unknown_sku",
+                "status": "passed",
+                "duration": 192,
+                "start": 1786081351430,
+                "stop": 1786081351622,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unknown_report_name",
+                "status": "passed",
+                "duration": 82,
+                "start": 1786081351623,
+                "stop": 1786081351705,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_without_code",
+                "status": "passed",
+                "duration": 74,
+                "start": 1786081351706,
+                "stop": 1786081351780,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_shelf_row_changes_every_report",
+                "status": "passed",
+                "duration": 1213,
+                "start": 1786081351781,
+                "stop": 1786081352994,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_second_warehouse_invalidates_sole_warehouse",
+                "status": "passed",
+                "duration": 1100,
+                "start": 1786081352994,
+                "stop": 1786081354094,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_duplicate_pair_is_detected",
+                "status": "passed",
+                "duration": 873,
+                "start": 1786081354095,
+                "stop": 1786081354968,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_sku_expands_matrix",
+                "status": "passed",
+                "duration": 1149,
+                "start": 1786081354969,
+                "stop": 1786081356118,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_warehouse_expands_balance",
+                "status": "passed",
+                "duration": 968,
+                "start": 1786081356119,
+                "stop": 1786081357087,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_ledger_row_changes_every_report",
+                "status": "passed",
+                "duration": 1874,
+                "start": 1786081357088,
+                "stop": 1786081358962,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

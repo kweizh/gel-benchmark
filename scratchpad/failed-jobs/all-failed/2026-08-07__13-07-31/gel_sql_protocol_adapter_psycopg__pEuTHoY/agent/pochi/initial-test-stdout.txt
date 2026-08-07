@@ -1,0 +1,23 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 15 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_server_binary_available PASSED
+../bootstrap/test_initial_state.py::test_server_control_scripts_are_executable PASSED
+../bootstrap/test_initial_state.py::test_python_gel_client_importable PASSED
+../bootstrap/test_initial_state.py::test_python_psycopg_importable PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_project_is_a_gel_project PASSED
+../bootstrap/test_initial_state.py::test_schema_directory_exists_and_has_no_user_schema PASSED
+../bootstrap/test_initial_state.py::test_solution_entrypoint_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_seed_dataset_present_and_well_formed PASSED
+../bootstrap/test_initial_state.py::test_sql_protocol_environment_variables_are_set PASSED
+../bootstrap/test_initial_state.py::test_gel_server_reachable_over_binary_protocol PASSED
+../bootstrap/test_initial_state.py::test_gel_server_reachable_over_sql_protocol PASSED
+../bootstrap/test_initial_state.py::test_catalog_module_is_not_defined_yet PASSED
+../bootstrap/test_initial_state.py::test_migration_status_reports_no_user_migrations PASSED
+
+============================= 15 passed in 44.58s ==============================

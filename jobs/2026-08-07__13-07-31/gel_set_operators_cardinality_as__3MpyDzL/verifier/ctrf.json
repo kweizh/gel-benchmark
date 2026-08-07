@@ -1,0 +1,383 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-07T05:20:14.244883+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 37,
+            "passed": 30,
+            "failed": 7,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1786080006081,
+            "stop": 1786080014244
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_entrypoint_exists",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786080006128,
+                "stop": 1786080006128,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_queries_directory_holds_edgeql_files",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786080006128,
+                "stop": 1786080006129,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_no_foreign_runtime_source_files_in_project",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786080006129,
+                "stop": 1786080006129,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_entrypoint_does_not_invoke_foreign_runtimes",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786080006129,
+                "stop": 1786080006130,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_migration_file_created",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786080006130,
+                "stop": 1786080006130,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_state_in_sync",
+                "status": "passed",
+                "duration": 1459,
+                "start": 1786080006130,
+                "stop": 1786080007589,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_warehouse_scalar_computeds_declared",
+                "status": "passed",
+                "duration": 185,
+                "start": 1786080007589,
+                "stop": 1786080007774,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_warehouse_multi_link_computeds_declared",
+                "status": "passed",
+                "duration": 73,
+                "start": 1786080007774,
+                "stop": 1786080007847,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_sole_warehouse_declared",
+                "status": "passed",
+                "duration": 71,
+                "start": 1786080007847,
+                "stop": 1786080007918,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_computeds_are_readable_for_every_object",
+                "status": "passed",
+                "duration": 358,
+                "start": 1786080007918,
+                "stop": 1786080008276,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_warehouse_computed_values",
+                "status": "passed",
+                "duration": 163,
+                "start": 1786080008277,
+                "stop": 1786080008440,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_balance_report_baseline",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 213,
+                "start": 1786080008440,
+                "stop": 1786080008653,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_balance_report_baseline(gel_server):\n>       entries = balance_map(cli_json(\"balance\"))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:440: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\npayload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]\n\n    def balance_map(payload):\n>       assert payload.get(\"report\") == \"balance\", (\n               ^^^^^^^^^^^\n            f\"`balance` must report \\\"report\\\": \\\"balance\\\", got {payload.get('report')!r}.\"\n        )\nE       AttributeError: 'list' object has no attribute 'get'\n\n/tests/test_final_state.py:220: AttributeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_balance_sku_arrays_are_distinct",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 113,
+                "start": 1786080008653,
+                "stop": 1786080008766,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_balance_sku_arrays_are_distinct(gel_server):\n>       for entry in balance_map(cli_json(\"balance\")):\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:450: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\npayload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]\n\n    def balance_map(payload):\n>       assert payload.get(\"report\") == \"balance\", (\n               ^^^^^^^^^^^\n            f\"`balance` must report \\\"report\\\": \\\"balance\\\", got {payload.get('report')!r}.\"\n        )\nE       AttributeError: 'list' object has no attribute 'get'\n\n/tests/test_final_state.py:220: AttributeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 84,
+                "start": 1786080008766,
+                "stop": 1786080008850,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 80,
+                "start": 1786080008850,
+                "stop": 1786080008930,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 83,
+                "start": 1786080008930,
+                "stop": 1786080009013,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 88,
+                "start": 1786080009013,
+                "stop": 1786080009101,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 90,
+                "start": 1786080009102,
+                "stop": 1786080009192,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 78,
+                "start": 1786080009192,
+                "stop": 1786080009270,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_baseline",
+                "status": "passed",
+                "duration": 92,
+                "start": 1786080009270,
+                "stop": 1786080009362,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_unknown_code_without_strict",
+                "status": "passed",
+                "duration": 90,
+                "start": 1786080009363,
+                "stop": 1786080009453,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_unknown_code_with_strict_fails",
+                "status": "passed",
+                "duration": 86,
+                "start": 1786080009454,
+                "stop": 1786080009540,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_known_code_with_strict_succeeds",
+                "status": "passed",
+                "duration": 93,
+                "start": 1786080009540,
+                "stop": 1786080009633,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicates_report_baseline",
+                "status": "passed",
+                "duration": 75,
+                "start": 1786080009633,
+                "stop": 1786080009708,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicates_assert_fails_when_duplicates_exist",
+                "status": "passed",
+                "duration": 84,
+                "start": 1786080009708,
+                "stop": 1786080009792,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicates_clean_state",
+                "status": "passed",
+                "duration": 509,
+                "start": 1786080009792,
+                "stop": 1786080010301,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_matrix_report_baseline",
+                "status": "passed",
+                "duration": 96,
+                "start": 1786080010302,
+                "stop": 1786080010398,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_matrix_report_filtered_by_sku",
+                "status": "passed",
+                "duration": 143,
+                "start": 1786080010398,
+                "stop": 1786080010541,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_matrix_report_unknown_sku",
+                "status": "passed",
+                "duration": 94,
+                "start": 1786080010541,
+                "stop": 1786080010635,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unknown_report_name",
+                "status": "passed",
+                "duration": 8,
+                "start": 1786080010635,
+                "stop": 1786080010643,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sku_report_without_code",
+                "status": "passed",
+                "duration": 4,
+                "start": 1786080010644,
+                "stop": 1786080010648,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_shelf_row_changes_every_report",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 537,
+                "start": 1786080010648,
+                "stop": 1786080011185,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_new_shelf_row_changes_every_report(gel_server):\n        with mutations(insert_shelf(\"W-DUB\", \"SKU-007\", 4)):\n>           entries = {e[\"code\"]: e for e in balance_map(cli_json(\"balance\"))}\n                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:666: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\npayload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on...-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': ['SKU-007'], 'shelf_only': ['SKU-007'], ...}]\n\n    def balance_map(payload):\n>       assert payload.get(\"report\") == \"balance\", (\n               ^^^^^^^^^^^\n            f\"`balance` must report \\\"report\\\": \\\"balance\\\", got {payload.get('report')!r}.\"\n        )\nE       AttributeError: 'list' object has no attribute 'get'\n\n/tests/test_final_state.py:220: AttributeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_second_warehouse_invalidates_sole_warehouse",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 557,
+                "start": 1786080011186,
+                "stop": 1786080011743,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_second_warehouse_invalidates_sole_warehouse(gel_server):\n        with mutations(insert_shelf(\"W-BER\", \"SKU-003\", 2)):\n            sku = cli_json(\"sku\", \"SKU-003\")\n            assert sku_tuple(sku) == (True, None, [\"W-AMS\", \"W-BER\"], 4, 0), (\n                \"Once SKU-003 is counted in two warehouses, sole_warehouse must become null; got \"\n                f\"{sku_tuple(sku)}.\"\n            )\n>           entries = {e[\"code\"]: e for e in balance_map(cli_json(\"balance\"))}\n                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:707: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\npayload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]\n\n    def balance_map(payload):\n>       assert payload.get(\"report\") == \"balance\", (\n               ^^^^^^^^^^^\n            f\"`balance` must report \\\"report\\\": \\\"balance\\\", got {payload.get('report')!r}.\"\n        )\nE       AttributeError: 'list' object has no attribute 'get'\n\n/tests/test_final_state.py:220: AttributeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_new_duplicate_pair_is_detected",
+                "status": "passed",
+                "duration": 564,
+                "start": 1786080011744,
+                "stop": 1786080012308,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_new_sku_expands_matrix",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 638,
+                "start": 1786080012309,
+                "stop": 1786080012947,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_new_sku_expands_matrix(gel_server):\n        with mutations(\"insert Sku { code := 'SKU-900', label := 'probe' }\"):\n            payload = cli_json(\"matrix\")\n            cells, index = matrix_index(payload)\n            assert len(cells) == 32, (\n                f\"With an eighth SKU the matrix must have 4x8=32 cells, got {len(cells)}.\"\n            )\n            assert payload[\"total_delta\"] == 5, (\n                f\"A SKU with no rows must not change total_delta, got {payload['total_delta']}.\"\n            )\n            cell = index[(\"W-AMS\", \"SKU-900\")]\n            assert (cell[\"shelf\"], cell[\"ledger\"], cell[\"delta\"]) == (0, 0, 0), (\n                f\"Cell (W-AMS, SKU-900) should be all zeros, got {cell!r}.\"\n            )\n            assert sku_tuple(cli_json(\"sku\", \"SKU-900\")) == (True, None, [], 0, 0), (\n                \"`sku SKU-900` should report an existing but empty SKU.\"\n            )\n>           entries = {e[\"code\"]: e for e in balance_map(cli_json(\"balance\"))}\n                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:766: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\npayload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]\n\n    def balance_map(payload):\n>       assert payload.get(\"report\") == \"balance\", (\n               ^^^^^^^^^^^\n            f\"`balance` must report \\\"report\\\": \\\"balance\\\", got {payload.get('report')!r}.\"\n        )\nE       AttributeError: 'list' object has no attribute 'get'\n\n/tests/test_final_state.py:220: AttributeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_new_warehouse_expands_balance",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 527,
+                "start": 1786080012947,
+                "stop": 1786080013474,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_new_warehouse_expands_balance(gel_server):\n        with mutations(\"insert Warehouse { code := 'W-ZZZ', region := 'probe' }\"):\n>           entries = balance_map(cli_json(\"balance\"))\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:775: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\npayload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}, {'both': [], 'code': 'W-ZZZ', 'all_skus': [], 'shelf_only': [], ...}]\n\n    def balance_map(payload):\n>       assert payload.get(\"report\") == \"balance\", (\n               ^^^^^^^^^^^\n            f\"`balance` must report \\\"report\\\": \\\"balance\\\", got {payload.get('report')!r}.\"\n        )\nE       AttributeError: 'list' object has no attribute 'get'\n\n/tests/test_final_state.py:220: AttributeError",
+                "message": "The test failed in the call phase"
+            },
+            {
+                "name": "test_final_state.py::test_new_ledger_row_changes_every_report",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 769,
+                "start": 1786080013475,
+                "stop": 1786080014244,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_server = True\n\n    def test_new_ledger_row_changes_every_report(gel_server):\n        with mutations(insert_ledger(\"W-DUB\", \"SKU-006\", 6)):\n>           entries = {e[\"code\"]: e for e in balance_map(cli_json(\"balance\"))}\n                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/tests/test_final_state.py:810: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\npayload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on...s': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': ['SKU-006'], 'shelf_only': [], ...}]\n\n    def balance_map(payload):\n>       assert payload.get(\"report\") == \"balance\", (\n               ^^^^^^^^^^^\n            f\"`balance` must report \\\"report\\\": \\\"balance\\\", got {payload.get('report')!r}.\"\n        )\nE       AttributeError: 'list' object has no attribute 'get'\n\n/tests/test_final_state.py:220: AttributeError",
+                "message": "The test failed in the call phase"
+            }
+        ]
+    }
+}

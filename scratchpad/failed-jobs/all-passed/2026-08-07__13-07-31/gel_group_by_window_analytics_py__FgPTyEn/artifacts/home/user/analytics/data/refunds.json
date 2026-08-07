@@ -1,0 +1,248 @@
+[
+  {
+    "external_id": "RF-0001",
+    "order_ref": "ORD-0001",
+    "amount_cents": 25,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0002",
+    "order_ref": "ORD-0001",
+    "amount_cents": 150,
+    "refunded_at": "2024-01-18T08:30:00Z"
+  },
+  {
+    "external_id": "RF-0003",
+    "order_ref": "ORD-0005",
+    "amount_cents": 50,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0004",
+    "order_ref": "ORD-0009",
+    "amount_cents": 1900,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0005",
+    "order_ref": "ORD-0013",
+    "amount_cents": 100,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0006",
+    "order_ref": "ORD-0017",
+    "amount_cents": 125,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0007",
+    "order_ref": "ORD-0021",
+    "amount_cents": 150,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0008",
+    "order_ref": "ORD-0025",
+    "amount_cents": 175,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0009",
+    "order_ref": "ORD-0029",
+    "amount_cents": 200,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0010",
+    "order_ref": "ORD-0033",
+    "amount_cents": 25,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0011",
+    "order_ref": "ORD-0037",
+    "amount_cents": 50,
+    "refunded_at": "2024-01-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0012",
+    "order_ref": "ORD-0041",
+    "amount_cents": 75,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0013",
+    "order_ref": "ORD-0045",
+    "amount_cents": 100,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0014",
+    "order_ref": "ORD-0049",
+    "amount_cents": 125,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0015",
+    "order_ref": "ORD-0053",
+    "amount_cents": 150,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0016",
+    "order_ref": "ORD-0057",
+    "amount_cents": 175,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0017",
+    "order_ref": "ORD-0061",
+    "amount_cents": 200,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0018",
+    "order_ref": "ORD-0065",
+    "amount_cents": 25,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0019",
+    "order_ref": "ORD-0069",
+    "amount_cents": 50,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0020",
+    "order_ref": "ORD-0073",
+    "amount_cents": 75,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0021",
+    "order_ref": "ORD-0077",
+    "amount_cents": 100,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0022",
+    "order_ref": "ORD-0081",
+    "amount_cents": 125,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0023",
+    "order_ref": "ORD-0085",
+    "amount_cents": 150,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0024",
+    "order_ref": "ORD-0089",
+    "amount_cents": 175,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0025",
+    "order_ref": "ORD-0093",
+    "amount_cents": 200,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0026",
+    "order_ref": "ORD-0097",
+    "amount_cents": 25,
+    "refunded_at": "2024-02-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0027",
+    "order_ref": "ORD-0153",
+    "amount_cents": 50,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0028",
+    "order_ref": "ORD-0157",
+    "amount_cents": 75,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0029",
+    "order_ref": "ORD-0161",
+    "amount_cents": 100,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0030",
+    "order_ref": "ORD-0165",
+    "amount_cents": 125,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0031",
+    "order_ref": "ORD-0169",
+    "amount_cents": 150,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0032",
+    "order_ref": "ORD-0173",
+    "amount_cents": 175,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0033",
+    "order_ref": "ORD-0177",
+    "amount_cents": 200,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0034",
+    "order_ref": "ORD-0181",
+    "amount_cents": 25,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0035",
+    "order_ref": "ORD-0185",
+    "amount_cents": 50,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0036",
+    "order_ref": "ORD-0189",
+    "amount_cents": 75,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0037",
+    "order_ref": "ORD-0193",
+    "amount_cents": 100,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-0038",
+    "order_ref": "ORD-0197",
+    "amount_cents": 125,
+    "refunded_at": "2024-04-15T12:00:00Z"
+  },
+  {
+    "external_id": "RF-9001",
+    "order_ref": "ORD-9001",
+    "amount_cents": 100,
+    "refunded_at": "2024-05-01T12:00:00Z"
+  },
+  {
+    "external_id": "RF-9002",
+    "order_ref": "ORD-9002",
+    "amount_cents": 200,
+    "refunded_at": "2024-05-02T12:00:00Z"
+  },
+  {
+    "external_id": "RF-9003",
+    "order_ref": "ORD-9003",
+    "amount_cents": 300,
+    "refunded_at": "2024-05-03T12:00:00Z"
+  }
+]

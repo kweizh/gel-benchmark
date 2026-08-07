@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_graphql_http_endpoint_integration_py",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_graphql_http_endpoint_integr__CkMNxH3",
+    "trials_dir": "jobs/2026-08-07__13-07-31",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "google/gemini-3.5-flash",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "5c63ce15-ef0c-4a5e-aaed-9f164f072962"
+}

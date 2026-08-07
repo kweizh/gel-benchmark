@@ -1,0 +1,1192 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 29 items
+
+../tests/test_final_state.py FFFF.FEEEEEEEEEEEEEEEEEEEEEEE               [100%]
+
+==================================== ERRORS ====================================
+____________________ ERROR at setup of test_batch_a_counts _____________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_______________ ERROR at setup of test_batch_a_products_payload ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+____________________ ERROR at setup of test_batch_a_totals _____________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+________________ ERROR at setup of test_batch_a_persisted_state ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+______________ ERROR at setup of test_replay_is_rejected_as_stale ______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+___________ ERROR at setup of test_revision_zero_is_invalid_payload ____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+____________________ ERROR at setup of test_batch_b_counts _____________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_______________ ERROR at setup of test_batch_b_products_payload ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+____________________ ERROR at setup of test_batch_b_totals _____________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+________________ ERROR at setup of test_batch_b_persisted_state ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_________ ERROR at setup of test_invalid_payload_rolls_everything_back _________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_ ERROR at setup of test_malformed_payloads_are_rejected[duplicate_sku-payload0] _
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_ ERROR at setup of test_malformed_payloads_are_rejected[duplicate_variant_code-payload1] _
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_ ERROR at setup of test_malformed_payloads_are_rejected[empty_products-payload2] _
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_ ERROR at setup of test_malformed_payloads_are_rejected[string_revision-payload3] _
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_ ERROR at setup of test_malformed_payloads_are_rejected[empty_tag_label-payload4] _
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+____________ ERROR at setup of test_missing_input_file_is_io_error _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_____________ ERROR at setup of test_unparseable_input_is_io_error _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+____________ ERROR at setup of test_missing_input_flag_is_io_error _____________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_______________ ERROR at setup of test_batch_d_counts_and_totals _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+________________ ERROR at setup of test_batch_d_persisted_state ________________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+___________ ERROR at setup of test_concurrent_sources_do_not_collide ___________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+_______________ ERROR at setup of test_stdout_contains_only_json _______________
+
+gel_server = True
+
+    @pytest.fixture(scope="session")
+    def clean_catalog(gel_server):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
+        os.makedirs(WORK_DIR, exist_ok=True)
+>       purge_catalog()
+
+/tests/test_final_state.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+=================================== FAILURES ===================================
+________________________ test_schema_object_types_exist ________________________
+
+gel_server = True
+
+    def test_schema_object_types_exist(gel_server):
+        rows = gel_query(
+            "select schema::ObjectType { name } filter .name in {"
+            "'default::Vendor', 'default::Tag', 'default::Product', "
+            "'default::Variant', 'default::SyncSource'}"
+        )
+        found = sorted(row["name"] for row in rows)
+>       assert found == sorted(EXPECTED_POINTERS.keys()), (
+            f"Expected object types {sorted(EXPECTED_POINTERS.keys())}, found {found}"
+        )
+E       AssertionError: Expected object types ['default::Product', 'default::SyncSource', 'default::Tag', 'default::Variant', 'default::Vendor'], found []
+E       assert [] == ['default::Pr...ault::Vendor']
+E         
+E         Right contains 5 more items, first extra item: 'default::Product'
+E         Use -v to get more diff
+
+/tests/test_final_state.py:354: AssertionError
+______________________ test_schema_pointers_are_declared _______________________
+
+gel_server = True
+
+    def test_schema_pointers_are_declared(gel_server):
+        rows = gel_query(
+            "select schema::ObjectType { name, pointers: { name, "
+            "card := <str>.cardinality, req := .required } } "
+            "filter .name in {'default::Vendor', 'default::Tag', 'default::Product', "
+            "'default::Variant', 'default::SyncSource'}"
+        )
+        by_type = {row["name"]: row["pointers"] for row in rows}
+        for type_name, expected in EXPECTED_POINTERS.items():
+            pointers = {p["name"]: p for p in by_type.get(type_name, [])}
+            missing = expected - set(pointers)
+>           assert not missing, f"{type_name} is missing pointer(s): {sorted(missing)}"
+E           AssertionError: default::Vendor is missing pointer(s): ['code', 'name']
+E           assert not {'code', 'name'}
+
+/tests/test_final_state.py:370: AssertionError
+___________________ test_uniqueness_constraints_are_enforced ___________________
+
+gel_server = True
+
+    def test_uniqueness_constraints_are_enforced(gel_server):
+>       purge_catalog()
+
+/tests/test_final_state.py:393: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:161: in purge_catalog
+    run_gel(["query", query])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ['query', 'delete Variant'], check = True, timeout = 180
+
+    def run_gel(args, check=True, timeout=180):
+        proc = subprocess.run(
+            ["gel"] + args,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=timeout,
+        )
+        if check:
+>           assert proc.returncode == 0, (
+                f"`gel {' '.join(args)}` failed with code {proc.returncode}:\n"
+                f"{proc.stdout}\n{proc.stderr}"
+            )
+E           AssertionError: `gel query delete Variant` failed with code 1:
+E             
+E             error: InvalidReferenceError: object type or alias 'default::Variant' does not exist
+E               ┌─ <query>:1:8
+E               │
+E             1 │ delete Variant
+E               │        ^^^^^^^ error
+E             
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['gel', 'query', 'delete Variant'], returncode=1, stdout='', stderr="error: InvalidReferenceErro...e or alias 'default::Variant' does not exist\n  ┌─ <query>:1:8\n  │\n1 │ delete Variant\n  │        ^^^^^^^ error\n\n").returncode
+
+/tests/test_final_state.py:141: AssertionError
+__________________________ test_migration_files_exist __________________________
+
+    def test_migration_files_exist():
+        files = glob.glob(os.path.join(PROJECT_DIR, "dbschema", "migrations", "*.edgeql"))
+>       assert files, (
+            "No migration file found in "
+            f"{os.path.join(PROJECT_DIR, 'dbschema', 'migrations')}; the schema must be "
+            "applied through Gel's migration system."
+        )
+E       AssertionError: No migration file found in /home/user/catalog-ingest/dbschema/migrations; the schema must be applied through Gel's migration system.
+E       assert []
+
+/tests/test_final_state.py:450: AssertionError
+____________________ test_migration_history_recorded_in_db _____________________
+
+gel_server = True
+
+    def test_migration_history_recorded_in_db(gel_server):
+        proc = run_gel(["migration", "log", "--from-db"])
+        history = f"{proc.stdout}\n{proc.stderr}".strip()
+>       assert history and "<no migrations>" not in history, (
+            "The database has no migration history; the schema was not applied "
+            f"through a migration: {proc.stdout}\n{proc.stderr}"
+        )
+E       AssertionError: The database has no migration history; the schema was not applied through a migration: <no migrations>
+E         
+E         
+E       assert ('<no migrations>' and '<no migrations>' not in '<no migrations>'
+E         
+E         '<no migrations>' is contained here:
+E           <no migrations>)
+
+/tests/test_final_state.py:472: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_status_is_up_to_date
+ERROR ../tests/test_final_state.py::test_batch_a_counts - AssertionError: `ge...
+ERROR ../tests/test_final_state.py::test_batch_a_products_payload - Assertion...
+ERROR ../tests/test_final_state.py::test_batch_a_totals - AssertionError: `ge...
+ERROR ../tests/test_final_state.py::test_batch_a_persisted_state - AssertionE...
+ERROR ../tests/test_final_state.py::test_replay_is_rejected_as_stale - Assert...
+ERROR ../tests/test_final_state.py::test_revision_zero_is_invalid_payload - A...
+ERROR ../tests/test_final_state.py::test_batch_b_counts - AssertionError: `ge...
+ERROR ../tests/test_final_state.py::test_batch_b_products_payload - Assertion...
+ERROR ../tests/test_final_state.py::test_batch_b_totals - AssertionError: `ge...
+ERROR ../tests/test_final_state.py::test_batch_b_persisted_state - AssertionE...
+ERROR ../tests/test_final_state.py::test_invalid_payload_rolls_everything_back
+ERROR ../tests/test_final_state.py::test_malformed_payloads_are_rejected[duplicate_sku-payload0]
+ERROR ../tests/test_final_state.py::test_malformed_payloads_are_rejected[duplicate_variant_code-payload1]
+ERROR ../tests/test_final_state.py::test_malformed_payloads_are_rejected[empty_products-payload2]
+ERROR ../tests/test_final_state.py::test_malformed_payloads_are_rejected[string_revision-payload3]
+ERROR ../tests/test_final_state.py::test_malformed_payloads_are_rejected[empty_tag_label-payload4]
+ERROR ../tests/test_final_state.py::test_missing_input_file_is_io_error - Ass...
+ERROR ../tests/test_final_state.py::test_unparseable_input_is_io_error - Asse...
+ERROR ../tests/test_final_state.py::test_missing_input_flag_is_io_error - Ass...
+ERROR ../tests/test_final_state.py::test_batch_d_counts_and_totals - Assertio...
+ERROR ../tests/test_final_state.py::test_batch_d_persisted_state - AssertionE...
+ERROR ../tests/test_final_state.py::test_concurrent_sources_do_not_collide - ...
+ERROR ../tests/test_final_state.py::test_stdout_contains_only_json - Assertio...
+FAILED ../tests/test_final_state.py::test_schema_object_types_exist - Asserti...
+FAILED ../tests/test_final_state.py::test_schema_pointers_are_declared - Asse...
+FAILED ../tests/test_final_state.py::test_uniqueness_constraints_are_enforced
+FAILED ../tests/test_final_state.py::test_migration_files_exist - AssertionEr...
+FAILED ../tests/test_final_state.py::test_migration_history_recorded_in_db - ...
+==================== 5 failed, 1 passed, 23 errors in 2.35s ====================

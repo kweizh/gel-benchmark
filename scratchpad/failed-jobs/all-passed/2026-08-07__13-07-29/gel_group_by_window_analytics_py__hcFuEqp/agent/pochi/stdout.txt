@@ -1,0 +1,257 @@
+- Initializing MCP connections...
+You
+# Gel: Multi-Key `group` Analytics Rollups Behind an Async Python Client ## Background `/home/user/analytics` is an existing **Gel 7** project for a small coffee-equipment retailer. A local Gel 7 server lives inside this container, the schema in `dbschema/default.gel` has already been migrated once, and the `main` branch of that instance is already populated with `Category` and `Sale` objects. The existing schema (do not remove or rename anything in it) is: ``` module default { type Category { required name: str { constraint exclusive; } required region: str; } type Sale { required order_ref: str { constraint exclusive; } required occurred_at: datetime; required amount_cents: int64; required units: int64; required channel: str; required category: Category; } } ``` `channel` is always one of `web`, `retail`, `partner`. All `datetime` values are UTC. The finance team now needs refunds to be tracked, and needs a repeatable analytics report that slices revenue by month **and** sales channel, plus channel and category rollups with ranking and percentile figures. The report must be produced by the database using EdgeQL's top-level `group` statement — not by pulling rows into Python and aggregating there. ## Requirements ### 1. Schema and migration Extend `dbschema/default.gel` so the `default` module also provides: - An object type `default::Refund` with: - `external_id: str` — required, and no two `Refund` objects may share one. - `sale: Sale` — required single link to the refunded sale. - `amount_cents: int64` — required; the database itself must reject any value below `1`. - `refunded_at: datetime` — required. - Two new read-only computed properties on `default::Sale`, both single-valued: - `refund_count: int64` — how many `Refund` objects point at this sale (`0` when there are none). - `net_cents: int64` — `amount_cents` minus the total `amount_cents` of the `Refund` objects pointing at this sale (equal to `amount_cents` when there are none). - An index on `default::Sale` over the pair `(.channel, .occurred_at)`. The change must be delivered as a **new migration file** in `dbschema/migrations/` and applied to the running branch, leaving the migration history in sync. Bare DDL applied outside the migration system is not acceptable. ### 2. Refund ingestion `/home/user/analytics/data/refunds.json` is a JSON array of refund records. Every record is an object with exactly these keys: ```json { "external_id": "RF-0001", "order_ref": "ORD-0007", "amount_cents": 1250, "refunded_at": "2024-02-11T09:30:00Z" } ``` Ingestion must be an idempotent upsert keyed on `external_id`, and must never delete refunds that are absent from the file: - A record whose `order_ref` matches no existing `Sale` is **skipped** (it is not an error, and nothing is written for it). - A record whose `external_id` is not yet in the database is **inserted**. - A record whose `external_id` is already in the database and whose linked sale, `amount_cents` and `refunded_at` all already match is **unchanged**. - A record whose `external_id` is already in the database but which differs in any of those three values is **updated** so that the stored refund matches the file. Validation happens before anything is written, and a file that fails validation must leave the database **byte-for-byte unchanged** (no partial ingestion): - `amount_cents` must be an integer greater than or equal to `1`. - No `external_id` may appear twice within the same file. ### 3. Analytics report Produce a report over a set of *in-scope* sales. By default every `Sale` is in scope; when a month is supplied, only sales whose `occurred_at` falls inside that calendar month **in UTC** are in scope. A sale's `net_cents` always accounts for *all* of its refunds, regardless of when those refunds happened. The report is a single JSON object whose top-level keys are exactly `window`, `grand_total`, `monthly_by_channel`, `channel_totals`, `category_rank` and `empty_categories`. - `window` — object with exactly the key `month`: the requested month as a `"YYYY-MM"` string, or `null` when no month was requested. - `grand_total` — object with exactly the keys `sale_count`, `unit_count`, `gross_cents`, `refund_cents`, `net_cents`, `month_count`, `channel_count`, `category_count` (all integers), computed over the in-scope sales. `gross_cents` sums `amount_cents`, `net_cents` sums `net_cents`, `refund_cents` is `gross_cents - net_cents`, `unit_count` sums `units`, and the three `*_count` fields are the number of distinct UTC months, distinct channels and distinct categories present among the in-scope sales. Every field is `0` when nothing is in scope. - `monthly_by_channel` — array with one object per `(UTC month, channel)` pair that has at least one in-scope sale. Pairs with no sales must not appear at all. Each object has exactly the keys `month` (`"YYYY-MM"`), `channel`, `sale_count`, `unit_count`, `gross_cents`, `refund_cents`, `net_cents`, `mean_net_cents`, `min_net_cents`, `max_net_cents`, `stddev_net_cents` and `top_orders`, where: - `sale_count`, `unit_count`, `gross_cents`, `refund_cents`, `net_cents`, `min_net_cents`, `max_net_cents` are integers derived from the group's sales the same way as in `grand_total` (`min`/`max` are over the sales' `net_cents`). - `mean_net_cents` is the arithmetic mean of the group's `net_cents`, rounded to 2 decimal places. - `stddev_net_cents` is the **sample** standard deviation of the group's `net_cents`, rounded to 2 decimal places, and is `null` whenever `sale_count` is less than 2. - `top_orders` is an array of at most 3 objects with exactly the keys `order_ref` and `net_cents`, holding the group's highest-`net_cents` sales ordered by `net_cents` descending and then by `order_ref` ascending. - The array itself is ordered by `month` ascending, then `channel` ascending. - `channel_totals` — array with one object per channel that has at least one in-scope sale, each with exactly the keys `channel`, `sale_count`, `net_cents` and `share_pct`. `share_pct` is that channel's `net_cents` as a percentage of `grand_total.net_cents`, rounded to 2 decimal places, and is `0.0` when `grand_total.net_cents` is `0`. Ordered by `net_cents` descending, then `channel` ascending. - `category_rank` — array with one object per category that has at least one in-scope sale, each with exactly the keys `category` (the category name), `region`, `sale_count`, `net_cents`, `rank` and `percentile`. Ranking is over exactly the categories present in this array: - `rank` is `1` plus the number of those categories whose `net_cents` is strictly greater, so tied categories share a rank and subsequent ranks are skipped. - `percentile` is `100 * (number of those categories whose net_cents is less than or equal to this one) / (total number of those categories)`, rounded to 2 decimal places. - Ordered by `rank` ascending, then `category` ascending. - `empty_categories` — array of the names of every `Category` with no in-scope sale, sorted ascending. ### 4. Python surface The report and the ingestion must be reachable both as an importable async API and as a command-line tool. ## Implementation Hints - Project path: `/home/user/analytics`. All commands are run from that directory. - The local Gel server is started by `/usr/local/bin/gel-start`, which is idempotent and blocks until the server answers queries; run it whenever the server is not accepting connections. Do **not** run `gel project init`, do not create a second instance or branch, and do not launch a server any other way. - Connection settings are already exported as the `GEL_DSN` and `GEL_CLIENT_SECURITY` environment variables, so the `gel` CLI and the `gel` Python package (both already installed) connect without extra flags. The project has a `gel.toml` and its schema directory is `dbschema/`. - Do not insert, update or delete any `Category` or `Sale` object, and do not change their existing properties. - Create the Python package directory `/home/user/analytics/analytics/` containing at least `__init__.py`, `rollups.py` and `cli.py`. - `analytics/rollups.py` must define exactly these two coroutine functions, importable as `analytics.rollups.build_report` and `analytics.rollups.ingest_refunds`: - `async def build_report(client, month=None)` — `client` is a `gel.AsyncIOClient`; `month` is `None` or a `"YYYY-MM"` string. Returns the report described above as a plain Python `dict`/`list`/`str`/`int`/`float`/`None` structure (JSON-serialisable with `json.dumps`, no `Decimal`, no `datetime`, no Gel object wrappers). Raises `ValueError` if `month` does not match `^[0-9]{4}-(0[1-9]|1[0-2])$`. - `async def ingest_refunds(client, records)` — `client` is a `gel.AsyncIOClient`; `records` is a list of already-parsed refund dicts using the keys shown above. Returns a plain `dict` with exactly the keys `inserted`, `updated`, `unchanged`, `skipped`, `refund_total_count`, `refund_total_cents` (all integers), where the first four count the records of this call and the last two are the database-wide `Refund` count and summed `amount_cents` after the call. Raises `ValueError` on an invalid file, without having written anything. - The EdgeQL text that `analytics/rollups.py` sends for the report must use EdgeQL's top-level `group` statement; graders check that the source of `analytics/rollups.py` contains a `group ... by ...` statement. - Command: `python3 -m analytics.cli <subcommand> [options]`, with these two subcommands: - `python3 -m analytics.cli ingest-refunds --file <path>` — reads the JSON array at `<path>`, ingests it, and prints the ingestion summary object as JSON. - `python3 -m analytics.cli report [--month YYYY-MM]` — prints the report object as JSON. - On success the command exits `0` and writes **only** the JSON document to stdout (a trailing newline is fine). On any failure stdout must be completely empty, and the exit code and a stderr message are: - `2` — missing or unrecognised subcommand, or an unrecognised option. - `3` — the `--file` path does not exist; stderr contains `refunds file not found`. - `4` — the refunds file is invalid; stderr contains `invalid refunds file`; the database is left unchanged. - `5` — `--month` is not a valid `YYYY-MM` value; stderr contains `invalid month`. - Every count field and every `*_cents` field described above must be emitted as a JSON integer (no fractional part). The rounded fields `mean_net_cents`, `stddev_net_cents`, `share_pct` and `percentile` must be JSON numbers carrying at most 2 decimal places (or `null` where the specification says so). No numeric value may be emitted as a string.   
+
+Pochi
+💫 Executing cd /home/user/analytics && ls -la && echo --- && cat gel.toml && echo --- && cat dbschema/default.gel && echo --- && ls dbschema/migrations/ && echo --- && ls data/ 2>/dev/null ✔ 
+💫 Executing cd /home/user/analytics && cat dbschema/migrations/00001-m1bwpx5.edgeql && echo --- && cat data/refunds.json | head -50 && echo --- && python3 -c "import gel; print(gel.__file__)" && echo --- && env | grep -i gel ✔ 
+💫 Executing /usr/local/bin/gel-start 2>&1 | tail -20 ✔ 
+💫 Executing cd /home/user/analytics && gel query "select count(Sale)" && gel query "select count(Category)" ✔ 
+Now let's update the schema file with the new Refund type and computed properties.   
+🔧 Applying diff to /home/user/analytics/dbschema/default.gel ✖ "File has not been read yet. Please read the file before editing it."
+💭 Thinking for 250 characters   
+📖 Reading /home/user/analytics/dbschema/default.gel ✔ 
+🔧 Applying diff to /home/user/analytics/dbschema/default.gel ✔ 
+Now let's create the migration.   
+💫 Executing cd /home/user/analytics && gel migration create --non-interactive 2>&1 ✔ 
+💫 Executing cd /home/user/analytics && ls dbschema/migrations/ && cat dbschema/migrations/00002*.edgeql 2>/dev/null ✔ 
+Migration created successfully. Now apply it.   
+💫 Executing cd /home/user/analytics && gel migrate 2>&1 ✔ 
+Migration applied. Let's verify the computed properties work correctly.   
+💫 Executing cd /home/user/analytics && gel query "select Sale {order_ref, amount_cents, refund_count, net_cents} limit 3" && gel query "select count(Refund)" ✔ 
+Schema works correctly. Now let's check the full refunds.json data and Sale schema more closely to build the Python package.   
+💫 Executing cd /home/user/analytics && python3 -c "
+import json
+d = json.load(open('data/refunds.json'))
+print(len(d))
+print(d[0])
+print(d[-1])
+ext_ids = [r['external_id'] for r in d]
+print(len(ext_ids), len(set(ext_ids)))
+"
+ ✔ 
+💫 Executing cd /home/user/analytics && gel query "select Sale{occurred_at, channel} order by .occurred_at limit 5" && echo --- && gel query "select min(Sale.occurred_at)" && gel query "select max(Sale.occurred_at)" && echo --- && gel query "select distinct Sale.channel" ✔ 
+💫 Executing gel --version; python3 -c "import gel; print(gel.__version__ if hasattr(gel,'__version__') else 'n/a')"; pip3 show gel 2>/dev/null | head -5 ✔ 
+💭 Thinking for 5573 characters   
+💫 Executing cd /home/user/analytics && gel query "
+select (
+  group Sale
+  using month := to_str(.occurred_at, 'YYYY-MM'), channel := .channel
+  by month, channel
+) {
+  month := .key.month,
+  channel := .key.channel,
+  sale_count := count(.elements),
+} order by .month then .channel limit 5
+" ✔ 
+Group syntax works. Now let's test with filter, math::stddev/mean, and top_orders subquery.   
+💫 Executing cd /home/user/analytics && gel query "
+select (
+  group (select Sale filter .occurred_at >= <datetime>'2024-01-01T00:00:00Z' and .occurred_at < <datetime>'2024-02-01T00:00:00Z')
+  using month := to_str(.occurred_at, 'YYYY-MM'), channel := .channel
+  by month, channel
+) {
+  month := .key.month,
+  channel := .key.channel,
+  sale_count := count(.elements),
+  min_net := min(.elements.net_cents),
+  max_net := max(.elements.net_cents),
+  mean_net := math::mean(.elements.net_cents),
+  stddev_net := math::stddev(.elements.net_cents),
+  top_orders := (
+    select .elements { order_ref, net_cents }
+    order by .net_cents desc then .order_ref asc
+    limit 3
+  ),
+} order by .month then .channel
+" ✔ 
+This works. Now let's test stddev with a group of size 1 (should return empty/null), and category grouping.   
+💫 Executing cd /home/user/analytics && gel query "
+select (
+  group Sale
+  using cat := .category.name, region := .category.region
+  by cat, region
+) {
+  category := .key.cat,
+  region := .key.region,
+  sale_count := count(.elements),
+  net_cents := sum(.elements.net_cents),
+} order by .category limit 15
+"
+echo ---
+gel query "
+with x := (select Sale filter false)
+select math::stddev(x.net_cents) ?? -999
+"
+echo ---
+gel query "select Category.name" ✔ 
+💭 Thinking for 243 characters   
+💫 Executing cd /home/user/analytics && gel query "
+select (
+  group (select Sale filter .order_ref = 'ORD-0001')
+  using month := to_str(.occurred_at, 'YYYY-MM'), channel := .channel
+  by month, channel
+) {
+  month := .key.month,
+  channel := .key.channel,
+  sale_count := count(.elements),
+  stddev_net_cents := math::stddev(.elements.net_cents) if count(.elements) >= 2 else <float64>{},
+}
+" ✖ "Command exited with code 1"
+💭 Thinking for 6870 characters   
+💫 Executing cd /home/user/analytics && gel query "
+select (
+  group Sale
+  using month := to_str(.occurred_at, 'YYYY-MM'), channel := .channel
+  by month, channel
+) {
+  month := .key.month,
+  channel := .key.channel,
+  rows := (
+    select .elements { order_ref, net_cents, amount_cents, units }
+  ),
+} order by .month then .channel limit 1
+" ✔ 
+Query works well. Now let's write the Python package files.   
+✏️  Writing /home/user/analytics/analytics/__init__.py ✔ 
+💫 Executing python3 -c "
+from datetime import datetime
+d = datetime.fromisoformat('2024-02-11T09:30:00Z')
+print(d, d.tzinfo)
+" ✔ 
+💫 Executing python3 -c "
+import gel, inspect
+print(inspect.signature(gel.AsyncIOClient.transaction))
+" 2>&1 | head -20
+python3 -c "
+import gel
+print([m for m in dir(gel.AsyncIOClient) if not m.startswith('_')])
+" ✔ 
+💫 Executing python3 -c "
+import gel.asyncio_client as m
+import inspect
+print(inspect.getsource(m.AsyncIORetry))
+" 2>&1 | head -80 ✔ 
+💭 Thinking for 3250 characters   
+✏️  Writing /home/user/analytics/analytics/rollups.py ✔ 
+💭 Thinking for 219 characters   
+💫 Executing python3 -c "
+import gel
+print([n for n in dir(gel) if 'client' in n.lower() or 'async' in n.lower()])
+" ✔ 
+Now let's write cli.py using argparse-like manual parsing to get precise control over exit codes.   
+✏️  Writing /home/user/analytics/analytics/cli.py ✔ 
+💭 Thinking for 502 characters   
+💫 Executing cd /home/user/analytics && python3 -m analytics.cli 2>&1; echo "EXIT:$?"
+echo ---
+python3 -m analytics.cli foo 2>&1; echo "EXIT:$?"
+echo ---
+python3 -m analytics.cli report --bogus 2>&1; echo "EXIT:$?"
+echo ---
+python3 -m analytics.cli ingest-refunds --file /nonexistent.json 2>&1; echo "EXIT:$?"
+echo ---
+python3 -m analytics.cli report --month 2024-13 2>&1; echo "EXIT:$?" ✔ 
+Error paths work correctly. Now let's test the report command and ingest command with real data.   
+💫 Executing cd /home/user/analytics && python3 -m analytics.cli report --month 2024-01 > /tmp/report1.json 2>/tmp/err1.txt; echo "EXIT:$?"; cat /tmp/err1.txt; python3 -m json.tool /tmp/report1.json 2>/dev/null | head -60 || python3 -c "import json; print(json.dumps(json.load(open('/tmp/report1.json')), indent=2))" | head -80 ✔ 
+This matches expectations. Now let's test full report (no month) and check category_rank / channel_totals / empty_categories.   
+💫 Executing cd /home/user/analytics && python3 -m analytics.cli report > /tmp/report_all.json 2>/tmp/err_all.txt; echo "EXIT:$?"; cat /tmp/err_all.txt
+python3 -c "
+import json
+r = json.load(open('/tmp/report_all.json'))
+print(json.dumps(r['grand_total'], indent=2))
+print(json.dumps(r['channel_totals'], indent=2))
+print(json.dumps(r['category_rank'], indent=2))
+print(json.dumps(r['empty_categories'], indent=2))
+print('window', r['window'])
+print(len(r['monthly_by_channel']))
+" ✔ 
+💫 Executing cd /home/user/analytics && python3 -m analytics.cli ingest-refunds --file data/refunds.json 2>&1; echo "EXIT:$?" ✔ 
+Now let's test idempotency (run again, should show all unchanged) and test update detection.   
+💫 Executing cd /home/user/analytics && python3 -m analytics.cli ingest-refunds --file data/refunds.json 2>&1; echo "EXIT:$?" ✔ 
+Idempotency confirmed. Now test update detection and validation failures.   
+💫 Executing cd /home/user/analytics && python3 -c "
+import json
+d = json.load(open('data/refunds.json'))
+d[0]['amount_cents'] = 999999
+json.dump(d, open('/tmp/refunds_mod.json','w'))
+"
+python3 -m analytics.cli ingest-refunds --file /tmp/refunds_mod.json 2>&1; echo "EXIT:$?"
+echo ---restore---
+python3 -m analytics.cli ingest-refunds --file data/refunds.json 2>&1; echo "EXIT:$?" ✔ 
+Update detection and reversal work correctly. Now test invalid file validation (duplicate external_id, invalid amount_cents) and ensure DB stays unchanged.   
+💫 Executing cd /home/user/analytics && gel query "select count(Refund)"
+python3 -c "
+import json
+d = json.load(open('data/refunds.json'))
+d.append(dict(d[0]))  # duplicate external_id
+json.dump(d, open('/tmp/refunds_dup.json','w'))
+"
+python3 -m analytics.cli ingest-refunds --file /tmp/refunds_dup.json 1>/tmp/out.txt 2>/tmp/err.txt; echo "EXIT:$?"
+echo "STDOUT:"; cat /tmp/out.txt
+echo "STDERR:"; cat /tmp/err.txt
+gel query "select count(Refund)"
+echo ---
+python3 -c "
+import json
+d = json.load(open('data/refunds.json'))
+d[5]['amount_cents'] = 0
+json.dump(d, open('/tmp/refunds_bad.json','w'))
+"
+python3 -m analytics.cli ingest-refunds --file /tmp/refunds_bad.json 1>/tmp/out2.txt 2>/tmp/err2.txt; echo "EXIT:$?"
+echo "STDOUT:"; cat /tmp/out2.txt
+echo "STDERR:"; cat /tmp/err2.txt
+gel query "select count(Refund)" ✔ 
+Validation works correctly and DB stays unchanged (still 38 refunds). Now let's test malformed JSON file.   
+💫 Executing cd /home/user/analytics && echo "not json" > /tmp/refunds_notjson.json
+python3 -m analytics.cli ingest-refunds --file /tmp/refunds_notjson.json 1>/tmp/out3.txt 2>/tmp/err3.txt; echo "EXIT:$?"
+echo "STDOUT:"; cat /tmp/out3.txt
+echo "STDERR:"; cat /tmp/err3.txt
+echo ---
+python3 -m analytics.cli report --month 2024-99 1>/tmp/out4.txt 2>/tmp/err4.txt; echo "EXIT:$?"
+cat /tmp/out4.txt; cat /tmp/err4.txt
+echo --- empty file test ---
+echo "[]" > /tmp/refunds_empty.json
+python3 -m analytics.cli ingest-refunds --file /tmp/refunds_empty.json 2>&1; echo "EXIT:$?" ✔ 
+All edge cases pass. Now let's verify a month with no in-scope sales (empty scope) works properly, and check schema constraint for min_value(1) on Refund.amount_cents at DB level.   
+💫 Executing cd /home/user/analytics && python3 -m analytics.cli report --month 2025-01 2>&1
+echo ---
+gel query "insert Refund { external_id := 'TESTBAD', sale := (select Sale filter .order_ref = 'ORD-0001'), amount_cents := 0, refunded_at := <datetime>'2024-01-01T00:00:00Z' }" 2>&1
+echo ---
+gel query "select count(Refund) filter .external_id = 'TESTBAD'" ✖ "Command exited with code 1"
+Constraint enforced correctly (empty scope report and DB-level min_value both work as expected — that last error was just my malformed test query, irrelevant). Now let's check migration status is in sync and clean up test artifacts.   
+💫 Executing cd /home/user/analytics && gel migration status 2>&1
+rm -f /tmp/refunds_mod.json /tmp/refunds_dup.json /tmp/refunds_bad.json /tmp/refunds_notjson.json /tmp/refunds_empty.json /tmp/out*.txt /tmp/err*.txt /tmp/report*.json ✔ 
+💭 Thinking for 200 characters   
+💫 Executing cd /home/user/analytics && gel query "select count(Sale)" && gel query "select count(Category)" && gel query "select count(Refund)" && echo --- && find analytics -type f && echo --- && git status 2>&1 || true ✔ 
+Everything is intact: 200 Sales, 10 Categories unchanged, 38 Refunds correctly ingested. Let's clean up pycache and do a final review of the schema file and directory structure.   
+💫 Executing cd /home/user/analytics && rm -rf analytics/__pycache__ && cat dbschema/default.gel && echo --- && ls -la dbschema/migrations/ ✔ 
+Everything is in place and verified. Let's do one last end-to-end sanity check combining both subcommands with `--month` variations to make sure numbers stay self-consistent.   
+💫 Executing cd /home/user/analytics && python3 -c "
+import asyncio, gel, json
+from analytics.rollups import build_report
+
+async def main():
+    client = gel.create_async_client()
+    r = await build_report(client, month='2024-02')
+    print(json.dumps(r['grand_total']))
+    total_monthly_net = sum(m['net_cents'] for m in r['monthly_by_channel'])
+    total_cat_net = sum(c['net_cents'] for c in r['category_rank'])
+    print('monthly sum net', total_monthly_net, 'cat sum net', total_cat_net, 'grand', r['grand_total']['net_cents'])
+    await client.aclose()
+
+asyncio.run(main())
+"
+ ✔ 
+Numbers are perfectly consistent across all rollup dimensions, and refunds are correctly reflected in `net_cents`/`refund_cents` for the month they were ingested against.   
+🎉 Task Completed
+Implemented all four requirements against the running Gel 7 `main` branch in `/home/user/analytics`:
+
+**1. Schema/migration** — `dbschema/default.gel` now also defines `default::Refund` (`external_id` exclusive, required `sale` link, `amount_cents` with `min_value(1)` constraint, required `refunded_at`), plus read-only computed `Sale.refund_count` / `Sale.net_cents` and a composite index on `(.channel, .occurred_at)`. Delivered as migration `dbschema/migrations/00002-m17fglu.edgeql` (created via `gel migration create --non-interactive`, applied via `gel migrate`); `gel migration status` reports the database is up to date. Verified `Category`/`Sale` counts (10/200) are untouched.
+
+**2. Refund ingestion** (`analytics/rollups.py::ingest_refunds`) — validates the whole file first (raises `ValueError` on bad `amount_cents`, duplicate `external_id`, or malformed shape/dates) before touching the database, so invalid files leave it byte-for-byte unchanged (verified). Valid files are upserted inside a single Gel transaction: sales are looked up by `order_ref` (unmatched records are skipped, not errors), existing refunds are compared by sale/amount/timestamp to classify insert vs. update vs. unchanged, and the DB-wide refund count/total are returned. Verified idempotency (re-running gives all-`unchanged`), update-detection, and validation-triggers-no-writes behavior against the live DB.
+
+**3. Analytics report** (`analytics/rollups.py::build_report`) — uses EdgeQL's top-level `group ... by ...` twice (by `month, channel` and by `category, region`) to push all aggregation into the database, then computes rounding/ranking/percentile/top-orders in Python from the grouped results. Produces exactly the required `window`, `grand_total`, `monthly_by_channel`, `channel_totals`, `category_rank`, `empty_categories` structure, with all counts/`*_cents` as ints and rounded fields as 2-decimal floats or `null`. Cross-checked that `net_cents` totals agree exactly across `grand_total`, `monthly_by_channel`, and `category_rank` for both the full dataset and a single-month window, and confirmed empty-scope months return all-zero/empty output.
+
+**4. Python surface** — `analytics/` package (`__init__.py`, `rollups.py`, `cli.py`) exposes `build_report`/`ingest_refunds` as importable coroutines and via `python3 -m analytics.cli {ingest-refunds --file <path> | report [--month YYYY-MM]}`. Verified all required exit codes/stderr messages/empty-stdout-on-failure behavior: `2` (bad/missing subcommand or option), `3` (missing refunds file), `4` (invalid refunds file, including malformed JSON and validation failures — DB confirmed unchanged), `5` (invalid `--month`), and `0` with pure JSON on stdout for successful `report` and `ingest-refunds` calls.
+   
+  

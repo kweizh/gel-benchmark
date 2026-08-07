@@ -1,0 +1,118 @@
+{
+    "id": "ba2deaa1-c208-4d29-aa25-fb1e93cf181d",
+    "task_name": "gel_group_by_window_analytics_py",
+    "trial_name": "gel_group_by_window_analytics_py__zs6uwMQ",
+    "trial_uri": "file:///home/kw/code/zealt/pochi-harbor/jobs/2026-08-07__13-21-29/gel_group_by_window_analytics_py__zs6uwMQ",
+    "task_id": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_group_by_window_analytics_py"
+    },
+    "source": "pending-tasks",
+    "task_checksum": "a77b0735adae49756408f55802aaf15759af97f922aa27b23b3402d604236c06",
+    "config": {
+        "task": {
+            "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_group_by_window_analytics_py",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "pending-tasks"
+        },
+        "trial_name": "gel_group_by_window_analytics_py__zs6uwMQ",
+        "trials_dir": "jobs/2026-08-07__13-21-29",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "agents.pochi:Pochi",
+            "import_path": null,
+            "model_name": "deepseek/deepseek-4-pro",
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "env": {
+                "POCHI_API_KEY": "${POCHI_API_KEY}"
+            },
+            "mcp_servers": []
+        },
+        "environment": {
+            "type": "daytona",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [
+            "/home/user"
+        ],
+        "extra_instruction_paths": [],
+        "job_id": "793f3a68-8ee8-4441-89b2-d1550bf86583"
+    },
+    "agent_info": {
+        "name": "pochi",
+        "version": "0.6.20",
+        "model_info": {
+            "name": "deepseek-4-pro",
+            "provider": "deepseek"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 0,
+        "n_cache_tokens": 0,
+        "n_output_tokens": 11277790,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 1.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-08-07T05:21:33.195952Z",
+    "finished_at": "2026-08-07T05:39:27.418757Z",
+    "environment_setup": {
+        "started_at": "2026-08-07T05:21:33.293832Z",
+        "finished_at": "2026-08-07T05:21:39.993664Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-08-07T05:21:39.993710Z",
+        "finished_at": "2026-08-07T05:21:46.316596Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-08-07T05:21:46.316665Z",
+        "finished_at": "2026-08-07T05:38:57.723953Z"
+    },
+    "verifier": {
+        "started_at": "2026-08-07T05:39:10.443045Z",
+        "finished_at": "2026-08-07T05:39:26.483650Z"
+    },
+    "step_results": null
+}

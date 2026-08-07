@@ -1,0 +1,83 @@
+module default {
+  abstract constraint token_format(max: int64) {
+    using (
+      re_test(r'^[A-Z][A-Z0-9_]*$', __subject__)
+      and len(__subject__) <= max
+    );
+    errmessage := 'TOKEN_INVALID(max={max})';
+  }
+
+  type Region {
+    required property key: str {
+      constraint exclusive {
+        errmessage := 'REGION_KEY_DUPLICATE';
+      }
+    }
+  }
+
+  abstract type Revisioned {
+    required property revision: int64 {
+      constraint min_value(1) {
+        errmessage := 'REVISION_TOO_LOW';
+      }
+    }
+  }
+
+  abstract type Taggable {
+    multi property tags: str {
+      constraint token_format(12);
+    }
+  }
+
+  abstract type Asset extending Revisioned, Taggable {
+    required property code: str {
+      delegated constraint exclusive {
+        errmessage := 'CODE_DUPLICATE_IN_KIND';
+      }
+      constraint token_format(16);
+    }
+
+    required property serial: str {
+      constraint exclusive {
+        errmessage := 'SERIAL_DUPLICATE_GLOBAL';
+      }
+    }
+
+    required link region -> Region;
+
+    required property slot: int64;
+    required property capacity: int64;
+    required property reserved: int64;
+
+    delegated constraint exclusive on ((.region, .slot)) {
+      errmessage := 'SLOT_DUPLICATE_IN_KIND';
+    }
+
+    constraint expression on (.reserved <= .capacity) {
+      errmessage := 'CAPACITY_EXCEEDED';
+    }
+  }
+
+  type ServerAsset extending Asset {
+    required property hostname: str;
+  }
+
+  type StorageAsset extending Asset {
+    required property volume_gb: int64;
+  }
+
+  type Operator {
+    required property name: str {
+      constraint exclusive {
+        errmessage := 'OPERATOR_NAME_DUPLICATE';
+      }
+    }
+
+    multi link crew -> Asset {
+      property role: str;
+      constraint exclusive on ((@source, @role)) {
+        errmessage := 'ROLE_DUPLICATE_FOR_OPERATOR';
+      }
+    }
+  }
+}

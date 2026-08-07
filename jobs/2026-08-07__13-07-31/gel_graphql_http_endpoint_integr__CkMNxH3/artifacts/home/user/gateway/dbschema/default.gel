@@ -1,0 +1,28 @@
+using extension graphql;
+
+module default {
+    type Team {
+        required property name -> str {
+            constraint exclusive;
+        }
+        required property region -> str;
+        
+        link services := (SELECT Service FILTER .owner = Team);
+        property service_count := count(.services);
+    }
+
+    type Service {
+        required property name -> str {
+            constraint exclusive;
+        }
+        required property tier -> int64;
+        required property active -> bool;
+        required link owner -> Team;
+        
+        property team_name := .owner.name;
+    }
+
+    alias ActiveService := (
+        SELECT Service FILTER .active = true
+    );
+}

@@ -1,0 +1,39 @@
+module default {
+  type Category {
+    required name: str {
+      constraint exclusive;
+    }
+    required region: str;
+  }
+
+  type Sale {
+    required order_ref: str {
+      constraint exclusive;
+    }
+    required occurred_at: datetime;
+    required amount_cents: int64;
+    required units: int64;
+    required channel: str;
+    required category: Category;
+
+    # How many Refund objects point at this sale (0 when there are none).
+    refund_count := count(.<sale[is Refund]);
+
+    # amount_cents minus the total amount_cents of the Refund objects
+    # pointing at this sale (equal to amount_cents when there are none).
+    net_cents := .amount_cents - sum(.<sale[is Refund].amount_cents);
+
+    index on ((.channel, .occurred_at));
+  }
+
+  type Refund {
+    required external_id: str {
+      constraint exclusive;
+    }
+    required sale: Sale;
+    required amount_cents: int64 {
+      constraint min_value(1);
+    }
+    required refunded_at: datetime;
+  }
+}

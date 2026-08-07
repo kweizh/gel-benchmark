@@ -1,0 +1,2426 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 36 items
+
+../tests/test_final_state.py ...FEEEEEEEEEEEFEFEEEEEEEEEEEEEEEEEE        [100%]
+
+==================================== ERRORS ====================================
+____________ ERROR at setup of test_all_required_object_types_exist ____________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_________________ ERROR at setup of test_abstractness_of_types _________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+____________ ERROR at setup of test_asset_uses_multiple_inheritance ____________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+________________ ERROR at setup of test_concrete_asset_subtypes ________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+___________ ERROR at setup of test_asset_declares_required_pointers ____________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+________ ERROR at setup of test_code_exclusive_constraint_is_delegated _________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_____ ERROR at setup of test_serial_exclusive_constraint_is_not_delegated ______
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_______ ERROR at setup of test_composite_object_constraint_is_delegated ________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+____________ ERROR at setup of test_capacity_expression_constraint _____________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+__ ERROR at setup of test_inherited_constraints_are_not_delegated_on_subtypes __
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+__________ ERROR at setup of test_no_unexpected_delegated_constraints __________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_______ ERROR at setup of test_abstract_constraint_reused_at_both_sites ________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def schema_types(gel_server: str) -> dict[str, dict]:
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                is_abstract := .abstract,
+                base_names := (select .bases.name),
+                pointers: {
+                    name,
+                    required,
+                    constraints: {
+                        cname := .name,
+                        delegated,
+                        errmessage,
+                        subjectexpr
+                    }
+                },
+                constraints: {
+                    cname := .name,
+                    delegated,
+                    errmessage,
+                    subjectexpr
+                }
+            }
+            filter .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            is_abstract := .abstract,\n            base_nam...  errmessage,\n                subjectexpr\n            }\n        }\n        filter .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     is_abstract := .abstract,
+E                     base_names := (select .bases.name),
+E                     pointers: {
+E                         name,
+E                         required,
+E                         constraints: {
+E                             cname := .name,
+E                             delegated,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     },
+E                     constraints: {
+E                         cname := .name,
+E                         delegated,
+E                         errmessage,
+E                         subjectexpr
+E                     }
+E                 }
+E                 filter .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+______________ ERROR at setup of test_run_a_exit_code_and_stdout _______________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+[run-ingest --input /tmp/run_a.json --report /tmp/report_a.json] rc=1
+stdout:
+
+stderr:
+A client connection error occurred; reconnecting because of "waitUntilAvailable=30000". ClientConnectionClosedError: network error: Error: connect ECONNREFUSED 127.0.0.1:5656
+    at RawConnection._onError (/home/user/assetreg/node_modules/gel/dist/rawConn.js:138:24)
+    at TLSSocket.emit (node:events:509:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5656
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5656
+  }
+}
+A client connection error occurred; reconnecting because of "waitUntilAvailable=30000". ClientConnectionClosedError: network error: Error: connect ECONNREFUSED 127.0.0.1:5656
+    at RawConnection._onError (/home/user/assetreg/node_modules/gel/dist/rawConn.js:138:24)
+    at TLSSocket.emit (node:events:509:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5656
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5656
+  }
+}
+A client connection error occurred; reconnecting because of "waitUntilAvailable=30000". ClientConnectionClosedError: network error: Error: connect ECONNREFUSED 127.0.0.1:5656
+    at RawConnection._onError (/home/user/assetreg/node_modules/gel/dist/rawConn.js:138:24)
+    at TLSSocket.emit (node:events:509:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5656
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5656
+  }
+}
+A client connection error occurred; reconnecting because of "waitUntilAvailable=30000". ClientConnectionClosedError: network error: Error: connect ECONNREFUSED 127.0.0.1:5656
+    at RawConnection._onError (/home/user/assetreg/node_modules/gel/dist/rawConn.js:138:24)
+    at TLSSocket.emit (node:events:509:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5656
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5656
+  }
+}
+A client connection error occurred; reconnecting because of "waitUntilAvailable=30000". ClientConnectionClosedError: network error: Error: connect ECONNREFUSED 127.0.0.1:5656
+    at RawConnection._onError (/home/user/assetreg/node_modules/gel/dist/rawConn.js:138:24)
+    at TLSSocket.emit (node:events:509:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5656
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5656
+  }
+}
+A client connection error occurred; reconnecting because of "waitUntilAvailable=30000". ClientConnectionClosedError: network error: Error: connect ECONNREFUSED 127.0.0.1:5656
+    at RawConnection._onError (/home/user/assetreg/node_modules/gel/dist/rawConn.js:138:24)
+    at TLSSocket.emit (node:events:509:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5656
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5656
+  }
+}
+Fatal error: network error: Error: connect ECONNREFUSED 127.0.0.1:5656
+
+__________________ ERROR at setup of test_run_a_report_totals __________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+___________ ERROR at setup of test_run_a_results_ordering_and_shape ____________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+________ ERROR at setup of test_run_a_schema_section_from_introspection ________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_________________ ERROR at setup of test_run_a_database_state __________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+______________ ERROR at setup of test_run_b_exit_code_and_stdout _______________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+__________________ ERROR at setup of test_run_b_report_totals __________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+______________ ERROR at setup of test_run_b_classification_table _______________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+__________________ ERROR at setup of test_run_b_reason_counts __________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_____________ ERROR at setup of test_run_b_left_no_partial_writes ______________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_________________ ERROR at setup of test_run_b_database_counts _________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+______________ ERROR at setup of test_run_c_exit_code_and_stdout _______________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_____________________ ERROR at setup of test_run_c_report ______________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+_________________ ERROR at setup of test_run_c_database_state __________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+__________ ERROR at setup of test_operator_rules_enforced_by_database __________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+______________ ERROR at setup of test_missing_report_flag_exits_1 ______________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+________ ERROR at setup of test_unreadable_input_exits_1_without_report ________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+___________ ERROR at setup of test_empty_manifest_and_reversed_flags ___________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    @pytest.fixture(scope="session")
+    def ingest_runs(gel_server: str) -> dict:
+        """Execute runs A, B and C once, in order, and collect their artifacts."""
+        assert os.path.isfile(RUN_SCRIPT), (
+            f"{RUN_SCRIPT} does not exist; the ingest entrypoint was not created."
+        )
+    
+        for path in (REPORT_A, REPORT_B, REPORT_C):
+            if os.path.exists(path):
+                os.remove(path)
+    
+        write_manifest(MANIFEST_A, RUN_A)
+        write_manifest(MANIFEST_B, RUN_B)
+        write_manifest(MANIFEST_C, RUN_C)
+    
+        proc_a = run_ingest(["--input", MANIFEST_A, "--report", REPORT_A])
+        state_after_a = {
+>           "server": gel_scalar("select count(ServerAsset)"),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "storage": gel_scalar("select count(StorageAsset)"),
+            "assets": gel_scalar("select count(Asset)"),
+            "regions": sorted(gel_query("select Region.key")),
+        }
+
+/tests/test_final_state.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:372: in gel_scalar
+    rows = gel_query(query)
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = 'select count(ServerAsset)'
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: select count(ServerAsset)
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', 'select count(ServerAsset)'], returncode=1, stdout='', stderr='Co...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+=================================== FAILURES ===================================
+_______________________ test_migration_status_is_in_sync _______________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    def test_migration_status_is_in_sync(gel_server: str) -> None:
+        proc = subprocess.run(
+            ["gel", "migration", "status"],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            "`gel migration status` reports the database is not fully migrated.\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: `gel migration status` reports the database is not fully migrated.
+E         stdout:
+E         
+E         stderr:
+E         gel error: InternalServerError: terminating connection due to unexpected postmaster exit
+E           Server traceback:
+E               edb.errors.InternalServerError: terminating connection due to unexpected postmaster exit
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'migration', 'status'], returncode=1, stdout='', stderr='gel error: InternalServerError:...  Server traceback:\n      edb.errors.InternalServerError: terminating connection due to unexpected postmaster exit\n').returncode
+
+/tests/test_final_state.py:546: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+[gel-ensure-server] stdout:
+using gel server binary: /usr/bin/gel-server-6
+gel server is ready
+
+[gel-ensure-server] stderr:
+
+________________ test_single_parameterized_abstract_constraint _________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    def test_single_parameterized_abstract_constraint(gel_server: str) -> None:
+>       rows = gel_query(
+            """
+            select schema::Constraint {
+                name,
+                errmessage,
+                parameters := (
+                    select .params { pname := .name, type_name := .type.name }
+                )
+            }
+            filter .abstract and .name like 'default::%'
+            """
+        )
+
+/tests/test_final_state.py:770: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::Constraint {\n            name,\n            errmessage,\n            parameters := (\n     ...e, type_name := .type.name }\n            )\n        }\n        filter .abstract and .name like 'default::%'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::Constraint {
+E                     name,
+E                     errmessage,
+E                     parameters := (
+E                         select .params { pname := .name, type_name := .type.name }
+E                     )
+E                 }
+E                 filter .abstract and .name like 'default::%'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::Constraint {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+__________________ test_operator_link_property_and_constraint __________________
+
+gel_server = '/usr/local/bin/gel-ensure-server.sh'
+
+    def test_operator_link_property_and_constraint(gel_server: str) -> None:
+        # NOTE: the `[is schema::Link]` intersection is mandatory. Nesting `pointers`
+        # directly under a generic `schema::Pointer` set raises InvalidReferenceError.
+>       rows = gel_query(
+            """
+            select schema::ObjectType {
+                name,
+                pointers: {
+                    name,
+                    link_props := ([is schema::Link].pointers.name),
+                    constraints: {
+                        cname := .name,
+                        errmessage,
+                        subjectexpr
+                    }
+                }
+            }
+            filter .name = 'default::Operator'
+            """
+        )
+
+/tests/test_final_state.py:826: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "\n        select schema::ObjectType {\n            name,\n            pointers: {\n                name,\n           ...        subjectexpr\n                }\n            }\n        }\n        filter .name = 'default::Operator'\n        "
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: 
+E                 select schema::ObjectType {
+E                     name,
+E                     pointers: {
+E                         name,
+E                         link_props := ([is schema::Link].pointers.name),
+E                         constraints: {
+E                             cname := .name,
+E                             errmessage,
+E                             subjectexpr
+E                         }
+E                     }
+E                 }
+E                 filter .name = 'default::Operator'
+E                 
+E         stdout:
+E         
+E         stderr:
+E         Connecting to Gel instance at 127.0.0.1:5656...
+E         gel error: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "\n        select schema::ObjectType {\n            name,\n      ...r: I/O error. Check your connection to the database: ClientConnectionFailedError: Connection refused (os error 111)\n').returncode
+
+/tests/test_final_state.py:349: AssertionError
+==================================== PASSES ====================================
+__________________________ test_migration_files_exist __________________________
+----------------------------- Captured stdout call -----------------------------
+migrations: ['/home/user/assetreg/dbschema/migrations/00001-m1hjfkb.edgeql', '/home/user/assetreg/dbschema/migrations/00002-m1gelfx.edgeql']
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_run_ingest_entrypoint_exists
+PASSED ../tests/test_final_state.py::test_typescript_sources_exist_and_use_gel_client
+PASSED ../tests/test_final_state.py::test_migration_files_exist
+ERROR ../tests/test_final_state.py::test_all_required_object_types_exist - As...
+ERROR ../tests/test_final_state.py::test_abstractness_of_types - AssertionErr...
+ERROR ../tests/test_final_state.py::test_asset_uses_multiple_inheritance - As...
+ERROR ../tests/test_final_state.py::test_concrete_asset_subtypes - AssertionE...
+ERROR ../tests/test_final_state.py::test_asset_declares_required_pointers - A...
+ERROR ../tests/test_final_state.py::test_code_exclusive_constraint_is_delegated
+ERROR ../tests/test_final_state.py::test_serial_exclusive_constraint_is_not_delegated
+ERROR ../tests/test_final_state.py::test_composite_object_constraint_is_delegated
+ERROR ../tests/test_final_state.py::test_capacity_expression_constraint - Ass...
+ERROR ../tests/test_final_state.py::test_inherited_constraints_are_not_delegated_on_subtypes
+ERROR ../tests/test_final_state.py::test_no_unexpected_delegated_constraints
+ERROR ../tests/test_final_state.py::test_abstract_constraint_reused_at_both_sites
+ERROR ../tests/test_final_state.py::test_run_a_exit_code_and_stdout - Asserti...
+ERROR ../tests/test_final_state.py::test_run_a_report_totals - AssertionError...
+ERROR ../tests/test_final_state.py::test_run_a_results_ordering_and_shape - A...
+ERROR ../tests/test_final_state.py::test_run_a_schema_section_from_introspection
+ERROR ../tests/test_final_state.py::test_run_a_database_state - AssertionErro...
+ERROR ../tests/test_final_state.py::test_run_b_exit_code_and_stdout - Asserti...
+ERROR ../tests/test_final_state.py::test_run_b_report_totals - AssertionError...
+ERROR ../tests/test_final_state.py::test_run_b_classification_table - Asserti...
+ERROR ../tests/test_final_state.py::test_run_b_reason_counts - AssertionError...
+ERROR ../tests/test_final_state.py::test_run_b_left_no_partial_writes - Asser...
+ERROR ../tests/test_final_state.py::test_run_b_database_counts - AssertionErr...
+ERROR ../tests/test_final_state.py::test_run_c_exit_code_and_stdout - Asserti...
+ERROR ../tests/test_final_state.py::test_run_c_report - AssertionError: EdgeQ...
+ERROR ../tests/test_final_state.py::test_run_c_database_state - AssertionErro...
+ERROR ../tests/test_final_state.py::test_operator_rules_enforced_by_database
+ERROR ../tests/test_final_state.py::test_missing_report_flag_exits_1 - Assert...
+ERROR ../tests/test_final_state.py::test_unreadable_input_exits_1_without_report
+ERROR ../tests/test_final_state.py::test_empty_manifest_and_reversed_flags - ...
+FAILED ../tests/test_final_state.py::test_migration_status_is_in_sync - Asser...
+FAILED ../tests/test_final_state.py::test_single_parameterized_abstract_constraint
+FAILED ../tests/test_final_state.py::test_operator_link_property_and_constraint
+============== 3 failed, 3 passed, 30 errors in 178.80s (0:02:58) ==============

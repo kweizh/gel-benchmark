@@ -1,0 +1,121 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 37 items
+
+../tests/test_final_state.py ......................F............F.       [100%]
+
+=================================== FAILURES ===================================
+___________________ test_list_services_pagination_boundaries ___________________
+
+gw = <module 'gateway' from '/home/user/gateway/gateway.py'>
+
+    def test_list_services_pagination_boundaries(gw):
+        assert _names(gw.list_services(limit=2)) == ["auth-api", "billing-api"], (
+            "limit=2 must return the first two services by name."
+        )
+>       assert _names(gw.list_services(limit=2, offset=2)) == ["cache-proxy", "dns-relay"], (
+            "limit=2, offset=2 must return the third and fourth services by name."
+        )
+E       AssertionError: limit=2, offset=2 must return the third and fourth services by name.
+E       assert ['dns-relay', 'edge-router'] == ['cache-proxy', 'dns-relay']
+E         
+E         At index 0 diff: 'dns-relay' != 'cache-proxy'
+E         Use -v to get more diff
+
+/tests/test_final_state.py:551: AssertionError
+____________________ test_report_command_regenerates_report ____________________
+
+gw = <module 'gateway' from '/home/user/gateway/gateway.py'>
+
+    def test_report_command_regenerates_report(gw):
+        if os.path.exists(REPORT_PATH):
+            os.remove(REPORT_PATH)
+        proc = subprocess.run(
+            ["python3", "report.py"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_DIR,
+            timeout=300,
+        )
+        assert proc.returncode == 0, (
+            "`python3 report.py` must exit 0.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+        assert os.path.isfile(REPORT_PATH), f"{REPORT_PATH} was not created by report.py."
+        with open(REPORT_PATH, encoding="utf-8") as handle:
+            report = json.load(handle)
+    
+        assert set(report) == {"endpoint", "teams", "pages", "parity"}, (
+            f"The report must have exactly the keys endpoint/teams/pages/parity, got {sorted(report)}."
+        )
+        assert report["endpoint"] == GRAPHQL_URL, (
+            f"report['endpoint'] must be {GRAPHQL_URL!r}, got {report['endpoint']!r}."
+        )
+        assert report["teams"] == EXPECTED_TEAMS, (
+            f"report['teams'] must be {EXPECTED_TEAMS}, got {report['teams']}."
+        )
+        assert set(report["pages"]) == {"page_1", "page_2", "page_3"}, (
+            f"report['pages'] must have exactly page_1/page_2/page_3, got {sorted(report['pages'])}."
+        )
+>       assert report["pages"] == EXPECTED_PAGES, (
+            f"report['pages'] must be {EXPECTED_PAGES}, got {report['pages']}."
+        )
+E       AssertionError: report['pages'] must be {'page_1': ['auth-api', 'billing-api'], 'page_2': ['cache-proxy', 'dns-relay'], 'page_3': ['edge-router', 'feed-worker']}, got {'page_1': ['auth-api', 'billing-api'], 'page_2': ['dns-relay', 'edge-router'], 'page_3': ['feed-worker', 'graph-sync']}.
+E       assert {'page_1': ['...'graph-sync']} == {'page_1': ['...feed-worker']}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'page_3': ['feed-worker', 'graph-sync']} != {'page_3': ['edge-router', 'feed-worker']}
+E         {'page_2': ['dns-relay', 'edge-router']} != {'page_2': ['cache-proxy', 'dns-relay']}
+E         Use -v to get more diff
+
+/tests/test_final_state.py:830: AssertionError
+==================================== PASSES ====================================
+_______________________ test_migration_status_is_in_sync _______________________
+---------------------------- Captured stdout setup -----------------------------
+--- start-gel-server.sh stdout ---
+gel server already running on 127.0.0.1:5656
+
+--- start-gel-server.sh stderr ---
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_schema_file_exists
+PASSED ../tests/test_final_state.py::test_migration_file_created
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+PASSED ../tests/test_final_state.py::test_graphql_extension_enabled
+PASSED ../tests/test_final_state.py::test_active_service_alias_exists
+PASSED ../tests/test_final_state.py::test_team_type_shape
+PASSED ../tests/test_final_state.py::test_service_type_shape
+PASSED ../tests/test_final_state.py::test_seed_counts
+PASSED ../tests/test_final_state.py::test_seed_rows_exact
+PASSED ../tests/test_final_state.py::test_raw_http_alias_query
+PASSED ../tests/test_final_state.py::test_raw_http_team_computeds
+PASSED ../tests/test_final_state.py::test_endpoint_url
+PASSED ../tests/test_final_state.py::test_execute_happy_path
+PASSED ../tests/test_final_state.py::test_execute_with_variables
+PASSED ../tests/test_final_state.py::test_execute_graphql_error_payload
+PASSED ../tests/test_final_state.py::test_execute_non_json_transport_error
+PASSED ../tests/test_final_state.py::test_list_services_unfiltered
+PASSED ../tests/test_final_state.py::test_list_services_region_filter
+PASSED ../tests/test_final_state.py::test_list_services_min_tier_filter
+PASSED ../tests/test_final_state.py::test_list_services_active_only
+PASSED ../tests/test_final_state.py::test_list_services_combined_filters
+PASSED ../tests/test_final_state.py::test_list_services_empty_result
+PASSED ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs0]
+PASSED ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs1]
+PASSED ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs2]
+PASSED ../tests/test_final_state.py::test_list_services_invalid_window_raises[kwargs3]
+PASSED ../tests/test_final_state.py::test_list_services_records_server_side_request
+PASSED ../tests/test_final_state.py::test_list_services_reflects_live_data
+PASSED ../tests/test_final_state.py::test_fetch_teams
+PASSED ../tests/test_final_state.py::test_verify_parity
+PASSED ../tests/test_final_state.py::test_create_and_delete_service
+PASSED ../tests/test_final_state.py::test_create_service_failure_is_clean
+PASSED ../tests/test_final_state.py::test_retire_service
+PASSED ../tests/test_final_state.py::test_missing_service_errors
+PASSED ../tests/test_final_state.py::test_no_schema_drift_at_end
+FAILED ../tests/test_final_state.py::test_list_services_pagination_boundaries
+FAILED ../tests/test_final_state.py::test_report_command_regenerates_report
+========================= 2 failed, 35 passed in 3.22s =========================

@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_free_objects_nested_inserts_ts",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_free_objects_nested_inserts__PzxYtfm",
+    "trials_dir": "jobs/2026-08-07__13-22-37",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "zai/glm-5.2",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "7e9c1369-c0be-4962-b429-f0ea6a51f4da"
+}

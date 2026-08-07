@@ -1,0 +1,221 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 37 items
+
+../tests/test_final_state.py ...........FF..................FF.FFF       [100%]
+
+=================================== FAILURES ===================================
+_________________________ test_balance_report_baseline _________________________
+
+gel_server = True
+
+    def test_balance_report_baseline(gel_server):
+>       entries = balance_map(cli_json("balance"))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:440: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]
+
+    def balance_map(payload):
+>       assert payload.get("report") == "balance", (
+               ^^^^^^^^^^^
+            f"`balance` must report \"report\": \"balance\", got {payload.get('report')!r}."
+        )
+E       AttributeError: 'list' object has no attribute 'get'
+
+/tests/test_final_state.py:220: AttributeError
+_____________________ test_balance_sku_arrays_are_distinct _____________________
+
+gel_server = True
+
+    def test_balance_sku_arrays_are_distinct(gel_server):
+>       for entry in balance_map(cli_json("balance")):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:450: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]
+
+    def balance_map(payload):
+>       assert payload.get("report") == "balance", (
+               ^^^^^^^^^^^
+            f"`balance` must report \"report\": \"balance\", got {payload.get('report')!r}."
+        )
+E       AttributeError: 'list' object has no attribute 'get'
+
+/tests/test_final_state.py:220: AttributeError
+___________________ test_new_shelf_row_changes_every_report ____________________
+
+gel_server = True
+
+    def test_new_shelf_row_changes_every_report(gel_server):
+        with mutations(insert_shelf("W-DUB", "SKU-007", 4)):
+>           entries = {e["code"]: e for e in balance_map(cli_json("balance"))}
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:666: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on...-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': ['SKU-007'], 'shelf_only': ['SKU-007'], ...}]
+
+    def balance_map(payload):
+>       assert payload.get("report") == "balance", (
+               ^^^^^^^^^^^
+            f"`balance` must report \"report\": \"balance\", got {payload.get('report')!r}."
+        )
+E       AttributeError: 'list' object has no attribute 'get'
+
+/tests/test_final_state.py:220: AttributeError
+_______________ test_second_warehouse_invalidates_sole_warehouse _______________
+
+gel_server = True
+
+    def test_second_warehouse_invalidates_sole_warehouse(gel_server):
+        with mutations(insert_shelf("W-BER", "SKU-003", 2)):
+            sku = cli_json("sku", "SKU-003")
+            assert sku_tuple(sku) == (True, None, ["W-AMS", "W-BER"], 4, 0), (
+                "Once SKU-003 is counted in two warehouses, sole_warehouse must become null; got "
+                f"{sku_tuple(sku)}."
+            )
+>           entries = {e["code"]: e for e in balance_map(cli_json("balance"))}
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:707: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]
+
+    def balance_map(payload):
+>       assert payload.get("report") == "balance", (
+               ^^^^^^^^^^^
+            f"`balance` must report \"report\": \"balance\", got {payload.get('report')!r}."
+        )
+E       AttributeError: 'list' object has no attribute 'get'
+
+/tests/test_final_state.py:220: AttributeError
+_________________________ test_new_sku_expands_matrix __________________________
+
+gel_server = True
+
+    def test_new_sku_expands_matrix(gel_server):
+        with mutations("insert Sku { code := 'SKU-900', label := 'probe' }"):
+            payload = cli_json("matrix")
+            cells, index = matrix_index(payload)
+            assert len(cells) == 32, (
+                f"With an eighth SKU the matrix must have 4x8=32 cells, got {len(cells)}."
+            )
+            assert payload["total_delta"] == 5, (
+                f"A SKU with no rows must not change total_delta, got {payload['total_delta']}."
+            )
+            cell = index[("W-AMS", "SKU-900")]
+            assert (cell["shelf"], cell["ledger"], cell["delta"]) == (0, 0, 0), (
+                f"Cell (W-AMS, SKU-900) should be all zeros, got {cell!r}."
+            )
+            assert sku_tuple(cli_json("sku", "SKU-900")) == (True, None, [], 0, 0), (
+                "`sku SKU-900` should report an existing but empty SKU."
+            )
+>           entries = {e["code"]: e for e in balance_map(cli_json("balance"))}
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:766: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'all_skus': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}]
+
+    def balance_map(payload):
+>       assert payload.get("report") == "balance", (
+               ^^^^^^^^^^^
+            f"`balance` must report \"report\": \"balance\", got {payload.get('report')!r}."
+        )
+E       AttributeError: 'list' object has no attribute 'get'
+
+/tests/test_final_state.py:220: AttributeError
+______________________ test_new_warehouse_expands_balance ______________________
+
+gel_server = True
+
+    def test_new_warehouse_expands_balance(gel_server):
+        with mutations("insert Warehouse { code := 'W-ZZZ', region := 'probe' }"):
+>           entries = balance_map(cli_json("balance"))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:775: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on... 'W-DUB', 'all_skus': [], 'shelf_only': [], ...}, {'both': [], 'code': 'W-ZZZ', 'all_skus': [], 'shelf_only': [], ...}]
+
+    def balance_map(payload):
+>       assert payload.get("report") == "balance", (
+               ^^^^^^^^^^^
+            f"`balance` must report \"report\": \"balance\", got {payload.get('report')!r}."
+        )
+E       AttributeError: 'list' object has no attribute 'get'
+
+/tests/test_final_state.py:220: AttributeError
+___________________ test_new_ledger_row_changes_every_report ___________________
+
+gel_server = True
+
+    def test_new_ledger_row_changes_every_report(gel_server):
+        with mutations(insert_ledger("W-DUB", "SKU-006", 6)):
+>           entries = {e["code"]: e for e in balance_map(cli_json("balance"))}
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:810: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+payload = [{'both': ['SKU-001', 'SKU-002'], 'code': 'W-AMS', 'all_skus': ['SKU-001', 'SKU-002', 'SKU-003', 'SKU-006'], 'shelf_on...s': ['SKU-005'], 'shelf_only': [], ...}, {'both': [], 'code': 'W-DUB', 'all_skus': ['SKU-006'], 'shelf_only': [], ...}]
+
+    def balance_map(payload):
+>       assert payload.get("report") == "balance", (
+               ^^^^^^^^^^^
+            f"`balance` must report \"report\": \"balance\", got {payload.get('report')!r}."
+        )
+E       AttributeError: 'list' object has no attribute 'get'
+
+/tests/test_final_state.py:220: AttributeError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_entrypoint_exists
+PASSED ../tests/test_final_state.py::test_queries_directory_holds_edgeql_files
+PASSED ../tests/test_final_state.py::test_no_foreign_runtime_source_files_in_project
+PASSED ../tests/test_final_state.py::test_entrypoint_does_not_invoke_foreign_runtimes
+PASSED ../tests/test_final_state.py::test_new_migration_file_created
+PASSED ../tests/test_final_state.py::test_migration_state_in_sync
+PASSED ../tests/test_final_state.py::test_warehouse_scalar_computeds_declared
+PASSED ../tests/test_final_state.py::test_warehouse_multi_link_computeds_declared
+PASSED ../tests/test_final_state.py::test_sku_sole_warehouse_declared
+PASSED ../tests/test_final_state.py::test_computeds_are_readable_for_every_object
+PASSED ../tests/test_final_state.py::test_warehouse_computed_values
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-001]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-002]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-003]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-004]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-005]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-006]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-007]
+PASSED ../tests/test_final_state.py::test_sku_report_unknown_code_without_strict
+PASSED ../tests/test_final_state.py::test_sku_report_unknown_code_with_strict_fails
+PASSED ../tests/test_final_state.py::test_sku_report_known_code_with_strict_succeeds
+PASSED ../tests/test_final_state.py::test_duplicates_report_baseline
+PASSED ../tests/test_final_state.py::test_duplicates_assert_fails_when_duplicates_exist
+PASSED ../tests/test_final_state.py::test_duplicates_clean_state
+PASSED ../tests/test_final_state.py::test_matrix_report_baseline
+PASSED ../tests/test_final_state.py::test_matrix_report_filtered_by_sku
+PASSED ../tests/test_final_state.py::test_matrix_report_unknown_sku
+PASSED ../tests/test_final_state.py::test_unknown_report_name
+PASSED ../tests/test_final_state.py::test_sku_report_without_code
+PASSED ../tests/test_final_state.py::test_new_duplicate_pair_is_detected
+FAILED ../tests/test_final_state.py::test_balance_report_baseline - Attribute...
+FAILED ../tests/test_final_state.py::test_balance_sku_arrays_are_distinct - A...
+FAILED ../tests/test_final_state.py::test_new_shelf_row_changes_every_report
+FAILED ../tests/test_final_state.py::test_second_warehouse_invalidates_sole_warehouse
+FAILED ../tests/test_final_state.py::test_new_sku_expands_matrix - AttributeE...
+FAILED ../tests/test_final_state.py::test_new_warehouse_expands_balance - Att...
+FAILED ../tests/test_final_state.py::test_new_ledger_row_changes_every_report
+========================= 7 failed, 30 passed in 8.17s =========================

@@ -1,0 +1,91 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 34 items
+
+../tests/test_final_state.py ..............F...................          [100%]
+
+=================================== FAILURES ===================================
+__________________________ test_tracks_loaded_exactly __________________________
+
+gel_client = <gel.blocking_client.Client object at 0x790fc4973550>
+seed = {'albums': [{'label': 'Fjord Records', 'slug': 'alb-northern-lights', 'title': 'Northern Lights', 'year': 1999}, {'lab...}, {'artist': 'brick-mono', 'role': 'bass', 'share_bp': 3000}], 'duration_ms': 240000, 'royalty_rate': '0.1075', ...}]}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_tracks_loaded_exactly(gel_client, seed, expected):
+        tracks = gel_client.query(
+            """
+            select catalog::Track {
+                slug,
+                title,
+                duration_ms,
+                payout_micros,
+                album_slug := .album.slug,
+                tags,
+                contribs := (
+                    select .contributors {
+                        handle,
+                        c_role := @role,
+                        c_share := @share_bp
+                    }
+                )
+            }
+            """
+        )
+        by_slug = {}
+        for track in tracks:
+            assert track.slug not in by_slug, f"Track slug {track.slug!r} appears more than once."
+            by_slug[track.slug] = track
+        for entry in seed["tracks"]:
+            assert entry["slug"] in by_slug, f"Track {entry['slug']!r} was not loaded."
+            track = by_slug[entry["slug"]]
+            assert track.title == entry["title"], (
+                f"Track {entry['slug']!r} title mismatch: {track.title!r} != {entry['title']!r}"
+            )
+>           assert track.duration_ms == entry["duration_ms"], (
+                f"Track {entry['slug']!r} duration mismatch: "
+                f"{track.duration_ms} != {entry['duration_ms']}"
+            )
+E           AssertionError: Track 'trk-echoless' duration mismatch: 100000 != 95500
+E           assert 100000 == 95500
+E            +  where 100000 = Object{slug := 'trk-echoless', title := 'Echoless', duration_ms := 100000, payout_micros := 20000, album_slug := 'alb-quiet-machines', tags := ['ambient'], contribs := []}.duration_ms
+
+/tests/test_final_state.py:729: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_status_is_up_to_date
+PASSED ../tests/test_final_state.py::test_migration_files_exist
+PASSED ../tests/test_final_state.py::test_object_type_hierarchy
+PASSED ../tests/test_final_state.py::test_track_pointer_cardinalities_and_targets
+PASSED ../tests/test_final_state.py::test_payout_micros_is_computed_int64
+PASSED ../tests/test_final_state.py::test_contributors_link_properties
+PASSED ../tests/test_final_state.py::test_indexes_and_exclusive_constraints
+PASSED ../tests/test_final_state.py::test_invalid_country_is_rejected
+PASSED ../tests/test_final_state.py::test_valid_country_is_accepted
+PASSED ../tests/test_final_state.py::test_zero_duration_track_is_rejected
+PASSED ../tests/test_final_state.py::test_duplicate_slug_is_rejected
+PASSED ../tests/test_final_state.py::test_object_counts_match_seed
+PASSED ../tests/test_final_state.py::test_artists_loaded_exactly
+PASSED ../tests/test_final_state.py::test_albums_loaded_exactly
+PASSED ../tests/test_final_state.py::test_sql_relations_are_queryable
+PASSED ../tests/test_final_state.py::test_sql_column_mapping
+PASSED ../tests/test_final_state.py::test_load_command_reports_totals
+PASSED ../tests/test_final_state.py::test_load_command_is_idempotent
+PASSED ../tests/test_final_state.py::test_reconcile_exit_code_and_stdout
+PASSED ../tests/test_final_state.py::test_report_top_level_shape
+PASSED ../tests/test_final_state.py::test_report_metrics_are_complete_sorted_and_correct
+PASSED ../tests/test_final_state.py::test_report_rows_are_complete_sorted_and_correct
+PASSED ../tests/test_final_state.py::test_report_covers_edge_case_rows
+PASSED ../tests/test_final_state.py::test_reconcile_reflects_new_objects
+PASSED ../tests/test_final_state.py::test_reconcile_row_for_new_track
+PASSED ../tests/test_final_state.py::test_reconcile_reflects_sql_side_mutation
+PASSED ../tests/test_final_state.py::test_reconcile_returns_to_baseline_after_cleanup
+PASSED ../tests/test_final_state.py::test_drift_exit_code_and_stdout
+PASSED ../tests/test_final_state.py::test_drift_entries_are_exact_and_sorted
+PASSED ../tests/test_final_state.py::test_no_drift_against_matching_baseline
+PASSED ../tests/test_final_state.py::test_bad_sql_password_reports_connection_error
+PASSED ../tests/test_final_state.py::test_closed_sql_port_reports_connection_error
+PASSED ../tests/test_final_state.py::test_bad_edgeql_credentials_report_connection_error
+FAILED ../tests/test_final_state.py::test_tracks_loaded_exactly - AssertionEr...
+========================= 1 failed, 33 passed in 6.09s =========================

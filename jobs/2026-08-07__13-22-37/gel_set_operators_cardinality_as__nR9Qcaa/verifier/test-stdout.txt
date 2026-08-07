@@ -1,0 +1,48 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 37 items
+
+../tests/test_final_state.py .....................................       [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_entrypoint_exists
+PASSED ../tests/test_final_state.py::test_queries_directory_holds_edgeql_files
+PASSED ../tests/test_final_state.py::test_no_foreign_runtime_source_files_in_project
+PASSED ../tests/test_final_state.py::test_entrypoint_does_not_invoke_foreign_runtimes
+PASSED ../tests/test_final_state.py::test_new_migration_file_created
+PASSED ../tests/test_final_state.py::test_migration_state_in_sync
+PASSED ../tests/test_final_state.py::test_warehouse_scalar_computeds_declared
+PASSED ../tests/test_final_state.py::test_warehouse_multi_link_computeds_declared
+PASSED ../tests/test_final_state.py::test_sku_sole_warehouse_declared
+PASSED ../tests/test_final_state.py::test_computeds_are_readable_for_every_object
+PASSED ../tests/test_final_state.py::test_warehouse_computed_values
+PASSED ../tests/test_final_state.py::test_balance_report_baseline
+PASSED ../tests/test_final_state.py::test_balance_sku_arrays_are_distinct
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-001]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-002]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-003]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-004]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-005]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-006]
+PASSED ../tests/test_final_state.py::test_sku_report_baseline[SKU-007]
+PASSED ../tests/test_final_state.py::test_sku_report_unknown_code_without_strict
+PASSED ../tests/test_final_state.py::test_sku_report_unknown_code_with_strict_fails
+PASSED ../tests/test_final_state.py::test_sku_report_known_code_with_strict_succeeds
+PASSED ../tests/test_final_state.py::test_duplicates_report_baseline
+PASSED ../tests/test_final_state.py::test_duplicates_assert_fails_when_duplicates_exist
+PASSED ../tests/test_final_state.py::test_duplicates_clean_state
+PASSED ../tests/test_final_state.py::test_matrix_report_baseline
+PASSED ../tests/test_final_state.py::test_matrix_report_filtered_by_sku
+PASSED ../tests/test_final_state.py::test_matrix_report_unknown_sku
+PASSED ../tests/test_final_state.py::test_unknown_report_name
+PASSED ../tests/test_final_state.py::test_sku_report_without_code
+PASSED ../tests/test_final_state.py::test_new_shelf_row_changes_every_report
+PASSED ../tests/test_final_state.py::test_second_warehouse_invalidates_sole_warehouse
+PASSED ../tests/test_final_state.py::test_new_duplicate_pair_is_detected
+PASSED ../tests/test_final_state.py::test_new_sku_expands_matrix
+PASSED ../tests/test_final_state.py::test_new_warehouse_expands_balance
+PASSED ../tests/test_final_state.py::test_new_ledger_row_changes_every_report
+============================= 37 passed in 13.23s ==============================

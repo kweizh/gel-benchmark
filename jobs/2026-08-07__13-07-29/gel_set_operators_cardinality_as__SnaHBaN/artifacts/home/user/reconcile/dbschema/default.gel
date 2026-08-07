@@ -1,0 +1,52 @@
+module default {
+    type Warehouse {
+        required code: str {
+            constraint exclusive;
+        }
+        required region: str;
+
+        required single shelf_units := sum(.<warehouse[is ShelfCount].quantity);
+        required single ledger_units := sum(.<warehouse[is LedgerLine].quantity);
+
+        multi counted_skus := distinct .<warehouse[is ShelfCount].sku;
+        multi ledger_skus := distinct .<warehouse[is LedgerLine].sku;
+
+        multi unreconciled_skus := distinct (
+            (.counted_skus except .ledger_skus)
+            union
+            (.ledger_skus except .counted_skus)
+        );
+
+        required single is_balanced := (
+            (not exists .unreconciled_skus)
+            and (.shelf_units = .ledger_units)
+        );
+    }
+
+    type Sku {
+        required code: str {
+            constraint exclusive;
+        }
+        required label: str;
+
+        single sole_warehouse := assert_single(
+            (distinct .<sku[is ShelfCount].warehouse)
+            if (count(distinct .<sku[is ShelfCount].warehouse) = 1)
+            else <Warehouse>{}
+        );
+    }
+
+    type ShelfCount {
+        required warehouse: Warehouse;
+        required sku: Sku;
+        required quantity: int64;
+        required tag: str;
+    }
+
+    type LedgerLine {
+        required warehouse: Warehouse;
+        required sku: Sku;
+        required quantity: int64;
+        required tag: str;
+    }
+}

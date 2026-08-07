@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 14 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_python3_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_start_script_available PASSED
+../bootstrap/test_initial_state.py::test_connection_environment_variables_present PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_no_gel_toml_in_project PASSED
+../bootstrap/test_initial_state.py::test_seed_fixture_exists_and_has_expected_shape PASSED
+../bootstrap/test_initial_state.py::test_solution_files_not_present_yet PASSED
+../bootstrap/test_initial_state.py::test_gel_server_is_reachable PASSED
+../bootstrap/test_initial_state.py::test_gel_server_is_version_7 PASSED
+../bootstrap/test_initial_state.py::test_graphql_extension_not_enabled_yet PASSED
+../bootstrap/test_initial_state.py::test_domain_types_not_defined_yet PASSED
+../bootstrap/test_initial_state.py::test_no_migrations_applied_yet PASSED
+
+============================= 14 passed in 39.74s ==============================

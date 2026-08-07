@@ -1,0 +1,61 @@
+module default {
+
+    abstract type Measurement {
+        required property code -> str;
+        required link sample -> Sample;
+    }
+
+    type Assay extending Measurement {
+        required property value -> float64;
+    }
+
+    type Calibration extending Measurement {
+        required property bias -> float64;
+    }
+
+    type Certificate {
+        required property serial -> str {
+            constraint exclusive;
+        }
+        required link sample -> Sample {
+            constraint exclusive;
+        }
+    }
+
+    type Batch {
+        required property code -> str {
+            constraint exclusive;
+        }
+        multi link samples -> Sample {
+            property position -> int64;
+        }
+        property sample_count := count(.samples);
+    }
+
+    type Sample {
+        required property label -> str {
+            constraint exclusive;
+        }
+        required property grams -> float64;
+        required property intake_ref -> uuid {
+            readonly := true;
+            default := std::uuid_generate_v4();
+        }
+        required property intake_at -> datetime {
+            readonly := true;
+            default := std::datetime_of_statement();
+        }
+
+        # computed pointers
+        property label_key := std::str_lower(.label);
+        property age := std::datetime_of_statement() - .intake_at;
+        property assay_count := count(.assays);
+        property measurement_count := count(.measurements);
+        property total_value := sum(.assays.value);
+        multi link measurements := .<sample[IS Measurement];
+        multi link assays := .<sample[IS Assay];
+        multi link batches := .<samples[IS Batch];
+        link certificate := .<sample[IS Certificate];
+    }
+
+}

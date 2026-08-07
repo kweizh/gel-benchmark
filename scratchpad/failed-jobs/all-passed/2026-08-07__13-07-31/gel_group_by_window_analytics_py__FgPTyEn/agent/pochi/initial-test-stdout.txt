@@ -1,0 +1,24 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /bootstrap
+plugins: json-ctrf-0.5.3
+collected 16 items
+
+../bootstrap/test_initial_state.py::test_gel_cli_available PASSED
+../bootstrap/test_initial_state.py::test_gel_python_client_importable PASSED
+../bootstrap/test_initial_state.py::test_python3_available PASSED
+../bootstrap/test_initial_state.py::test_connection_environment_variables_present PASSED
+../bootstrap/test_initial_state.py::test_project_directory_exists PASSED
+../bootstrap/test_initial_state.py::test_schema_file_exists_with_seed_types PASSED
+../bootstrap/test_initial_state.py::test_migrations_directory_has_initial_migration PASSED
+../bootstrap/test_initial_state.py::test_refunds_file_exists_and_is_well_formed PASSED
+../bootstrap/test_initial_state.py::test_analytics_package_not_prepopulated PASSED
+../bootstrap/test_initial_state.py::test_migration_history_is_in_sync PASSED
+../bootstrap/test_initial_state.py::test_seed_types_exist_in_database PASSED
+../bootstrap/test_initial_state.py::test_categories_are_seeded PASSED
+../bootstrap/test_initial_state.py::test_sales_are_seeded PASSED
+../bootstrap/test_initial_state.py::test_sales_use_only_the_documented_channels PASSED
+../bootstrap/test_initial_state.py::test_sale_has_the_documented_properties PASSED
+../bootstrap/test_initial_state.py::test_refund_type_absent_before_the_task PASSED
+
+============================= 16 passed in 41.38s ==============================

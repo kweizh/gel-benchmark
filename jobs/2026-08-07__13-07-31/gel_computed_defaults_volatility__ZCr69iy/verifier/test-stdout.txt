@@ -1,0 +1,42 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 31 items
+
+../tests/test_final_state.py ...............................             [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_solution_files_exist
+PASSED ../tests/test_final_state.py::test_schema_and_migration_files_exist
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+PASSED ../tests/test_final_state.py::test_build_report_is_async_callable
+PASSED ../tests/test_final_state.py::test_declared_object_types_are_exactly_the_six
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Sample]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Measurement]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Assay]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Calibration]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Certificate]
+PASSED ../tests/test_final_state.py::test_pointer_contract_in_database[Batch]
+PASSED ../tests/test_final_state.py::test_stored_defaults_are_declared_readonly_with_defaults
+PASSED ../tests/test_final_state.py::test_link_property_introspection
+PASSED ../tests/test_final_state.py::test_report_introspection_matches_database
+PASSED ../tests/test_final_state.py::test_report_link_properties_match_database
+PASSED ../tests/test_final_state.py::test_seeded_row_counts
+PASSED ../tests/test_final_state.py::test_sample_labels_and_updated_row
+PASSED ../tests/test_final_state.py::test_report_samples_array
+PASSED ../tests/test_final_state.py::test_computed_values_match_direct_query
+PASSED ../tests/test_final_state.py::test_batch_and_link_property_values
+PASSED ../tests/test_final_state.py::test_report_defaults_block
+PASSED ../tests/test_final_state.py::test_defaults_captured_once_per_statement
+PASSED ../tests/test_final_state.py::test_computed_pointers_react_to_new_measurements
+PASSED ../tests/test_final_state.py::test_computed_key_follows_its_source_property
+PASSED ../tests/test_final_state.py::test_report_computed_block
+PASSED ../tests/test_final_state.py::test_read_time_age_invariant_from_database
+PASSED ../tests/test_final_state.py::test_report_volatility_block
+PASSED ../tests/test_final_state.py::test_volatile_expressions_are_refused_by_the_server
+PASSED ../tests/test_final_state.py::test_probes_left_no_residue
+PASSED ../tests/test_final_state.py::test_program_is_rerunnable_and_deterministic
+PASSED ../tests/test_final_state.py::test_build_report_coroutine_returns_the_same_document
+============================= 31 passed in 40.93s ==============================

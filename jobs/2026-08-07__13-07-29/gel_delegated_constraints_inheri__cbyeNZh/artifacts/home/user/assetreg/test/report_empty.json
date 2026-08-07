@@ -1,0 +1,18 @@
+{
+  "total": 0,
+  "inserted": 0,
+  "rejected": 0,
+  "results": [],
+  "reason_counts": {},
+  "schema": {
+    "abstract_constraints": [
+      "default::token_format"
+    ],
+    "delegated_pointer_constraints": [
+      "Asset.code"
+    ],
+    "delegated_object_constraints": [
+      "Asset"
+    ]
+  }
+}

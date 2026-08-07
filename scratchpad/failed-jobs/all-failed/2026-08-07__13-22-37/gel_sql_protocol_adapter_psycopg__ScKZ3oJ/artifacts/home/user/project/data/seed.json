@@ -1,0 +1,124 @@
+{
+  "artists": [
+    {
+      "handle": "aurora-lane",
+      "name": "Aurora Lane",
+      "country": "SE",
+      "aliases": ["Lane", "A.L.", "Aurora"]
+    },
+    {
+      "handle": "brick-mono",
+      "name": "Brick Mono",
+      "country": "US",
+      "aliases": []
+    },
+    {
+      "handle": "cassia-vek",
+      "name": "Cassia Vek",
+      "country": "BR",
+      "aliases": ["Vek"]
+    },
+    {
+      "handle": "delta-nine",
+      "name": "Delta Nine",
+      "country": "JP",
+      "aliases": ["D9", "Delta"]
+    },
+    {
+      "handle": "echo-void",
+      "name": "Echo Void",
+      "country": "DE",
+      "aliases": ["EV"]
+    }
+  ],
+  "albums": [
+    {
+      "slug": "alb-northern-lights",
+      "title": "Northern Lights",
+      "year": 1999,
+      "label": "Fjord Records"
+    },
+    {
+      "slug": "alb-quiet-machines",
+      "title": "Quiet Machines",
+      "year": 2007,
+      "label": null
+    },
+    {
+      "slug": "alb-zero-hour",
+      "title": "Zero Hour",
+      "year": 2007,
+      "label": "Zero Hour Media"
+    }
+  ],
+  "tracks": [
+    {
+      "slug": "trk-aurora-drift",
+      "title": "Aurora Drift",
+      "album": "alb-northern-lights",
+      "duration_ms": 214300,
+      "royalty_rate": "0.125",
+      "tags": ["ambient", "night"],
+      "contributors": [
+        {"artist": "aurora-lane", "role": "lead vocals", "share_bp": 6000},
+        {"artist": "delta-nine", "role": "synth", "share_bp": 4000}
+      ]
+    },
+    {
+      "slug": "trk-brick-house",
+      "title": "Brick House",
+      "album": "alb-northern-lights",
+      "duration_ms": 187000,
+      "royalty_rate": "0.0725",
+      "tags": ["rock"],
+      "contributors": [
+        {"artist": "brick-mono", "role": "guitar", "share_bp": 10000}
+      ]
+    },
+    {
+      "slug": "trk-cafe-varsang",
+      "title": "Café Vårsång 変奏曲",
+      "album": "alb-northern-lights",
+      "duration_ms": 305999,
+      "royalty_rate": "0.5",
+      "tags": ["ambient", "live", "instrumental"],
+      "contributors": [
+        {"artist": "cassia-vek", "role": "piano", "share_bp": 5000},
+        {"artist": "aurora-lane", "role": "strings", "share_bp": 3000},
+        {"artist": "delta-nine", "role": "percussion", "share_bp": 2000}
+      ]
+    },
+    {
+      "slug": "trk-delta-pulse",
+      "title": "Delta Pulse",
+      "album": "alb-quiet-machines",
+      "duration_ms": 121001,
+      "royalty_rate": "0.33333",
+      "tags": [],
+      "contributors": [
+        {"artist": "delta-nine", "role": "synth", "share_bp": 10000}
+      ]
+    },
+    {
+      "slug": "trk-echoless",
+      "title": "Echoless",
+      "album": "alb-quiet-machines",
+      "duration_ms": 95500,
+      "royalty_rate": "0.2",
+      "tags": ["ambient"],
+      "contributors": []
+    },
+    {
+      "slug": "trk-zenith",
+      "title": "Zenith",
+      "album": "alb-quiet-machines",
+      "duration_ms": 240000,
+      "royalty_rate": "0.1075",
+      "tags": ["night", "instrumental"],
+      "contributors": [
+        {"artist": "aurora-lane", "role": "vocals", "share_bp": 7000},
+        {"artist": "brick-mono", "role": "bass", "share_bp": 3000}
+      ]
+    }
+  ]
+}

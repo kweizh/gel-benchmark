@@ -1,0 +1,18 @@
+{
+  "teams": [
+    { "name": "atlas", "region": "eu-west" },
+    { "name": "borealis", "region": "us-east" },
+    { "name": "cygnus", "region": "eu-west" }
+  ],
+  "services": [
+    { "name": "auth-api", "tier": 1, "active": true, "team": "atlas" },
+    { "name": "billing-api", "tier": 2, "active": true, "team": "borealis" },
+    { "name": "cache-proxy", "tier": 3, "active": false, "team": "atlas" },
+    { "name": "dns-relay", "tier": 2, "active": true, "team": "cygnus" },
+    { "name": "edge-router", "tier": 1, "active": true, "team": "borealis" },
+    { "name": "feed-worker", "tier": 3, "active": true, "team": "atlas" },
+    { "name": "graph-sync", "tier": 2, "active": false, "team": "cygnus" },
+    { "name": "heartbeat", "tier": 1, "active": true, "team": "borealis" },
+    { "name": "index-builder", "tier": 3, "active": true, "team": "cygnus" }
+  ]
+}

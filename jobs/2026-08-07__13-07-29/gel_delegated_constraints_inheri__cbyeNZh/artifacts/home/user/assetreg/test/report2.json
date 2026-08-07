@@ -1,0 +1,116 @@
+{
+  "total": 11,
+  "inserted": 0,
+  "rejected": 11,
+  "results": [
+    {
+      "seq": 1,
+      "kind": "server",
+      "serial": "SN-0001",
+      "status": "rejected",
+      "reason": "SERIAL_DUPLICATE_GLOBAL",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 2,
+      "kind": "storage",
+      "serial": "SN-0002",
+      "status": "rejected",
+      "reason": "SERIAL_DUPLICATE_GLOBAL",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 3,
+      "kind": "server",
+      "serial": "SN-0003",
+      "status": "rejected",
+      "reason": "CODE_DUPLICATE_IN_KIND",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 4,
+      "kind": "storage",
+      "serial": "SN-0001",
+      "status": "rejected",
+      "reason": "SERIAL_DUPLICATE_GLOBAL",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 5,
+      "kind": "server",
+      "serial": "SN-0005",
+      "status": "rejected",
+      "reason": "SLOT_DUPLICATE_IN_KIND",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 6,
+      "kind": "storage",
+      "serial": "SN-0006",
+      "status": "rejected",
+      "reason": "SERIAL_DUPLICATE_GLOBAL",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 7,
+      "kind": "server",
+      "serial": "SN-0007",
+      "status": "rejected",
+      "reason": "CAPACITY_EXCEEDED",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 8,
+      "kind": "server",
+      "serial": "SN-0008",
+      "status": "rejected",
+      "reason": "REVISION_TOO_LOW",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 9,
+      "kind": "server",
+      "serial": "SN-0009",
+      "status": "rejected",
+      "reason": "TOKEN_INVALID(max=16)",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 10,
+      "kind": "server",
+      "serial": "SN-0010",
+      "status": "rejected",
+      "reason": "TOKEN_INVALID(max=12)",
+      "error_class": "ConstraintViolationError"
+    },
+    {
+      "seq": 11,
+      "kind": "server",
+      "serial": "SN-0011",
+      "status": "rejected",
+      "reason": "MISSING_REQUIRED",
+      "error_class": "MissingRequiredError"
+    }
+  ],
+  "reason_counts": {
+    "SERIAL_DUPLICATE_GLOBAL": 4,
+    "CODE_DUPLICATE_IN_KIND": 1,
+    "SLOT_DUPLICATE_IN_KIND": 1,
+    "CAPACITY_EXCEEDED": 1,
+    "REVISION_TOO_LOW": 1,
+    "TOKEN_INVALID(max=16)": 1,
+    "TOKEN_INVALID(max=12)": 1,
+    "MISSING_REQUIRED": 1
+  },
+  "schema": {
+    "abstract_constraints": [
+      "default::token_format"
+    ],
+    "delegated_pointer_constraints": [
+      "Asset.code"
+    ],
+    "delegated_object_constraints": [
+      "Asset"
+    ]
+  }
+}

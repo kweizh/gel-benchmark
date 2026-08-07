@@ -1,0 +1,353 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-07T05:19:23.318199+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 36,
+            "passed": 36,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1786079958028,
+            "stop": 1786079963318
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_run_ingest_entrypoint_exists",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079958073,
+                "stop": 1786079958074,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_typescript_sources_exist_and_use_gel_client",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079958074,
+                "stop": 1786079958074,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_exist",
+                "status": "passed",
+                "duration": 15,
+                "start": 1786079958075,
+                "stop": 1786079958090,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_is_in_sync",
+                "status": "passed",
+                "duration": 1362,
+                "start": 1786079958090,
+                "stop": 1786079959452,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_all_required_object_types_exist",
+                "status": "passed",
+                "duration": 250,
+                "start": 1786079959453,
+                "stop": 1786079959703,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_abstractness_of_types",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079959703,
+                "stop": 1786079959704,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_asset_uses_multiple_inheritance",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079959704,
+                "stop": 1786079959704,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_concrete_asset_subtypes",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079959704,
+                "stop": 1786079959704,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_asset_declares_required_pointers",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079959704,
+                "stop": 1786079959705,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_code_exclusive_constraint_is_delegated",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079959705,
+                "stop": 1786079959705,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_serial_exclusive_constraint_is_not_delegated",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079959705,
+                "stop": 1786079959706,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_composite_object_constraint_is_delegated",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079959706,
+                "stop": 1786079959706,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_capacity_expression_constraint",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079959706,
+                "stop": 1786079959706,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_inherited_constraints_are_not_delegated_on_subtypes",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079959706,
+                "stop": 1786079959707,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_no_unexpected_delegated_constraints",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079959707,
+                "stop": 1786079959707,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_single_parameterized_abstract_constraint",
+                "status": "passed",
+                "duration": 155,
+                "start": 1786079959707,
+                "stop": 1786079959862,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_abstract_constraint_reused_at_both_sites",
+                "status": "passed",
+                "duration": 124,
+                "start": 1786079959862,
+                "stop": 1786079959986,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_operator_link_property_and_constraint",
+                "status": "passed",
+                "duration": 178,
+                "start": 1786079959986,
+                "stop": 1786079960164,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_a_exit_code_and_stdout",
+                "status": "passed",
+                "duration": 1681,
+                "start": 1786079960165,
+                "stop": 1786079961846,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_a_report_totals",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961846,
+                "stop": 1786079961846,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_a_results_ordering_and_shape",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079961846,
+                "stop": 1786079961847,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_a_schema_section_from_introspection",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961847,
+                "stop": 1786079961847,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_a_database_state",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961847,
+                "stop": 1786079961847,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_b_exit_code_and_stdout",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961848,
+                "stop": 1786079961848,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_b_report_totals",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961848,
+                "stop": 1786079961848,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_b_classification_table",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079961848,
+                "stop": 1786079961849,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_b_reason_counts",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961849,
+                "stop": 1786079961849,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_b_left_no_partial_writes",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961849,
+                "stop": 1786079961849,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_b_database_counts",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079961849,
+                "stop": 1786079961850,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_c_exit_code_and_stdout",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961850,
+                "stop": 1786079961850,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_c_report",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961850,
+                "stop": 1786079961850,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_run_c_database_state",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079961851,
+                "stop": 1786079961851,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_operator_rules_enforced_by_database",
+                "status": "passed",
+                "duration": 604,
+                "start": 1786079961851,
+                "stop": 1786079962455,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_missing_report_flag_exits_1",
+                "status": "passed",
+                "duration": 196,
+                "start": 1786079962455,
+                "stop": 1786079962651,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_unreadable_input_exits_1_without_report",
+                "status": "passed",
+                "duration": 205,
+                "start": 1786079962651,
+                "stop": 1786079962856,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_empty_manifest_and_reversed_flags",
+                "status": "passed",
+                "duration": 461,
+                "start": 1786079962856,
+                "stop": 1786079963317,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

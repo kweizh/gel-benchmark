@@ -1,0 +1,14 @@
+{
+  "name": "catalog-ingest",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "gel": "2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "tsx": "4.23.9",
+    "typescript": "5.9.3"
+  }
+}

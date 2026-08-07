@@ -1,0 +1,14 @@
+{
+  "name": "assetreg",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fleet asset compliance registry ingest tool",
+  "dependencies": {
+    "gel": "2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "tsx": "4.23.9",
+    "typescript": "^5.9.0"
+  }
+}

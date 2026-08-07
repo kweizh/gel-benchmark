@@ -1,0 +1,308 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-07T05:16:31.523984+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "9.1.1"
+        },
+        "summary": {
+            "tests": 31,
+            "passed": 31,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1786079750604,
+            "stop": 1786079791523
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_solution_files_exist",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079750698,
+                "stop": 1786079750698,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_schema_and_migration_files_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079750698,
+                "stop": 1786079750699,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_status_is_in_sync",
+                "status": "passed",
+                "duration": 35495,
+                "start": 1786079750699,
+                "stop": 1786079786194,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_build_report_is_async_callable",
+                "status": "passed",
+                "duration": 2,
+                "start": 1786079786194,
+                "stop": 1786079786196,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_declared_object_types_are_exactly_the_six",
+                "status": "passed",
+                "duration": 46,
+                "start": 1786079786196,
+                "stop": 1786079786242,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_pointer_contract_in_database",
+                "status": "passed",
+                "duration": 183,
+                "start": 1786079786242,
+                "stop": 1786079786425,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_pointer_contract_in_database",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079786425,
+                "stop": 1786079786426,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_pointer_contract_in_database",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079786426,
+                "stop": 1786079786427,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_pointer_contract_in_database",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079786428,
+                "stop": 1786079786429,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_pointer_contract_in_database",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079786429,
+                "stop": 1786079786430,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_pointer_contract_in_database",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079786430,
+                "stop": 1786079786431,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_stored_defaults_are_declared_readonly_with_defaults",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079786431,
+                "stop": 1786079786432,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_link_property_introspection",
+                "status": "passed",
+                "duration": 240,
+                "start": 1786079786432,
+                "stop": 1786079786672,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_introspection_matches_database",
+                "status": "passed",
+                "duration": 1298,
+                "start": 1786079786672,
+                "stop": 1786079787970,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_link_properties_match_database",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079787970,
+                "stop": 1786079787971,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_seeded_row_counts",
+                "status": "passed",
+                "duration": 38,
+                "start": 1786079787972,
+                "stop": 1786079788010,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sample_labels_and_updated_row",
+                "status": "passed",
+                "duration": 19,
+                "start": 1786079788010,
+                "stop": 1786079788029,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_samples_array",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079788029,
+                "stop": 1786079788029,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_computed_values_match_direct_query",
+                "status": "passed",
+                "duration": 78,
+                "start": 1786079788030,
+                "stop": 1786079788108,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_batch_and_link_property_values",
+                "status": "passed",
+                "duration": 73,
+                "start": 1786079788108,
+                "stop": 1786079788181,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_defaults_block",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079788181,
+                "stop": 1786079788181,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_defaults_captured_once_per_statement",
+                "status": "passed",
+                "duration": 302,
+                "start": 1786079788181,
+                "stop": 1786079788483,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_computed_pointers_react_to_new_measurements",
+                "status": "passed",
+                "duration": 177,
+                "start": 1786079788483,
+                "stop": 1786079788660,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_computed_key_follows_its_source_property",
+                "status": "passed",
+                "duration": 51,
+                "start": 1786079788661,
+                "stop": 1786079788712,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_computed_block",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079788712,
+                "stop": 1786079788713,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_read_time_age_invariant_from_database",
+                "status": "passed",
+                "duration": 75,
+                "start": 1786079788713,
+                "stop": 1786079788788,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_volatility_block",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079788788,
+                "stop": 1786079788789,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_volatile_expressions_are_refused_by_the_server",
+                "status": "passed",
+                "duration": 20,
+                "start": 1786079788789,
+                "stop": 1786079788809,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_probes_left_no_residue",
+                "status": "passed",
+                "duration": 1281,
+                "start": 1786079788810,
+                "stop": 1786079790091,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_program_is_rerunnable_and_deterministic",
+                "status": "passed",
+                "duration": 764,
+                "start": 1786079790092,
+                "stop": 1786079790856,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_build_report_coroutine_returns_the_same_document",
+                "status": "passed",
+                "duration": 667,
+                "start": 1786079790856,
+                "stop": 1786079791523,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

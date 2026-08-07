@@ -1,0 +1,862 @@
+- Initializing MCP connections...
+You
+# Dual-protocol reconciliation for a Gel catalog (EdgeQL binary protocol vs. PostgreSQL wire protocol) ## Background A Gel 6 server runs locally inside this container and is already linked to the project at `/home/user/project`. Gel speaks two wire protocols on the very same port: its native binary protocol (used by the Python `gel` client) and a PostgreSQL-compatible protocol (usable by any Postgres driver, e.g. `psycopg`). Both expose the *same* stored data, but through two very different surfaces: EdgeQL object types/links/properties on one side, and plain SQL relations on the other. The data team no longer trusts either surface on its own. Your job is to model a small music catalog in Gel, load a dataset into it over the native protocol, and then build a reconciliation tool that recomputes an agreed-upon set of figures **independently over each protocol** and reports, exactly and machine-readably, wherever the two disagree — plus any drift against a previously captured report. Everything runs locally. The Python `gel` client, `psycopg` (v3), `pytest` and the Gel CLI are already installed; do not download anything and do not rely on any external service. ## Requirements ### 1. Schema Define the following in the Gel module `catalog` (all names are exact and case-sensitive), apply it through Gel's migration system, and leave the migration files in `dbschema/migrations/` with the branch reported as up to date: * abstract type `Asset` with required `title: str` and required `slug: str`; `slug` is unique across all assets. * type `Artist` with required `handle: str` (unique), required `name: str`, required `country: str`, and a multi property `aliases: str`. A `country` value that is not exactly two uppercase ASCII letters must be rejected by the database itself. * type `Album extending Asset` with required `year: int32` and optional `label: str`, and an index on `year`. * type `Track extending Asset` with: * required `duration_ms: int64`, which the database must reject when it is less than 1; * required `royalty_rate: decimal`; * a required single link `album` to `Album`; * a multi property `tags: str`; * a multi link `contributors` to `Artist` carrying two link properties, `role: str` and `share_bp: int64`; * a computed single property `payout_micros: int64` whose value is the integer floor of `duration_ms * royalty_rate`. ### 2. Dataset loading The dataset lives at `/home/user/project/data/seed.json`. It has three top-level arrays: `artists` (objects with `handle`, `name`, `country`, `aliases`), `albums` (objects with `slug`, `title`, `year`, `label`, where `label` may be `null`), and `tracks` (objects with `slug`, `title`, `album` referencing an album `slug`, `duration_ms`, `royalty_rate` given as an exact decimal *string*, `tags`, and `contributors`, each contributor being `{"artist": <artist handle>, "role": <str>, "share_bp": <int>}`). Loading must go through Gel's native binary protocol only, must be re-runnable any number of times without creating duplicates or accumulating extra multi-property/link rows, and must converge every listed object to exactly what the file says (including replacing `tags` and `contributors` sets). It must never delete or modify objects that are not named in the file. Leave the dataset loaded in the database when you are done. ### 3. Reconciliation tool A command-line tool that computes an agreed set of figures twice — once with EdgeQL over the native binary protocol, once with SQL over the PostgreSQL protocol — compares them, optionally diffs the result against a baseline report, and writes a JSON report. ## Implementation Hints * Project path: `/home/user/project`. Work only inside it (the schema, the tool, and any helpers you write). * The Gel server may not be running when you start; `/usr/local/bin/gel-start` starts it (idempotent, waits for readiness) and `/usr/local/bin/gel-stop` stops it. Assume the graders start it the same way, and never assume anything survives outside the database's data directory and the project directory. * All EdgeQL/binary-protocol connections must rely on the Gel Python client's standard connection resolution (linked project plus the standard `GEL_*` environment variables), never on hardcoded credentials. * PostgreSQL-protocol connection parameters are supplied through the environment variables `GEL_SQL_HOST`, `GEL_SQL_PORT`, `GEL_SQL_USER`, `GEL_SQL_PASSWORD`, `GEL_SQL_DBNAME` (all preset in this environment). They MUST be read at run time on every invocation; they will be overridden when the tool is exercised. ### Commands Both commands are run with the working directory set to `/home/user/project`. * `python3 dualview.py load --input <path>` * Loads the dataset at `<path>` as described above. * On success prints to stdout exactly one JSON object and nothing else, with exactly the keys `artists`, `albums`, `tracks`, `contributions`, whose values are the total number of `Artist` objects, `Album` objects, `Track` objects, and `Track.contributors` link rows present in the database *after* the load. Exit code 0. * `python3 dualview.py reconcile --output <path> [--baseline <path>]` * Writes the JSON report described below to `--output` (creating parent directories as needed). * On success prints to stdout exactly one JSON object and nothing else, with exactly the keys `output` (the `--output` value verbatim), `agrees`, `mismatch_count`, `drift_count`. * Exit code 0 when there are no mismatches and no drift; 3 when `mismatch_count > 0`; 4 when `mismatch_count == 0` and `drift_count > 0`. * If either protocol cannot be connected to, nothing is written to stdout, no report file is produced, exactly one JSON object with exactly the keys `error` (always the string `connection`), `protocol` (`edgeql` or `sql`), and `message` (a non-empty string) is printed to stderr, and the exit code is 2. If both protocols are unreachable, report `edgeql`. ### Report format A JSON object with exactly these top-level keys: `schema_version` (always the integer `1`), `agrees` (boolean, true iff `mismatch_count` is 0), `mismatch_count` (integer), `drift_count` (integer), `metrics`, `rows`, `mismatches`, `drift`. `metrics` is an array, sorted by `id` in ascending ASCII order, of objects with exactly the keys `id`, `edgeql`, `sql`, `agrees`. `edgeql` and `sql` are the value computed over each protocol (JSON integer, or `null` when the underlying set is empty). The `id` set is exactly: | `id` | value | | --------------------------------------------------- | ------------------------------------------------------------------ | | `count.artists_without_contributions` | number of `Artist` objects that are not a contributor on any track | | `count.catalog::Album` | number of `Album` objects | | `count.catalog::Artist` | number of `Artist` objects | | `count.catalog::Artist.aliases` | total number of alias entries across all artists | | `count.catalog::Asset` | number of `Asset` objects | | `count.catalog::Track` | number of `Track` objects | | `count.catalog::Track.contributors` | total number of contributor link entries across all tracks | | `count.catalog::Track.tags` | total number of tag entries across all tracks | | `count.distinct.catalog::Track.album` | number of distinct albums referenced by at least one track | | `count.distinct.catalog::Track.contributors@target` | number of distinct artists that contribute to at least one track | | `count.tracks_without_tags` | number of `Track` objects with no tags | | `max.catalog::Album.year` | largest `Album.year` | | `min.catalog::Album.year` | smallest `Album.year` | | `sum.catalog::Track.contributors@share_bp` | sum of the `share_bp` link property over all contributor entries | | `sum.catalog::Track.duration_ms` | sum of `duration_ms` over all tracks | | `sum.catalog::Track.payout_micros` | sum of `payout_micros` over all tracks | | `sum.catalog::Track.title_length` | sum of the character length of `title` over all tracks | `rows` is an array, sorted by `slug` in ascending ASCII order, of objects with exactly the keys `slug` (the track's slug), `edgeql`, `sql`, `agrees`. Its slug set is the union of the track slugs observed over the two protocols. `edgeql` and `sql` are each either `null` (that protocol did not observe this track at all) or an object with exactly the keys `album_slug` (string), `album_year` (integer), `contributor_count` (integer), `duration_ms` (integer), `payout_micros` (integer), `share_bp_total` (integer, the sum of `share_bp` over that track's contributors, `0` when there are none), `tag_count` (integer), `title_length` (integer, the character length of the track title). `mismatches` is an array of objects with exactly the keys `scope`, `id`, `field`, `edgeql`, `sql`, sorted by `scope`, then `id`, then `field`, all in ascending ASCII order. One entry per disagreeing metric, with `scope` `metric`, `id` the metric id and `field` the string `value`; plus one entry per disagreeing row field, with `scope` `row`, `id` the track slug and `field` the row-object key, where a `null` side yields `null` for every one of its eight fields. `mismatch_count` is the length of this array. `drift` is an array of objects with exactly the keys `scope`, `id`, `field`, `baseline`, `current`, sorted the same way; it is empty when `--baseline` is not given. Otherwise the baseline is a previously written report in this same format, and drift is computed over the **`edgeql`** side only: one entry per metric whose value differs (`scope` `metric`, `field` `value`), and one entry per differing row field (`scope` `row`, `id` the slug, `field` the row-object key). A track present in only one of the two reports produces eight entries — one per row-object key — with `null` on the side where it is absent. `drift_count` is the length of this array.   
+
+Pochi
+📂 Listing files in /home/user/project recursively ✔ 
+📖 Reading /home/user/project/dbschema/default.gel ✔ 
+💭 Thinking for 362 characters   
+📖 Reading /home/user/project/gel.toml ✔ 
+💫 Executing /usr/local/bin/gel-start ✔ 
+💫 Executing gel query "select 1" ✔ 
+💫 Executing gel migration status ✔ 
+📂 Listing files in /home/user/project/dbschema recursively ✔ 
+💭 Thinking for 262 characters   
+💫 Executing gel migration log ✖ "Command exited with code 1"
+💫 Executing gel migration log --from-db ✔ 
+💭 Thinking for 570 characters   
+💫 Executing gel query "select re_test(r'^[A-Z]{2}$', 'US')" ✔ 
+💫 Executing gel query "select re_test(r'^[A-Z]{2}$', 'us') or re_test(r'^[A-Z]{2}$', 'USA') or re_test(r'^[A-Z]{2}$', 'U1')" ✔ 
+💭 Thinking for 883 characters   
+💫 Executing gel query "select <int64>math::floor(<decimal>123 * <decimal>1.5)" ✔ 
+💫 Executing gel query "select <int64><decimal>184.5" ✔ 
+💭 Thinking for 319 characters   
+💫 Executing gel query "select <int64>math::floor(<decimal>184.9)" ✔ 
+💭 Thinking for 313 characters   
+💫 Executing gel query "select 100 * <decimal>1.5" ✔ 
+💭 Thinking for 1219 characters   
+✏️  Writing /home/user/project/dbschema/default.gel ✔ 
+💫 Executing gel migration create --non-interactive ✔ 
+📂 Listing files in /home/user/project/dbschema recursively ✔ 
+📖 Reading /home/user/project/dbschema/migrations/00001-m1hqgoq.edgeql ✔ 
+💫 Executing gel migrate ✔ 
+💫 Executing gel migration status ✔ 
+📖 Reading /home/user/project/data/seed.json ✔ 
+📖 Reading /home/user/project/data/seed.json ✔ 
+💭 Thinking for 295 characters   
+💫 Executing python3 -c "import gel, psycopg; print(gel.__version__); print(psycopg.__version__)" ✔ 
+💭 Thinking for 166 characters   
+💫 Executing python3 -c "import gel; client = gel.create_client(); print(client.query('select 1'))" ✔ 
+💭 Thinking for 366 characters   
+💫 Executing python3 -c "import gel; client = gel.create_client(); print(client.query('select catalog::Artist'))" ✔ 
+💭 Thinking for 646 characters   
+💫 Executing gel query "insert catalog::Artist { handle := 'test', name := 'Test', country := 'US', aliases := array_unpack(<array<str>>['A', 'B']) }" ✔ 
+💫 Executing gel query "select catalog::Artist { handle, name, country, aliases }" ✔ 
+💭 Thinking for 238 characters   
+💫 Executing gel query "insert catalog::Artist { handle := 'test', name := 'Test Updated', country := 'US', aliases := array_unpack(<array<str>>['C']) } unless conflict on .handle else (update catalog::Artist set { name := 'Test Updated', country := 'US', aliases := array_unpack(<array<str>>['C']) })" ✔ 
+💫 Executing gel query "select catalog::Artist { handle, name, country, aliases }" ✔ 
+💭 Thinking for 335 characters   
+💫 Executing gel query "insert catalog::Artist { handle := 'test', name := 'Test Empty', country := 'US', aliases := array_unpack(<array<str>>[]) } unless conflict on .handle else (update catalog::Artist set { name := 'Test Empty', country := 'US', aliases := array_unpack(<array<str>>[]) })" ✔ 
+💫 Executing gel query "select catalog::Artist { handle, name, country, aliases }" ✔ 
+💫 Executing gel query "delete catalog::Artist filter .handle = 'test'" ✔ 
+💭 Thinking for 197 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+res = client.query('''
+insert catalog::Album {
+    slug := <str>\$slug,
+    title := <str>\$title,
+    year := <int32>\$year,
+    label := <optional str>\$label
+}
+unless conflict on .slug
+else (
+    update catalog::Album
+    set {
+        title := <str>\$title,
+        year := <int32>\$year,
+        label := <optional str>\$label
+    }
+)
+''', slug='alb-test', title='Test Album', year=2020, label=None)
+print(res)
+" ✖ "Command exited with code 1"
+💭 Thinking for 663 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+slug = 'alb-test'
+album = client.query_single('select catalog::Album { id } filter .slug = <str>\$slug', slug=slug)
+if album:
+    client.query('update catalog::Album filter .slug = <str>\$slug set { title := <str>\$title, year := <int32>\$year, label := <optional str>\$label }', slug=slug, title='Test Album', year=2020, label=None)
+else:
+    client.query('insert catalog::Album { slug := <str>\$slug, title := <str>\$title, year := <int32>\$year, label := <optional str>\$label }', slug=slug, title='Test Album', year=2020, label=None)
+print(client.query('select catalog::Album { slug, title, year, label } filter .slug = <str>\$slug', slug=slug))
+" ✔ 
+💫 Executing gel query "delete catalog::Album filter .slug = 'alb-test'" ✔ 
+💭 Thinking for 788 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+client.query(\"insert catalog::Artist { handle := 'art-1', name := 'Artist 1', country := 'US' }\")
+client.query(\"insert catalog::Artist { handle := 'art-2', name := 'Artist 2', country := 'US' }\")
+client.query(\"insert catalog::Album { slug := 'alb-1', title := 'Album 1', year := 2000 }\")
+" ✔ 
+💭 Thinking for 205 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+client.query('''
+insert catalog::Track {
+    slug := 'trk-1',
+    title := 'Track 1',
+    duration_ms := 100000,
+    royalty_rate := <decimal>'0.1',
+    album := (select catalog::Album filter .slug = 'alb-1'),
+    tags := array_unpack(<array<str>>['pop', 'dance']),
+    contributors := (
+        (select catalog::Artist filter .handle = 'art-1') {
+            @role := 'vocals',
+            @share_bp := <int64>5000
+        }
+        union
+        (select catalog::Artist filter .handle = 'art-2') {
+            @role := 'guitar',
+            @share_bp := <int64>5000
+        }
+    )
+}
+''')
+" ✖ "Command exited with code 1"
+💭 Thinking for 952 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+client.query('''
+insert catalog::Track {
+    slug := 'trk-1',
+    title := 'Track 1',
+    duration_ms := 100000,
+    royalty_rate := <decimal>'0.1',
+    album := (select catalog::Album filter .slug = 'alb-1'),
+    tags := array_unpack(<array<str>>['pop', 'dance']),
+    contributors := (
+        select catalog::Artist filter .handle = 'art-1' {
+            @role := 'vocals',
+            @share_bp := <int64>5000
+        }
+    )
+}
+''')
+" ✖ "Command exited with code 1"
+💭 Thinking for 753 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+client.query('''
+insert catalog::Track {
+    slug := 'trk-1',
+    title := 'Track 1',
+    duration_ms := 100000,
+    royalty_rate := <decimal>'0.1',
+    album := (select catalog::Album filter .slug = 'alb-1'),
+    tags := array_unpack(<array<str>>['pop', 'dance']),
+    contributors := (
+        select catalog::Artist {
+            @role := 'vocals',
+            @share_bp := <int64>5000
+        } filter .handle = 'art-1'
+    )
+}
+''')
+" ✔ 
+💭 Thinking for 231 characters   
+💫 Executing gel query "delete catalog::Track filter .slug = 'trk-1'" ✔ 
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+client.query('''
+insert catalog::Track {
+    slug := 'trk-1',
+    title := 'Track 1',
+    duration_ms := 100000,
+    royalty_rate := <decimal>'0.1',
+    album := (select catalog::Album filter .slug = 'alb-1'),
+    tags := array_unpack(<array<str>>['pop', 'dance']),
+    contributors := (
+        (select catalog::Artist {
+            @role := 'vocals',
+            @share_bp := <int64>5000
+        } filter .handle = 'art-1')
+        union
+        (select catalog::Artist {
+            @role := 'guitar',
+            @share_bp := <int64>3000
+        } filter .handle = 'art-2')
+    )
+}
+''')
+" ✖ "Command exited with code 1"
+💭 Thinking for 655 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+# First clear
+client.query(\"update catalog::Track filter .slug = 'trk-1' set { contributors := {} }\")
+# Then add one
+client.query('''
+update catalog::Track filter .slug = 'trk-1' set {
+    contributors += (
+        select catalog::Artist {
+            @role := 'vocals',
+            @share_bp := <int64>5000
+        } filter .handle = 'art-1'
+    )
+}
+''')
+# Then add second
+client.query('''
+update catalog::Track filter .slug = 'trk-1' set {
+    contributors += (
+        select catalog::Artist {
+            @role := 'guitar',
+            @share_bp := <int64>3000
+        } filter .handle = 'art-2'
+    )
+}
+''')
+# Select track to verify
+print(client.query('''
+select catalog::Track {
+    slug,
+    contributors: {
+        handle,
+        @role,
+        @share_bp
+    }
+} filter .slug = 'trk-1'
+'''))
+" ✔ 
+💭 Thinking for 273 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+client.query('''
+insert catalog::Track {
+    slug := 'trk-1',
+    title := 'Track 1',
+    duration_ms := 100000,
+    royalty_rate := <decimal>'0.1',
+    album := (select catalog::Album filter .slug = 'alb-1'),
+    tags := array_unpack(<array<str>>['pop', 'dance'])
+}
+''')
+client.query(\"update catalog::Track filter .slug = 'trk-1' set { contributors := {} }\")
+client.query('''
+update catalog::Track filter .slug = 'trk-1' set {
+    contributors += (
+        select catalog::Artist {
+            @role := 'vocals',
+            @share_bp := <int64>5000
+        } filter .handle = 'art-1'
+    )
+}
+''')
+client.query('''
+update catalog::Track filter .slug = 'trk-1' set {
+    contributors += (
+        select catalog::Artist {
+            @role := 'guitar',
+            @share_bp := <int64>3000
+        } filter .handle = 'art-2'
+    )
+}
+''')
+print(client.query('''
+select catalog::Track {
+    slug,
+    contributors: {
+        handle,
+        @role,
+        @share_bp
+    }
+} filter .slug = 'trk-1'
+'''))
+" ✔ 
+💫 Executing gel query "delete catalog::Track filter .slug = 'trk-1'; delete catalog::Artist filter .handle in {'art-1', 'art-2'}; delete catalog::Album filter .slug = 'alb-1';" ✔ 
+💭 Thinking for 261 characters   
+💫 Executing python3 -c "
+import gel, json
+client = gel.create_client()
+client.query(\"insert catalog::Artist { handle := 'art-1', name := 'Artist 1', country := 'US' }\")
+client.query(\"insert catalog::Artist { handle := 'art-2', name := 'Artist 2', country := 'US' }\")
+client.query(\"insert catalog::Album { slug := 'alb-1', title := 'Album 1', year := 2000 }\")
+client.query(\"insert catalog::Track { slug := 'trk-1', title := 'Track 1', duration_ms := 100000, royalty_rate := <decimal>'0.1', album := (select catalog::Album filter .slug = 'alb-1') }\")
+
+# Now update using json array
+contributors_json = [
+    json.dumps({\"artist\": \"art-1\", \"role\": \"vocals\", \"share_bp\": 5000}),
+    json.dumps({\"artist\": \"art-2\", \"role\": \"guitar\", \"share_bp\": 3000})
+]
+
+client.query('''
+update catalog::Track filter .slug = 'trk-1' set {
+    contributors := (
+        for item_str in array_unpack(<array<str>>\$contributors_json) union (
+            with item := to_json(item_str)
+            select catalog::Artist {
+                @role := <str>item['role'],
+                @share_bp := <int64>item['share_bp']
+            } filter .handle = <str>item['artist']
+        )
+    )
+}
+''', contributors_json=contributors_json)
+
+print(client.query('''
+select catalog::Track {
+    slug,
+    contributors: {
+        handle,
+        @role,
+        @share_bp
+    }
+} filter .slug = 'trk-1'
+'''))
+" ✖ "Command exited with code 1"
+💭 Thinking for 317 characters   
+💫 Executing python3 -c "
+import gel, json
+client = gel.create_client()
+contributors_json = [
+    json.dumps({\"artist\": \"art-1\", \"role\": \"vocals\", \"share_bp\": 5000}),
+    json.dumps({\"artist\": \"art-2\", \"role\": \"guitar\", \"share_bp\": 3000})
+]
+
+client.query('''
+update catalog::Track filter .slug = 'trk-1' set {
+    contributors := (
+        distinct (
+            for item_str in array_unpack(<array<str>>\$contributors_json) union (
+                with item := to_json(item_str)
+                select catalog::Artist {
+                    @role := <str>item['role'],
+                    @share_bp := <int64>item['share_bp']
+                } filter .handle = <str>item['artist']
+            )
+        )
+    )
+}
+''', contributors_json=contributors_json)
+
+print(client.query('''
+select catalog::Track {
+    slug,
+    contributors: {
+        handle,
+        @role,
+        @share_bp
+    }
+} filter .slug = 'trk-1'
+'''))
+" ✔ 
+💫 Executing gel query "delete catalog::Track filter .slug = 'trk-1'; delete catalog::Artist filter .handle in {'art-1', 'art-2'}; delete catalog::Album filter .slug = 'alb-1';" ✔ 
+💭 Thinking for 2803 characters   
+💫 Executing env | grep GEL_SQL ✔ 
+💭 Thinking for 314 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute(\"SELECT schema_name FROM information_schema.schemata\")
+    print(cur.fetchall())
+" ✔ 
+💭 Thinking for 285 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute(\"SELECT current_database(), current_user\")
+    print(cur.fetchall())
+" ✔ 
+💭 Thinking for 297 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute(\"SELECT schemaname, tablename FROM pg_catalog.pg_tables\")
+    print(cur.fetchall())
+" ✔ 
+💭 Thinking for 326 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+tables = ['Artist', 'Album', 'Track', 'Track.contributors', 'Track.tags', 'Artist.aliases', 'Asset']
+with conn.cursor() as cur:
+    for t in tables:
+        cur.execute(f'''
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_schema = 'catalog' AND table_name = '{t}'
+        ''')
+        print(t, cur.fetchall())
+" ✔ 
+💭 Thinking for 2830 characters   
+💫 Executing python3 -c "
+import gel, json
+client = gel.create_client()
+
+with open('/home/user/project/data/seed.json') as f:
+    data = json.load(f)
+
+# 1. Load artists
+for art in data['artists']:
+    client.query('''
+    insert catalog::Artist {
+        handle := <str>\$handle,
+        name := <str>\$name,
+        country := <str>\$country,
+        aliases := array_unpack(<array<str>>\$aliases)
+    }
+    unless conflict on .handle
+    else (
+        update catalog::Artist
+        set {
+            name := <str>\$name,
+            country := <str>\$country,
+            aliases := array_unpack(<array<str>>\$aliases)
+        }
+    )
+    ''', handle=art['handle'], name=art['name'], country=art['country'], aliases=art['aliases'])
+
+# 2. Load albums
+for alb in data['albums']:
+    album = client.query_single('select catalog::Album { id } filter .slug = <str>\$slug', slug=alb['slug'])
+    if album:
+        client.query('''
+        update catalog::Album filter .slug = <str>\$slug set {
+            title := <str>\$title,
+            year := <int32>\$year,
+            label := <optional str>\$label
+        }
+        ''', slug=alb['slug'], title=alb['title'], year=alb['year'], label=alb['label'])
+    else:
+        client.query('''
+        insert catalog::Album {
+            slug := <str>\$slug,
+            title := <str>\$title,
+            year := <int32>\$year,
+            label := <optional str>\$label
+        }
+        ''', slug=alb['slug'], title=alb['title'], year=alb['year'], label=alb['label'])
+
+# 3. Load tracks
+for trk in data['tracks']:
+    track = client.query_single('select catalog::Track { id } filter .slug = <str>\$slug', slug=trk['slug'])
+    tags = trk.get('tags', [])
+    contributors_json = [
+        json.dumps({'artist': c['artist'], 'role': c['role'], 'share_bp': c['share_bp']})
+        for c in trk.get('contributors', [])
+    ]
+    if track:
+        client.query('''
+        update catalog::Track filter .slug = <str>\$slug set {
+            title := <str>\$title,
+            duration_ms := <int64>\$duration_ms,
+            royalty_rate := <decimal>\$royalty_rate,
+            album := (select catalog::Album filter .slug = <str>\$album_slug),
+            tags := array_unpack(<array<str>>\$tags),
+            contributors := (
+                distinct (
+                    for item_str in array_unpack(<array<str>>\$contributors_json) union (
+                        with item := to_json(item_str)
+                        select catalog::Artist {
+                            @role := <str>item['role'],
+                            @share_bp := <int64>item['share_bp']
+                        } filter .handle = <str>item['artist']
+                    )
+                )
+            )
+        }
+        ''', slug=trk['slug'], title=trk['title'], duration_ms=trk['duration_ms'], royalty_rate=trk['royalty_rate'], album_slug=trk['album'], tags=tags, contributors_json=contributors_json)
+    else:
+        client.query('''
+        insert catalog::Track {
+            slug := <str>\$slug,
+            title := <str>\$title,
+            duration_ms := <int64>\$duration_ms,
+            royalty_rate := <decimal>\$royalty_rate,
+            album := (select catalog::Album filter .slug = <str>\$album_slug),
+            tags := array_unpack(<array<str>>\$tags),
+            contributors := (
+                distinct (
+                    for item_str in array_unpack(<array<str>>\$contributors_json) union (
+                        with item := to_json(item_str)
+                        select catalog::Artist {
+                            @role := <str>item['role'],
+                            @share_bp := <int64>item['share_bp']
+                        } filter .handle = <str>item['artist']
+                    )
+                )
+            )
+        }
+        ''', slug=trk['slug'], title=trk['title'], duration_ms=trk['duration_ms'], royalty_rate=trk['royalty_rate'], album_slug=trk['album'], tags=tags, contributors_json=contributors_json)
+
+print('Artists:', client.query_single('select count(catalog::Artist)'))
+print('Albums:', client.query_single('select count(catalog::Album)'))
+print('Tracks:', client.query_single('select count(catalog::Track)'))
+print('Contributions:', client.query_single('select count(catalog::Track.contributors)'))
+" ✖ "Command exited with code 1"
+💭 Thinking for 249 characters   
+💫 Executing python3 -c "
+import gel, json, decimal
+client = gel.create_client()
+
+with open('/home/user/project/data/seed.json') as f:
+    data = json.load(f)
+
+# 1. Load artists
+for art in data['artists']:
+    client.query('''
+    insert catalog::Artist {
+        handle := <str>\$handle,
+        name := <str>\$name,
+        country := <str>\$country,
+        aliases := array_unpack(<array<str>>\$aliases)
+    }
+    unless conflict on .handle
+    else (
+        update catalog::Artist
+        set {
+            name := <str>\$name,
+            country := <str>\$country,
+            aliases := array_unpack(<array<str>>\$aliases)
+        }
+    )
+    ''', handle=art['handle'], name=art['name'], country=art['country'], aliases=art['aliases'])
+
+# 2. Load albums
+for alb in data['albums']:
+    album = client.query_single('select catalog::Album { id } filter .slug = <str>\$slug', slug=alb['slug'])
+    if album:
+        client.query('''
+        update catalog::Album filter .slug = <str>\$slug set {
+            title := <str>\$title,
+            year := <int32>\$year,
+            label := <optional str>\$label
+        }
+        ''', slug=alb['slug'], title=alb['title'], year=alb['year'], label=alb['label'])
+    else:
+        client.query('''
+        insert catalog::Album {
+            slug := <str>\$slug,
+            title := <str>\$title,
+            year := <int32>\$year,
+            label := <optional str>\$label
+        }
+        ''', slug=alb['slug'], title=alb['title'], year=alb['year'], label=alb['label'])
+
+# 3. Load tracks
+for trk in data['tracks']:
+    track = client.query_single('select catalog::Track { id } filter .slug = <str>\$slug', slug=trk['slug'])
+    tags = trk.get('tags', [])
+    contributors_json = [
+        json.dumps({'artist': c['artist'], 'role': c['role'], 'share_bp': c['share_bp']})
+        for c in trk.get('contributors', [])
+    ]
+    royalty_rate = decimal.Decimal(trk['royalty_rate'])
+    if track:
+        client.query('''
+        update catalog::Track filter .slug = <str>\$slug set {
+            title := <str>\$title,
+            duration_ms := <int64>\$duration_ms,
+            royalty_rate := <decimal>\$royalty_rate,
+            album := (select catalog::Album filter .slug = <str>\$album_slug),
+            tags := array_unpack(<array<str>>\$tags),
+            contributors := (
+                distinct (
+                    for item_str in array_unpack(<array<str>>\$contributors_json) union (
+                        with item := to_json(item_str)
+                        select catalog::Artist {
+                            @role := <str>item['role'],
+                            @share_bp := <int64>item['share_bp']
+                        } filter .handle = <str>item['artist']
+                    )
+                )
+            )
+        }
+        ''', slug=trk['slug'], title=trk['title'], duration_ms=trk['duration_ms'], royalty_rate=royalty_rate, album_slug=trk['album'], tags=tags, contributors_json=contributors_json)
+    else:
+        client.query('''
+        insert catalog::Track {
+            slug := <str>\$slug,
+            title := <str>\$title,
+            duration_ms := <int64>\$duration_ms,
+            royalty_rate := <decimal>\$royalty_rate,
+            album := (select catalog::Album filter .slug = <str>\$album_slug),
+            tags := array_unpack(<array<str>>\$tags),
+            contributors := (
+                distinct (
+                    for item_str in array_unpack(<array<str>>\$contributors_json) union (
+                        with item := to_json(item_str)
+                        select catalog::Artist {
+                            @role := <str>item['role'],
+                            @share_bp := <int64>item['share_bp']
+                        } filter .handle = <str>item['artist']
+                    )
+                )
+            )
+        }
+        ''', slug=trk['slug'], title=trk['title'], duration_ms=trk['duration_ms'], royalty_rate=royalty_rate, album_slug=trk['album'], tags=tags, contributors_json=contributors_json)
+
+print('Artists:', client.query_single('select count(catalog::Artist)'))
+print('Albums:', client.query_single('select count(catalog::Album)'))
+print('Tracks:', client.query_single('select count(catalog::Track)'))
+print('Contributions:', client.query_single('select count(catalog::Track.contributors)'))
+" ✔ 
+💭 Thinking for 990 characters   
+💫 Executing gel query "select sum((select count(t.contributors) with t := catalog::Track))" ✖ "Command exited with code 1"
+💫 Executing gel query "select sum((with t := catalog::Track select count(t.contributors)))" ✔ 
+💫 Executing gel query "select sum((for t in catalog::Track select count(t.contributors)))" ✔ 
+💫 Executing gel query "select count(catalog::Track.contributors@role)" ✔ 
+💭 Thinking for 307 characters   
+💫 Executing gel query "select sum(catalog::Track.contributors@share_bp)" ✔ 
+💭 Thinking for 193 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute(\"SELECT slug, payout_micros FROM catalog.\\\"Track\\\"\")
+    print(cur.fetchall())
+" ✔ 
+💭 Thinking for 344 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute(\"SELECT slug, payout_micros FROM catalog.\\\"Track\\\"\")
+    row = cur.fetchone()
+    print(row[1], type(row[1]))
+" ✔ 
+💭 Thinking for 371 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute(\"SELECT SUM(payout_micros) FROM catalog.\\\"Track\\\"\")
+    print(cur.fetchone())
+" ✔ 
+💭 Thinking for 260 characters   
+💫 Executing python3 -c "
+import gel, psycopg, os
+client = gel.create_client()
+eq = client.query_single('select count(catalog::Artist filter not .id in catalog::Track.contributors.id)')
+
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute('''
+        SELECT COUNT(*)::bigint
+        FROM catalog.\"Artist\" a
+        WHERE NOT EXISTS (
+            SELECT 1 FROM catalog.\"Track.contributors\" c WHERE c.target = a.id
+        )
+    ''')
+    sql = cur.fetchone()[0]
+
+print('EdgeQL:', eq, 'SQL:', sql)
+" ✔ 
+💭 Thinking for 1151 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+queries = {
+    'count.artists_without_contributions': 'SELECT COUNT(*)::bigint FROM catalog.\"Artist\" a WHERE NOT EXISTS (SELECT 1 FROM catalog.\"Track.contributors\" c WHERE c.target = a.id)',
+    'count.catalog::Album': 'SELECT COUNT(*)::bigint FROM catalog.\"Album\"',
+    'count.catalog::Artist': 'SELECT COUNT(*)::bigint FROM catalog.\"Artist\"',
+    'count.catalog::Artist.aliases': 'SELECT COUNT(*)::bigint FROM catalog.\"Artist.aliases\"',
+    'count.catalog::Asset': 'SELECT COUNT(*)::bigint FROM catalog.\"Asset\"',
+    'count.catalog::Track': 'SELECT COUNT(*)::bigint FROM catalog.\"Track\"',
+    'count.catalog::Track.contributors': 'SELECT COUNT(*)::bigint FROM catalog.\"Track.contributors\"',
+    'count.catalog::Track.tags': 'SELECT COUNT(*)::bigint FROM catalog.\"Track.tags\"',
+    'count.distinct.catalog::Track.album': 'SELECT COUNT(DISTINCT album_id)::bigint FROM catalog.\"Track\"',
+    'count.distinct.catalog::Track.contributors@target': 'SELECT COUNT(DISTINCT target)::bigint FROM catalog.\"Track.contributors\"',
+    'count.tracks_without_tags': 'SELECT COUNT(*)::bigint FROM catalog.\"Track\" t WHERE NOT EXISTS (SELECT 1 FROM catalog.\"Track.tags\" tg WHERE tg.source = t.id)',
+    'max.catalog::Album.year': 'SELECT MAX(year)::integer FROM catalog.\"Album\"',
+    'min.catalog::Album.year': 'SELECT MIN(year)::integer FROM catalog.\"Album\"',
+    'sum.catalog::Track.contributors@share_bp': 'SELECT SUM(share_bp)::bigint FROM catalog.\"Track.contributors\"',
+    'sum.catalog::Track.duration_ms': 'SELECT SUM(duration_ms)::bigint FROM catalog.\"Track\"',
+    'sum.catalog::Track.payout_micros': 'SELECT SUM(payout_micros::bigint)::bigint FROM catalog.\"Track\"',
+    'sum.catalog::Track.title_length': 'SELECT SUM(char_length(title))::bigint FROM catalog.\"Track\"'
+}
+with conn.cursor() as cur:
+    for k, q in queries.items():
+        try:
+            cur.execute(q)
+            print(k, cur.fetchone()[0])
+        except Exception as e:
+            print(k, 'ERROR:', e)
+            conn.rollback()
+" ✔ 
+💭 Thinking for 259 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+queries = {
+    'count.artists_without_contributions': 'select count(catalog::Artist filter not .id in catalog::Track.contributors.id)',
+    'count.catalog::Album': 'select count(catalog::Album)',
+    'count.catalog::Artist': 'select count(catalog::Artist)',
+    'count.catalog::Artist.aliases': 'select count(catalog::Artist.aliases)',
+    'count.catalog::Asset': 'select count(catalog::Asset)',
+    'count.catalog::Track': 'select count(catalog::Track)',
+    'count.catalog::Track.contributors': 'select count(catalog::Track.contributors@role)',
+    'count.catalog::Track.tags': 'select count(catalog::Track.tags)',
+    'count.distinct.catalog::Track.album': 'select count(distinct catalog::Track.album)',
+    'count.distinct.catalog::Track.contributors@target': 'select count(distinct catalog::Track.contributors)',
+    'count.tracks_without_tags': 'select count(catalog::Track filter not exists .tags)',
+    'max.catalog::Album.year': 'select max(catalog::Album.year)',
+    'min.catalog::Album.year': 'select min(catalog::Album.year)',
+    'sum.catalog::Track.contributors@share_bp': 'select sum(catalog::Track.contributors@share_bp)',
+    'sum.catalog::Track.duration_ms': 'select sum(catalog::Track.duration_ms)',
+    'sum.catalog::Track.payout_micros': 'select sum(catalog::Track.payout_micros)',
+    'sum.catalog::Track.title_length': 'select sum(len(catalog::Track.title))'
+}
+for k, q in queries.items():
+    res = client.query_single(q)
+    print(k, res)
+" ✔ 
+💭 Thinking for 795 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+res = client.query('''
+select catalog::Track {
+    slug,
+    title,
+    duration_ms,
+    payout_micros,
+    album_slug := .album.slug,
+    album_year := .album.year,
+    contributor_count := count(.contributors),
+    share_bp_total := sum(.contributors@share_bp),
+    tag_count := count(.tags)
+}
+''')
+for r in res:
+    print(r.slug, r.title, r.duration_ms, r.payout_micros, r.album_slug, r.album_year, r.contributor_count, r.share_bp_total, r.tag_count)
+" ✔ 
+💭 Thinking for 243 characters   
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+res = client.query('''
+select catalog::Track {
+    slug,
+    share_bp_total := sum(.contributors@share_bp)
+} filter .slug = 'trk-echoless'
+''')
+print(res[0].share_bp_total, type(res[0].share_bp_total))
+" ✔ 
+💭 Thinking for 591 characters   
+💫 Executing python3 -c "
+import psycopg, os
+conn = psycopg.connect(
+    host=os.environ['GEL_SQL_HOST'],
+    port=os.environ['GEL_SQL_PORT'],
+    user=os.environ['GEL_SQL_USER'],
+    password=os.environ['GEL_SQL_PASSWORD'],
+    dbname=os.environ['GEL_SQL_DBNAME']
+)
+with conn.cursor() as cur:
+    cur.execute('''
+        SELECT 
+            t.slug,
+            t.title,
+            t.duration_ms,
+            t.payout_micros::bigint,
+            a.slug AS album_slug,
+            a.year AS album_year,
+            COALESCE(tc.contributor_count, 0)::bigint AS contributor_count,
+            COALESCE(tc.share_bp_total, 0)::bigint AS share_bp_total,
+            COALESCE(tg.tag_count, 0)::bigint AS tag_count
+        FROM catalog.\"Track\" t
+        LEFT JOIN catalog.\"Album\" a ON t.album_id = a.id
+        LEFT JOIN (
+            SELECT source, COUNT(*)::bigint AS contributor_count, SUM(share_bp)::bigint AS share_bp_total
+            FROM catalog.\"Track.contributors\"
+            GROUP BY source
+        ) tc ON t.id = tc.source
+        LEFT JOIN (
+            SELECT source, COUNT(*)::bigint AS tag_count
+            FROM catalog.\"Track.tags\"
+            GROUP BY source
+        ) tg ON t.id = tg.source
+    ''')
+    for r in cur.fetchall():
+        print(r)
+" ✔ 
+💭 Thinking for 3906 characters   
+💫 Executing /usr/local/bin/gel-stop ✔ 
+💫 Executing python3 -c "
+import gel
+client = gel.create_client()
+client.query('select 1')
+" ✖ "Command exited with code 1"
+💫 Executing /usr/local/bin/gel-start ✔ 
+💭 Thinking for 6565 characters   
+✏️  Writing /home/user/project/dualview.py ✔ 
+💫 Executing python3 dualview.py load --input /home/user/project/data/seed.json ✔ 
+💫 Executing python3 dualview.py load --input /home/user/project/data/seed.json && echo "EXIT_CODE: $?" ✔ 
+💫 Executing python3 dualview.py reconcile --output /home/user/project/report.json && echo "EXIT_CODE: $?" ✔ 
+📖 Reading /home/user/project/report.json ✔ 
+💭 Thinking for 287 characters   
+💫 Executing python3 dualview.py load --input /home/user/project/data/seed.json && python3 dualview.py load --input /home/user/project/data/seed.json ✔ 
+💭 Thinking for 230 characters   
+💫 Executing gel query "update catalog::Track filter .slug = 'trk-echoless' set { duration_ms := 100000 }" ✔ 
+💭 Thinking for 247 characters   
+💫 Executing python3 dualview.py reconcile --output /home/user/project/report_drift.json --baseline /home/user/project/report.json; echo "EXIT_CODE: $?" ✔ 
+📖 Reading /home/user/project/report_drift.json ✔ 

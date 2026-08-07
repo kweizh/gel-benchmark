@@ -1,0 +1,22 @@
+{
+    "task": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_delegated_constraints_inheritance_ts",
+        "source": "pending-tasks"
+    },
+    "trial_name": "gel_delegated_constraints_inheri__NqhoMMV",
+    "trials_dir": "jobs/2026-08-07__13-21-29",
+    "agent": {
+        "name": "agents.pochi:Pochi",
+        "model_name": "deepseek/deepseek-4-pro",
+        "env": {
+            "POCHI_API_KEY": "${POCHI_API_KEY}"
+        }
+    },
+    "environment": {
+        "type": "daytona"
+    },
+    "artifacts": [
+        "/home/user"
+    ],
+    "job_id": "793f3a68-8ee8-4441-89b2-d1550bf86583"
+}

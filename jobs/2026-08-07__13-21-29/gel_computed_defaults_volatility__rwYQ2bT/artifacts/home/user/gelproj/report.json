@@ -1,0 +1,308 @@
+{
+  "introspection": {
+    "Assay": {
+      "abstract": false,
+      "pointers": {
+        "code": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::str"
+        },
+        "value": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::float64"
+        },
+        "sample": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "default::Sample"
+        }
+      }
+    },
+    "Batch": {
+      "abstract": false,
+      "pointers": {
+        "sample_count": {
+          "cardinality": "One",
+          "required": true,
+          "computed": true,
+          "target": "std::int64"
+        },
+        "code": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::str"
+        },
+        "samples": {
+          "cardinality": "Many",
+          "required": false,
+          "computed": false,
+          "target": "default::Sample"
+        }
+      }
+    },
+    "Calibration": {
+      "abstract": false,
+      "pointers": {
+        "code": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::str"
+        },
+        "bias": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::float64"
+        },
+        "sample": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "default::Sample"
+        }
+      }
+    },
+    "Certificate": {
+      "abstract": false,
+      "pointers": {
+        "serial": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::str"
+        },
+        "sample": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "default::Sample"
+        }
+      }
+    },
+    "Measurement": {
+      "abstract": true,
+      "pointers": {
+        "code": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::str"
+        },
+        "sample": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "default::Sample"
+        }
+      }
+    },
+    "Sample": {
+      "abstract": false,
+      "pointers": {
+        "age": {
+          "cardinality": "One",
+          "required": true,
+          "computed": true,
+          "target": "std::duration"
+        },
+        "grams": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::float64"
+        },
+        "intake_ref": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::uuid"
+        },
+        "label": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::str"
+        },
+        "label_key": {
+          "cardinality": "One",
+          "required": true,
+          "computed": true,
+          "target": "std::str"
+        },
+        "assay_count": {
+          "cardinality": "One",
+          "required": true,
+          "computed": true,
+          "target": "std::int64"
+        },
+        "total_value": {
+          "cardinality": "One",
+          "required": true,
+          "computed": true,
+          "target": "std::float64"
+        },
+        "measurement_count": {
+          "cardinality": "One",
+          "required": true,
+          "computed": true,
+          "target": "std::int64"
+        },
+        "intake_at": {
+          "cardinality": "One",
+          "required": true,
+          "computed": false,
+          "target": "std::datetime"
+        },
+        "assays": {
+          "cardinality": "Many",
+          "required": false,
+          "computed": true,
+          "target": "default::Assay"
+        },
+        "batches": {
+          "cardinality": "Many",
+          "required": false,
+          "computed": true,
+          "target": "default::Batch"
+        },
+        "certificate": {
+          "cardinality": "One",
+          "required": false,
+          "computed": true,
+          "target": "default::Certificate"
+        },
+        "measurements": {
+          "cardinality": "Many",
+          "required": false,
+          "computed": true,
+          "target": "default::Measurement"
+        }
+      }
+    }
+  },
+  "link_properties": {
+    "Batch.samples": {
+      "position": {
+        "cardinality": "One",
+        "required": false,
+        "target": "std::int64"
+      }
+    }
+  },
+  "defaults": {
+    "batch_insert_size": 4,
+    "distinct_intake_at_in_batch": 1,
+    "distinct_intake_ref_in_batch": 4,
+    "intake_at_unchanged_after_update": true,
+    "intake_ref_unchanged_after_update": true,
+    "late_intake_at_not_before_batch": true,
+    "readonly_update_rejected": {
+      "rejected": true,
+      "error_class": "QueryError",
+      "error_message": "cannot update property 'intake_at': it is declared as read-only\n  \u250c\u2500 query:5:34\n  \u2502 \n5 \u2502                       intake_at := std::datetime_current()\n  \u2502                                    ^^^^^^^^^^^^^^^^^^^^^^^ error"
+    }
+  },
+  "computed": {
+    "label_key_before_update": "delta-04",
+    "label_key_after_update": "zulu-99",
+    "alpha_assay_count_before": 0,
+    "alpha_measurement_count_before": 0,
+    "alpha_total_value_before": 0,
+    "alpha_assay_count_after": 2,
+    "alpha_measurement_count_after": 3,
+    "alpha_total_value_after": 12.5,
+    "age_non_negative": true,
+    "age_difference_matches_intake_difference": true
+  },
+  "volatility": {
+    "schema_computed_volatile": {
+      "rejected": true,
+      "error_class": "SchemaDefinitionError",
+      "error_message": "volatile functions are not permitted in schema-defined computed expressions\n  \u250c\u2500 query:3:55\n  \u2502 \n3 \u2502                       CREATE PROPERTY volatile_probe := std::datetime_current();\n  \u2502                                                         ^^^^^^^^^^^^^^^^^^^^^^^ error"
+    },
+    "cartesian_volatile": {
+      "rejected": true,
+      "error_class": "QueryError",
+      "error_message": "can not take cross product of volatile operation\n  \u250c\u2500 query:2:33\n  \u2502 \n2 \u2502                   SELECT (Sample, std::datetime_current());\n  \u2502                                   ^^^^^^^^^^^^^^^^^^^^^^^ error"
+    },
+    "schema_unchanged_after_probe": true
+  },
+  "samples": [
+    {
+      "label": "Alpha-01",
+      "label_key": "alpha-01",
+      "assay_count": 2,
+      "measurement_count": 3,
+      "total_value": 12.5,
+      "has_certificate": true,
+      "batch_codes": [
+        "BATCH-1"
+      ]
+    },
+    {
+      "label": "Bravo-02",
+      "label_key": "bravo-02",
+      "assay_count": 1,
+      "measurement_count": 1,
+      "total_value": 7.25,
+      "has_certificate": false,
+      "batch_codes": [
+        "BATCH-1"
+      ]
+    },
+    {
+      "label": "Charlie-03",
+      "label_key": "charlie-03",
+      "assay_count": 0,
+      "measurement_count": 1,
+      "total_value": 0,
+      "has_certificate": false,
+      "batch_codes": [
+        "BATCH-1"
+      ]
+    },
+    {
+      "label": "Echo-05",
+      "label_key": "echo-05",
+      "assay_count": 0,
+      "measurement_count": 0,
+      "total_value": 0,
+      "has_certificate": false,
+      "batch_codes": []
+    },
+    {
+      "label": "Zulu-99",
+      "label_key": "zulu-99",
+      "assay_count": 0,
+      "measurement_count": 0,
+      "total_value": 0,
+      "has_certificate": false,
+      "batch_codes": []
+    }
+  ],
+  "batch": {
+    "code": "BATCH-1",
+    "sample_count": 3,
+    "members": [
+      {
+        "label": "Alpha-01",
+        "@position": 1
+      },
+      {
+        "label": "Bravo-02",
+        "@position": 2
+      },
+      {
+        "label": "Charlie-03",
+        "@position": 3
+      }
+    ]
+  }
+}

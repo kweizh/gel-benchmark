@@ -1,0 +1,116 @@
+{
+    "id": "e136e7f4-2088-4c48-b6e1-46031bccc314",
+    "task_name": "gel_sql_protocol_adapter_psycopg_py",
+    "trial_name": "gel_sql_protocol_adapter_psycopg__dVdQLxG",
+    "trial_uri": "file:///home/kw/code/zealt/pochi-harbor/jobs/2026-08-07__13-07-29/gel_sql_protocol_adapter_psycopg__dVdQLxG",
+    "task_id": {
+        "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_sql_protocol_adapter_psycopg_py"
+    },
+    "source": "pending-tasks",
+    "task_checksum": "86680071f93421ffa140528590d90e59d38a4f8ee9035bfcc97fcc568998f07b",
+    "config": {
+        "task": {
+            "path": "/home/kw/code/zealt/gel-benchmark/scratchpad/pending-tasks/gel_sql_protocol_adapter_psycopg_py",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "pending-tasks"
+        },
+        "trial_name": "gel_sql_protocol_adapter_psycopg__dVdQLxG",
+        "trials_dir": "jobs/2026-08-07__13-07-29",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "agents.pochi:Pochi",
+            "import_path": null,
+            "model_name": "anthropic/claude-5-sonnet",
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "env": {
+                "POCHI_API_KEY": "${POCHI_API_KEY}"
+            },
+            "mcp_servers": []
+        },
+        "environment": {
+            "type": "daytona",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [
+            "/home/user"
+        ],
+        "extra_instruction_paths": [],
+        "job_id": "997f3b1f-bdb6-4d27-afff-aec26e7ee58e"
+    },
+    "agent_info": {
+        "name": "pochi",
+        "version": "0.6.20",
+        "model_info": {
+            "name": "claude-5-sonnet",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": null,
+    "exception_info": {
+        "exception_type": "InitialStateError",
+        "exception_message": "Initial state test failed",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/home/kw/code/zealt/pochi-harbor/agents/pochi.py\", line 194, in run\n    await self.exec_as_agent(\n  File \"/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 592, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 559, in _exec\n    raise self._classify_exec_error(command, result)\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 1): if [ -f /bootstrap/test_initial_state.py ]; then pytest -s --log-cli-level=DEBUG /bootstrap/test_initial_state.py > >(tee /logs/agent/pochi/initial-test-stdout.txt) 2> >(tee /logs/agent/pochi/initial-test-stderr.txt >&2); fi\nstdout: ============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0\nrootdir: /bootstrap\nplugins: json-ctrf-0.5.3\ncollected 15 items\n\n../bootstrap/test_initial_state.py::test_gel ... [9080 chars truncated] ... None,\n                    stderr=b''.join(stderr_seq) if stderr_seq else None)\nE           subprocess.TimeoutExpired: Command '['/usr/local/bin/gel-start']' timed out after 300 seconds\n\n/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired\n=========================== short test summary info ============================\nERROR ../bootstrap/test_initial_state.py::test_gel_server_reachable_over_binary_protocol\nERROR ../bootstrap/test_initial_state.py::test_gel_server_reachable_over_sql_protocol\nERROR ../bootstrap/test_initial_state.py::test_catalog_module_is_not_defined_yet\nERROR ../bootstrap/test_initial_state.py::test_migration_status_reports_no_user_migrations\n=================== 11 passed, 4 errors in 300.35s (0:05:00) ===================\n\nstderr: None\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py\", line 354, in run\n    await self._run()\n  File \"/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/single_step.py\", line 41, in _run\n    await self._run_agent()\n  File \"/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/single_step.py\", line 77, in _run_agent\n    await self._run_agent_phase(\n  File \"/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py\", line 450, in _run_agent_phase\n    await asyncio.wait_for(\n  File \"/opt/miniconda3/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/home/kw/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/installed/base.py\", line 168, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/kw/code/zealt/pochi-harbor/agents/pochi.py\", line 206, in run\n    raise InitialStateError(\"Initial state test failed\") from e\nagents.pochi.InitialStateError: Initial state test failed\n",
+        "occurred_at": "2026-08-07T13:14:36.733087"
+    },
+    "started_at": "2026-08-07T05:07:32.707857Z",
+    "finished_at": "2026-08-07T05:14:43.986582Z",
+    "environment_setup": {
+        "started_at": "2026-08-07T05:07:32.803861Z",
+        "finished_at": "2026-08-07T05:09:23.102325Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-08-07T05:09:23.102355Z",
+        "finished_at": "2026-08-07T05:09:29.625186Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-08-07T05:09:29.625340Z",
+        "finished_at": "2026-08-07T05:14:33.711902Z"
+    },
+    "verifier": null,
+    "step_results": null
+}

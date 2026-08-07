@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "agrees": true,
+  "mismatch_count": 0,
+  "drift_count": 4,
+  "metrics": [
+    {
+      "id": "count.artists_without_contributions",
+      "edgeql": 1,
+      "sql": 1,
+      "agrees": true
+    },
+    {
+      "id": "count.catalog::Album",
+      "edgeql": 3,
+      "sql": 3,
+      "agrees": true
+    },
+    {
+      "id": "count.catalog::Artist",
+      "edgeql": 5,
+      "sql": 5,
+      "agrees": true
+    },
+    {
+      "id": "count.catalog::Artist.aliases",
+      "edgeql": 7,
+      "sql": 7,
+      "agrees": true
+    },
+    {
+      "id": "count.catalog::Asset",
+      "edgeql": 9,
+      "sql": 9,
+      "agrees": true
+    },
+    {
+      "id": "count.catalog::Track",
+      "edgeql": 6,
+      "sql": 6,
+      "agrees": true
+    },
+    {
+      "id": "count.catalog::Track.contributors",
+      "edgeql": 9,
+      "sql": 9,
+      "agrees": true
+    },
+    {
+      "id": "count.catalog::Track.tags",
+      "edgeql": 9,
+      "sql": 9,
+      "agrees": true
+    },
+    {
+      "id": "count.distinct.catalog::Track.album",
+      "edgeql": 2,
+      "sql": 2,
+      "agrees": true
+    },
+    {
+      "id": "count.distinct.catalog::Track.contributors@target",
+      "edgeql": 4,
+      "sql": 4,
+      "agrees": true
+    },
+    {
+      "id": "count.tracks_without_tags",
+      "edgeql": 1,
+      "sql": 1,
+      "agrees": true
+    },
+    {
+      "id": "max.catalog::Album.year",
+      "edgeql": 2007,
+      "sql": 2007,
+      "agrees": true
+    },
+    {
+      "id": "min.catalog::Album.year",
+      "edgeql": 1999,
+      "sql": 1999,
+      "agrees": true
+    },
+    {
+      "id": "sum.catalog::Track.contributors@share_bp",
+      "edgeql": 50000,
+      "sql": 50000,
+      "agrees": true
+    },
+    {
+      "id": "sum.catalog::Track.duration_ms",
+      "edgeql": 1168300,
+      "sql": 1168300,
+      "agrees": true
+    },
+    {
+      "id": "sum.catalog::Track.payout_micros",
+      "edgeql": 279476,
+      "sql": 279476,
+      "agrees": true
+    },
+    {
+      "id": "sum.catalog::Track.title_length",
+      "edgeql": 64,
+      "sql": 64,
+      "agrees": true
+    }
+  ],
+  "rows": [
+    {
+      "slug": "trk-aurora-drift",
+      "edgeql": {
+        "album_slug": "alb-northern-lights",
+        "album_year": 1999,
+        "contributor_count": 2,
+        "duration_ms": 214300,
+        "payout_micros": 26787,
+        "share_bp_total": 10000,
+        "tag_count": 2,
+        "title_length": 12
+      },
+      "sql": {
+        "album_slug": "alb-northern-lights",
+        "album_year": 1999,
+        "contributor_count": 2,
+        "duration_ms": 214300,
+        "payout_micros": 26787,
+        "share_bp_total": 10000,
+        "tag_count": 2,
+        "title_length": 12
+      },
+      "agrees": true
+    },
+    {
+      "slug": "trk-brick-house",
+      "edgeql": {
+        "album_slug": "alb-northern-lights",
+        "album_year": 1999,
+        "contributor_count": 1,
+        "duration_ms": 187000,
+        "payout_micros": 13557,
+        "share_bp_total": 10000,
+        "tag_count": 1,
+        "title_length": 11
+      },
+      "sql": {
+        "album_slug": "alb-northern-lights",
+        "album_year": 1999,
+        "contributor_count": 1,
+        "duration_ms": 187000,
+        "payout_micros": 13557,
+        "share_bp_total": 10000,
+        "tag_count": 1,
+        "title_length": 11
+      },
+      "agrees": true
+    },
+    {
+      "slug": "trk-cafe-varsang",
+      "edgeql": {
+        "album_slug": "alb-northern-lights",
+        "album_year": 1999,
+        "contributor_count": 3,
+        "duration_ms": 305999,
+        "payout_micros": 152999,
+        "share_bp_total": 10000,
+        "tag_count": 3,
+        "title_length": 16
+      },
+      "sql": {
+        "album_slug": "alb-northern-lights",
+        "album_year": 1999,
+        "contributor_count": 3,
+        "duration_ms": 305999,
+        "payout_micros": 152999,
+        "share_bp_total": 10000,
+        "tag_count": 3,
+        "title_length": 16
+      },
+      "agrees": true
+    },
+    {
+      "slug": "trk-delta-pulse",
+      "edgeql": {
+        "album_slug": "alb-quiet-machines",
+        "album_year": 2007,
+        "contributor_count": 1,
+        "duration_ms": 121001,
+        "payout_micros": 40333,
+        "share_bp_total": 10000,
+        "tag_count": 0,
+        "title_length": 11
+      },
+      "sql": {
+        "album_slug": "alb-quiet-machines",
+        "album_year": 2007,
+        "contributor_count": 1,
+        "duration_ms": 121001,
+        "payout_micros": 40333,
+        "share_bp_total": 10000,
+        "tag_count": 0,
+        "title_length": 11
+      },
+      "agrees": true
+    },
+    {
+      "slug": "trk-echoless",
+      "edgeql": {
+        "album_slug": "alb-quiet-machines",
+        "album_year": 2007,
+        "contributor_count": 0,
+        "duration_ms": 100000,
+        "payout_micros": 20000,
+        "share_bp_total": 0,
+        "tag_count": 1,
+        "title_length": 8
+      },
+      "sql": {
+        "album_slug": "alb-quiet-machines",
+        "album_year": 2007,
+        "contributor_count": 0,
+        "duration_ms": 100000,
+        "payout_micros": 20000,
+        "share_bp_total": 0,
+        "tag_count": 1,
+        "title_length": 8
+      },
+      "agrees": true
+    },
+    {
+      "slug": "trk-zenith",
+      "edgeql": {
+        "album_slug": "alb-quiet-machines",
+        "album_year": 2007,
+        "contributor_count": 2,
+        "duration_ms": 240000,
+        "payout_micros": 25800,
+        "share_bp_total": 10000,
+        "tag_count": 2,
+        "title_length": 6
+      },
+      "sql": {
+        "album_slug": "alb-quiet-machines",
+        "album_year": 2007,
+        "contributor_count": 2,
+        "duration_ms": 240000,
+        "payout_micros": 25800,
+        "share_bp_total": 10000,
+        "tag_count": 2,
+        "title_length": 6
+      },
+      "agrees": true
+    }
+  ],
+  "mismatches": [],
+  "drift": [
+    {
+      "scope": "metric",
+      "id": "sum.catalog::Track.duration_ms",
+      "field": "value",
+      "baseline": 1163800,
+      "current": 1168300
+    },
+    {
+      "scope": "metric",
+      "id": "sum.catalog::Track.payout_micros",
+      "field": "value",
+      "baseline": 278576,
+      "current": 279476
+    },
+    {
+      "scope": "row",
+      "id": "trk-echoless",
+      "field": "duration_ms",
+      "baseline": 95500,
+      "current": 100000
+    },
+    {
+      "scope": "row",
+      "id": "trk-echoless",
+      "field": "payout_micros",
+      "baseline": 19100,
+      "current": 20000
+    }
+  ]
+}

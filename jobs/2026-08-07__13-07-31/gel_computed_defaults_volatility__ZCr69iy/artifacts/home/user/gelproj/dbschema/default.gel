@@ -1,0 +1,60 @@
+module default {
+    type Sample {
+        required property label: str {
+            constraint exclusive;
+        }
+        required property grams: float64;
+        required property intake_ref: uuid {
+            readonly := true;
+            default := std::uuid_generate_v4();
+        }
+        required property intake_at: datetime {
+            readonly := true;
+            default := std::datetime_of_statement();
+        }
+
+        # Computeds
+        required property label_key := str_lower(.label);
+        required property age := datetime_of_statement() - .intake_at;
+        required property assay_count := count(.assays);
+        required property measurement_count := count(.measurements);
+        required property total_value := sum(.assays.value);
+
+        multi link measurements := (select Measurement filter .sample = Sample);
+        multi link assays := (select Assay filter .sample = Sample);
+        multi link batches := (select Batch filter Sample in .samples);
+        link certificate := (select Certificate filter .sample = Sample);
+    }
+
+    abstract type Measurement {
+        required property code: str;
+        required link sample: Sample;
+    }
+
+    type Assay extending Measurement {
+        required property value: float64;
+    }
+
+    type Calibration extending Measurement {
+        required property bias: float64;
+    }
+
+    type Certificate {
+        required property serial: str {
+            constraint exclusive;
+        }
+        required link sample: Sample {
+            constraint exclusive;
+        }
+    }
+
+    type Batch {
+        required property code: str {
+            constraint exclusive;
+        }
+        multi link samples: Sample {
+            property position: int64;
+        }
+        required property sample_count := count(.samples);
+    }
+}

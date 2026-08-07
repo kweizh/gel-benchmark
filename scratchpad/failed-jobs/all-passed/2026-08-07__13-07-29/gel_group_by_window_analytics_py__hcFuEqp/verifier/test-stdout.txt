@@ -1,0 +1,49 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 38 items
+
+../tests/test_final_state.py ......................................      [100%]
+
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_analytics_package_files_exist
+PASSED ../tests/test_final_state.py::test_refund_type_exists_with_required_pointers
+PASSED ../tests/test_final_state.py::test_refund_external_id_is_exclusive
+PASSED ../tests/test_final_state.py::test_refund_amount_below_one_is_rejected[0]
+PASSED ../tests/test_final_state.py::test_refund_amount_below_one_is_rejected[-5]
+PASSED ../tests/test_final_state.py::test_refund_amount_of_one_is_accepted
+PASSED ../tests/test_final_state.py::test_sale_computed_properties_are_declared
+PASSED ../tests/test_final_state.py::test_sale_has_channel_occurred_at_index
+PASSED ../tests/test_final_state.py::test_new_migration_file_was_created
+PASSED ../tests/test_final_state.py::test_migration_history_in_sync
+PASSED ../tests/test_final_state.py::test_migrations_recorded_in_database
+PASSED ../tests/test_final_state.py::test_net_cents_and_refund_count_match_the_refund_rows
+PASSED ../tests/test_final_state.py::test_computed_properties_cover_the_interesting_cases
+PASSED ../tests/test_final_state.py::test_ingest_is_idempotent_and_reports_totals
+PASSED ../tests/test_final_state.py::test_ingest_updates_changed_records_and_restores_them
+PASSED ../tests/test_final_state.py::test_invalid_amount_aborts_without_partial_writes
+PASSED ../tests/test_final_state.py::test_duplicate_external_id_in_file_aborts
+PASSED ../tests/test_final_state.py::test_missing_refunds_file_exits_three
+PASSED ../tests/test_final_state.py::test_bad_subcommand_exits_two[argv0]
+PASSED ../tests/test_final_state.py::test_bad_subcommand_exits_two[argv1]
+PASSED ../tests/test_final_state.py::test_full_window_report_matches_independent_oracle
+PASSED ../tests/test_final_state.py::test_full_window_report_structural_invariants
+PASSED ../tests/test_final_state.py::test_month_window_reports_match_independent_oracle
+PASSED ../tests/test_final_state.py::test_month_windows_partition_the_full_window
+PASSED ../tests/test_final_state.py::test_empty_month_window
+PASSED ../tests/test_final_state.py::test_invalid_month_exits_five[2024-13]
+PASSED ../tests/test_final_state.py::test_invalid_month_exits_five[24-01]
+PASSED ../tests/test_final_state.py::test_invalid_month_exits_five[notamonth]
+PASSED ../tests/test_final_state.py::test_invalid_month_exits_five[2024-00]
+PASSED ../tests/test_final_state.py::test_rollups_exposes_coroutine_functions
+PASSED ../tests/test_final_state.py::test_build_report_api_matches_cli_full_window
+PASSED ../tests/test_final_state.py::test_build_report_api_matches_cli_month_window
+PASSED ../tests/test_final_state.py::test_build_report_rejects_malformed_month
+PASSED ../tests/test_final_state.py::test_build_report_result_is_json_serialisable
+PASSED ../tests/test_final_state.py::test_ingest_refunds_api_is_idempotent
+PASSED ../tests/test_final_state.py::test_ingest_refunds_api_rejects_invalid_amount
+PASSED ../tests/test_final_state.py::test_report_query_uses_top_level_group_statement
+PASSED ../tests/test_final_state.py::test_shutil_which_still_finds_gel
+============================== 38 passed in 6.21s ==============================

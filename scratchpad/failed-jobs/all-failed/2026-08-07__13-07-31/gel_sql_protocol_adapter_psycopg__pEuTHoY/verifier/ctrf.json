@@ -1,0 +1,338 @@
+{
+    "reportFormat": "CTRF",
+    "specVersion": "0.0.0",
+    "timestamp": "2026-08-07T05:19:48.373334+00:00",
+    "generatedBy": "pytest",
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.2"
+        },
+        "summary": {
+            "tests": 34,
+            "passed": 33,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1786079982291,
+            "stop": 1786079988373
+        },
+        "environment": {
+            "buildName": "Pytest JSON CTRF Report",
+            "buildNumber": "000",
+            "buildUrl": "https://ctrf.io"
+        },
+        "tests": [
+            {
+                "name": "test_final_state.py::test_migration_status_is_up_to_date",
+                "status": "passed",
+                "duration": 1478,
+                "start": 1786079982358,
+                "stop": 1786079983836,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_migration_files_exist",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079983837,
+                "stop": 1786079983838,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_object_type_hierarchy",
+                "status": "passed",
+                "duration": 130,
+                "start": 1786079983838,
+                "stop": 1786079983968,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_track_pointer_cardinalities_and_targets",
+                "status": "passed",
+                "duration": 206,
+                "start": 1786079983969,
+                "stop": 1786079984175,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_payout_micros_is_computed_int64",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079984176,
+                "stop": 1786079984176,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_contributors_link_properties",
+                "status": "passed",
+                "duration": 0,
+                "start": 1786079984177,
+                "stop": 1786079984177,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_indexes_and_exclusive_constraints",
+                "status": "passed",
+                "duration": 189,
+                "start": 1786079984177,
+                "stop": 1786079984366,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_invalid_country_is_rejected",
+                "status": "passed",
+                "duration": 87,
+                "start": 1786079984366,
+                "stop": 1786079984453,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_valid_country_is_accepted",
+                "status": "passed",
+                "duration": 40,
+                "start": 1786079984454,
+                "stop": 1786079984494,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_zero_duration_track_is_rejected",
+                "status": "passed",
+                "duration": 69,
+                "start": 1786079984494,
+                "stop": 1786079984563,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_duplicate_slug_is_rejected",
+                "status": "passed",
+                "duration": 35,
+                "start": 1786079984564,
+                "stop": 1786079984599,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_object_counts_match_seed",
+                "status": "passed",
+                "duration": 20,
+                "start": 1786079984599,
+                "stop": 1786079984619,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_artists_loaded_exactly",
+                "status": "passed",
+                "duration": 35,
+                "start": 1786079984619,
+                "stop": 1786079984654,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_albums_loaded_exactly",
+                "status": "passed",
+                "duration": 12,
+                "start": 1786079984654,
+                "stop": 1786079984666,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_tracks_loaded_exactly",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 86,
+                "start": 1786079984666,
+                "stop": 1786079984752,
+                "retries": 0,
+                "file_path": "test_final_state.py",
+                "trace": "gel_client = <gel.blocking_client.Client object at 0x790fc4973550>\nseed = {'albums': [{'label': 'Fjord Records', 'slug': 'alb-northern-lights', 'title': 'Northern Lights', 'year': 1999}, {'lab...}, {'artist': 'brick-mono', 'role': 'bass', 'share_bp': 3000}], 'duration_ms': 240000, 'royalty_rate': '0.1075', ...}]}\nexpected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}\n\n    def test_tracks_loaded_exactly(gel_client, seed, expected):\n        tracks = gel_client.query(\n            \"\"\"\n            select catalog::Track {\n                slug,\n                title,\n                duration_ms,\n                payout_micros,\n                album_slug := .album.slug,\n                tags,\n                contribs := (\n                    select .contributors {\n                        handle,\n                        c_role := @role,\n                        c_share := @share_bp\n                    }\n                )\n            }\n            \"\"\"\n        )\n        by_slug = {}\n        for track in tracks:\n            assert track.slug not in by_slug, f\"Track slug {track.slug!r} appears more than once.\"\n            by_slug[track.slug] = track\n        for entry in seed[\"tracks\"]:\n            assert entry[\"slug\"] in by_slug, f\"Track {entry['slug']!r} was not loaded.\"\n            track = by_slug[entry[\"slug\"]]\n            assert track.title == entry[\"title\"], (\n                f\"Track {entry['slug']!r} title mismatch: {track.title!r} != {entry['title']!r}\"\n            )\n>           assert track.duration_ms == entry[\"duration_ms\"], (\n                f\"Track {entry['slug']!r} duration mismatch: \"\n                f\"{track.duration_ms} != {entry['duration_ms']}\"\n            )\nE           AssertionError: Track 'trk-echoless' duration mismatch: 100000 != 95500\nE           assert 100000 == 95500\nE            +  where 100000 = Object{slug := 'trk-echoless', title := 'Echoless', duration_ms := 100000, payout_micros := 20000, album_slug := 'alb-quiet-machines', tags := ['ambient'], contribs := []}.duration_ms\n\n/tests/test_final_state.py:729: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_final_state.py::test_sql_relations_are_queryable",
+                "status": "passed",
+                "duration": 93,
+                "start": 1786079984752,
+                "stop": 1786079984845,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_sql_column_mapping",
+                "status": "passed",
+                "duration": 23,
+                "start": 1786079984846,
+                "stop": 1786079984869,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_load_command_reports_totals",
+                "status": "passed",
+                "duration": 621,
+                "start": 1786079984870,
+                "stop": 1786079985491,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_load_command_is_idempotent",
+                "status": "passed",
+                "duration": 198,
+                "start": 1786079985491,
+                "stop": 1786079985689,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reconcile_exit_code_and_stdout",
+                "status": "passed",
+                "duration": 291,
+                "start": 1786079985690,
+                "stop": 1786079985981,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_top_level_shape",
+                "status": "passed",
+                "duration": 2,
+                "start": 1786079985981,
+                "stop": 1786079985983,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_metrics_are_complete_sorted_and_correct",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079985983,
+                "stop": 1786079985984,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_rows_are_complete_sorted_and_correct",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079985984,
+                "stop": 1786079985985,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_report_covers_edge_case_rows",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079985986,
+                "stop": 1786079985987,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reconcile_reflects_new_objects",
+                "status": "passed",
+                "duration": 1182,
+                "start": 1786079985987,
+                "stop": 1786079987169,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reconcile_row_for_new_track",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079987170,
+                "stop": 1786079987171,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reconcile_reflects_sql_side_mutation",
+                "status": "passed",
+                "duration": 3,
+                "start": 1786079987171,
+                "stop": 1786079987174,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_reconcile_returns_to_baseline_after_cleanup",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079987174,
+                "stop": 1786079987175,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_drift_exit_code_and_stdout",
+                "status": "passed",
+                "duration": 309,
+                "start": 1786079987175,
+                "stop": 1786079987484,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_drift_entries_are_exact_and_sorted",
+                "status": "passed",
+                "duration": 1,
+                "start": 1786079987484,
+                "stop": 1786079987485,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_no_drift_against_matching_baseline",
+                "status": "passed",
+                "duration": 301,
+                "start": 1786079987486,
+                "stop": 1786079987787,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_bad_sql_password_reports_connection_error",
+                "status": "passed",
+                "duration": 204,
+                "start": 1786079987788,
+                "stop": 1786079987992,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_closed_sql_port_reports_connection_error",
+                "status": "passed",
+                "duration": 179,
+                "start": 1786079987993,
+                "stop": 1786079988172,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            },
+            {
+                "name": "test_final_state.py::test_bad_edgeql_credentials_report_connection_error",
+                "status": "passed",
+                "duration": 200,
+                "start": 1786079988172,
+                "stop": 1786079988372,
+                "retries": 0,
+                "file_path": "test_final_state.py"
+            }
+        ]
+    }
+}

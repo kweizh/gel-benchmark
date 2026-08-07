@@ -1,0 +1,771 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 34 items
+
+../tests/test_final_state.py ......F...FFFFFF.FFFFFFFFFFFEEEFFF          [100%]
+
+==================================== ERRORS ====================================
+______________ ERROR at setup of test_drift_exit_code_and_stdout _______________
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    @pytest.fixture(scope="session")
+    def drift_setup(mutation_cycle):
+>       clean = load_report(mutation_cycle["r4"]["path"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r4.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r4.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r4.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+__________ ERROR at setup of test_drift_entries_are_exact_and_sorted ___________
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    @pytest.fixture(scope="session")
+    def drift_setup(mutation_cycle):
+>       clean = load_report(mutation_cycle["r4"]["path"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r4.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r4.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r4.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+__________ ERROR at setup of test_no_drift_against_matching_baseline ___________
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    @pytest.fixture(scope="session")
+    def drift_setup(mutation_cycle):
+>       clean = load_report(mutation_cycle["r4"]["path"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r4.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r4.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r4.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+=================================== FAILURES ===================================
+____________________ test_indexes_and_exclusive_constraints ____________________
+
+gel_client = <gel.blocking_client.Client object at 0x73be906e7550>
+
+    def test_indexes_and_exclusive_constraints(gel_client):
+        album = gel_client.query_single(
+            """
+            select schema::ObjectType { indexes: { expr } }
+            filter .name = 'catalog::Album'
+            limit 1
+            """
+        )
+        assert album is not None, "Object type catalog::Album was not found."
+        exprs = [ix.expr or "" for ix in album.indexes]
+        assert any("year" in e for e in exprs), (
+            f"catalog::Album must declare an index on `year`; found index exprs: {exprs}"
+        )
+    
+        constrained = gel_client.query(
+            """
+            select schema::ObjectType {
+                name,
+                properties: {
+                    name,
+                    constraint_names := (select .constraints.name)
+                }
+            }
+            filter .name in {'catalog::Asset', 'catalog::Artist'}
+            """
+        )
+        found = {}
+        for obj in constrained:
+            for prop in obj.properties:
+                found[(obj.name, prop.name)] = set(prop.constraint_names)
+        slug_constraints = found.get(("catalog::Asset", "slug"), set())
+>       assert any("exclusive" in c for c in slug_constraints), (
+            f"catalog::Asset.slug must carry an exclusive constraint; found {slug_constraints}"
+        )
+E       AssertionError: catalog::Asset.slug must carry an exclusive constraint; found set()
+E       assert False
+E        +  where False = any(<generator object test_indexes_and_exclusive_constraints.<locals>.<genexpr> at 0x73be907b5ff0>)
+
+/tests/test_final_state.py:534: AssertionError
+_______________________ test_duplicate_slug_is_rejected ________________________
+
+gel_client = <gel.blocking_client.Client object at 0x73be906e7550>
+seed = {'albums': [{'label': 'Fjord Records', 'slug': 'alb-northern-lights', 'title': 'Northern Lights', 'year': 1999}, {'lab...}, {'artist': 'brick-mono', 'role': 'bass', 'share_bp': 3000}], 'duration_ms': 240000, 'royalty_rate': '0.1075', ...}]}
+
+    def test_duplicate_slug_is_rejected(gel_client, seed):
+        existing_slug = seed["albums"][0]["slug"]
+>       with pytest.raises(Exception):
+E       Failed: DID NOT RAISE <class 'Exception'>
+
+/tests/test_final_state.py:609: Failed
+________________________ test_object_counts_match_seed _________________________
+
+gel_client = <gel.blocking_client.Client object at 0x73be906e7550>
+seed = {'albums': [{'label': 'Fjord Records', 'slug': 'alb-northern-lights', 'title': 'Northern Lights', 'year': 1999}, {'lab...}, {'artist': 'brick-mono', 'role': 'bass', 'share_bp': 3000}], 'duration_ms': 240000, 'royalty_rate': '0.1075', ...}]}
+
+    def test_object_counts_match_seed(gel_client, seed):
+        counts = gel_client.query_single(
+            """
+            select {
+                artists := count(catalog::Artist),
+                albums := count(catalog::Album),
+                tracks := count(catalog::Track)
+            }
+            """
+        )
+>       assert counts.artists == len(seed["artists"]), (
+            f"Expected {len(seed['artists'])} Artist objects, found {counts.artists}."
+        )
+E       AssertionError: Expected 5 Artist objects, found 0.
+E       assert 0 == 5
+E        +  where 0 = Object{artists := 0, albums := 1, tracks := 0}.artists
+E        +  and   5 = len([{'aliases': ['Lane', 'A.L.', 'Aurora'], 'country': 'SE', 'handle': 'aurora-lane', 'name': 'Aurora Lane'}, {'aliases':... 'delta-nine', 'name': 'Delta Nine'}, {'aliases': ['EV'], 'country': 'DE', 'handle': 'echo-void', 'name': 'Echo Void'}])
+
+/tests/test_final_state.py:642: AssertionError
+_________________________ test_artists_loaded_exactly __________________________
+
+gel_client = <gel.blocking_client.Client object at 0x73be906e7550>
+seed = {'albums': [{'label': 'Fjord Records', 'slug': 'alb-northern-lights', 'title': 'Northern Lights', 'year': 1999}, {'lab...}, {'artist': 'brick-mono', 'role': 'bass', 'share_bp': 3000}], 'duration_ms': 240000, 'royalty_rate': '0.1075', ...}]}
+
+    def test_artists_loaded_exactly(gel_client, seed):
+        artists = gel_client.query(
+            "select catalog::Artist { handle, name, country, aliases }"
+        )
+        by_handle = {}
+        for artist in artists:
+            assert artist.handle not in by_handle, (
+                f"Artist handle {artist.handle!r} appears more than once."
+            )
+            by_handle[artist.handle] = artist
+        for entry in seed["artists"]:
+>           assert entry["handle"] in by_handle, f"Artist {entry['handle']!r} was not loaded."
+E           AssertionError: Artist 'aurora-lane' was not loaded.
+E           assert 'aurora-lane' in {}
+
+/tests/test_final_state.py:664: AssertionError
+__________________________ test_albums_loaded_exactly __________________________
+
+gel_client = <gel.blocking_client.Client object at 0x73be906e7550>
+seed = {'albums': [{'label': 'Fjord Records', 'slug': 'alb-northern-lights', 'title': 'Northern Lights', 'year': 1999}, {'lab...}, {'artist': 'brick-mono', 'role': 'bass', 'share_bp': 3000}], 'duration_ms': 240000, 'royalty_rate': '0.1075', ...}]}
+
+    def test_albums_loaded_exactly(gel_client, seed):
+        albums = gel_client.query("select catalog::Album { slug, title, year, label }")
+        by_slug = {}
+        for album in albums:
+            assert album.slug not in by_slug, f"Album slug {album.slug!r} appears more than once."
+            by_slug[album.slug] = album
+        for entry in seed["albums"]:
+            assert entry["slug"] in by_slug, f"Album {entry['slug']!r} was not loaded."
+            album = by_slug[entry["slug"]]
+>           assert album.title == entry["title"], (
+                f"Album {entry['slug']!r} title mismatch: {album.title!r} != {entry['title']!r}"
+            )
+E           AssertionError: Album 'alb-northern-lights' title mismatch: 'Duplicate' != 'Northern Lights'
+E           assert 'Duplicate' == 'Northern Lights'
+E             
+E             - Northern Lights
+E             + Duplicate
+
+/tests/test_final_state.py:688: AssertionError
+__________________________ test_tracks_loaded_exactly __________________________
+
+gel_client = <gel.blocking_client.Client object at 0x73be906e7550>
+seed = {'albums': [{'label': 'Fjord Records', 'slug': 'alb-northern-lights', 'title': 'Northern Lights', 'year': 1999}, {'lab...}, {'artist': 'brick-mono', 'role': 'bass', 'share_bp': 3000}], 'duration_ms': 240000, 'royalty_rate': '0.1075', ...}]}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_tracks_loaded_exactly(gel_client, seed, expected):
+        tracks = gel_client.query(
+            """
+            select catalog::Track {
+                slug,
+                title,
+                duration_ms,
+                payout_micros,
+                album_slug := .album.slug,
+                tags,
+                contribs := (
+                    select .contributors {
+                        handle,
+                        c_role := @role,
+                        c_share := @share_bp
+                    }
+                )
+            }
+            """
+        )
+        by_slug = {}
+        for track in tracks:
+            assert track.slug not in by_slug, f"Track slug {track.slug!r} appears more than once."
+            by_slug[track.slug] = track
+        for entry in seed["tracks"]:
+>           assert entry["slug"] in by_slug, f"Track {entry['slug']!r} was not loaded."
+E           AssertionError: Track 'trk-aurora-drift' was not loaded.
+E           assert 'trk-aurora-drift' in {}
+
+/tests/test_final_state.py:724: AssertionError
+_______________________ test_sql_relations_are_queryable _______________________
+
+sql_connect = <function sql_connect.<locals>._connect at 0x73be909d5300>
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_sql_relations_are_queryable(sql_connect, expected):
+        wanted_counts = {
+            'catalog."Album"': expected["metrics"]["count.catalog::Album"],
+            'catalog."Artist"': expected["metrics"]["count.catalog::Artist"],
+            'catalog."Track"': expected["metrics"]["count.catalog::Track"],
+            'catalog."Track.tags"': expected["metrics"]["count.catalog::Track.tags"],
+            'catalog."Track.contributors"': expected["metrics"][
+                "count.catalog::Track.contributors"
+            ],
+            'catalog."Artist.aliases"': expected["metrics"]["count.catalog::Artist.aliases"],
+        }
+        with sql_connect() as conn:
+            with conn.cursor() as cur:
+                for relation, wanted in wanted_counts.items():
+                    cur.execute(f"select count(*) from {relation}")  # noqa: S608
+                    row = cur.fetchone()
+                    assert row is not None, f"Could not count rows in {relation}."
+>                   assert row[0] == wanted, (
+                        f"SQL relation {relation} has {row[0]} rows, expected {wanted}."
+                    )
+E                   AssertionError: SQL relation catalog."Album" has 1 rows, expected 3.
+E                   assert 1 == 3
+
+/tests/test_final_state.py:779: AssertionError
+_______________________ test_load_command_reports_totals _______________________
+
+load_runs = {'first': CompletedProcess(args=['python3', 'dualview.py', 'load', '--input', 'data/seed.json'], returncode=2, stdout=... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_load_command_reports_totals(load_runs, expected):
+        proc = load_runs["first"]
+>       assert proc.returncode == 0, (
+            f"`python3 {ENTRYPOINT} load --input data/seed.json` exited with "
+            f"{proc.returncode}.\nstdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: `python3 dualview.py load --input data/seed.json` exited with 2.
+E         stdout: 
+E         stderr: python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'dualview.py', 'load', '--input', 'data/seed.json'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:809: AssertionError
+_______________________ test_load_command_is_idempotent ________________________
+
+load_runs = {'first': CompletedProcess(args=['python3', 'dualview.py', 'load', '--input', 'data/seed.json'], returncode=2, stdout=... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+gel_client = <gel.blocking_client.Client object at 0x73be906e7550>
+
+    def test_load_command_is_idempotent(load_runs, expected, gel_client):
+        proc = load_runs["second"]
+>       assert proc.returncode == 0, (
+            f"The second `load` run exited with {proc.returncode}.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: The second `load` run exited with 2.
+E         stdout: 
+E         stderr: python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'dualview.py', 'load', '--input', 'data/seed.json'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:839: AssertionError
+_____________________ test_reconcile_exit_code_and_stdout ______________________
+
+report_r1 = {'path': '/tmp/recon-verify/r1.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output'... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+
+    def test_reconcile_exit_code_and_stdout(report_r1):
+        proc = report_r1["proc"]
+>       assert proc.returncode == 0, (
+            f"`reconcile` exited with {proc.returncode}, expected 0.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: `reconcile` exited with 2, expected 0.
+E         stdout: 
+E         stderr: python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output', '/tmp/recon-verify/r1.json'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:887: AssertionError
+_________________________ test_report_top_level_shape __________________________
+
+report_r1 = {'path': '/tmp/recon-verify/r1.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output'... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+
+    def test_report_top_level_shape(report_r1):
+>       report = load_report(report_r1["path"])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:909: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r1.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r1.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r1.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+_____________ test_report_metrics_are_complete_sorted_and_correct ______________
+
+report_r1 = {'path': '/tmp/recon-verify/r1.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output'... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_report_metrics_are_complete_sorted_and_correct(report_r1, expected):
+>       report = load_report(report_r1["path"])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:925: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r1.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r1.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r1.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+_______________ test_report_rows_are_complete_sorted_and_correct _______________
+
+report_r1 = {'path': '/tmp/recon-verify/r1.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output'... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_report_rows_are_complete_sorted_and_correct(report_r1, expected):
+>       report = load_report(report_r1["path"])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:949: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r1.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r1.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r1.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+______________________ test_report_covers_edge_case_rows _______________________
+
+report_r1 = {'path': '/tmp/recon-verify/r1.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output'... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_report_covers_edge_case_rows(report_r1, expected):
+>       report = load_report(report_r1["path"])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:979: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r1.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r1.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r1.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+_____________________ test_reconcile_reflects_new_objects ______________________
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+report_r1 = {'path': '/tmp/recon-verify/r1.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output'... stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n")}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_reconcile_reflects_new_objects(mutation_cycle, report_r1, expected):
+        proc = mutation_cycle["r2"]["proc"]
+>       assert proc.returncode == 0, (
+            f"`reconcile` after inserting new objects exited with {proc.returncode}.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: `reconcile` after inserting new objects exited with 2.
+E         stdout: 
+E         stderr: python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output', '/tmp/recon-verify/r2.json'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:1011: AssertionError
+_______________________ test_reconcile_row_for_new_track _______________________
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    def test_reconcile_row_for_new_track(mutation_cycle):
+>       report = load_report(mutation_cycle["r2"]["path"])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:1051: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/recon-verify/r2.json'
+
+    def load_report(path):
+>       assert os.path.isfile(path), f"Report file {path} was not written."
+E       AssertionError: Report file /tmp/recon-verify/r2.json was not written.
+E       assert False
+E        +  where False = <function isfile at 0x73be9183c220>('/tmp/recon-verify/r2.json')
+E        +    where <function isfile at 0x73be9183c220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:167: AssertionError
+__________________ test_reconcile_reflects_sql_side_mutation ___________________
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    def test_reconcile_reflects_sql_side_mutation(mutation_cycle):
+        proc = mutation_cycle["r3"]["proc"]
+>       assert proc.returncode == 0, (
+            f"`reconcile` after the SQL-side insert exited with {proc.returncode}.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: `reconcile` after the SQL-side insert exited with 2.
+E         stdout: 
+E         stderr: python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output', '/tmp/recon-verify/r3.json'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:1078: AssertionError
+_______________ test_reconcile_returns_to_baseline_after_cleanup _______________
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+expected = {'metrics': {'count.artists_without_contributions': 1, 'count.catalog::Album': 3, 'count.catalog::Artist': 5, 'count.c...e': {'album_slug': 'alb-quiet-machines', 'album_year': 2007, 'contributor_count': 1, 'duration_ms': 121001, ...}, ...}}
+
+    def test_reconcile_returns_to_baseline_after_cleanup(mutation_cycle, expected):
+        proc = mutation_cycle["r4"]["proc"]
+>       assert proc.returncode == 0, (
+            f"`reconcile` after cleanup exited with {proc.returncode}.\n"
+            f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
+        )
+E       AssertionError: `reconcile` after cleanup exited with 2.
+E         stdout: 
+E         stderr: python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--output', '/tmp/recon-verify/r4.json'], returncode=2, stdout='', stderr="python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n").returncode
+
+/tests/test_final_state.py:1106: AssertionError
+________________ test_bad_sql_password_reports_connection_error ________________
+
+text = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n"
+what = '`reconcile` stderr'
+
+    def parse_single_json_object(text, what):
+        stripped = (text or "").strip()
+        assert stripped, f"Expected a single JSON object on {what}, got nothing."
+        try:
+>           parsed = json.loads(stripped)
+                     ^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x73be910e2c90>
+s = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory"
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/usr/lib/python3.12/json/decoder.py:355: JSONDecodeError
+
+The above exception was the direct cause of the following exception:
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    def test_bad_sql_password_reports_connection_error(mutation_cycle):
+        out_path = os.path.join(REPORT_DIR, "bad-sql.json")
+        if os.path.exists(out_path):
+            os.remove(out_path)
+        proc = run_tool(
+            ["reconcile", "--output", out_path],
+            extra_env={"GEL_SQL_PASSWORD": "definitely-not-the-password"},
+        )
+>       _assert_connection_error(proc, out_path, "sql")
+
+/tests/test_final_state.py:1300: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:1273: in _assert_connection_error
+    payload = parse_single_json_object(proc.stderr, "`reconcile` stderr")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n"
+what = '`reconcile` stderr'
+
+    def parse_single_json_object(text, what):
+        stripped = (text or "").strip()
+        assert stripped, f"Expected a single JSON object on {what}, got nothing."
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+>           raise AssertionError(
+                f"{what} is not exactly one JSON object: {stripped!r} ({exc})"
+            ) from exc
+E           AssertionError: `reconcile` stderr is not exactly one JSON object: "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory" (Expecting value: line 1 column 1 (char 0))
+
+/tests/test_final_state.py:159: AssertionError
+________________ test_closed_sql_port_reports_connection_error _________________
+
+text = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n"
+what = '`reconcile` stderr'
+
+    def parse_single_json_object(text, what):
+        stripped = (text or "").strip()
+        assert stripped, f"Expected a single JSON object on {what}, got nothing."
+        try:
+>           parsed = json.loads(stripped)
+                     ^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x73be910e2c90>
+s = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory"
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/usr/lib/python3.12/json/decoder.py:355: JSONDecodeError
+
+The above exception was the direct cause of the following exception:
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    def test_closed_sql_port_reports_connection_error(mutation_cycle):
+        out_path = os.path.join(REPORT_DIR, "bad-sql-port.json")
+        if os.path.exists(out_path):
+            os.remove(out_path)
+        proc = run_tool(
+            ["reconcile", "--output", out_path],
+            extra_env={"GEL_SQL_PORT": "1"},
+        )
+>       _assert_connection_error(proc, out_path, "sql")
+
+/tests/test_final_state.py:1311: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:1273: in _assert_connection_error
+    payload = parse_single_json_object(proc.stderr, "`reconcile` stderr")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n"
+what = '`reconcile` stderr'
+
+    def parse_single_json_object(text, what):
+        stripped = (text or "").strip()
+        assert stripped, f"Expected a single JSON object on {what}, got nothing."
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+>           raise AssertionError(
+                f"{what} is not exactly one JSON object: {stripped!r} ({exc})"
+            ) from exc
+E           AssertionError: `reconcile` stderr is not exactly one JSON object: "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory" (Expecting value: line 1 column 1 (char 0))
+
+/tests/test_final_state.py:159: AssertionError
+_____________ test_bad_edgeql_credentials_report_connection_error ______________
+
+text = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n"
+what = '`reconcile` stderr'
+
+    def parse_single_json_object(text, what):
+        stripped = (text or "").strip()
+        assert stripped, f"Expected a single JSON object on {what}, got nothing."
+        try:
+>           parsed = json.loads(stripped)
+                     ^^^^^^^^^^^^^^^^^^^^
+
+/tests/test_final_state.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x73be910e2c90>
+s = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory"
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/usr/lib/python3.12/json/decoder.py:355: JSONDecodeError
+
+The above exception was the direct cause of the following exception:
+
+mutation_cycle = {'r2': {'path': '/tmp/recon-verify/r2.json', 'proc': CompletedProcess(args=['python3', 'dualview.py', 'reconcile', '--...oject/dualview.py': [Errno 2] No such file or directory\n")}, 'track_id': UUID('8146c990-9221-11f1-9f36-e39d8153e81e')}
+
+    def test_bad_edgeql_credentials_report_connection_error(mutation_cycle):
+        out_path = os.path.join(REPORT_DIR, "bad-edgeql.json")
+        if os.path.exists(out_path):
+            os.remove(out_path)
+        proc = run_tool(
+            ["reconcile", "--output", out_path],
+            extra_env={
+                "GEL_DSN": "gel://admin:definitely-not-the-password@127.0.0.1:5656/main",
+                "GEL_CLIENT_TLS_SECURITY": "insecure",
+            },
+        )
+>       _assert_connection_error(proc, out_path, "edgeql")
+
+/tests/test_final_state.py:1325: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tests/test_final_state.py:1273: in _assert_connection_error
+    payload = parse_single_json_object(proc.stderr, "`reconcile` stderr")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory\n"
+what = '`reconcile` stderr'
+
+    def parse_single_json_object(text, what):
+        stripped = (text or "").strip()
+        assert stripped, f"Expected a single JSON object on {what}, got nothing."
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+>           raise AssertionError(
+                f"{what} is not exactly one JSON object: {stripped!r} ({exc})"
+            ) from exc
+E           AssertionError: `reconcile` stderr is not exactly one JSON object: "python3: can't open file '/home/user/project/dualview.py': [Errno 2] No such file or directory" (Expecting value: line 1 column 1 (char 0))
+
+/tests/test_final_state.py:159: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_migration_status_is_up_to_date
+PASSED ../tests/test_final_state.py::test_migration_files_exist
+PASSED ../tests/test_final_state.py::test_object_type_hierarchy
+PASSED ../tests/test_final_state.py::test_track_pointer_cardinalities_and_targets
+PASSED ../tests/test_final_state.py::test_payout_micros_is_computed_int64
+PASSED ../tests/test_final_state.py::test_contributors_link_properties
+PASSED ../tests/test_final_state.py::test_invalid_country_is_rejected
+PASSED ../tests/test_final_state.py::test_valid_country_is_accepted
+PASSED ../tests/test_final_state.py::test_zero_duration_track_is_rejected
+PASSED ../tests/test_final_state.py::test_sql_column_mapping
+ERROR ../tests/test_final_state.py::test_drift_exit_code_and_stdout - Asserti...
+ERROR ../tests/test_final_state.py::test_drift_entries_are_exact_and_sorted
+ERROR ../tests/test_final_state.py::test_no_drift_against_matching_baseline
+FAILED ../tests/test_final_state.py::test_indexes_and_exclusive_constraints
+FAILED ../tests/test_final_state.py::test_duplicate_slug_is_rejected - Failed...
+FAILED ../tests/test_final_state.py::test_object_counts_match_seed - Assertio...
+FAILED ../tests/test_final_state.py::test_artists_loaded_exactly - AssertionE...
+FAILED ../tests/test_final_state.py::test_albums_loaded_exactly - AssertionEr...
+FAILED ../tests/test_final_state.py::test_tracks_loaded_exactly - AssertionEr...
+FAILED ../tests/test_final_state.py::test_sql_relations_are_queryable - Asser...
+FAILED ../tests/test_final_state.py::test_load_command_reports_totals - Asser...
+FAILED ../tests/test_final_state.py::test_load_command_is_idempotent - Assert...
+FAILED ../tests/test_final_state.py::test_reconcile_exit_code_and_stdout - As...
+FAILED ../tests/test_final_state.py::test_report_top_level_shape - AssertionE...
+FAILED ../tests/test_final_state.py::test_report_metrics_are_complete_sorted_and_correct
+FAILED ../tests/test_final_state.py::test_report_rows_are_complete_sorted_and_correct
+FAILED ../tests/test_final_state.py::test_report_covers_edge_case_rows - Asse...
+FAILED ../tests/test_final_state.py::test_reconcile_reflects_new_objects - As...
+FAILED ../tests/test_final_state.py::test_reconcile_row_for_new_track - Asser...
+FAILED ../tests/test_final_state.py::test_reconcile_reflects_sql_side_mutation
+FAILED ../tests/test_final_state.py::test_reconcile_returns_to_baseline_after_cleanup
+FAILED ../tests/test_final_state.py::test_bad_sql_password_reports_connection_error
+FAILED ../tests/test_final_state.py::test_closed_sql_port_reports_connection_error
+FAILED ../tests/test_final_state.py::test_bad_edgeql_credentials_report_connection_error
+=================== 21 failed, 10 passed, 3 errors in 3.65s ====================

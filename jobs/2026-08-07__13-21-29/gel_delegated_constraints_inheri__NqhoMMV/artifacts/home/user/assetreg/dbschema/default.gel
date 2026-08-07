@@ -1,0 +1,93 @@
+module default {
+
+    # --- Shared token rule (abstract constraint) ---
+    abstract constraint token_invalid(max: int64) {
+        errmessage := "TOKEN_INVALID(max={max})";
+        using (
+            re_test("[A-Z][A-Z0-9_]*", <str>__subject__)
+            and std::len(<str>__subject__) <= max
+        );
+    }
+
+    # --- Region ---
+    type Region {
+        required property key: str {
+            constraint exclusive {
+                errmessage := "REGION_KEY_DUPLICATE";
+            }
+        }
+    }
+
+    # --- Revisioned ---
+    abstract type Revisioned {
+        required property revision: int64 {
+            constraint min_value(1) {
+                errmessage := "REVISION_TOO_LOW";
+            }
+        }
+    }
+
+    # --- Taggable ---
+    abstract type Taggable {
+        multi property tags: str {
+            constraint token_invalid(12);
+        }
+    }
+
+    # --- Asset ---
+    abstract type Asset extending Revisioned, Taggable {
+        required property code: str {
+            constraint token_invalid(16);
+            delegated constraint exclusive {
+                errmessage := "CODE_DUPLICATE_IN_KIND";
+            }
+        }
+
+        required property serial: str {
+            constraint exclusive {
+                errmessage := "SERIAL_DUPLICATE_GLOBAL";
+            }
+        }
+
+        required property slot: int64;
+        required property capacity: int64;
+        required property reserved: int64;
+
+        required link region: Region;
+
+        delegated constraint exclusive on ((.region, .slot)) {
+            errmessage := "SLOT_DUPLICATE_IN_KIND";
+        }
+
+        delegated constraint expression on (__subject__.reserved <= __subject__.capacity) {
+            errmessage := "CAPACITY_EXCEEDED";
+        }
+    }
+
+    # --- ServerAsset ---
+    type ServerAsset extending Asset {
+        required property hostname: str;
+    }
+
+    # --- StorageAsset ---
+    type StorageAsset extending Asset {
+        required property volume_gb: int64;
+    }
+
+    # --- Operator ---
+    type Operator {
+        required property name: str {
+            constraint exclusive {
+                errmessage := "OPERATOR_NAME_DUPLICATE";
+            }
+        }
+
+        multi link crew: Asset {
+            property role: str;
+            constraint exclusive on (__subject__@role) {
+                errmessage := "ROLE_DUPLICATE_FOR_OPERATOR";
+            }
+        }
+    }
+
+}

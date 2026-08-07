@@ -1,0 +1,163 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.5.3
+collected 36 items
+
+../tests/test_final_state.py ................................F...        [100%]
+
+=================================== FAILURES ===================================
+___________________ test_operator_rules_enforced_by_database ___________________
+
+ingest_runs = {'proc_a': CompletedProcess(args=['bash', '/home/user/assetreg/run-ingest.sh', '--input', '/tmp/run_a.json', '--report... 'status': 'inserted', ...}, {'seq': 3, 'kind': 'storage', 'serial': 'SN-0003', 'status': 'inserted', ...}], ...}, ...}
+
+    def test_operator_rules_enforced_by_database(ingest_runs: dict) -> None:
+        gel_query("delete Operator")
+        try:
+            gel_query(
+                "insert Operator { name := 'op-alpha', crew := ("
+                "select Asset { @role := 'PRIMARY' } filter .serial = 'SN-0001') }"
+            )
+    
+            output = gel_query_expect_failure(
+                "update Operator filter .name = 'op-alpha' set { crew += ("
+                "select Asset { @role := 'PRIMARY' } filter .serial = 'SN-0002') }"
+            )
+            assert "ROLE_DUPLICATE_FOR_OPERATOR" in output, (
+                "Linking a second asset with the same @role to the same Operator must be "
+                f"refused with ROLE_DUPLICATE_FOR_OPERATOR; got:\n{output}"
+            )
+    
+            output = gel_query_expect_failure("insert Operator { name := 'op-alpha' }")
+            assert "OPERATOR_NAME_DUPLICATE" in output, (
+                "Duplicate Operator names must be refused with OPERATOR_NAME_DUPLICATE; "
+                f"got:\n{output}"
+            )
+    
+>           gel_query(
+                "insert Operator { name := 'op-beta', crew := ("
+                "select Asset { @role := 'PRIMARY' } filter .serial = 'SN-0002') }"
+            )
+
+/tests/test_final_state.py:1129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+query = "insert Operator { name := 'op-beta', crew := (select Asset { @role := 'PRIMARY' } filter .serial = 'SN-0002') }"
+
+    def gel_query(query: str) -> Any:
+        proc = subprocess.run(
+            ["gel", "query", "-F", "json", query],
+            cwd=PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+>       assert proc.returncode == 0, (
+            f"EdgeQL query failed.\nquery: {query}\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+E       AssertionError: EdgeQL query failed.
+E         query: insert Operator { name := 'op-beta', crew := (select Asset { @role := 'PRIMARY' } filter .serial = 'SN-0002') }
+E         stdout:
+E         
+E         stderr:
+E         gel error: ConstraintViolationError: ROLE_DUPLICATE_FOR_OPERATOR
+E           Detail: violated constraint 'std::exclusive' on link 'crew' of object type 'default::Operator'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['gel', 'query', '-F', 'json', "insert Operator { name := 'op-beta', crew := (select Asset { @ro...CATE_FOR_OPERATOR\n  Detail: violated constraint 'std::exclusive' on link 'crew' of object type 'default::Operator'\n").returncode
+
+/tests/test_final_state.py:349: AssertionError
+==================================== PASSES ====================================
+__________________________ test_migration_files_exist __________________________
+----------------------------- Captured stdout call -----------------------------
+migrations: ['/home/user/assetreg/dbschema/migrations/00001-m1m5prp.edgeql']
+_______________________ test_migration_status_is_in_sync _______________________
+---------------------------- Captured stdout setup -----------------------------
+[gel-ensure-server] stdout:
+gel server already running
+
+[gel-ensure-server] stderr:
+
+_______________________ test_run_a_exit_code_and_stdout ________________________
+---------------------------- Captured stdout setup -----------------------------
+[run-ingest --input /tmp/run_a.json --report /tmp/report_a.json] rc=0
+stdout:
+SUMMARY inserted=3 rejected=0
+
+stderr:
+
+[run-ingest --input /tmp/run_b.json --report /tmp/report_b.json] rc=2
+stdout:
+SUMMARY inserted=2 rejected=9
+
+stderr:
+
+[run-ingest --input /tmp/run_c.json --report /tmp/report_c.json] rc=2
+stdout:
+SUMMARY inserted=1 rejected=2
+
+stderr:
+
+_______________________ test_missing_report_flag_exits_1 _______________________
+----------------------------- Captured stdout call -----------------------------
+[run-ingest --input /tmp/run_a.json] rc=1
+stdout:
+
+stderr:
+Error: Both --input and --report flags are mandatory.
+
+_________________ test_unreadable_input_exits_1_without_report _________________
+----------------------------- Captured stdout call -----------------------------
+[run-ingest --input /tmp/does_not_exist.json --report /tmp/report_missing.json] rc=1
+stdout:
+
+stderr:
+Error: Cannot read input file at /tmp/does_not_exist.json: ENOENT: no such file or directory, open '/tmp/does_not_exist.json'
+
+____________________ test_empty_manifest_and_reversed_flags ____________________
+----------------------------- Captured stdout call -----------------------------
+[run-ingest --report /tmp/report_empty.json --input /tmp/run_empty.json] rc=0
+stdout:
+SUMMARY inserted=0 rejected=0
+
+stderr:
+
+=========================== short test summary info ============================
+PASSED ../tests/test_final_state.py::test_run_ingest_entrypoint_exists
+PASSED ../tests/test_final_state.py::test_typescript_sources_exist_and_use_gel_client
+PASSED ../tests/test_final_state.py::test_migration_files_exist
+PASSED ../tests/test_final_state.py::test_migration_status_is_in_sync
+PASSED ../tests/test_final_state.py::test_all_required_object_types_exist
+PASSED ../tests/test_final_state.py::test_abstractness_of_types
+PASSED ../tests/test_final_state.py::test_asset_uses_multiple_inheritance
+PASSED ../tests/test_final_state.py::test_concrete_asset_subtypes
+PASSED ../tests/test_final_state.py::test_asset_declares_required_pointers
+PASSED ../tests/test_final_state.py::test_code_exclusive_constraint_is_delegated
+PASSED ../tests/test_final_state.py::test_serial_exclusive_constraint_is_not_delegated
+PASSED ../tests/test_final_state.py::test_composite_object_constraint_is_delegated
+PASSED ../tests/test_final_state.py::test_capacity_expression_constraint
+PASSED ../tests/test_final_state.py::test_inherited_constraints_are_not_delegated_on_subtypes
+PASSED ../tests/test_final_state.py::test_no_unexpected_delegated_constraints
+PASSED ../tests/test_final_state.py::test_single_parameterized_abstract_constraint
+PASSED ../tests/test_final_state.py::test_abstract_constraint_reused_at_both_sites
+PASSED ../tests/test_final_state.py::test_operator_link_property_and_constraint
+PASSED ../tests/test_final_state.py::test_run_a_exit_code_and_stdout
+PASSED ../tests/test_final_state.py::test_run_a_report_totals
+PASSED ../tests/test_final_state.py::test_run_a_results_ordering_and_shape
+PASSED ../tests/test_final_state.py::test_run_a_schema_section_from_introspection
+PASSED ../tests/test_final_state.py::test_run_a_database_state
+PASSED ../tests/test_final_state.py::test_run_b_exit_code_and_stdout
+PASSED ../tests/test_final_state.py::test_run_b_report_totals
+PASSED ../tests/test_final_state.py::test_run_b_classification_table
+PASSED ../tests/test_final_state.py::test_run_b_reason_counts
+PASSED ../tests/test_final_state.py::test_run_b_left_no_partial_writes
+PASSED ../tests/test_final_state.py::test_run_b_database_counts
+PASSED ../tests/test_final_state.py::test_run_c_exit_code_and_stdout
+PASSED ../tests/test_final_state.py::test_run_c_report
+PASSED ../tests/test_final_state.py::test_run_c_database_state
+PASSED ../tests/test_final_state.py::test_missing_report_flag_exits_1
+PASSED ../tests/test_final_state.py::test_unreadable_input_exits_1_without_report
+PASSED ../tests/test_final_state.py::test_empty_manifest_and_reversed_flags
+FAILED ../tests/test_final_state.py::test_operator_rules_enforced_by_database
+========================= 1 failed, 35 passed in 7.56s =========================
